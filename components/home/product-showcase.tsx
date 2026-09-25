@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
 import { CartItem } from "@/components/cart/cart-drawer";
@@ -108,6 +109,7 @@ export function ProductCardItem({
   theme,
   aspectRatio,
 }: ProductCardItemProps) {
+  const router = useRouter();
   const isDark = theme ? theme === "dark" : variant === "dark";
   const primarySrc = product.image ? `${product.image}?v=4` : "/images/product/image9.png";
   const [activeImgIdx, setActiveImgIdx] = useState(0);
@@ -125,13 +127,7 @@ export function ProductCardItem({
   }, [product]);
 
   const handleCardClick = () => {
-    if (activeMode === "custom") {
-      onCustomize(product);
-    } else if (product.customizationFields && product.customizationFields.length > 0) {
-      onCustomize(product);
-    } else {
-      onQuickAdd(product);
-    }
+    router.push(`/products/${product.id}`);
   };
 
   const currentDisplayImg = images[activeImgIdx] || primarySrc;
@@ -143,7 +139,7 @@ export function ProductCardItem({
     >
       {/* Modern Image Canvas with Aspect-[4/5] & Rounded Corners */}
       <div
-        className={`relative w-full aspect-[4/5] overflow-hidden rounded-xl shadow-2xs ${
+        className={`relative w-full aspect-[4/5] overflow-hidden rounded-xl shadow-2xs flex items-center justify-center ${
           isDark ? "bg-[#061e11]" : "bg-[#f5f3ec]"
         }`}
       >
@@ -152,7 +148,7 @@ export function ProductCardItem({
           alt={product.name}
           fill
           unoptimized
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="object-contain p-2.5 sm:p-3.5 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-sm"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
 
@@ -211,8 +207,8 @@ export function ProductCardItem({
                 key={idx}
                 className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                   idx === activeImgIdx
-                    ? "bg-white scale-125 shadow-xs"
-                    : "bg-white/50"
+                    ? isDark ? "bg-white scale-125 shadow-xs" : "bg-stone-800 scale-125 shadow-xs"
+                    : isDark ? "bg-white/40" : "bg-stone-400/50"
                 }`}
               />
             ))}
@@ -252,48 +248,50 @@ export function ProductCardItem({
           </div>
         </div>
 
-        {/* Action Button on Far Right */}
-        {activeMode === "custom" ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCustomize(product);
-            }}
-            title={`Personalise ${product.name}`}
-            aria-label={`Personalise ${product.name}`}
-            className={`shrink-0 p-1 transition-all duration-200 hover:scale-125 cursor-pointer ${
-              isDark
-                ? "text-[#eed08e] hover:text-white"
-                : "text-stone-800 hover:text-black"
-            }`}
-          >
-            <SlidersHorizontal className="w-4 h-4 stroke-[1.75]" />
-          </button>
-        ) : (
+        {/* Action Buttons on Far Right */}
+        <div className="flex items-center gap-1 shrink-0">
+          {product.customizationFields && product.customizationFields.length > 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/products/${product.id}`);
+              }}
+              title={`Customise & Buy ${product.name}`}
+              aria-label={`Customise & Buy ${product.name}`}
+              className={`p-1 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer ${
+                isDark
+                  ? "text-[#eed08e] hover:text-white hover:bg-white/10"
+                  : "text-[#c0881b] hover:text-stone-900 hover:bg-stone-100"
+              }`}
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
+            </button>
+          )}
+
           <button
             onClick={(e) => {
               e.stopPropagation();
               onQuickAdd(product);
             }}
-            title={`Add ${product.name} to cart`}
-            aria-label={`Add ${product.name} to cart`}
-            className={`shrink-0 p-1 transition-all duration-200 hover:scale-125 cursor-pointer ${
+            title={`Quick add ${product.name} to cart`}
+            aria-label={`Quick add ${product.name} to cart`}
+            className={`p-1 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer ${
               isDark
-                ? "text-[#eed08e] hover:text-white"
-                : "text-stone-800 hover:text-black"
+                ? "text-stone-300 hover:text-white hover:bg-white/10"
+                : "text-stone-800 hover:text-black hover:bg-stone-100"
             }`}
           >
             {addedId === product.id ? (
               <Check
-                className={`w-4 h-4 stroke-[2.5] ${
+                className={`w-3.5 h-3.5 stroke-[2.5] ${
                   isDark ? "text-emerald-400" : "text-emerald-600"
                 }`}
               />
             ) : (
-              <Plus className="w-4 h-4 stroke-[1.75]" />
+              <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
             )}
           </button>
-        )}
+        </div>
       </div>
     </div>
   );

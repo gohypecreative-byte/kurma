@@ -107,7 +107,7 @@ function StoryCard({ story, index, onClick }: StoryCardProps) {
   return (
     <div
       onClick={onClick}
-      className="relative aspect-[9/14] sm:aspect-[9/15] rounded-xl sm:rounded-2xl overflow-hidden border border-[#eed08e]/30 group cursor-pointer bg-stone-950 shadow-md hover:shadow-2xl hover:border-[#eed08e] hover:-translate-y-1 transition-all duration-300 select-none flex flex-col justify-between"
+      className="relative aspect-[9/14] sm:aspect-[9/15] rounded-lg overflow-hidden border border-[#072515]/15 group cursor-pointer bg-stone-950 shadow-md hover:shadow-xl hover:border-[#c0881b] hover:-translate-y-1 transition-all duration-300 select-none flex flex-col justify-end"
     >
       {/* Background Image */}
       {!hasError ? (
@@ -117,7 +117,7 @@ function StoryCard({ story, index, onClick }: StoryCardProps) {
           fill
           unoptimized
           onError={handleImageError}
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           priority={index < 3}
         />
@@ -127,38 +127,24 @@ function StoryCard({ story, index, onClick }: StoryCardProps) {
         </div>
       )}
 
-      {/* Cinematic Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#051f13]/95 via-[#072515]/60 to-transparent pointer-events-none" />
-
-      {/* Top Floating Badges */}
-      <div className="relative z-10 p-2.5 sm:p-3 flex items-center justify-between">
-        <span className="text-[9px] uppercase tracking-wider font-bold text-[#eed08e] bg-[#072515]/90 backdrop-blur-xs px-2 py-0.5 rounded-full border border-[#eed08e]/40 shadow-xs">
-          {story.tag}
-        </span>
-        <span className="text-[9px] font-medium text-white/80 bg-black/60 backdrop-blur-xs px-1.5 py-0.5 rounded-full">
-          {story.duration}
-        </span>
-      </div>
+      {/* Subtle Bottom Gradient for Text Legibility */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
       {/* Center Luxury Gold Play Button */}
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#072515]/80 border border-[#eed08e]/70 text-[#eed08e] group-hover:bg-[#eed08e] group-hover:text-[#072515] group-hover:scale-110 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all duration-300 flex items-center justify-center backdrop-blur-xs">
+        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/60 border border-[#eed08e]/70 text-[#eed08e] group-hover:bg-[#eed08e] group-hover:text-black group-hover:scale-110 shadow-lg transition-all duration-300 flex items-center justify-center backdrop-blur-xs">
           <Play className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-current translate-x-0.5" />
         </div>
       </div>
 
-      {/* Bottom Title & Price Bar */}
-      <div className="relative z-10 p-2.5 sm:p-3 space-y-1">
+      {/* Bottom Title & Price */}
+      <div className="relative z-10 p-3 space-y-1">
         <h4 className="text-xs sm:text-[13px] font-medium text-white leading-snug line-clamp-2 drop-shadow group-hover:text-[#eed08e] transition-colors">
           {story.title}
         </h4>
-        <div className="flex items-center justify-between pt-1 border-t border-white/15">
-          <span className="text-xs font-bold text-[#eed08e]">
+        <div className="pt-0.5">
+          <span className="text-xs sm:text-[13px] font-bold text-[#eed08e]">
             ₹{story.price.toLocaleString("en-IN")}
-          </span>
-          <span className="text-[9.5px] font-medium text-stone-300 group-hover:text-white transition-colors flex items-center gap-0.5">
-            Watch Reel
           </span>
         </div>
       </div>
@@ -178,27 +164,27 @@ export function VideoStories({ onAddToCart, onExploreProducts }: VideoStoriesPro
   };
 
   return (
-    <section className="w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat py-12 sm:py-16 text-white border-t border-[#eed08e]/15">
+    <section className="w-full bg-[#f3f6ef] py-12 sm:py-16 text-stone-900 border-t border-b border-[#072515]/15">
       <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 space-y-7">
         {/* Section Heading */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#eed08e]" />
-              <span className="text-[10px] sm:text-xs font-bold tracking-[0.22em] text-[#eed08e] uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#072515]" />
+              <span className="text-[10px] sm:text-xs font-bold tracking-[0.22em] text-[#072515] uppercase">
                 SACRED REELS &amp; UNBOXINGS
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif text-white tracking-tight font-normal mt-1">
+            <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 tracking-tight font-normal mt-1">
               Kurma Gifting &amp; Craft Stories
             </h2>
-            <div className="h-0.5 w-20 bg-[#eed08e] mt-2" />
+            <div className="h-0.5 w-20 bg-[#c0881b] mt-2" />
           </div>
 
           {onExploreProducts && (
             <button
               onClick={onExploreProducts}
-              className="text-xs font-semibold text-[#eed08e] hover:text-white transition-colors cursor-pointer self-start sm:self-auto inline-flex items-center gap-1.5 group"
+              className="text-xs font-semibold text-[#072515] hover:text-[#c0881b] transition-colors cursor-pointer self-start sm:self-auto inline-flex items-center gap-1.5 group"
             >
               <span>Explore Initial Products</span>
               <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -272,7 +258,7 @@ export function VideoStories({ onAddToCart, onExploreProducts }: VideoStoriesPro
 
           {/* Vertical Reel Phone Frame */}
           <div
-            className="relative w-full max-w-[380px] h-[82vh] max-h-[740px] rounded-3xl overflow-hidden bg-stone-950 shadow-2xl flex flex-col justify-between border border-[#eed08e]/40"
+            className="relative w-full max-w-[380px] h-[82vh] max-h-[740px] rounded-xl overflow-hidden bg-stone-950 shadow-2xl flex flex-col justify-between border border-[#eed08e]/40"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="absolute inset-0">
@@ -297,7 +283,7 @@ export function VideoStories({ onAddToCart, onExploreProducts }: VideoStoriesPro
             {/* Header */}
             <div className="relative z-20 px-4 py-2 flex items-center justify-between text-white">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-[#072515] border border-[#eed08e]/60 flex items-center justify-center text-xs font-bold text-[#eed08e] shadow-xs">
+                <div className="w-8 h-8 rounded-full bg-stone-900 border border-[#eed08e]/60 flex items-center justify-center text-xs font-bold text-[#eed08e] shadow-xs">
                   K
                 </div>
                 <div>
@@ -318,14 +304,14 @@ export function VideoStories({ onAddToCart, onExploreProducts }: VideoStoriesPro
 
             {/* Center Subtle Playing Icon */}
             <div className="relative z-20 flex-1 flex items-center justify-center pointer-events-none">
-              <div className="w-14 h-14 rounded-full bg-[#072515]/60 border border-[#eed08e]/60 text-[#eed08e] flex items-center justify-center backdrop-blur-xs opacity-75">
+              <div className="w-14 h-14 rounded-full bg-black/60 border border-[#eed08e]/60 text-[#eed08e] flex items-center justify-center backdrop-blur-xs opacity-75">
                 <Play className="w-6 h-6 fill-current translate-x-0.5" />
               </div>
             </div>
 
             {/* Bottom Drawer */}
             <div className="relative z-20 p-4 space-y-2">
-              <div className="bg-[#072515]/95 backdrop-blur-md rounded-xl p-4 shadow-xl border border-[#eed08e]/30 text-white">
+              <div className="bg-stone-900/95 backdrop-blur-md rounded-xl p-4 shadow-xl border border-[#eed08e]/30 text-white">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase tracking-wider font-semibold text-[#eed08e]">
                     {storiesData[activeStoryIndex].tag}
@@ -355,7 +341,7 @@ export function VideoStories({ onAddToCart, onExploreProducts }: VideoStoriesPro
                         quantity: 1,
                       });
                     }}
-                    className="mt-3 w-full py-2.5 px-4 bg-[#eed08e] hover:bg-[#ffe3a8] text-[#072515] text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
+                    className="mt-3 w-full py-2.5 px-4 bg-[#eed08e] hover:bg-[#ffe3a8] text-stone-950 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-95"
                   >
                     <ShoppingBag className="w-3.5 h-3.5" />
                     <span>Add to Sacred Cart • ₹{storiesData[activeStoryIndex].price.toLocaleString("en-IN")}</span>

@@ -158,8 +158,9 @@ export const PRODUCTS: ProductSKU[] = [
     image: "/images/product/suite-clean.png",
     gallery: [
       "/images/product/suite-clean.png",
+      "/images/product/five-boxes-3d.png",
+      "/images/product/turtle-holder-clean.png",
       "/images/product/image7.png",
-      "/images/product/marble-box-clean.png",
     ],
     badge: "Complete Suite",
     description:
@@ -173,21 +174,54 @@ export const PRODUCTS: ProductSKU[] = [
     elements: ["Earth", "Water", "Fire", "Air", "Space"],
     customizationFields: [
       {
+        id: "lid_engraving",
+        label: "Lid / Gold Band Monogram Engraving",
+        type: "text",
+        placeholder: "e.g. Om Shanti • The Sharma Sanctuary",
+        description: "Custom debossed gold foil personalization (up to 30 characters)",
+        maxLength: 30,
+      },
+      {
+        id: "ritual_intent",
+        label: "Ritual Blessing Focus",
+        type: "select",
+        defaultValue: "Total Prana Harmonization & Space Sanctification",
+        options: [
+          { label: "Total Prana Harmonization & Space Sanctification", value: "Total Prana Harmonization & Space Sanctification" },
+          { label: "Root Grounding & Deep Emotional Stability", value: "Root Grounding & Deep Emotional Stability" },
+          { label: "Sacred Cleansing & Creative Fluidity", value: "Sacred Cleansing & Creative Fluidity" },
+          { label: "Divine Courage & Energy Transformation", value: "Divine Courage & Energy Transformation" },
+          { label: "Cosmic Stillness & Crown Meditation", value: "Cosmic Stillness & Crown Meditation" },
+        ],
+      },
+      {
+        id: "turtle_burner_addon",
+        label: "Add Solid Cast Brass Turtle Burner (+₹699)",
+        type: "radio",
+        defaultValue: "None",
+        options: [
+          { label: "No brass burner (Incense sticks only)", value: "None", priceDelta: 0 },
+          { label: "Include Moradabad Solid Brass Turtle Burner (+₹699)", value: "Include Turtle Burner", priceDelta: 699 },
+        ],
+      },
+      {
         id: "gift_wrap",
         label: "Luxury Festive Gift Wrap",
         type: "radio",
-        defaultValue: "Emerald Gold Wrap",
+        defaultValue: "Standard Wrap",
         options: [
-          { label: "Imperial Emerald & Gold Zari", value: "Emerald Gold Wrap" },
-          { label: "Crimson Royal Deckle Wrap", value: "Crimson Wrap" },
+          { label: "Standard Keepsake Band (Included)", value: "Standard Wrap", priceDelta: 0 },
+          { label: "Imperial Emerald & Gold Zari (+₹149)", value: "Emerald Gold Wrap", priceDelta: 149 },
+          { label: "Crimson Royal Deckle Wrap (+₹149)", value: "Crimson Wrap", priceDelta: 149 },
         ],
       },
       {
         id: "gift_note",
-        label: "Personalized Gift Message",
+        label: "Handwritten Blessing / Gift Message",
         type: "text",
-        placeholder: "May this sacred aroma bring peace and joy...",
-        maxLength: 100,
+        placeholder: "May the sacred elements fill your sanctuary with peace...",
+        description: "Inscribed on handmade deckle-edge scroll paper",
+        maxLength: 120,
       },
     ],
   },
@@ -200,7 +234,12 @@ export const PRODUCTS: ProductSKU[] = [
     category: "Fragrances",
     price: 399,
     originalPrice: 499,
-    image: "/images/product/image1.png",
+    image: "/images/product/earth-front.png",
+    gallery: [
+      "/images/product/earth-front.png",
+      "/images/product/five-boxes-3d.png",
+      "/images/product/turtle-holder-clean.png",
+    ],
     badge: "Element: Earth",
     description:
       "A warm and woody blend that connects you to nature's stability. Earth soothes the mind, calms the senses, and brings a profound sense of balance and rootedness into your sanctuary.",
@@ -254,7 +293,12 @@ export const PRODUCTS: ProductSKU[] = [
     category: "Fragrances",
     price: 399,
     originalPrice: 499,
-    image: "/images/product/image2.png",
+    image: "/images/product/water-front.png",
+    gallery: [
+      "/images/product/water-front.png",
+      "/images/product/five-boxes-3d.png",
+      "/images/product/turtle-holder-clean.png",
+    ],
     badge: "Element: Water",
     description:
       "A refreshing and tranquil blend inspired by sacred flowing waters. Water cleanses the mind, uplifts the spirit, and brings a serene sense of emotional clarity and peace.",
@@ -308,7 +352,12 @@ export const PRODUCTS: ProductSKU[] = [
     category: "Fragrances",
     price: 399,
     originalPrice: 499,
-    image: "/images/product/image3.png",
+    image: "/images/product/fire-front.png",
+    gallery: [
+      "/images/product/fire-front.png",
+      "/images/product/five-boxes-3d.png",
+      "/images/product/turtle-holder-clean.png",
+    ],
     badge: "Element: Fire",
     description:
       "A rich, warm, and intense blend that awakens inner strength. Fire ignites positivity, dispels lethargy, and creates a vibrant atmosphere of warmth, courage, and inspiration.",
@@ -362,7 +411,12 @@ export const PRODUCTS: ProductSKU[] = [
     category: "Fragrances",
     price: 399,
     originalPrice: 499,
-    image: "/images/product/image4.png",
+    image: "/images/product/air-front.png",
+    gallery: [
+      "/images/product/air-front.png",
+      "/images/product/five-boxes-3d.png",
+      "/images/product/turtle-holder-clean.png",
+    ],
     badge: "Element: Air",
     description:
       "A light, crisp, and airy blend that brings freshness and freedom. Air clears mental fatigue, uplifts the spirit, and fills your living spaces with openness and optimism.",
@@ -416,7 +470,12 @@ export const PRODUCTS: ProductSKU[] = [
     category: "Fragrances",
     price: 399,
     originalPrice: 499,
-    image: "/images/product/image5.png",
+    image: "/images/product/space-front.png",
+    gallery: [
+      "/images/product/space-front.png",
+      "/images/product/five-boxes-3d.png",
+      "/images/product/turtle-holder-clean.png",
+    ],
     badge: "Element: Space",
     description:
       "A deep, cosmic, and mysterious blend that invites stillness and transcendent reflection. Space connects you to the infinite, heightening awareness and higher consciousness.",

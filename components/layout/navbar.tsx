@@ -18,13 +18,12 @@ export function Navbar({ cartCount, onOpenCart, onExploreProducts }: NavbarProps
     { name: "Home", href: "/" },
     { name: "Shop", href: "/shop" },
     { name: "5 Elements", href: "/elements" },
-    { name: "Gift Trunks", href: "/gift-trunks" },
-    { name: "Our Ritual", href: "/ritual" },
-    { name: "Reviews", href: "/reviews" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-stone-200/80 text-stone-900 transition-all shadow-xs">
+    <header className="sticky top-0 z-40 w-full relative bg-white/95 backdrop-blur-md border-b border-stone-200/80 text-stone-900 transition-all shadow-xs">
       <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-20 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
@@ -60,7 +59,10 @@ export function Navbar({ cartCount, onOpenCart, onExploreProducts }: NavbarProps
         <div className="flex items-center gap-2.5 sm:gap-3">
           {/* Refined Luxury Cart Icon Button (Icon Only) */}
           <button
-            onClick={onOpenCart}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenCart();
+            }}
             aria-label={`View shopping cart with ${cartCount} items`}
             className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-stone-200 hover:border-[#c0881b] bg-[#faf9f6] hover:bg-[#fbf6ea] text-stone-800 hover:text-[#8b5f10] flex items-center justify-center transition-all duration-200 shadow-2xs hover:shadow-xs group cursor-pointer"
           >
@@ -85,33 +87,34 @@ export function Navbar({ cartCount, onOpenCart, onExploreProducts }: NavbarProps
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown & Backdrop (Overlays page so the section stays behind without shifting down) */}
       {mobileMenuOpen && (
-        <div id="mobile-navigation" className="lg:hidden bg-white/98 backdrop-blur-lg border-b border-stone-200 px-6 py-4 space-y-3 shadow-xl text-stone-900">
-          {navLinks.map((link) => (
-            <div key={link.name} className="border-b border-stone-100 pb-2">
-              <Link
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block text-sm font-medium text-stone-800 hover:text-[#c0881b] transition-colors"
-              >
-                {link.name}
-              </Link>
-            </div>
-          ))}
-          <div className="pt-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenCart();
-              }}
-              className="w-full py-2.5 bg-[#072515] hover:bg-[#0a311d] text-[#eed08e] border border-[#eed08e]/40 text-sm font-cinzel font-semibold rounded-lg text-center flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-colors"
-            >
-              <ShoppingBag className="w-4 h-4 stroke-[2]" />
-              <span>Open Cart ({cartCount})</span>
-            </button>
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 top-20 bg-stone-900/40 backdrop-blur-xs z-30 lg:hidden animate-in fade-in duration-200"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Floating Dropdown Menu */}
+          <div
+            id="mobile-navigation"
+            className="absolute top-full left-0 right-0 z-40 lg:hidden bg-white/98 backdrop-blur-xl border-b border-stone-200/90 px-6 py-4 space-y-2.5 shadow-2xl text-stone-900 animate-in fade-in-50 slide-in-from-top-2 duration-200"
+          >
+            {navLinks.map((link) => (
+              <div key={link.name} className="border-b border-stone-100 last:border-b-0 pb-2.5 last:pb-0">
+                <Link
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block text-sm font-medium text-stone-800 hover:text-[#c0881b] transition-colors py-1"
+                >
+                  {link.name}
+                </Link>
+              </div>
+            ))}
           </div>
-        </div>
+        </>
       )}
     </header>
   );

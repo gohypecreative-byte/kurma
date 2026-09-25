@@ -1,23 +1,43 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { PRODUCTS, ProductSKU } from "@/lib/products";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { useCart } from "@/lib/cart-context";
+import {
+  Mountain,
+  Droplets,
+  Flame,
+  Wind,
+  Compass,
+} from "lucide-react";
+import {
+  getProductById,
+  ProductSKU,
+  PRODUCTS,
+} from "@/lib/products";
 import {
   ProductCardItem,
   getCleanTitle,
   getProductBadge,
   getDiscountPercent,
 } from "@/components/home/product-showcase";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { useCart } from "@/lib/cart-context";
-import { Mountain, Droplets, Flame, Wind, Compass } from "lucide-react";
 
-type ElementKey = "all" | "Earth" | "Water" | "Fire" | "Air" | "Space";
+// The 5 Elements products + related complete suites
+const ELEMENT_PRODUCT_IDS = [
+  "5-elements-suite",
+  "fragrance-earth",
+  "fragrance-water",
+  "fragrance-fire",
+  "fragrance-air",
+  "fragrance-space",
+  "marble-gift-box",
+];
 
 const ELEMENT_PHILOSOPHY = [
   {
-    key: "Earth",
+    key: "Earth" as const,
     name: "Prithvi (Earth)",
     icon: Mountain,
     tagline: "Ground • Nourish • Belong",
@@ -26,7 +46,7 @@ const ELEMENT_PHILOSOPHY = [
     intention: "Grounding erratic energy, root chakra awakening, deep calm & stability.",
   },
   {
-    key: "Water",
+    key: "Water" as const,
     name: "Jal (Water)",
     icon: Droplets,
     tagline: "Flow • Purify • Renew",
@@ -35,7 +55,7 @@ const ELEMENT_PHILOSOPHY = [
     intention: "Emotional cleansing, releasing mental blockages, fluidity & creative receptivity.",
   },
   {
-    key: "Fire",
+    key: "Fire" as const,
     name: "Agni (Fire)",
     icon: Flame,
     tagline: "Transform • Clarify • Ascend",
@@ -44,7 +64,7 @@ const ELEMENT_PHILOSOPHY = [
     intention: "Purification of stagnant prana, mental focus, ignition of divine courage.",
   },
   {
-    key: "Air",
+    key: "Air" as const,
     name: "Vayu (Air)",
     icon: Wind,
     tagline: "Elevate • Expand • Breathe",
@@ -53,7 +73,7 @@ const ELEMENT_PHILOSOPHY = [
     intention: "Heart chakra opening, expansiveness, freedom from anxiety & mental fatigue.",
   },
   {
-    key: "Space",
+    key: "Space" as const,
     name: "Akasha (Space / Ether)",
     icon: Compass,
     tagline: "Transcend • Stillness • Awaken",
@@ -64,9 +84,14 @@ const ELEMENT_PHILOSOPHY = [
 ];
 
 export default function ElementsPage() {
-  const { cartCount, setIsCartOpen, setCustomizingProduct, quickAddToCart } = useCart();
-  const [activeTab, setActiveTab] = useState<ElementKey>("all");
+  const router = useRouter();
+  const { cartCount, setIsCartOpen, quickAddToCart } = useCart();
   const [addedId, setAddedId] = useState<string | null>(null);
+
+  // Retrieve products in exact order
+  const elementProducts = ELEMENT_PRODUCT_IDS.map((id) => getProductById(id)).filter(
+    Boolean
+  ) as ProductSKU[];
 
   const handleQuickAdd = (product: ProductSKU) => {
     quickAddToCart(product);
@@ -75,68 +100,36 @@ export default function ElementsPage() {
   };
 
   const handleCustomize = (product: ProductSKU) => {
-    setCustomizingProduct(product);
+    router.push(`/products/${product.id}`);
   };
-
-  // Products belonging to the 5 elements
-  const elementalProducts = useMemo(() => {
-    const list = PRODUCTS.filter(
-      (p) => p.category === "Fragrances" || p.id === "5-elements-suite"
-    );
-    if (activeTab === "all") return list;
-    return list.filter((p) => p.elements && p.elements.includes(activeTab));
-  }, [activeTab]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+      {/* Top Navbar */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-10 space-y-12 sm:space-y-16">
+      <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-12 space-y-12 sm:space-y-16">
         {/* Minimalist Editorial Header */}
-        <div className="space-y-4 pt-1 pb-2 max-w-4xl mx-auto text-center">
-          <h1 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal tracking-tight">
+        <div className="space-y-3 pt-1 pb-2 max-w-4xl mx-auto text-center">
+          <span className="text-[11px] font-cinzel uppercase tracking-[0.25em] text-[#8b5f10] font-bold">
+            Pancha Mahabhuta Collection
+          </span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif text-stone-900 font-normal tracking-tight">
             The 5 Sacred Elements
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 font-sans max-w-xl mx-auto leading-relaxed">
-            In Vedic wisdom, the Pancha Mahabhuta govern all existence. Each Kurma blend is formulated from pure botanicals to balance prana and harmonize the sacred spaces within.
+            In Vedic wisdom, the Pancha Mahabhuta govern all existence. Pure charcoal-free botanicals formulated to harmonize prana across your sacred space.
           </p>
-
-          {/* Clean Underline Element Tabs */}
-          <div className="flex items-center justify-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar py-2 text-xs font-cinzel tracking-wider border-b border-stone-200/60">
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`pb-1.5 transition-all whitespace-nowrap cursor-pointer uppercase ${
-                activeTab === "all"
-                  ? "text-stone-900 border-b-2 border-stone-900 font-semibold"
-                  : "text-stone-400 hover:text-stone-800 font-normal"
-              }`}
-            >
-              All Elements
-            </button>
-            {ELEMENT_PHILOSOPHY.map((el) => (
-              <button
-                key={el.key}
-                onClick={() => setActiveTab(el.key as ElementKey)}
-                className={`pb-1.5 transition-all whitespace-nowrap cursor-pointer uppercase ${
-                  activeTab === el.key
-                    ? "text-stone-900 border-b-2 border-stone-900 font-semibold"
-                    : "text-stone-400 hover:text-stone-800 font-normal"
-                }`}
-              >
-                {el.name.split(" ")[0]}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {/* Product Gallery Grid */}
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-            {elementalProducts.map((product) => (
+        {/* PRODUCTS GRID (End-to-End Home Page Card Style) */}
+        <div className="w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
+            {elementProducts.map((product) => (
               <ProductCardItem
                 key={product.id}
                 product={product}
-                activeMode="direct"
+                activeMode="custom"
                 addedId={addedId}
                 onQuickAdd={handleQuickAdd}
                 onCustomize={handleCustomize}
@@ -150,7 +143,7 @@ export default function ElementsPage() {
         </div>
 
         {/* Pancha Mahabhuta Ritual & Botanical Chart */}
-        <section className="pt-8 border-t border-stone-200/80 space-y-8">
+        <section className="pt-8 border-t border-stone-200/80 space-y-8 w-full">
           <div className="text-center space-y-2">
             <h2 className="text-xl sm:text-2xl font-serif text-stone-900 font-normal">
               Elemental Wisdom &amp; Burning Hours

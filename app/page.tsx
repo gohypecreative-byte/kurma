@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { MotionConfig } from "motion/react";
 import { RitualAndQuestions, ScrollProgress } from "@/components/home/experience";
 import { Navbar } from "@/components/layout/navbar";
@@ -17,11 +18,11 @@ import { ProductCustomizerModal } from "@/components/product/product-customizer-
 import { useCart } from "@/lib/cart-context";
 
 export default function Home() {
+  const router = useRouter();
   const {
     cartCount,
     setIsCartOpen,
     addToCart,
-    setCustomizingProduct,
   } = useCart();
 
   const scrollToCatalog = () => {
@@ -66,7 +67,7 @@ export default function Home() {
         <div id="catalog">
           <ProductShowcase
             onAddToCart={addToCart}
-            onCustomizeProduct={(product) => setCustomizingProduct(product)}
+            onCustomizeProduct={(product) => router.push(`/products/${product.id}`)}
           />
         </div>
 
@@ -79,7 +80,7 @@ export default function Home() {
         {/* Curated Gifting Suites & Heirloom Trunks */}
         <SolutionsAndTrust
           onAddToCart={addToCart}
-          onCustomizeProduct={(product) => setCustomizingProduct(product)}
+          onCustomizeProduct={(product) => router.push(`/products/${product.id}`)}
         />
 
         <RitualAndQuestions />

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { Mail, ArrowRight, Check } from "lucide-react";
+import { Mail, ArrowRight, Check, ShieldCheck, Heart } from "lucide-react";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -20,236 +21,169 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full bg-[#f3f4f6] text-gray-800 border-t border-gray-200 font-sans">
-      {/* Top 6-Column Section with Vertical Dividers */}
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-12">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-0">
-          {/* Column 1: Policy Info */}
-          <div className="lg:pr-6 lg:border-r lg:border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 mb-3.5 tracking-tight">
-              Policy Info
-            </h3>
-            <ul className="space-y-2 text-xs text-gray-600">
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Terms &amp; Conditions
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Terms of Use
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Disclaimer
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <footer className="w-full bg-[#f3f6ef] text-stone-800 border-t border-[#e2e8dc] font-sans">
+      {/* Main Footer Content */}
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Column 1: Brand & Sacred Mission (Col Span 5) */}
+          <div className="lg:col-span-5 space-y-3.5">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0">
+                <Image
+                  src="/images/brand/kurma-turtle-transparent.png"
+                  alt="Kurma Logo"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="font-serif tracking-[0.2em] text-lg sm:text-xl font-bold text-stone-900 leading-none">
+                KURMA
+              </span>
+            </Link>
 
-          {/* Column 2: About Company */}
-          <div className="lg:px-6 lg:border-r lg:border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 mb-3.5 tracking-tight">
-              About Company
-            </h3>
-            <ul className="space-y-2 text-xs text-gray-600">
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Kurma Artisans
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Testimonials
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  News Room
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Sacred Blog
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Kurma Business */}
-          <div className="lg:px-6 lg:border-r lg:border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 mb-3.5 tracking-tight">
-              Kurma Incense
-            </h3>
-            <ul className="space-y-2 text-xs text-gray-600">
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Temple Fragrances
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Corporate Gifting
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Affiliate Program
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Retail Boutiques
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Franchise
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Need Help ? */}
-          <div className="lg:px-6 lg:border-r lg:border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 mb-3.5 tracking-tight">
-              Need Help ?
-            </h3>
-            <ul className="space-y-2 text-xs text-gray-600">
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  FAQs
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 5: International Presence */}
-          <div className="lg:px-6 lg:border-r lg:border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 mb-3.5 tracking-tight">
-              International
-              <br className="hidden lg:block" /> Presence
-            </h3>
-            <ul className="space-y-2 text-xs text-gray-600">
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Dubai
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Qatar
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Saudi Arabia
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-gray-900 transition-colors">
-                  Singapore
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 6: Subscribe Now */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-1 lg:pl-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-1 tracking-tight">
-              Subscribe Now
-            </h3>
-            <p className="text-xs text-gray-600 mb-3 leading-relaxed">
-              Get sacred aroma releases and exclusive corporate privileges.
+            <p className="text-xs sm:text-sm text-stone-600 max-w-sm leading-relaxed">
+              100% charcoal-free Vedic incense, handcrafted with pure Mysore botanicals, temple flower resins, and heirloom brass burners.
             </p>
 
-            <form onSubmit={handleSubscribe} className="relative">
-              <div className="flex items-center bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-2xs focus-within:border-gray-500 transition-colors">
-                <div className="w-5 h-5 rounded border border-gray-400 flex items-center justify-center mr-2 shrink-0">
-                  <Mail className="w-3 h-3 text-gray-600" />
+            {/* Newsletter Subscription */}
+            <div className="pt-1 max-w-sm">
+              <span className="text-[11px] font-bold text-stone-900 uppercase tracking-wider block mb-1.5 font-cinzel">
+                Sacred Aroma Dispatch
+              </span>
+              <form onSubmit={handleSubscribe} className="relative">
+                <div className="flex items-center bg-white border border-stone-300 rounded-lg px-3 py-2 shadow-2xs focus-within:border-[#c0881b] transition-colors">
+                  <Mail className="w-3.5 h-3.5 text-stone-400 mr-2 shrink-0" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter email for 10% off"
+                    required
+                    className="w-full text-xs text-stone-800 placeholder-stone-400 bg-transparent focus:outline-none min-w-0"
+                  />
+                  <button
+                    type="submit"
+                    aria-label="Subscribe"
+                    className="ml-2 text-stone-600 hover:text-[#c0881b] transition-colors cursor-pointer shrink-0"
+                  >
+                    {isSubscribed ? (
+                      <Check className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <ArrowRight className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email address"
-                  required
-                  className="w-full text-xs text-gray-800 placeholder-gray-400 bg-transparent focus:outline-none min-w-0"
-                />
-                <button
-                  type="submit"
-                  aria-label="Subscribe"
-                  className="ml-2 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer shrink-0"
-                >
-                  {isSubscribed ? (
-                    <Check className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <ArrowRight className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-              {isSubscribed && (
-                <span className="text-[11px] text-emerald-600 absolute -bottom-5 left-1">
-                  Thank you for subscribing!
-                </span>
-              )}
-            </form>
+                {isSubscribed && (
+                  <span className="text-[11px] text-emerald-700 font-medium block mt-1">
+                    Thank you! Code SACRED10 has been unlocked.
+                  </span>
+                )}
+              </form>
+            </div>
+          </div>
+
+          {/* Quick Links in 2 Columns on Mobile, 3 Columns on Desktop */}
+          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 pt-2 lg:pt-0">
+            {/* Column 2: Sacred Collections */}
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider font-cinzel mb-3">
+                Collections
+              </h3>
+              <ul className="space-y-2 text-xs text-stone-600">
+                <li>
+                  <Link href="/shop" className="hover:text-[#c0881b] transition-colors">
+                    All Incense &amp; Trunks
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/elements" className="hover:text-[#c0881b] transition-colors">
+                    5 Elements Suite
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/gift-trunks" className="hover:text-[#c0881b] transition-colors">
+                    Marble &amp; Wooden Trunks
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ritual" className="hover:text-[#c0881b] transition-colors">
+                    Sacred Daily Rituals
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: The Sanctuary */}
+            <div>
+              <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider font-cinzel mb-3">
+                Sanctuary
+              </h3>
+              <ul className="space-y-2 text-xs text-stone-600">
+                <li>
+                  <Link href="/about" className="hover:text-[#c0881b] transition-colors">
+                    Our Heritage &amp; Artisans
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/reviews" className="hover:text-[#c0881b] transition-colors">
+                    Devotee Testimonials
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
+                    Contact &amp; Support
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
+                    Corporate Bespoke Gifting
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4: Guarantees & Policies */}
+            <div className="col-span-2 sm:col-span-1">
+              <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider font-cinzel mb-3">
+                Assurance
+              </h3>
+              <ul className="space-y-2 text-xs text-stone-600">
+                <li className="flex items-center gap-1.5 text-stone-700 font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>100% Charcoal-Free</span>
+                </li>
+                <li className="flex items-center gap-1.5 text-stone-700 font-medium">
+                  <Heart className="w-3.5 h-3.5 text-[#c0881b] shrink-0" />
+                  <span>Mysore Hand-Rolled</span>
+                </li>
+                <li className="pt-1">
+                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
+                    Shipping &amp; Delivery
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
+                    Returns &amp; Fragile Guarantee
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Legal, CIN & Grievance Information Section */}
-      <div className="border-t border-gray-200/90 py-8 px-4 sm:px-6 lg:px-8 text-center text-[11px] sm:text-xs text-gray-700 leading-relaxed">
-        <div className="max-w-5xl mx-auto space-y-2">
-          <p>
-            <span className="font-semibold text-gray-800">Company Name:</span> Kurma Impressions Private Limited
-            <span className="mx-1.5 text-gray-300">|</span>
-            <span className="font-semibold text-gray-800">CIN:</span> U52100HR2021PTC118882
-            <span className="mx-1.5 text-gray-300">|</span>
-            <span className="font-semibold text-gray-800">Regd. Office:</span> Plot No. 75P, Sector-44, Gurugram, Haryana - 122003
+      {/* Bottom Copyright & Sacred Craft Bar */}
+      <div className="border-t border-[#e2e8dc] py-5 px-4 sm:px-6 lg:px-12 text-center text-xs text-stone-500">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
+          <p className="flex items-center justify-center gap-1 text-[11px] sm:text-xs">
+            <span>Handcrafted with</span>
+            <Heart className="w-3 h-3 text-[#c0881b] fill-current" />
+            <span>in Mysore &amp; Moradabad, India</span>
           </p>
 
-          <p>
-            <span className="font-semibold text-gray-800">Telephone No.:</span> +91-11-26802680
-            <span className="mx-1.5 text-gray-300">|</span>
-            <span className="font-semibold text-gray-800">Grievance Resolution Officer Name:</span> Mr. Sagarjit Karmakar
-            <span className="mx-1.5 text-gray-300">|</span>
-            <span className="font-semibold text-gray-800">Contact No.:</span> +91 9212422000 / 9755-248-248
-            <span className="mx-1.5 text-gray-300">|</span>
-            <span className="font-semibold text-gray-800">Email ID -</span>{" "}
-            <a href="mailto:grievance@kurma.com" className="hover:underline">
-              grievance@kurma.com
-            </a>
-          </p>
-
-          <p className="pt-2">
-            <Link
-              href="#"
-              className="text-[#2563eb] hover:underline font-medium"
-            >
-              Corporate Social Responsibility (CSR) Policy
-            </Link>
+          <p className="text-[11px] sm:text-xs text-stone-500">
+            &copy; {new Date().getFullYear()} Kurma Impressions. All rights reserved.
           </p>
         </div>
       </div>

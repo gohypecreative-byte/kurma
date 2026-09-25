@@ -64,7 +64,7 @@ const REVIEWS: Review[] = [
     rating: 5,
     date: "1 month ago",
     orderInfo: "250x Earth & Water Fragrance Boxes (Personalized)",
-    productImage: "/images/product/image1.png",
+    productImage: "/images/product/earth-front.png",
     title: "100% Charcoal-free with celestial natural aroma",
     comment:
       "The Earth blend is profoundly grounding and the Water fragrance brings immense peace during our evening mindfulness sessions. The custom gold foil name sleeves on each box added a deeply personal touch.",
@@ -125,58 +125,60 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
       : REVIEWS.filter((r) => r.category === activeCategory);
 
   return (
-    <section id="reviews" className="w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat py-16 sm:py-24 border-b border-[#eed08e]/20 text-white">
+    <section id="reviews" className="w-full bg-[#f3f6ef] py-12 sm:py-16 lg:py-20 border-b border-[#e2e8dc] text-stone-900">
       <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
         {/* Centered Brand Header */}
-        <div className="text-center mb-10">
-          <span className="text-xs font-bold tracking-[0.24em] text-[#eed08e] uppercase">
+        <div className="text-center mb-8 sm:mb-10">
+          <span className="text-[10px] sm:text-xs font-bold tracking-[0.22em] text-[#072515] uppercase block">
             PATRON TESTIMONIALS
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif text-white font-normal mt-1">
+          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif text-stone-900 font-normal mt-1">
             Voices of Devotion &amp; Trust
           </h2>
 
           {/* Elegant Gold Diamond Divider */}
-          <div className="flex items-center justify-center gap-2 mt-2.5 mb-4">
-            <div className="h-px w-20 sm:w-28 bg-[#eed08e]" />
-            <div className="w-2.5 h-2.5 rotate-45 border border-[#eed08e] bg-[#072515] flex items-center justify-center">
-              <div className="w-1 h-1 bg-[#eed08e]" />
+          <div className="flex items-center justify-center gap-2 mt-2 mb-3.5 sm:mb-4">
+            <div className="h-px w-16 sm:w-24 bg-[#c0881b]/35" />
+            <div className="w-2.5 h-2.5 rotate-45 border border-[#c0881b] bg-[#fbf6ea] flex items-center justify-center">
+              <div className="w-1 h-1 bg-[#c0881b]" />
             </div>
-            <div className="h-px w-20 sm:w-28 bg-[#eed08e]" />
+            <div className="h-px w-16 sm:w-24 bg-[#c0881b]/35" />
           </div>
 
-          <p className="text-stone-300 text-sm sm:text-base max-w-2xl mx-auto font-sans">
+          <p className="text-stone-600 text-xs sm:text-sm max-w-xl mx-auto font-sans leading-relaxed">
             Cherished by families, spiritual practitioners, and leading enterprises across India for sacred rituals and heirloom presentation.
           </p>
 
           {/* Overall Rating Strip */}
-          <div className="inline-flex items-center gap-2.5 bg-white border border-stone-200 rounded-full px-4 py-1.5 shadow-sm mt-4 text-stone-900">
+          <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 bg-white border border-stone-200/90 rounded-full px-3.5 sm:px-4 py-1.5 shadow-2xs mt-3.5 sm:mt-4 text-stone-900">
             <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />
               ))}
             </div>
             <span className="text-xs sm:text-sm font-bold text-stone-900">4.9 / 5</span>
             <span className="text-stone-300">•</span>
-            <span className="text-xs text-stone-600">Based on 14,800+ handcrafted product shipments</span>
+            <span className="text-[11px] sm:text-xs text-stone-600">
+              14,800+ Handcrafted Deliveries
+            </span>
           </div>
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center justify-center gap-2 overflow-x-auto pb-8 no-scrollbar">
+        <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-6 sm:pb-8 pt-1 no-scrollbar px-1">
           {[
             { id: "all" as const, label: "All Reviews" },
-            { id: "corporate" as const, label: "Corporate & Executive Gifting" },
-            { id: "festive" as const, label: "Festive & Temple Trunks" },
-            { id: "luxury" as const, label: "Artisanal Marble & Brass" },
+            { id: "corporate" as const, label: "Corporate Gifting" },
+            { id: "festive" as const, label: "Festive & Temple" },
+            { id: "luxury" as const, label: "Artisanal Brass & Marble" },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveCategory(tab.id)}
-              className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-3.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeCategory === tab.id
-                  ? "bg-[#eed08e] text-[#072515] font-bold shadow-md"
-                  : "bg-white/10 text-stone-200 hover:bg-white/20 border border-white/15"
+                  ? "bg-[#072515] text-[#eed08e] font-semibold shadow-xs"
+                  : "bg-white text-stone-700 hover:bg-stone-50 border border-stone-200/80 hover:border-stone-300"
               }`}
             >
               {tab.label}
@@ -185,74 +187,74 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
         </div>
 
         {/* Reviews 3-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {filteredReviews.map((review) => (
             <div
               key={review.id}
-              className="bg-white text-stone-900 rounded-2xl border border-stone-200/90 p-6 sm:p-7 flex flex-col justify-between hover:shadow-2xl hover:border-amber-300 transition-all duration-300 group"
+              className="bg-white text-stone-900 rounded-xl border border-stone-200/90 p-5 sm:p-6 flex flex-col justify-between hover:shadow-lg hover:border-[#eed08e] transition-all duration-300 group shadow-2xs"
             >
               <div>
                 {/* Stars and Verified Badge */}
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <div className="flex items-center gap-0.5">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                  <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
                     <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
                     Verified Order
                   </span>
                 </div>
 
                 {/* Review Title */}
-                <h3 className="text-base font-bold text-stone-900 mb-2.5 leading-snug">
+                <h3 className="text-sm sm:text-base font-bold text-stone-900 mb-2 leading-snug">
                   &ldquo;{review.title}&rdquo;
                 </h3>
 
                 {/* Review Text */}
-                <p className="text-stone-600 text-sm leading-relaxed mb-5">
+                <p className="text-stone-600 text-xs sm:text-sm leading-relaxed mb-4">
                   {review.comment}
                 </p>
               </div>
 
               <div>
                 {/* Ordered Product Pill with Thumbnail */}
-                <div className="mb-5 flex items-center gap-2.5 p-2 bg-stone-50 rounded-xl border border-stone-100">
-                  <div className="relative w-9 h-9 rounded-lg overflow-hidden bg-stone-200 shrink-0 border border-stone-200">
+                <div className="mb-4 flex items-center gap-2.5 p-2 bg-[#f9fbf7] rounded-lg border border-stone-200/70">
+                  <div className="relative w-8 h-8 rounded-md overflow-hidden bg-stone-200 shrink-0 border border-stone-200">
                     <Image
                       src={review.productImage}
                       alt={review.orderInfo}
                       fill
                       className="object-cover"
-                      sizes="36px"
+                      sizes="32px"
                     />
                   </div>
-                  <span className="text-xs text-stone-700 font-medium truncate">
+                  <span className="text-[11px] sm:text-xs text-stone-700 font-medium truncate">
                     {review.orderInfo}
                   </span>
                 </div>
 
                 {/* Reviewer Profile */}
-                <div className="flex items-center gap-3 pt-3.5 border-t border-stone-100">
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden shrink-0 border border-stone-200">
+                <div className="flex items-center gap-2.5 pt-3 border-t border-stone-100">
+                  <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 border border-stone-200">
                     <Image
                       src={review.avatar}
                       alt={review.name}
                       fill
                       className="object-cover"
-                      sizes="40px"
+                      sizes="36px"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-bold text-stone-900 truncate">
+                    <div className="text-xs sm:text-sm font-bold text-stone-900 truncate">
                       {review.name}
                     </div>
-                    <div className="text-xs text-stone-500 truncate">
+                    <div className="text-[11px] text-stone-500 truncate">
                       {review.role} • {review.company}
                     </div>
                   </div>
-                  <span className="text-[11px] text-stone-400 shrink-0">
+                  <span className="text-[10px] sm:text-[11px] text-stone-400 shrink-0">
                     {review.date}
                   </span>
                 </div>
@@ -262,22 +264,22 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
         </div>
 
         {/* Bottom E-Commerce Promotional Banner */}
-        <div className="mt-12 bg-white border border-[#eed08e]/80 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl text-stone-900">
+        <div className="mt-10 sm:mt-12 bg-white border border-[#eed08e]/70 rounded-xl p-5 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-2xs text-stone-900">
           <div className="text-center sm:text-left">
-            <span className="text-[11px] font-bold text-[#c0881b] tracking-wider uppercase">
+            <span className="text-[10.5px] sm:text-[11px] font-bold text-[#c0881b] tracking-wider uppercase">
               Exclusive Online Welcome Gift
             </span>
-            <h3 className="text-lg sm:text-xl font-serif font-bold text-stone-900 mt-0.5">
+            <h3 className="text-base sm:text-xl font-serif font-bold text-stone-900 mt-0.5">
               Elevate Your Sacred Space with Kurma
             </h3>
-            <p className="text-stone-600 text-xs sm:text-sm mt-1">
+            <p className="text-stone-600 text-xs sm:text-sm mt-1 max-w-xl">
               Enjoy 10% off your initial order with code <strong className="text-[#c0881b]">SACRED10</strong> at checkout. Complimentary Brass Turtle Incense Stand on orders above ₹1,999.
             </p>
           </div>
 
           <button
             onClick={onExploreProducts}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#c0881b] hover:bg-[#a67414] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-md shrink-0 cursor-pointer hover:shadow-lg"
+            className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 bg-[#c0881b] hover:bg-[#a67414] text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs shrink-0 cursor-pointer hover:shadow-md"
           >
             <span>Shop Initial Collection</span>
             <ArrowRight className="w-4 h-4" />

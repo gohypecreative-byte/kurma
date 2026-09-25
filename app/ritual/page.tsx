@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
-import { Sparkles, Flame, ShieldCheck, Heart, Leaf, ChevronDown, ArrowRight } from "lucide-react";
+import { Flame, ShieldCheck, Heart, Leaf, ChevronDown, ArrowRight, Droplets } from "lucide-react";
 
 export default function RitualPage() {
   const { cartCount, setIsCartOpen } = useCart();
@@ -41,7 +41,7 @@ export default function RitualPage() {
       desc: "Made without industrial charcoal, synthetic binders, or petroleum fixatives. Burns clean with zero black wall soot.",
     },
     {
-      icon: Sparkles,
+      icon: Droplets,
       title: "Pure Temple Resins",
       desc: "Pure Indian Sandalwood, Agarwood, Loban, Guggul, and flower powders ground fresh in heritage artisanal ateliers.",
     },

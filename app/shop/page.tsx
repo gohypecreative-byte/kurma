@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
 import {
   ProductCardItem,
@@ -15,10 +16,10 @@ import { useCart } from "@/lib/cart-context";
 type CategoryFilter = "all" | "Gift Boxes" | "Fragrances" | "Sacred Accessories";
 
 export default function ShopPage() {
+  const router = useRouter();
   const {
     cartCount,
     setIsCartOpen,
-    setCustomizingProduct,
     quickAddToCart,
   } = useCart();
 
@@ -32,7 +33,7 @@ export default function ShopPage() {
   };
 
   const handleCustomize = (product: ProductSKU) => {
-    setCustomizingProduct(product);
+    router.push(`/products/${product.id}`);
   };
 
   // Filter products by category

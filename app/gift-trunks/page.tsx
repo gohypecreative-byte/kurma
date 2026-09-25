@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
 import {
   ProductCardItem,
@@ -11,10 +12,11 @@ import {
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
-import { SlidersHorizontal, ShieldCheck, Sparkles, Feather, PenTool, Check } from "lucide-react";
+import { SlidersHorizontal, ShieldCheck, Crown, Feather, PenTool, Check } from "lucide-react";
 
 export default function GiftTrunksPage() {
-  const { cartCount, setIsCartOpen, setCustomizingProduct, quickAddToCart } = useCart();
+  const router = useRouter();
+  const { cartCount, setIsCartOpen, quickAddToCart } = useCart();
   const [addedId, setAddedId] = useState<string | null>(null);
 
   const handleQuickAdd = (product: ProductSKU) => {
@@ -24,7 +26,7 @@ export default function GiftTrunksPage() {
   };
 
   const handleCustomize = (product: ProductSKU) => {
-    setCustomizingProduct(product);
+    router.push(`/products/${product.id}`);
   };
 
   // Gift Trunks & Suites
@@ -40,7 +42,7 @@ export default function GiftTrunksPage() {
     },
     {
       title: "Imperial Suede & Velvet Linings",
-      icon: Sparkles,
+      icon: Crown,
       desc: "Lush jewel-toned interior linings in Sacred Forest Green, Royal Crimson, or Midnight Obsidian to nestle each incense box.",
     },
     {
