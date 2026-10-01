@@ -281,15 +281,11 @@ export function VideoStories({
                   }`}
                 >
                   {/* BRIGHT PRODUCT IMAGE */}
-                  <div className="relative w-full aspect-[3/4] bg-stone-100 overflow-hidden">
-                    <Image
+                  <div className="relative w-full aspect-[3/4] bg-stone-50 flex items-center justify-center p-3 overflow-hidden">
+                    <img
                       src={story.image}
                       alt={story.title}
-                      fill
-                      unoptimized
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      sizes="(max-width: 640px) 75vw, 280px"
-                      priority={isCenter}
+                      className="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   </div>
 

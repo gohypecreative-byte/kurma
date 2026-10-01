@@ -30,7 +30,7 @@ const BESTSELLER_ITEMS = [
     price: 4299,
     priceDisplay: "₹4,299",
     originalPrice: "₹4,999",
-    image: "/images/hampers/hamper-2.jpg",
+    image: "/images/product/image7.png",
   },
   {
     id: "bestseller-2",
@@ -40,7 +40,7 @@ const BESTSELLER_ITEMS = [
     shortDesc: "Slatted wooden chest, natural jute sack & brass turtle incense stand",
     price: 4599,
     priceDisplay: "₹4,599",
-    image: "/images/hampers/hamper-4.jpg",
+    image: "/images/product/image8.png",
   },
   {
     id: "bestseller-3",
@@ -52,7 +52,7 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹2,899",
     originalPrice: "₹5,699",
     isSale: true,
-    image: "/images/hampers/hamper-7.jpg",
+    image: "/images/product/earth-front.png",
   },
   {
     id: "bestseller-4",
@@ -62,7 +62,7 @@ const BESTSELLER_ITEMS = [
     shortDesc: "Carved teakwood tray, spherical brass incense urn & oil lamp",
     price: 4899,
     priceDisplay: "₹4,899",
-    image: "/images/hampers/hamper-12.jpg",
+    image: "/images/product/fire-front.png",
   },
 ];
 
@@ -70,34 +70,34 @@ const OCCASIONS_ITEMS = [
   {
     id: "occasion-wedding",
     badge: "WEDDING",
-    title: "Wedding gifting",
-    description: "Return gifts, welcome hampers & bridal squad gifts curated for your big day.",
-    tags: ["Return gifts", "Bulk", "Bridal"],
-    image: "/images/hampers/hamper-9.jpg",
+    title: "Wedding & Festive Gifting",
+    description: "Return gifts, welcome hampers & festive suites curated with sacred agarbatti & solid brassware.",
+    tags: ["Return Gifts", "Bulk Orders", "Wedding Suites"],
+    image: "/images/product/image7.png",
   },
   {
     id: "occasion-corporate",
     badge: "CORPORATE",
-    title: "Corporate gifting",
-    description: "Diwali hampers, client gifts & employee appreciation with GST billing.",
-    tags: ["Diwali", "Branded", "Bulk"],
-    image: "/images/hampers/hamper-3.jpg",
+    title: "Corporate & Executive Suites",
+    description: "Diwali hampers, client appreciation & employee gifting with GST billing & custom brass plaques.",
+    tags: ["Diwali Hampers", "Branded Trunks", "Bulk Gifting"],
+    image: "/images/product/image9.png",
   },
   {
     id: "occasion-custom",
-    badge: "CUSTOM",
-    title: "Custom & bespoke",
-    description: "Pick your basket, fill it your way, or let us design something entirely yours.",
-    tags: ["Build yours", "Branded", "Bespoke"],
-    image: "/images/hampers/hamper-4.jpg",
+    badge: "BESPOKE",
+    title: "Custom & Bespoke Rituals",
+    description: "Pick your hamper, select your 5 elemental agarbatti fragrances, and personalize with custom brass seals.",
+    tags: ["Build Yours", "Brass Engraving", "Custom Blends"],
+    image: "/images/product/image8.png",
   },
   {
     id: "occasion-celebrations",
     badge: "CELEBRATION",
-    title: "Celebrations",
-    description: "Birthdays, anniversaries, new baby & housewarming gifts that feel the moment.",
-    tags: ["Birthday", "Anniversary", "Baby"],
-    image: "/images/hampers/hamper-8.jpg",
+    title: "Sacred Celebrations",
+    description: "Griha Pravesh, Puja rituals, Anniversaries & housewarming gifts infused with pure essential aromas.",
+    tags: ["Griha Pravesh", "Puja Rituals", "Anniversary"],
+    image: "/images/product/image9.png",
   },
 ];
 
@@ -181,13 +181,11 @@ export function RitualAndQuestions() {
               >
                 <div>
                   {/* Full-width Edge-to-Edge Image Box */}
-                  <div className="relative aspect-square w-full overflow-hidden bg-stone-100">
-                    <Image
+                  <div className="relative aspect-square w-full overflow-hidden bg-stone-50 flex items-center justify-center p-3">
+                    <img
                       src={item.image}
                       alt={item.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105"
                     />
 
                     {/* Wishlist Heart Button */}
@@ -314,7 +312,7 @@ export function RitualAndQuestions() {
               {/* Right Image */}
               <div className="relative aspect-[4/3] md:aspect-auto w-full overflow-hidden bg-stone-200">
                 <Image
-                  src="/images/hampers/hamper-3.jpg"
+                  src="/images/product/image7.png"
                   alt="Shop pre-curated hampers"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -388,7 +386,7 @@ export function RitualAndQuestions() {
               {/* Right Image */}
               <div className="relative aspect-[4/3] md:aspect-auto w-full overflow-hidden bg-stone-200">
                 <Image
-                  src="/images/hampers/hamper-4.jpg"
+                  src="/images/product/image8.png"
                   alt="Make your own hamper"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -443,7 +441,7 @@ export function RitualAndQuestions() {
               {/* Right Image */}
               <div className="relative aspect-[4/3] md:aspect-auto w-full overflow-hidden bg-stone-200">
                 <Image
-                  src="/images/hampers/hamper-10.jpg"
+                  src="/images/product/image9.png"
                   alt="Shop individual goodies & decor"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -488,13 +486,14 @@ export function RitualAndQuestions() {
                 className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-stone-100 flex flex-col justify-between group"
               >
                 <div>
-                  {/* Aspect 16:9 Landscape Image */}
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-100">
+                  {/* Aspect 16:9 Landscape Image Canvas with object-contain for 100% full image visibility */}
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#f5f3ec] flex items-center justify-center p-3 sm:p-4">
                     <Image
                       src={item.image}
                       alt={item.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
+                      className="absolute inset-0 w-full h-full object-contain object-center p-3 sm:p-4 group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>

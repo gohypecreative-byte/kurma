@@ -72,15 +72,14 @@ export function SolutionsAndTrust({
               </div>
 
               <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium leading-tight">
-                One gifting story across your entire{" "}
+                Sacred fragrance suites for timeless{" "}
                 <span className="italic font-serif font-normal text-[#991B1B]">
-                  wedding
+                  festive celebrations
                 </span>
               </h2>
 
               <p className="mt-4 text-sm sm:text-base text-stone-600 leading-relaxed font-light">
-                A single consultation with us covers gifting experiences for every
-                moment, every guest, and every family member.
+                Handcrafted 100% charcoal-free elemental incense suites and solid cast brass turtle holders, custom-curated for wedding return gifts, sacred rituals, and royal celebrations.
               </p>
             </div>
 
@@ -100,13 +99,11 @@ export function SolutionsAndTrust({
           </div>
 
           {/* Right High Quality Wedding Gift Image */}
-          <div className="lg:col-span-6 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
-            <Image
-              src="/images/hampers/hamper-8.jpg"
+          <div className="lg:col-span-6 min-h-[320px] lg:min-h-full bg-stone-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            <img
+              src="/images/product/image7.png"
               alt="Wedding Gifting Experience"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="max-w-full max-h-[460px] w-auto h-auto object-contain rounded-2xl group-hover:scale-105 transition-transform duration-700 shadow-xs"
             />
           </div>
         </div>
@@ -148,13 +145,11 @@ export function SolutionsAndTrust({
           </div>
 
           {/* Right High Quality Corporate Gift Image */}
-          <div className="lg:col-span-7 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
-            <Image
-              src="/images/hampers/hamper-3.jpg"
+          <div className="lg:col-span-7 min-h-[320px] lg:min-h-full bg-stone-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            <img
+              src="/images/product/image9.png"
               alt="Corporate Gifting Suite"
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="max-w-full max-h-[460px] w-auto h-auto object-contain rounded-2xl group-hover:scale-105 transition-transform duration-700 shadow-xs"
             />
           </div>
         </div>

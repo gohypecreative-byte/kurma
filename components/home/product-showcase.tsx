@@ -147,8 +147,8 @@ export function ProductCardItem({
     >
       {/* Modern Image Canvas */}
       <div
-        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-xl shadow-2xs flex items-center justify-center ${
-          isDark ? "bg-[#061e11]" : "bg-[#f5f3ec]"
+        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl shadow-md ${
+          isDark ? "bg-[#04190e]" : "bg-[#f5f3ec]"
         }`}
       >
         <Image
@@ -156,10 +156,12 @@ export function ProductCardItem({
           alt={product.name}
           fill
           unoptimized
-          className={`w-full h-full ${objectFit || "object-cover object-center"} transition-transform duration-500 ease-out drop-shadow-sm ${
-            imagePadding !== undefined ? imagePadding : "p-0"
+          className={`absolute inset-0 w-full h-full ${
+            objectFit || "object-contain object-center"
+          } transition-transform duration-500 ease-out ${
+            imagePadding !== undefined ? imagePadding : "p-1.5 sm:p-2"
           } ${
-            imageScale || "group-hover:scale-108"
+            imageScale || "group-hover:scale-105"
           }`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
@@ -384,10 +386,10 @@ export function ProductShowcase({
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
                 theme="dark"
-                imagePadding="p-0"
-                imageScale="scale-[1.02] group-hover:scale-110"
+                imagePadding="p-1 sm:p-2"
+                imageScale="group-hover:scale-105"
                 containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-cover object-center"
+                objectFit="object-contain object-center"
               />
             ))}
           </div>
@@ -441,10 +443,10 @@ export function ProductShowcase({
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
                 theme="dark"
-                imagePadding="p-0"
-                imageScale="scale-[1.02] group-hover:scale-110"
+                imagePadding="p-1 sm:p-2"
+                imageScale="group-hover:scale-105"
                 containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-cover object-center"
+                objectFit="object-contain object-center"
               />
             ))}
           </div>

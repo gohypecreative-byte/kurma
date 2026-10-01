@@ -48,7 +48,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
             alt="Kurma 5 Elements Sacred Agarbatti Luxury Incense Suite"
             fill
             priority
-            className="object-cover object-[75%_center] lg:object-[70%_center] filter brightness-[1.02] contrast-[1.03]"
+            className="object-contain object-right p-4 sm:p-6 filter brightness-[1.02] contrast-[1.03]"
             sizes="(max-width: 1024px) 100vw, 62vw"
           />
           {/* Seamless Edge Gradient Blend into Deep Green (NO Line Separator) */}
