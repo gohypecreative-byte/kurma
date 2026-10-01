@@ -163,6 +163,50 @@
   animation-play-state: paused;
 }
 
+@keyframes smokeRise1 {
+  0% {
+    opacity: 0.2;
+    transform: translateY(10px) scaleX(0.9);
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0.1;
+    transform: translateY(-25px) scaleX(1.2);
+  }
+}
+
+@keyframes smokeRise2 {
+  0% {
+    opacity: 0.3;
+    transform: translateY(5px) scaleX(1.1);
+  }
+  50% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0.05;
+    transform: translateY(-30px) scaleX(0.85);
+  }
+}
+
+.animate-smoke-1 {
+  animation: smokeRise1 3.5s ease-in-out infinite;
+}
+
+.animate-smoke-2 {
+  animation: smokeRise2 4.5s ease-in-out infinite 0.7s;
+}
+
+.animate-smoke-3 {
+  animation: smokeRise1 3s ease-in-out infinite 1.4s;
+}
+
+.animate-spin-slow {
+  animation: spin 12s linear infinite;
+}
+
 html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 [id] { scroll-margin-top: 100px; }
 button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }

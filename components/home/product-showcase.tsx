@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Sparkles, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
 import { CartItem } from "@/components/cart/cart-drawer";
 
@@ -94,6 +94,10 @@ export interface ProductCardItemProps {
   variant?: "dark" | "light" | "minimal";
   theme?: "light" | "dark";
   aspectRatio?: "square" | "landscape" | "portrait";
+  imagePadding?: string;
+  imageScale?: string;
+  containerAspect?: string;
+  objectFit?: string;
 }
 
 export function ProductCardItem({
@@ -108,6 +112,10 @@ export function ProductCardItem({
   variant = "minimal",
   theme,
   aspectRatio,
+  imagePadding,
+  imageScale,
+  containerAspect,
+  objectFit,
 }: ProductCardItemProps) {
   const router = useRouter();
   const isDark = theme ? theme === "dark" : variant === "dark";
@@ -137,9 +145,9 @@ export function ProductCardItem({
       onClick={handleCardClick}
       className="group relative flex flex-col cursor-pointer select-none transition-transform duration-300"
     >
-      {/* Modern Image Canvas with Aspect-[4/5] & Rounded Corners */}
+      {/* Modern Image Canvas */}
       <div
-        className={`relative w-full aspect-[4/5] overflow-hidden rounded-xl shadow-2xs flex items-center justify-center ${
+        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-xl shadow-2xs flex items-center justify-center ${
           isDark ? "bg-[#061e11]" : "bg-[#f5f3ec]"
         }`}
       >
@@ -148,7 +156,11 @@ export function ProductCardItem({
           alt={product.name}
           fill
           unoptimized
-          className="object-contain p-2.5 sm:p-3.5 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-sm"
+          className={`w-full h-full ${objectFit || "object-cover object-center"} transition-transform duration-500 ease-out drop-shadow-sm ${
+            imagePadding !== undefined ? imagePadding : "p-0"
+          } ${
+            imageScale || "group-hover:scale-108"
+          }`}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
 
@@ -372,30 +384,51 @@ export function ProductShowcase({
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
                 theme="dark"
+                imagePadding="p-0"
+                imageScale="scale-[1.02] group-hover:scale-110"
+                containerAspect="aspect-[3/4] sm:aspect-[3/4]"
+                objectFit="object-cover object-center"
               />
             ))}
           </div>
         </section>
 
-        {/* SECTION 2: The 5 Elements Fragrance Boxes */}
+        {/* SECTION 2: Sacred Agarbatti & Incense Collection */}
         <section className="space-y-6 pt-4 border-t border-[#eed08e]/15">
           <div className="flex items-center justify-between border-b border-[#eed08e]/20 pb-3">
             <div>
               <h3 className="text-lg sm:text-xl font-serif text-white font-normal">
-                The 5 Elements Fragrance Boxes
+                Sacred Agarbatti &amp; Incense Rituals
               </h3>
               <p className="text-xs text-stone-300 mt-0.5">
-                Earth, Water, Fire, Air, Space — 27 sticks per box. 100% charcoal-free pure devotion.
+                100% Charcoal-free elemental incense boxes &amp; solid brass turtle burners
               </p>
             </div>
             <span className="text-xs text-[#eed08e] font-semibold hidden sm:inline">
-              ₹399 each
+              Pure Essential Aromas
             </span>
           </div>
 
-          {/* 5 Fragrances Cards - Responsive Row Grid (5 columns on large screens) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-            {singleFragrances.map((product) => (
+          {/* 4 Distinct Agarbatti Products Grid (Full width, 4 columns) */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
+            {[
+              {
+                ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
+                image: "/images/product/image7.png",
+              },
+              {
+                ...PRODUCTS.find((p) => p.id === "turtle-incense-holder")!,
+                image: "/images/product/image8.png",
+              },
+              {
+                ...PRODUCTS.find((p) => p.id === "fragrance-earth")!,
+                image: "/images/product/earth-front.png",
+              },
+              {
+                ...PRODUCTS.find((p) => p.id === "fragrance-fire")!,
+                image: "/images/product/fire-front.png",
+              },
+            ].map((product) => (
               <ProductCardItem
                 key={product.id}
                 product={product}
@@ -408,42 +441,10 @@ export function ProductShowcase({
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
                 theme="dark"
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* SECTION 3: Sacred Artisanal Accessories */}
-        <section className="space-y-6 pt-4 border-t border-[#eed08e]/15">
-          <div className="flex items-center justify-between border-b border-[#eed08e]/20 pb-3">
-            <div>
-              <h3 className="text-lg sm:text-xl font-serif text-white font-normal">
-                Sacred Artisanal Accessories
-              </h3>
-              <p className="text-xs text-stone-300 mt-0.5">
-                Solid brass burners, elemental medallions, embroidered pashmina & silk bookmarks
-              </p>
-            </div>
-            <span className="text-xs text-[#eed08e] font-semibold hidden sm:inline">
-              Handcrafted Heirloom Pieces
-            </span>
-          </div>
-
-          {/* 4 Accessories Cards - Responsive Row Grid (4 columns) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
-            {singleAccessories.map((product) => (
-              <ProductCardItem
-                key={product.id}
-                product={product}
-                activeMode={activeMode}
-                addedId={addedId}
-                onQuickAdd={handleQuickAdd}
-                onCustomize={onCustomizeProduct}
-                badge={getProductBadge(product.id)}
-                discount={getDiscountPercent(product.price, product.originalPrice)}
-                cleanTitle={getCleanTitle(product)}
-                variant="minimal"
-                theme="dark"
+                imagePadding="p-0"
+                imageScale="scale-[1.02] group-hover:scale-110"
+                containerAspect="aspect-[3/4] sm:aspect-[3/4]"
+                objectFit="object-cover object-center"
               />
             ))}
           </div>

@@ -1,20 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import {
-  ArrowRight,
-  Leaf,
-  Flame,
-  Award,
-  ShieldCheck,
-  Check,
-  ShoppingBag,
-  Plus,
-  Bookmark,
-} from "lucide-react";
-import { getProductById, ProductSKU, createCartItemId } from "@/lib/products";
+import { Check, ShieldCheck, Flame, Globe2 } from "lucide-react";
 import { CartItem } from "@/components/cart/cart-drawer";
+import { ProductSKU } from "@/lib/products";
 
 interface SolutionsAndTrustProps {
   onAddToCart?: (item: CartItem) => void;
@@ -25,219 +14,150 @@ export function SolutionsAndTrust({
   onAddToCart,
   onCustomizeProduct,
 }: SolutionsAndTrustProps) {
-  const [addedIdx, setAddedIdx] = useState<number | null>(null);
-
-  const featuredCollections = [
+  const stats = [
     {
-      skuId: "marble-gift-box",
-      title: "ELEMENTS IN HARMONY MARBLE TRUNK",
-      description: "Full suite: 5 Element boxes, solid brass turtle burner & keepsake medallion.",
-      price: 4999,
-      priceDisplay: "₹4,999",
-      image: "/images/product/image9.png",
-      badge: "Flagship Suite",
-    },
-    {
-      skuId: "mdf-gift-box",
-      title: "KURMA ARTISANAL MDF HERITAGE BOX",
-      description: "Rigid wooden keepsake box with Scents Connect Worlds gold debossing.",
-      price: 2499,
-      priceDisplay: "₹2,499",
-      image: "/images/product/image.png",
-      badge: "Artisanal Wood",
-    },
-    {
-      skuId: "fragrance-earth",
-      title: "5 ELEMENTS SACRED FRAGRANCE SET",
-      description: "Complete bundle of Earth, Water, Fire, Air & Space boxes (135 sticks).",
-      price: 1799,
-      priceDisplay: "₹1,799",
-      image: "/images/product/image7.png",
-      badge: "Pure Botanicals",
-    },
-    {
-      skuId: "turtle-incense-holder",
-      title: "HEIRLOOM BRASS TURTLE & MEDALLION",
-      description: "Solid cast brass turtle stand paired with the 5 Elements keepsake medallion.",
-      price: 1499,
-      priceDisplay: "₹1,499",
-      image: "/images/product/image8.png",
-      badge: "Solid Brass",
-    },
-  ];
-
-  const pillars = [
-    {
-      num: "01",
-      icon: Leaf,
-      title: "100% Pure & Natural",
-      desc: "Natural wood powders, sacred tree resins, zero toxic black soot.",
-    },
-    {
-      num: "02",
-      icon: Flame,
-      title: "Five Sacred Elements",
-      desc: "Distinctive blends for Earth, Water, Fire, Air, and Space rituals.",
-    },
-    {
-      num: "03",
+      value: "30+",
+      label: "Years of Sacred Trust",
+      description: "Handcrafting pure Mysore incense & heirloom brassware since 1996.",
       icon: ShieldCheck,
-      title: "Solid Cast Brass",
-      desc: "Heirloom turtle incense holders designed to endure generations.",
     },
     {
-      num: "04",
-      icon: Award,
-      title: "Bespoke Personalization",
-      desc: "Separate custom engraving, messages, and finishes for every SKU.",
+      value: "50M+",
+      label: "Incense Sticks Lit & Delivered",
+      description: "Spreading botanical aromas and ritual mindfulness worldwide.",
+      icon: Flame,
+    },
+    {
+      value: "100+",
+      label: "Serving Countries",
+      description: "Delivering curated corporate hampers & trunks globally.",
+      icon: Globe2,
     },
   ];
-
-  const handleAddHamper = (item: typeof featuredCollections[0], idx: number) => {
-    if (onAddToCart) {
-      onAddToCart({
-        id: createCartItemId(item.skuId),
-        skuId: item.skuId,
-        name: item.title,
-        price: item.price,
-        image: item.image,
-        quantity: 1,
-      });
-      setAddedIdx(idx);
-      setTimeout(() => setAddedIdx(null), 1500);
-    }
-  };
-
-  const handleCustomize = (skuId: string) => {
-    if (onCustomizeProduct) {
-      const p = getProductById(skuId);
-      if (p) onCustomizeProduct(p);
-    }
-  };
 
   return (
-    <div className="w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat pb-20 space-y-16 text-white border-t border-[#eed08e]/15">
-      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 space-y-16 pt-6">
-
-        {/* SECTION 1: Featured Gifting Suites */}
-        <section id="solutions">
-          <div className="text-center mb-8">
-            <span className="text-xs font-bold tracking-[0.24em] text-[#eed08e] uppercase">
-              CURATED HEIRLOOM HAMPER SETS
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-serif text-white font-normal mt-1">
-              Sacred Gift Sets &amp; Heirloom Trunks
-            </h2>
-
-            {/* Elegant Gold Diamond Divider */}
-            <div className="flex items-center justify-center gap-2 mt-2.5">
-              <div className="h-px w-20 sm:w-28 bg-[#eed08e]" />
-              <div className="w-2.5 h-2.5 rotate-45 border border-[#eed08e] bg-[#072515] flex items-center justify-center">
-                <div className="w-1 h-1 bg-[#eed08e]" />
+    <div className="w-full bg-[#FAF7F2] py-16 sm:py-24 border-t border-[#EAE3D5]">
+      {/* 3 Metrics Trust Header Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-16">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-stone-200/80 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          {stats.map((stat, idx) => (
+            <div key={idx} className="flex flex-col items-center justify-center p-2">
+              <div className="w-10 h-10 rounded-full bg-[#0B2B1B]/5 border border-[#8C6215]/30 text-[#8C6215] flex items-center justify-center mb-3">
+                <stat.icon className="w-5 h-5" />
               </div>
-              <div className="h-px w-20 sm:w-28 bg-[#eed08e]" />
+              <span className="font-serif text-4xl sm:text-5xl font-bold text-[#0B2B1B] tracking-tight">
+                {stat.value}
+              </span>
+              <h3 className="font-serif text-sm sm:text-base font-semibold text-[#8C6215] mt-2">
+                {stat.label}
+              </h3>
+              <p className="text-xs text-stone-500 mt-1 font-light max-w-xs leading-relaxed">
+                {stat.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sticky Overlapping Card Stack Reveal Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-12">
+        {/* Card 1: THE WEDDING EDIT (Sticky Card 1) */}
+        <div className="sticky top-20 z-10 bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200/80 min-h-[480px] sm:min-h-[540px] grid grid-cols-1 lg:grid-cols-12 relative group">
+          {/* Left Content Box */}
+          <div className="lg:col-span-6 p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-white z-10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.25em] text-[#0B2B1B] uppercase mb-4">
+                <span className="text-amber-700 text-sm">✦</span>
+                <span>THE WEDDING EDIT</span>
+              </div>
+
+              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium leading-tight">
+                One gifting story across your entire{" "}
+                <span className="italic font-serif font-normal text-[#991B1B]">
+                  wedding
+                </span>
+              </h2>
+
+              <p className="mt-4 text-sm sm:text-base text-stone-600 leading-relaxed font-light">
+                A single consultation with us covers gifting experiences for every
+                moment, every guest, and every family member.
+              </p>
+            </div>
+
+            <div className="mt-8">
+              <a
+                href="#gifting-gallery"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("gifting-gallery");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="inline-block bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] px-7 py-3.5 rounded-xl text-xs font-bold tracking-widest uppercase shadow-md transition-all cursor-pointer"
+              >
+                START A FREE CONSULTATION
+              </a>
             </div>
           </div>
 
-          {/* 4 Hampers Grid with Luxury Minimal Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-            {featuredCollections.map((item, idx) => (
-              <div
-                key={idx}
-                onClick={() => handleCustomize(item.skuId)}
-                className="group relative flex flex-col cursor-pointer select-none transition-transform duration-300"
-              >
-                {/* Modern Image Canvas with Aspect-[4/5] & Rounded Corners */}
-                <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl bg-[#061e11] shadow-2xs">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 25vw"
-                  />
-
-                  {/* Bookmark Ribbon Icon */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    title="Save to Wishlist"
-                    aria-label="Save to Wishlist"
-                    className="absolute top-3.5 right-3.5 z-10 p-1 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] transition-transform active:scale-90 hover:scale-110 cursor-pointer"
-                  >
-                    <Bookmark className="w-4 h-4 text-white stroke-[2]" />
-                  </button>
-                </div>
-
-                {/* Minimalist Info Row Directly Beneath Image */}
-                <div className="mt-2.5 flex items-start justify-between gap-2 px-0.5">
-                  <div className="space-y-0.5 min-w-0 flex-1">
-                    <h3 className="text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate transition-colors text-[#fdfcf9] group-hover:text-[#eed08e]">
-                      {item.title}
-                    </h3>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs sm:text-[12.5px] font-medium text-[#eed08e]">
-                        {item.priceDisplay}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Quick Action Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddHamper(item, idx);
-                    }}
-                    title={`Add ${item.title} to cart`}
-                    aria-label={`Add ${item.title} to cart`}
-                    className="shrink-0 p-1 text-[#eed08e] hover:text-white hover:scale-125 transition-all duration-200 cursor-pointer"
-                  >
-                    {addedIdx === idx ? (
-                      <Check className="w-4 h-4 stroke-[2.5] text-emerald-400" />
-                    ) : (
-                      <Plus className="w-4 h-4 stroke-[1.75]" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
+          {/* Right High Quality Wedding Gift Image */}
+          <div className="lg:col-span-6 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
+            <Image
+              src="/images/hampers/hamper-8.jpg"
+              alt="Wedding Gifting Experience"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
           </div>
-        </section>
+        </div>
 
-        {/* SECTION 2: Why Customers Choose Kurma */}
-        <section className="pt-4">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-serif text-white font-normal">
-              Why Devotees &amp; Families Choose Kurma
-            </h2>
-            <div className="flex items-center justify-center gap-2 mt-2.5">
-              <div className="h-px w-20 bg-[#eed08e]/50" />
-              <div className="w-2 h-2 rotate-45 border border-[#eed08e] bg-[#072515]" />
-              <div className="h-px w-20 bg-[#eed08e]/50" />
+        {/* Card 2: FOR BUSINESS (Sticky Card 2 that slides over Card 1) */}
+        <div className="sticky top-28 z-20 bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-200/80 min-h-[480px] sm:min-h-[540px] grid grid-cols-1 lg:grid-cols-12 relative group">
+          {/* Left Content Box */}
+          <div className="lg:col-span-5 p-8 sm:p-12 lg:p-14 flex flex-col justify-between bg-white z-10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 bg-[#0B2B1B] text-[#EED08E] text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-md mb-6 shadow-xs">
+                <Check className="w-3.5 h-3.5 text-[#EED08E]" />
+                <span>FOR BUSINESS</span>
+              </div>
+
+              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium leading-tight">
+                Corporate{" "}
+                <span className="italic font-serif font-normal">gifting</span>
+              </h2>
+
+              <p className="mt-4 text-sm sm:text-base text-stone-600 leading-relaxed font-light">
+                Not another dry fruit box. Curated, branded, and delivered so your
+                clients and team actually remember who sent it.
+              </p>
+            </div>
+
+            <div className="mt-8">
+              <a
+                href="#gifting-gallery"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("gifting-gallery");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="block bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] px-7 py-3.5 rounded-xl text-xs font-bold tracking-widest uppercase shadow-md transition-all text-center cursor-pointer"
+              >
+                ENQUIRE FOR BULK ORDERS
+              </a>
             </div>
           </div>
 
-          {/* 4 Clean Pillars */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {pillars.map((step, idx) => (
-              <div
-                key={idx}
-                className="rounded-xl bg-[#0a311d]/60 border border-[#eed08e]/20 p-6 flex flex-col items-start text-left space-y-3 hover:border-[#eed08e]/40 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#072515] border border-[#eed08e]/30 flex items-center justify-center text-[#eed08e]">
-                  <step.icon className="w-5 h-5 stroke-[1.5]" />
-                </div>
-                <h3 className="text-base font-serif text-white font-medium">
-                  {step.title}
-                </h3>
-                <p className="text-xs sm:text-[13px] text-stone-300 leading-relaxed font-sans">
-                  {step.desc}
-                </p>
-              </div>
-            ))}
+          {/* Right High Quality Corporate Gift Image */}
+          <div className="lg:col-span-7 relative min-h-[300px] lg:min-h-full bg-stone-100 overflow-hidden">
+            <Image
+              src="/images/hampers/hamper-3.jpg"
+              alt="Corporate Gifting Suite"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
+              sizes="(max-width: 1024px) 100vw, 60vw"
+            />
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

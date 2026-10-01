@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
-import { ArrowRight, Leaf, Flame, ShieldCheck, PenTool } from "lucide-react";
+import { ArrowRight, Leaf, Flame, ShieldCheck, PenTool, Sparkles, ChevronDown } from "lucide-react";
 
 interface HeroProps {
   onExploreGifts: () => void;
@@ -37,70 +37,61 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
   return (
     <section
       id="home"
-      className="relative w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat overflow-hidden min-h-[640px] md:min-h-[700px] lg:min-h-[760px] flex flex-col justify-between text-white"
+      className="relative w-full h-[calc(100vh-80px)] min-h-[580px] bg-[#072515] overflow-hidden flex flex-col justify-between text-white"
     >
-      {/* Hero Showcase Area (Copy on left, Marble trunk image on right) */}
+      {/* Unified Hero Banner Canvas (NO Line Divider, Seamless Gradient Blend) */}
       <div className="relative flex-1 flex items-center py-10 sm:py-14 lg:py-18">
-        {/* Right-Side Hero Scene Image - Kurma Luxury Collection & Marble Gift Box */}
-        <div className="absolute inset-y-0 right-0 w-full lg:w-[54%] xl:w-[58%] h-full pointer-events-none z-0">
+        {/* Right-Side Hero Image - Seamlessly Blended */}
+        <div className="absolute inset-y-0 right-0 w-full lg:w-[58%] xl:w-[62%] h-full pointer-events-none z-0">
           <Image
-            src="/images/product/image9.png"
-            alt="Kurma Elements in Harmony Luxury Marble Gift Box"
+            src="/images/product/image7.png"
+            alt="Kurma 5 Elements Sacred Agarbatti Luxury Incense Suite"
             fill
             priority
-            className="object-cover object-[70%_center] lg:object-[72%_center]"
-            sizes="(max-width: 1024px) 100vw, 58vw"
+            className="object-cover object-[75%_center] lg:object-[70%_center] filter brightness-[1.02] contrast-[1.03]"
+            sizes="(max-width: 1024px) 100vw, 62vw"
           />
-          <div className="absolute inset-0 bg-[#072515]/75 lg:hidden" />
-          {/* Soft edge blend into deep green */}
-          <div className="absolute inset-y-0 left-0 w-48 sm:w-80 lg:w-96 bg-linear-to-r from-[#072515] via-[#072515]/95 to-transparent pointer-events-none" />
+          {/* Seamless Edge Gradient Blend into Deep Green (NO Line Separator) */}
+          <div className="absolute inset-y-0 left-0 w-48 sm:w-80 lg:w-96 bg-gradient-to-r from-[#072515] via-[#072515]/90 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-[#072515]/75 lg:hidden pointer-events-none" />
         </div>
 
         <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 z-10">
-          {/* Left Copy Section */}
-          <motion.div initial={{ opacity: 0, y: reduced ? 0 : 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }} className="max-w-2xl lg:max-w-[580px] xl:max-w-[660px] space-y-7">
-            {/* Eyebrow */}
-            <div>
-              <span className="text-xs sm:text-sm font-semibold tracking-[0.24em] text-[#eed08e] uppercase">
-                SCENTS CONNECT WORLDS • PURE FRAGRANCE
-              </span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[58px] xl:text-[66px] font-serif font-normal text-white leading-[1.15] tracking-tight">
+          {/* Left Text & Action Buttons Column */}
+          <motion.div
+            initial={{ opacity: 0, x: reduced ? 0 : -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: reduced ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-xl lg:max-w-[520px] xl:max-w-[580px] space-y-7"
+          >
+            {/* Clean Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[50px] xl:text-[58px] font-serif font-normal text-white leading-[1.12] tracking-tight">
               Elements in Harmony. <br />
               <span className="italic font-normal text-[#eed08e]">
                 Higher Consciousness.
               </span>
             </h1>
 
-            {/* Delicate Gold Diamond Divider */}
-            <div className="flex items-center gap-4 py-1">
-              <div className="h-[1.5px] w-32 bg-[#eed08e]" />
-              <div className="w-3 h-3 rotate-45 border border-[#eed08e] bg-[#072515] flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-[#eed08e]" />
-              </div>
-              <div className="h-[1.5px] w-32 bg-[#eed08e]" />
+            {/* Gold Diamond Accent Line */}
+            <div className="flex items-center gap-3">
+              <div className="h-px w-20 bg-[#eed08e]/60" />
+              <div className="w-2 h-2 rotate-45 border border-[#eed08e] bg-[#072515]" />
+              <div className="h-px w-20 bg-[#eed08e]/60" />
             </div>
 
-            {/* Subtext */}
-            <p className="text-stone-200 text-base sm:text-lg leading-relaxed font-sans max-w-xl">
-              Introducing Kurma&apos;s initial product suite — the iconic Green Marble &amp; MDF Gift Trunks, 5 Elemental Fragrance Boxes (Earth, Water, Fire, Air, Space), solid brass turtle incense stands, and silk pashmina pocket squares.
-            </p>
-
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center gap-4 pt-1">
               <button
                 onClick={onExploreGifts}
-                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-base sm:text-[17px] font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.98] group cursor-pointer"
+                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] group cursor-pointer"
               >
-                <span>Explore Initial Collection</span>
+                <span>Explore Collection</span>
                 <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
 
               <button
                 onClick={onExploreBestsellers || onExploreGifts}
-                className="inline-flex items-center justify-center px-8 py-4 bg-[#0a311d]/70 hover:bg-[#0e3d25] text-white text-base sm:text-[17px] font-medium rounded-lg border border-[#eed08e]/50 hover:border-[#eed08e] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer"
+                className="inline-flex items-center justify-center px-8 py-4 bg-[#0a311d]/90 hover:bg-[#0e3d25] text-[#eed08e] text-base font-medium rounded-xl border border-[#eed08e]/50 hover:border-[#eed08e] backdrop-blur-sm transition-all duration-200 shadow-md active:scale-[0.98] cursor-pointer"
               >
                 View Marble Trunk
               </button>
@@ -109,8 +100,8 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
         </div>
       </div>
 
-      {/* Trust Features Bar - Full Width, Generous Spacing, Centered, One Line */}
-      <div className="relative z-10 w-full border-t border-[#eed08e]/25 bg-[#04190e]/92 backdrop-blur-md py-4 sm:py-5">
+      {/* Trust Features Footer Bar */}
+      <div className="relative z-20 w-full border-t border-[#eed08e]/25 bg-[#04190e]/92 backdrop-blur-md py-3.5 sm:py-4">
         <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
           <div className="flex items-center justify-start lg:justify-between overflow-x-auto no-scrollbar gap-4 lg:gap-0 lg:grid lg:grid-cols-4 lg:divide-x divide-[#eed08e]/20">
             {trustFeatures.map((feat, idx) => (

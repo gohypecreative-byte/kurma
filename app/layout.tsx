@@ -29,6 +29,11 @@ const cinzel = Cinzel({
 export const metadata: Metadata = {
   title: "Kurma | Premium Corporate Gifting",
   description: "Thoughtful Gifts. Strong Impressions. Curated, branded luxury gifts that leave a lasting impact on employees, clients, and partners.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({

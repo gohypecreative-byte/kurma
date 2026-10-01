@@ -1,9 +1,36 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { Mail, ArrowRight, Check, ShieldCheck, Heart } from "lucide-react";
+import { Mail, Phone, ChevronUp, Check } from "lucide-react";
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
+function LinkedinIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </svg>
+  );
+}
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -20,171 +47,206 @@ export function Footer() {
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <footer className="w-full bg-[#f3f6ef] text-stone-800 border-t border-[#e2e8dc] font-sans">
-      {/* Main Footer Content */}
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
-          {/* Column 1: Brand & Sacred Mission (Col Span 5) */}
-          <div className="lg:col-span-5 space-y-3.5">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0">
-                <Image
-                  src="/images/brand/kurma-turtle-transparent.png"
-                  alt="Kurma Logo"
-                  width={44}
-                  height={44}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <span className="font-serif tracking-[0.2em] text-lg sm:text-xl font-bold text-stone-900 leading-none">
-                KURMA
-              </span>
-            </Link>
+    <footer className="w-full bg-[#061e13] text-[#EED08E] border-t border-[#EED08E]/20 font-serif relative">
+      {/* Main Footer Grid */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 py-14 sm:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12">
+          {/* Column 1: GET IN TOUCH (Col Span 3) */}
+          <div className="lg:col-span-3 space-y-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+              GET IN TOUCH
+            </h3>
 
-            <p className="text-xs sm:text-sm text-stone-600 max-w-sm leading-relaxed">
-              100% charcoal-free Vedic incense, handcrafted with pure Mysore botanicals, temple flower resins, and heirloom brass burners.
-            </p>
+            <div className="space-y-3 pt-2 text-xs sm:text-sm text-[#EED08E]/90 font-light">
+              <a
+                href="mailto:hello@kurmagifting.com"
+                className="flex items-center gap-2.5 hover:text-white transition-colors"
+              >
+                <Mail className="w-4 h-4 text-[#EED08E] shrink-0" />
+                <span>hello@kurmagifting.com</span>
+              </a>
 
-            {/* Newsletter Subscription */}
-            <div className="pt-1 max-w-sm">
-              <span className="text-[11px] font-bold text-stone-900 uppercase tracking-wider block mb-1.5 font-cinzel">
-                Sacred Aroma Dispatch
-              </span>
-              <form onSubmit={handleSubscribe} className="relative">
-                <div className="flex items-center bg-white border border-stone-300 rounded-lg px-3 py-2 shadow-2xs focus-within:border-[#c0881b] transition-colors">
-                  <Mail className="w-3.5 h-3.5 text-stone-400 mr-2 shrink-0" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter email for 10% off"
-                    required
-                    className="w-full text-xs text-stone-800 placeholder-stone-400 bg-transparent focus:outline-none min-w-0"
-                  />
-                  <button
-                    type="submit"
-                    aria-label="Subscribe"
-                    className="ml-2 text-stone-600 hover:text-[#c0881b] transition-colors cursor-pointer shrink-0"
-                  >
-                    {isSubscribed ? (
-                      <Check className="w-4 h-4 text-emerald-600" />
-                    ) : (
-                      <ArrowRight className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {isSubscribed && (
-                  <span className="text-[11px] text-emerald-700 font-medium block mt-1">
-                    Thank you! Code SACRED10 has been unlocked.
-                  </span>
-                )}
-              </form>
+              <a
+                href="tel:+919876543210"
+                className="flex items-center gap-2.5 hover:text-white transition-colors"
+              >
+                <Phone className="w-4 h-4 text-[#EED08E] shrink-0" />
+                <span>+91 98765 43210</span>
+              </a>
+            </div>
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-4 pt-3">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
+                className="w-8 h-8 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors"
+              >
+                <InstagramIcon className="w-4 h-4" />
+              </a>
+
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="LinkedIn"
+                className="w-8 h-8 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors"
+              >
+                <LinkedinIcon className="w-4 h-4" />
+              </a>
+
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Facebook"
+                className="w-8 h-8 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors"
+              >
+                <FacebookIcon className="w-4 h-4" />
+              </a>
             </div>
           </div>
 
-          {/* Quick Links in 2 Columns on Mobile, 3 Columns on Desktop */}
-          <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 pt-2 lg:pt-0">
-            {/* Column 2: Sacred Collections */}
-            <div>
-              <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider font-cinzel mb-3">
-                Collections
-              </h3>
-              <ul className="space-y-2 text-xs text-stone-600">
-                <li>
-                  <Link href="/shop" className="hover:text-[#c0881b] transition-colors">
-                    All Incense &amp; Trunks
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/elements" className="hover:text-[#c0881b] transition-colors">
-                    5 Elements Suite
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/gift-trunks" className="hover:text-[#c0881b] transition-colors">
-                    Marble &amp; Wooden Trunks
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ritual" className="hover:text-[#c0881b] transition-colors">
-                    Sacred Daily Rituals
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          {/* Column 2: NAVIGATION (Col Span 3) */}
+          <div className="lg:col-span-3 space-y-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+              NAVIGATION
+            </h3>
 
-            {/* Column 3: The Sanctuary */}
-            <div>
-              <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider font-cinzel mb-3">
-                Sanctuary
-              </h3>
-              <ul className="space-y-2 text-xs text-stone-600">
-                <li>
-                  <Link href="/about" className="hover:text-[#c0881b] transition-colors">
-                    Our Heritage &amp; Artisans
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/reviews" className="hover:text-[#c0881b] transition-colors">
-                    Devotee Testimonials
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
-                    Contact &amp; Support
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
-                    Corporate Bespoke Gifting
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-[#EED08E]/80 font-light">
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-white transition-colors">
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <Link href="/elements" className="hover:text-white transition-colors">
+                  5 Elements
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-white transition-colors">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            {/* Column 4: Guarantees & Policies */}
-            <div className="col-span-2 sm:col-span-1">
-              <h3 className="text-xs sm:text-sm font-bold text-stone-900 uppercase tracking-wider font-cinzel mb-3">
-                Assurance
-              </h3>
-              <ul className="space-y-2 text-xs text-stone-600">
-                <li className="flex items-center gap-1.5 text-stone-700 font-medium">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>100% Charcoal-Free</span>
-                </li>
-                <li className="flex items-center gap-1.5 text-stone-700 font-medium">
-                  <Heart className="w-3.5 h-3.5 text-[#c0881b] shrink-0" />
-                  <span>Mysore Hand-Rolled</span>
-                </li>
-                <li className="pt-1">
-                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
-                    Shipping &amp; Delivery
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-[#c0881b] transition-colors">
-                    Returns &amp; Fragile Guarantee
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          {/* Column 3: INFORMATION & POLICIES (Col Span 3) */}
+          <div className="lg:col-span-3 space-y-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+              INFORMATION
+            </h3>
+
+            <ul className="space-y-2.5 text-xs sm:text-sm text-[#EED08E]/80 font-light">
+              <li>
+                <Link href="/gift-trunks" className="hover:text-white transition-colors">
+                  Artisan Hampers &amp; Trunks
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Corporate &amp; Wedding Orders
+                </Link>
+              </li>
+              <li>
+                <Link href="/reviews" className="hover:text-white transition-colors">
+                  Client Testimonials
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Shipping &amp; Delivery Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Cancellation &amp; Refund Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Privacy &amp; Terms of Service
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: NEWSLETTER (Col Span 3) */}
+          <div className="lg:col-span-3 space-y-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+              NEWSLETTER
+            </h3>
+
+            <p className="text-xs text-[#EED08E]/80 uppercase tracking-wider font-light leading-relaxed">
+              SIGN UP TO RECEIVE THE LATEST NEWS &amp; EXCLUSIVE GIFT RELEASES.
+            </p>
+
+            <form onSubmit={handleSubscribe} className="pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="ENTER EMAIL ADDRESS"
+                  required
+                  className="bg-black/20 border border-[#EED08E]/40 text-[#EED08E] placeholder:text-[#EED08E]/50 px-4 py-2.5 text-xs tracking-wider uppercase focus:outline-none focus:border-[#EED08E] w-full min-w-0"
+                />
+
+                <button
+                  type="submit"
+                  className="bg-[#8C6215] text-white hover:bg-[#A37318] px-5 py-2.5 text-xs font-bold tracking-widest uppercase transition-colors shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  {isSubscribed ? (
+                    <Check className="w-4 h-4 text-emerald-300" />
+                  ) : (
+                    <span>SUBMIT</span>
+                  )}
+                </button>
+              </div>
+
+              {isSubscribed && (
+                <span className="text-[11px] text-emerald-400 block mt-2 font-sans">
+                  Thank you! You are now subscribed to Kurma dispatches.
+                </span>
+              )}
+            </form>
           </div>
         </div>
       </div>
 
-      {/* Bottom Copyright & Sacred Craft Bar */}
-      <div className="border-t border-[#e2e8dc] py-5 px-4 sm:px-6 lg:px-12 text-center text-xs text-stone-500">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
-          <p className="flex items-center justify-center gap-1 text-[11px] sm:text-xs">
-            <span>Handcrafted with</span>
-            <Heart className="w-3 h-3 text-[#c0881b] fill-current" />
-            <span>in Mysore &amp; Moradabad, India</span>
+      {/* Bottom Copyright Bar & Scroll to Top Button */}
+      <div className="border-t border-[#EED08E]/20 py-6 px-4 sm:px-6 lg:px-12 text-center text-xs text-[#EED08E]/70 font-serif relative">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <p className="tracking-widest">
+            &copy; {new Date().getFullYear()} Kurma Corporate &amp; Luxury Gifting. All rights reserved.
           </p>
 
-          <p className="text-[11px] sm:text-xs text-stone-500">
-            &copy; {new Date().getFullYear()} Kurma Impressions. All rights reserved.
-          </p>
+          {/* Floating Scroll to Top Button */}
+          <button
+            onClick={scrollToTop}
+            aria-label="Scroll to top"
+            className="absolute right-6 sm:right-12 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-[#061e13] hover:bg-[#EED08E] flex items-center justify-center shadow-lg transition-all cursor-pointer"
+          >
+            <ChevronUp className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </footer>
