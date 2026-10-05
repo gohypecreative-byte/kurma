@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
-import { ArrowRight, Plus, Heart, Check, SlidersHorizontal, ChevronDown, HelpCircle } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring } from "motion/react";
+import { ArrowRight, Plus, Heart, Check, SlidersHorizontal, ChevronDown, HelpCircle, Bookmark } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
 
@@ -73,7 +73,7 @@ const OCCASIONS_ITEMS = [
     title: "Wedding & Festive Gifting",
     description: "Return gifts, welcome hampers & festive suites curated with sacred agarbatti & solid brassware.",
     tags: ["Return Gifts", "Bulk Orders", "Wedding Suites"],
-    image: "/images/product/image7.png",
+    image: "/images/product/earth-front.png",
   },
   {
     id: "occasion-corporate",
@@ -81,7 +81,7 @@ const OCCASIONS_ITEMS = [
     title: "Corporate & Executive Suites",
     description: "Diwali hampers, client appreciation & employee gifting with GST billing & custom brass plaques.",
     tags: ["Diwali Hampers", "Branded Trunks", "Bulk Gifting"],
-    image: "/images/product/image9.png",
+    image: "/images/product/fire-front.png",
   },
   {
     id: "occasion-custom",
@@ -89,7 +89,7 @@ const OCCASIONS_ITEMS = [
     title: "Custom & Bespoke Rituals",
     description: "Pick your hamper, select your 5 elemental agarbatti fragrances, and personalize with custom brass seals.",
     tags: ["Build Yours", "Brass Engraving", "Custom Blends"],
-    image: "/images/product/image8.png",
+    image: "/images/product/water-front.png",
   },
   {
     id: "occasion-celebrations",
@@ -97,7 +97,7 @@ const OCCASIONS_ITEMS = [
     title: "Sacred Celebrations",
     description: "Griha Pravesh, Puja rituals, Anniversaries & housewarming gifts infused with pure essential aromas.",
     tags: ["Griha Pravesh", "Puja Rituals", "Anniversary"],
-    image: "/images/product/image9.png",
+    image: "/images/product/space-front.png",
   },
 ];
 
@@ -465,9 +465,9 @@ export function RitualAndQuestions() {
         </div>
       </section>
 
-      {/* NEW SECTION BELOW FAQ: 'What brings you here today?' (THE KURMA'S OCCASION) */}
-      <section className="bg-[#FAF7F2] py-20 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5]">
-        <div className="mx-auto max-w-6xl">
+      {/* SECTION: 'What brings you here today?' (THE KURMA'S OCCASION) - Single Line 4 Column Layout */}
+      <section className="bg-[#FAF7F2] py-20 sm:py-24 px-4 sm:px-6 md:px-8 lg:px-12 border-t border-[#EAE3D5] w-full">
+        <div className="mx-auto max-w-[1700px] w-full">
           {/* Header */}
           <div className="text-center mb-14">
             <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] text-[#0B2B1B] uppercase mb-2">
@@ -490,33 +490,57 @@ export function RitualAndQuestions() {
             </p>
           </div>
 
-          {/* 2x2 Grid of Occasion Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {/* Single Line 4-Column Grid of Occasion Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {OCCASIONS_ITEMS.map((item) => (
               <div
                 key={item.id}
                 className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-stone-100 flex flex-col justify-between group"
               >
                 <div>
-                  {/* Aspect 16:9 Landscape Image Canvas with object-contain for 100% full image visibility */}
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#f5f3ec] flex items-center justify-center p-3 sm:p-4">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      unoptimized
-                      className="absolute inset-0 w-full h-full object-contain object-center p-3 sm:p-4 group-hover:scale-105 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
+                  {/* Aspect 3/5 Vertical Portrait Image Canvas matching screenshot */}
+                  <div className="relative aspect-[3/5] w-full overflow-hidden bg-[#F5F3EC] rounded-2xl flex flex-col justify-between p-4 group-hover:bg-[#EFECE4] transition-colors">
+                    {/* Top Right Bookmark Icon */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist(item.id);
+                      }}
+                      className="absolute top-3.5 right-3.5 z-10 text-stone-700 hover:text-black transition-transform active:scale-95 cursor-pointer"
+                      title="Bookmark item"
+                    >
+                      <Bookmark className={`w-4 h-4 stroke-[1.5] ${likedItems[item.id] ? "fill-stone-900 text-stone-900" : ""}`} />
+                    </button>
+
+                    {/* Centered vertical box image */}
+                    <div className="relative w-full h-full flex items-center justify-center my-auto py-2">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        unoptimized
+                        className="object-contain object-center drop-shadow-md group-hover:scale-[1.03] transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                      />
+                    </div>
+
+                    {/* Bottom Pagination Dots matching screenshot */}
+                    <div className="flex items-center justify-center gap-1.5 pt-2 z-10">
+                      <span className="w-2 h-2 rounded-full bg-stone-900" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+                    </div>
                   </div>
 
                   {/* Content details */}
-                  <div className="p-6 pb-0">
+                  <div className="p-5 sm:p-6 pb-0">
                     <span className="bg-[#EBF3F5] text-[#2C5E69] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md inline-block">
                       {item.badge}
                     </span>
 
-                    <h3 className="font-serif text-xl sm:text-2xl font-medium text-[#0B2B1B] mt-3 group-hover:text-[#8C6215] transition-colors">
+                    <h3 className="font-serif text-lg sm:text-xl font-medium text-[#0B2B1B] mt-2.5 group-hover:text-[#8C6215] transition-colors">
                       {item.title}
                     </h3>
 
@@ -527,12 +551,12 @@ export function RitualAndQuestions() {
                 </div>
 
                 {/* Footer Pills & Action Button */}
-                <div className="p-6 pt-4 mt-4 border-t border-stone-100 flex items-center justify-between gap-3">
-                  <div className="flex flex-wrap gap-2">
+                <div className="p-5 sm:p-6 pt-4 mt-4 border-t border-stone-100 flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {item.tags.map((tag, i) => (
                       <span
                         key={i}
-                        className="border border-stone-200/80 text-stone-600 text-[11px] px-3 py-1 rounded-full bg-stone-50/50"
+                        className="border border-stone-200/80 text-stone-600 text-[10.5px] px-2.5 py-0.5 rounded-full bg-stone-50/50"
                       >
                         {tag}
                       </span>
@@ -547,9 +571,9 @@ export function RitualAndQuestions() {
                       }
                     }}
                     aria-label={`Explore ${item.title}`}
-                    className="w-9 h-9 rounded-full bg-stone-100 text-stone-700 group-hover:bg-[#0B2B1B] group-hover:text-[#EED08E] flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
+                    className="w-8 h-8 rounded-full bg-stone-100 text-stone-700 group-hover:bg-[#0B2B1B] group-hover:text-[#EED08E] flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
                   >
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -598,10 +622,10 @@ const FAQ_ITEMS = [
 ];
 
 function KurmaFAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-[#FAF7F2] py-16 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5]">
+    <section id="faq" className="bg-[#FAF7F2] py-16 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5] overflow-hidden">
       <div className="mx-auto max-w-4xl">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
@@ -612,18 +636,21 @@ function KurmaFAQSection() {
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium tracking-tight">
             Everything You Need to Know <span className="italic font-serif font-normal text-[#8C6215]">About Kurma</span>
           </h2>
-          <p className="mt-3 text-xs sm:text-sm text-stone-600 max-w-xl mx-auto font-sans">
-            Got questions about our charcoal-free formulation, custom corporate hampers, or nationwide shipping? We&apos;ve got you covered.
-          </p>
         </div>
 
-        {/* Accordion Questions List */}
+        {/* Accordion Questions List with Alternating Left/Right Scroll Animations */}
         <div className="space-y-4">
           {FAQ_ITEMS.map((faq, idx) => {
             const isOpen = openIndex === idx;
+            const isEven = idx % 2 === 0;
+
             return (
-              <div
+              <motion.div
                 key={idx}
+                initial={{ opacity: 0, x: isEven ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease: "easeOut" }}
                 className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden transition-all duration-300 hover:border-[#8C6215]/50"
               >
                 <button
@@ -638,12 +665,20 @@ function KurmaFAQSection() {
                   </div>
                 </button>
 
-                {isOpen && (
-                  <div className="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 font-sans animate-in fade-in-50 duration-200">
-                    <p className="pt-3">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 font-sans overflow-hidden"
+                    >
+                      <p className="pt-3">{faq.answer}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>

@@ -64,19 +64,19 @@ export function Footer() {
 
             <div className="space-y-3 pt-2 text-xs sm:text-sm text-[#EED08E]/90 font-light">
               <a
-                href="mailto:hello@kurmagifting.com"
+                href="mailto:XXXXXX@XXXXXX.com"
                 className="flex items-center gap-2.5 hover:text-white transition-colors"
               >
                 <Mail className="w-4 h-4 text-[#EED08E] shrink-0" />
-                <span>hello@kurmagifting.com</span>
+                <span>XXXXXX@XXXXXX.com</span>
               </a>
 
               <a
-                href="tel:+919876543210"
+                href="tel:+91XXXXXXXXXX"
                 className="flex items-center gap-2.5 hover:text-white transition-colors"
               >
                 <Phone className="w-4 h-4 text-[#EED08E] shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>+91 XXXXX XXXXX</span>
               </a>
             </div>
 

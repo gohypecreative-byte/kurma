@@ -33,6 +33,18 @@ export default function ContactPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Gifting Inquiry Form State (Transferred from Home Page)
+  const [giftingForm, setGiftingForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    company: "",
+    budget: "",
+    quantity: "",
+    message: "",
+  });
+  const [giftingSubmitted, setGiftingSubmitted] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -40,6 +52,23 @@ export default function ContactPage() {
       setIsSubmitting(false);
       setIsSubmitted(true);
     }, 900);
+  };
+
+  const handleGiftingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setGiftingSubmitted(true);
+    setTimeout(() => {
+      setGiftingSubmitted(false);
+      setGiftingForm({
+        name: "",
+        phone: "",
+        email: "",
+        company: "",
+        budget: "",
+        quantity: "",
+        message: "",
+      });
+    }, 4000);
   };
 
   return (
@@ -331,6 +360,139 @@ export default function ContactPage() {
             )}
           </div>
         </div>
+
+        {/* GIFTING INQUIRY Section (Transferred from Home Page) */}
+        <section id="gifting-inquiry" className="pt-12 sm:pt-16 border-t border-stone-200/80 max-w-3xl mx-auto space-y-8">
+          {/* Section Header */}
+          <div className="text-center space-y-2">
+            <h2 className="font-serif tracking-[0.2em] text-2xl sm:text-3xl font-bold text-[#8b5f10] uppercase">
+              GIFTING INQUIRY
+            </h2>
+            <p className="text-stone-700 text-xs sm:text-sm font-medium max-w-xl mx-auto">
+              Share your vision with us, and we&apos;ll create something extraordinary
+            </p>
+          </div>
+
+          {/* Inquiry Form */}
+          <form onSubmit={handleGiftingSubmit} className="space-y-4 sm:space-y-5">
+            {/* Row 1: NAME & PHONE */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <div>
+                <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                  NAME
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={giftingForm.name}
+                  onChange={(e) => setGiftingForm({ ...giftingForm, name: e.target.value })}
+                  placeholder="Your name"
+                  className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                  PHONE
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={giftingForm.phone}
+                  onChange={(e) => setGiftingForm({ ...giftingForm, phone: e.target.value })}
+                  placeholder="+91"
+                  className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: EMAIL */}
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                EMAIL
+              </label>
+              <input
+                type="email"
+                required
+                value={giftingForm.email}
+                onChange={(e) => setGiftingForm({ ...giftingForm, email: e.target.value })}
+                placeholder="your@email.com"
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+              />
+            </div>
+
+            {/* Row 3: COMPANY & BUDGET */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+              <div>
+                <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                  COMPANY
+                </label>
+                <input
+                  type="text"
+                  value={giftingForm.company}
+                  onChange={(e) => setGiftingForm({ ...giftingForm, company: e.target.value })}
+                  placeholder="Brand or company name"
+                  className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                  BUDGET
+                </label>
+                <input
+                  type="text"
+                  value={giftingForm.budget}
+                  onChange={(e) => setGiftingForm({ ...giftingForm, budget: e.target.value })}
+                  placeholder="Approximate budget"
+                  className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+                />
+              </div>
+            </div>
+
+            {/* Row 4: QUANTITY */}
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                QUANTITY
+              </label>
+              <input
+                type="text"
+                value={giftingForm.quantity}
+                onChange={(e) => setGiftingForm({ ...giftingForm, quantity: e.target.value })}
+                placeholder="Number of gifts"
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+              />
+            </div>
+
+            {/* Row 5: MESSAGE */}
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                MESSAGE
+              </label>
+              <textarea
+                rows={4}
+                value={giftingForm.message}
+                onChange={(e) => setGiftingForm({ ...giftingForm, message: e.target.value })}
+                placeholder="Looking for festive hampers for clients..."
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs resize-none"
+              />
+            </div>
+
+            {/* Submit Action */}
+            <div className="pt-3 text-center">
+              <button
+                type="submit"
+                className="bg-[#8b5f10] hover:bg-[#6f4b0d] text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-md hover:shadow-lg transition-all cursor-pointer inline-flex items-center gap-2 active:scale-98"
+              >
+                <span>SUBMIT INQUIRY</span>
+              </button>
+
+              {giftingSubmitted && (
+                <p className="text-xs font-bold text-emerald-800 mt-3 animate-in fade-in">
+                  Thank you! Your gifting inquiry has been received. Our concierge will contact you shortly.
+                </p>
+              )}
+            </div>
+          </form>
+        </section>
       </main>
 
       {/* Footer */}
