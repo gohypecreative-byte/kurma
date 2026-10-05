@@ -62,6 +62,12 @@ export const getProductBadge = (id: string): { label: string; color: string } | 
       return { label: "Handcrafted Devotion", color: "bg-[#7a1532]" };
     case "fragrance-space":
       return { label: "Rare Oudh", color: "bg-[#5b2273]" };
+    case "fragrance-sandalwood":
+      return { label: "Royal Chandan", color: "bg-[#7a1532]" };
+    case "fragrance-temple-flora":
+      return { label: "Temple Flora", color: "bg-[#7a1532]" };
+    case "fragrance-royal-oudh":
+      return { label: "Imperial Oudh", color: "bg-[#5b2273]" };
 
     // Accessories
     case "turtle-incense-holder":

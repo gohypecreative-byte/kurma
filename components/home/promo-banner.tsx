@@ -90,7 +90,7 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
 
   return (
     <section
-      className="w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat py-4 sm:py-6 overflow-hidden relative select-none"
+      className="w-full bg-[#FAF7F2] py-8 sm:py-12 border-t border-b border-[#EAE3D5] overflow-hidden relative select-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
-import { ArrowRight, Plus, Heart, Check } from "lucide-react";
+import { ArrowRight, Plus, Heart, Check, SlidersHorizontal, ChevronDown, HelpCircle } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
 
@@ -23,7 +24,7 @@ export function ScrollProgress() {
 const BESTSELLER_ITEMS = [
   {
     id: "bestseller-1",
-    skuId: "sacred-buddha-wooden-suite",
+    skuId: "5-elements-suite",
     name: "Sacred Buddha & Turtle Suite",
     categoryTag: "ALL PRODUCTS",
     shortDesc: "Polished hardwood stand, hand-finished Buddha & brass turtle burner",
@@ -34,7 +35,7 @@ const BESTSELLER_ITEMS = [
   },
   {
     id: "bestseller-2",
-    skuId: "heirloom-slatted-wooden-trunk",
+    skuId: "mdf-gift-box",
     name: "Heirloom Brass Turtle Trunk",
     categoryTag: "ALL PRODUCTS",
     shortDesc: "Slatted wooden chest, natural jute sack & brass turtle incense stand",
@@ -44,19 +45,18 @@ const BESTSELLER_ITEMS = [
   },
   {
     id: "bestseller-3",
-    skuId: "luxe-beauty-ritual",
+    skuId: "fragrance-earth",
     name: "The Luxe Beauty Ritual",
     categoryTag: "ALL PRODUCTS",
     shortDesc: "This blush-toned beauty box is basically luxury wrapped in gold",
     price: 2899,
     priceDisplay: "₹2,899",
     originalPrice: "₹5,699",
-    isSale: true,
     image: "/images/product/earth-front.png",
   },
   {
     id: "bestseller-4",
-    skuId: "vedic-heritage-brass-incense-chest",
+    skuId: "fragrance-fire",
     name: "Vedic Heritage Brass Chest",
     categoryTag: "ALL PRODUCTS",
     shortDesc: "Carved teakwood tray, spherical brass incense urn & oil lamp",
@@ -121,6 +121,7 @@ const questions = [
 ];
 
 export function RitualAndQuestions() {
+  const router = useRouter();
   const [open, setOpen] = useState<number | null>(0);
   const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
@@ -173,82 +174,93 @@ export function RitualAndQuestions() {
           </div>
 
           {/* 4 Card Bestsellers Showcase */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
             {BESTSELLER_ITEMS.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 border border-stone-100/80 flex flex-col justify-between group"
+                onClick={() => router.push(`/products/${item.skuId}`)}
+                className="group relative flex flex-col cursor-pointer select-none transition-all duration-300 bg-white p-3 rounded-2xl border border-stone-200/80 shadow-xs hover:shadow-md"
               >
-                <div>
-                  {/* Full-width Edge-to-Edge Image Box */}
-                  <div className="relative aspect-square w-full overflow-hidden bg-stone-50 flex items-center justify-center p-3">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                {/* Modern Image Canvas matching ProductCardItem */}
+                <div className="relative w-full aspect-[3/4] overflow-hidden rounded-xl bg-[#f5f3ec] flex items-center justify-center p-2">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-contain object-center p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+
+                  {/* Bookmark/Wishlist Icon Top-Right */}
+                  <button
+                    aria-label="Add to wishlist"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(item.id);
+                    }}
+                    className="absolute top-2.5 right-2.5 z-10 p-1 text-stone-700 hover:text-stone-900 drop-shadow-xs transition-transform active:scale-90 hover:scale-110 cursor-pointer"
+                  >
+                    <Heart
+                      className={`w-4 h-4 transition-colors ${
+                        likedItems[item.id]
+                          ? "fill-stone-800 text-stone-800 stroke-[2]"
+                          : "fill-transparent text-stone-700 stroke-[2]"
+                      }`}
                     />
+                  </button>
+                </div>
 
-                    {/* Wishlist Heart Button */}
-                    <button
-                      aria-label="Add to wishlist"
-                      onClick={() => toggleWishlist(item.id)}
-                      className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/95 text-stone-700 hover:text-red-500 hover:bg-white flex items-center justify-center shadow-xs transition-all z-10 cursor-pointer"
-                    >
-                      <Heart
-                        className={`w-4 h-4 ${
-                          likedItems[item.id]
-                            ? "fill-red-500 text-red-500"
-                            : "text-stone-600"
-                        }`}
-                      />
-                    </button>
-
-                    {/* SALE ribbon badge */}
-                    {item.isSale && (
-                      <div className="absolute top-3 left-3 bg-[#0B2B1B] text-[#EED08E] text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-md shadow-xs z-10">
-                        SALE
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Information Below Image */}
-                  <div className="p-4 sm:p-5 pb-0">
+                {/* Minimalist Info Row Directly Beneath Image */}
+                <div className="mt-2.5 flex items-start justify-between gap-2 px-0.5">
+                  <div className="space-y-0.5 min-w-0 flex-1">
                     <span className="text-[10px] font-bold tracking-widest uppercase text-[#991B1B] block">
                       {item.categoryTag}
                     </span>
-                    <h3 className="font-serif text-base sm:text-lg font-medium text-[#0B2B1B] mt-0.5 line-clamp-1 group-hover:text-[#8C6215] transition-colors">
+                    <h3 className="text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate text-stone-900 group-hover:text-stone-600 transition-colors">
                       {item.name}
                     </h3>
-                    <p className="text-xs text-stone-400 mt-0.5 line-clamp-1 font-light">
-                      {item.shortDesc}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bottom Row: Price + Plus Action */}
-                <div className="p-4 sm:p-5 pt-3 mt-2 border-t border-stone-100 flex items-center justify-between">
-                  <div className="flex items-baseline gap-1.5">
-                    {item.originalPrice && (
-                      <span className="text-xs text-stone-400 line-through">
-                        {item.originalPrice}
+                    <div className="flex items-center gap-1.5 pt-0.5">
+                      <span className="text-xs sm:text-[12.5px] font-medium text-stone-700">
+                        {item.priceDisplay}
                       </span>
-                    )}
-                    <span className="font-serif text-base sm:text-lg font-bold text-[#0B2B1B]">
-                      {item.priceDisplay}
-                    </span>
+                      {item.originalPrice && (
+                        <span className="text-[11px] line-through text-stone-400">
+                          {item.originalPrice}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <button
-                    aria-label="Add to bag"
-                    onClick={() => handleAddToCart(item)}
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0B2B1B] text-white hover:bg-[#16442D] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-xs cursor-pointer"
-                  >
-                    {addedIds[item.id] ? (
-                      <Check className="w-4 h-4 text-emerald-400" />
-                    ) : (
-                      <Plus className="w-4 h-4" />
-                    )}
-                  </button>
+                  {/* Action Buttons on Far Right matching ProductCardItem */}
+                  <div className="flex items-center gap-1 shrink-0 pt-3">
+                    {/* Customize & Buy Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/products/${item.skuId}`);
+                      }}
+                      title={`Customise & Buy ${item.name}`}
+                      aria-label={`Customise & Buy ${item.name}`}
+                      className="p-1 rounded-md text-[#c0881b] hover:text-stone-900 hover:bg-stone-100 transition-all duration-200 hover:scale-110 cursor-pointer"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
+                    </button>
+
+                    {/* Quick Add to Cart Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(item);
+                      }}
+                      title={`Quick add ${item.name} to cart`}
+                      aria-label={`Quick add ${item.name} to cart`}
+                      className="p-1 rounded-md text-stone-800 hover:text-black hover:bg-stone-100 transition-all duration-200 hover:scale-110 cursor-pointer"
+                    >
+                      {addedIds[item.id] ? (
+                        <Check className="w-3.5 h-3.5 stroke-[2.5] text-emerald-600" />
+                      ) : (
+                        <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -545,6 +557,97 @@ export function RitualAndQuestions() {
           </div>
         </div>
       </section>
+
+      {/* FAQ SECTION (Positioned Directly Below 'THE KURMA'S OCCASION' Section) */}
+      <KurmaFAQSection />
     </>
+  );
+}
+
+const FAQ_ITEMS = [
+  {
+    question: "What makes Kurma 5 Elements Incense 100% charcoal-free & non-toxic?",
+    answer:
+      "Kurma incense sticks are handcrafted using pure natural flower extracts, sacred resins, organic wood powders, and therapeutic essential oils without synthetic charcoal, phthalates, or chemical binders. This guarantees zero toxic black soot, clean indoor air, and a soothing 60-minute burn time.",
+  },
+  {
+    question: "What is included in The 5 Elements Complete Luxury Suite?",
+    answer:
+      "The complete suite includes 5 distinct sacred fragrances (Earth, Water, Fire, Air, Space — 135 total sticks), a heavy solid brass turtle incense holder, a metallic keepsake medallion & tassel bookmark, and an artisan gold-embossed presentation gift box.",
+  },
+  {
+    question: "Can I customize hampers with corporate logos or personal names?",
+    answer:
+      "Yes! We offer custom brass plaque engraving, personalized gold foil sleeves, custom greeting cards, and bespoke wax seals for corporate executive gifts, weddings, and grand celebrations. You can customize on product pages or contact our concierge team.",
+  },
+  {
+    question: "What are your shipping timelines and delivery coverage across India?",
+    answer:
+      "We deliver across 18,000+ pincodes in India with free express shipping on orders above ₹1,999. Orders are dispatched within 24 hours. Metro city deliveries arrive in 2–3 business days, while tier-2/3 cities take 3–5 business days in shock-proof transit packaging.",
+  },
+  {
+    question: "How do I clean and maintain the solid brass turtle incense burner?",
+    answer:
+      "Our turtle burners are cast from heavy virgin brass with a protective anti-tarnish finish. Simply wipe with a soft dry cloth after use. For long-term shine, a gentle wipe with brass polish or natural lemon-and-salt restores its heirloom golden luster instantly.",
+  },
+  {
+    question: "Are Kurma fragrance suites suitable for daily puja and mindfulness?",
+    answer:
+      "Formulated according to ancient Ayurvedic and Pancha Mahabhuta (5 Elements) principles, Kurma fragrances are ideal for daily morning rituals, evening dhyana/meditation, yoga practice, housewarmings (Griha Pravesh), and luxury festive gifting.",
+  },
+];
+
+function KurmaFAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  return (
+    <section id="faq" className="bg-[#FAF7F2] py-16 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5]">
+      <div className="mx-auto max-w-4xl">
+        {/* Section Header */}
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] text-[#0B2B1B] uppercase mb-2">
+            <HelpCircle className="w-4 h-4 text-[#8C6215]" />
+            <span>FREQUENTLY ASKED QUESTIONS</span>
+          </div>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium tracking-tight">
+            Everything You Need to Know <span className="italic font-serif font-normal text-[#8C6215]">About Kurma</span>
+          </h2>
+          <p className="mt-3 text-xs sm:text-sm text-stone-600 max-w-xl mx-auto font-sans">
+            Got questions about our charcoal-free formulation, custom corporate hampers, or nationwide shipping? We&apos;ve got you covered.
+          </p>
+        </div>
+
+        {/* Accordion Questions List */}
+        <div className="space-y-4">
+          {FAQ_ITEMS.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+            return (
+              <div
+                key={idx}
+                className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden transition-all duration-300 hover:border-[#8C6215]/50"
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : idx)}
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
+                >
+                  <span className="font-serif text-base sm:text-lg font-medium text-[#0B2B1B] pr-2">
+                    {faq.question}
+                  </span>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "bg-[#0B2B1B] text-[#EED08E] rotate-180" : "bg-stone-100 text-stone-600"}`}>
+                    <ChevronDown className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {isOpen && (
+                  <div className="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 font-sans animate-in fade-in-50 duration-200">
+                    <p className="pt-3">{faq.answer}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }

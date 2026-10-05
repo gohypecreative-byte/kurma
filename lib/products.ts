@@ -521,6 +521,147 @@ export const PRODUCTS: ProductSKU[] = [
     ],
   },
 
+  // 7b. Sacred Sandalwood Fragrance Box
+  {
+    id: "fragrance-sandalwood",
+    name: "Sacred Sandalwood Luxury Incense (Royal Chandan)",
+    subtitle: "Serenity • Devotion • Purity",
+    category: "Fragrances",
+    price: 449,
+    originalPrice: 549,
+    image: "/images/product/earth-3d.png",
+    gallery: [
+      "/images/product/earth-3d.png",
+      "/images/product/earth-front.png",
+      "/images/product/five-boxes-3d.png",
+    ],
+    badge: "Royal Chandan",
+    description:
+      "A timeless blend of pure Mysore sandalwood powder and sacred essential oils. Chandan calms agitation, sanctifies home altars, and fills your space with divine peace.",
+    details: [
+      "27 Handcrafted luxury incense sticks",
+      "Pure Mysore sandalwood powder & essential oil blend",
+      "100% Charcoal-free with rich aromatic smoke",
+      "Burn time: 55-65 minutes per stick",
+      "Ideal for daily morning prayers and meditation",
+    ],
+    elements: ["Earth"],
+    customizationFields: [
+      {
+        id: "pack_size",
+        label: "Pack Quantity",
+        type: "radio",
+        defaultValue: "Single Box (27 sticks)",
+        options: [
+          { label: "Single Box (27 sticks)", value: "Single Box (27 sticks)", priceDelta: 0 },
+          { label: "Trio Pack (3x 27 sticks) - Save 10%", value: "Trio Pack (81 sticks)", priceDelta: 749 },
+        ],
+      },
+      {
+        id: "gift_sleeve",
+        label: "Personalized Gold Sleeve Name Band",
+        type: "text",
+        placeholder: "e.g. For Family Rituals",
+        description: "Custom slip-on band wrapping the fragrance box (up to 20 characters)",
+        maxLength: 20,
+      },
+    ],
+  },
+
+  // 7c. Temple Flora Fragrance Box
+  {
+    id: "fragrance-temple-flora",
+    name: "Temple Flora Sacred Incense (Auspicious Blooms)",
+    subtitle: "Blessings • Joy • Sanctity",
+    category: "Fragrances",
+    price: 449,
+    originalPrice: 549,
+    image: "/images/product/air-3d.png",
+    gallery: [
+      "/images/product/air-3d.png",
+      "/images/product/air-front.png",
+      "/images/product/five-boxes-3d.png",
+    ],
+    badge: "Temple Flora",
+    description:
+      "Handcrafted using upcycled sacred temple flowers, fresh marigold, and natural aromatic resins. Brings the auspicious fragrance of divine temple mandirs into your sanctuary.",
+    details: [
+      "27 Handcrafted eco-conscious incense sticks",
+      "Upcycled temple flowers, marigold, and natural resins",
+      "100% Charcoal-free with uplifting floral aroma",
+      "Burn time: 55-65 minutes per stick",
+      "Empowering artisanal rural women craftspeople",
+    ],
+    elements: ["Air"],
+    customizationFields: [
+      {
+        id: "pack_size",
+        label: "Pack Quantity",
+        type: "radio",
+        defaultValue: "Single Box (27 sticks)",
+        options: [
+          { label: "Single Box (27 sticks)", value: "Single Box (27 sticks)", priceDelta: 0 },
+          { label: "Trio Pack (3x 27 sticks) - Save 10%", value: "Trio Pack (81 sticks)", priceDelta: 749 },
+        ],
+      },
+      {
+        id: "gift_sleeve",
+        label: "Personalized Gold Sleeve Name Band",
+        type: "text",
+        placeholder: "e.g. Festive Blessing",
+        description: "Custom slip-on band wrapping the fragrance box (up to 20 characters)",
+        maxLength: 20,
+      },
+    ],
+  },
+
+  // 7d. Royal Imperial Oudh Fragrance Box
+  {
+    id: "fragrance-royal-oudh",
+    name: "Royal Imperial Oudh Luxury Incense (Rare Oudh)",
+    subtitle: "Majesty • Stillness • Transcendent",
+    category: "Fragrances",
+    price: 499,
+    originalPrice: 599,
+    image: "/images/product/space-3d.png",
+    gallery: [
+      "/images/product/space-3d.png",
+      "/images/product/space-front.png",
+      "/images/product/five-boxes-3d.png",
+    ],
+    badge: "Imperial Oudh",
+    description:
+      "An opulent and rare formulation featuring genuine Assam agarwood (oudh) resin, frankincense, and aged cedar. Crafted for evening stillness, deep introspection, and royal gatherings.",
+    details: [
+      "27 Handcrafted royal luxury incense sticks",
+      "Rare Assam agarwood (oudh) resin and natural resins",
+      "100% Charcoal-free slow-burning formulation",
+      "Burn time: 60-70 minutes per stick",
+      "Housed in gold foil debossed luxury slide box",
+    ],
+    elements: ["Space"],
+    customizationFields: [
+      {
+        id: "pack_size",
+        label: "Pack Quantity",
+        type: "radio",
+        defaultValue: "Single Box (27 sticks)",
+        options: [
+          { label: "Single Box (27 sticks)", value: "Single Box (27 sticks)", priceDelta: 0 },
+          { label: "Trio Pack (3x 27 sticks) - Save 10%", value: "Trio Pack (81 sticks)", priceDelta: 849 },
+        ],
+      },
+      {
+        id: "gift_sleeve",
+        label: "Personalized Gold Sleeve Name Band",
+        type: "text",
+        placeholder: "e.g. Royal Gift",
+        description: "Custom slip-on band wrapping the fragrance box (up to 20 characters)",
+        maxLength: 20,
+      },
+    ],
+  },
+
   // 8. Turtle Incense Holder
   {
     id: "turtle-incense-holder",

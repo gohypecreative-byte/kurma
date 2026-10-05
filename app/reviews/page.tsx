@@ -226,7 +226,7 @@ export default function ReviewsPage() {
         </section>
 
         {/* Filter Underline Tabs */}
-        <div className="flex items-center justify-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar py-2 text-xs font-cinzel tracking-wider border-b border-stone-200/60">
+        <div className="flex flex-nowrap overflow-hidden items-center justify-center gap-2 sm:gap-4 md:gap-8 py-2 text-xs font-cinzel tracking-wider border-b border-stone-200/60">
           {categories.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (

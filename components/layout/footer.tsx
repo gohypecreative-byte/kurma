@@ -52,13 +52,13 @@ export function Footer() {
   };
 
   return (
-    <footer className="w-full bg-[#061e13] text-[#EED08E] border-t border-[#EED08E]/20 font-serif relative">
+    <footer className="w-full bg-[#061e13] text-[#EED08E] border-t border-[#EED08E]/20 relative font-sans">
       {/* Main Footer Grid */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 py-14 sm:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12">
           {/* Column 1: GET IN TOUCH (Col Span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+            <h3 className="text-xs sm:text-sm font-serif font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
               GET IN TOUCH
             </h3>
 
@@ -116,7 +116,7 @@ export function Footer() {
 
           {/* Column 2: NAVIGATION (Col Span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+            <h3 className="text-xs sm:text-sm font-serif font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
               NAVIGATION
             </h3>
 
@@ -151,7 +151,7 @@ export function Footer() {
 
           {/* Column 3: INFORMATION & POLICIES (Col Span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+            <h3 className="text-xs sm:text-sm font-serif font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
               INFORMATION
             </h3>
 
@@ -191,7 +191,7 @@ export function Footer() {
 
           {/* Column 4: NEWSLETTER (Col Span 3) */}
           <div className="lg:col-span-3 space-y-4">
-            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
+            <h3 className="text-xs sm:text-sm font-serif font-semibold uppercase tracking-[0.2em] text-[#EED08E]">
               NEWSLETTER
             </h3>
 
@@ -233,7 +233,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Copyright Bar & Scroll to Top Button */}
-      <div className="border-t border-[#EED08E]/20 py-6 px-4 sm:px-6 lg:px-12 text-center text-xs text-[#EED08E]/70 font-serif relative">
+      <div className="border-t border-[#EED08E]/20 py-6 px-4 sm:px-6 lg:px-12 text-center text-xs text-[#EED08E]/70 font-sans relative">
         <div className="max-w-7xl mx-auto flex items-center justify-center">
           <p className="tracking-widest">
             &copy; {new Date().getFullYear()} Kurma Corporate &amp; Luxury Gifting. All rights reserved.

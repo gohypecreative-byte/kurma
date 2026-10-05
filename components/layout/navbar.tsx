@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ShoppingBag, Menu, X } from "lucide-react";
 
 interface NavbarProps {
@@ -13,13 +14,14 @@ interface NavbarProps {
 
 export function Navbar({ cartCount, onOpenCart, onExploreProducts }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Shop", href: "/shop" },
-    { name: "5 Elements", href: "/elements" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: "HOME", href: "/" },
+    { name: "SHOP", href: "/shop" },
+    { name: "CUSTOMISE", href: "/elements" },
+    { name: "ABOUT", href: "/about" },
+    { name: "CONTACT", href: "/contact" },
   ];
 
   return (
@@ -43,16 +45,30 @@ export function Navbar({ cartCount, onOpenCart, onExploreProducts }: NavbarProps
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center space-x-7 xl:space-x-8 text-[13.5px] xl:text-[14px] text-stone-700 font-medium">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="py-2 transition-colors hover:text-[#8b5f10] cursor-pointer text-stone-700 font-medium"
-            >
-              {link.name}
-            </Link>
-          ))}
+        <nav className="hidden lg:flex items-center space-x-7 xl:space-x-8 text-[13px] xl:text-[13.5px] font-semibold uppercase tracking-wider">
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname?.startsWith(link.href);
+
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`relative py-2 transition-colors cursor-pointer ${
+                  isActive
+                    ? "text-[#8b5f10] font-semibold"
+                    : "text-stone-700 hover:text-[#8b5f10]"
+                }`}
+              >
+                <span>{link.name}</span>
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#8b5f10] rounded-full animate-in fade-in zoom-in-95 duration-200" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right Action CTAs */}
@@ -102,17 +118,31 @@ export function Navbar({ cartCount, onOpenCart, onExploreProducts }: NavbarProps
             id="mobile-navigation"
             className="absolute top-full left-0 right-0 z-40 lg:hidden bg-white/98 backdrop-blur-xl border-b border-stone-200/90 px-6 py-4 space-y-2.5 shadow-2xl text-stone-900 animate-in fade-in-50 slide-in-from-top-2 duration-200"
           >
-            {navLinks.map((link) => (
-              <div key={link.name} className="border-b border-stone-100 last:border-b-0 pb-2.5 last:pb-0">
-                <Link
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-sm font-medium text-stone-800 hover:text-[#c0881b] transition-colors py-1"
-                >
-                  {link.name}
-                </Link>
-              </div>
-            ))}
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname?.startsWith(link.href);
+
+              return (
+                <div key={link.name} className="border-b border-stone-100 last:border-b-0 pb-2.5 last:pb-0">
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block text-xs font-semibold uppercase tracking-wider transition-colors py-1 flex items-center justify-between ${
+                      isActive
+                        ? "text-[#8b5f10] font-semibold"
+                        : "text-stone-800 hover:text-[#c0881b]"
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    {isActive && (
+                      <span className="w-2 h-2 rounded-full bg-[#8b5f10]" />
+                    )}
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </>
       )}

@@ -435,15 +435,15 @@ export function GiftingGallery() {
             Artisanal Luxury Hampers & Gift Suites
           </h2>
 
-          {/* Filter Tabs - Single Line Layout */}
-          <div className="mt-8 flex flex-nowrap items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 max-w-full overflow-x-auto scrollbar-none whitespace-nowrap px-2">
+          {/* Filter Tabs - Single Line Fixed (No Scroll, No Wrap) */}
+          <div className="mt-8 flex flex-nowrap items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 max-w-full overflow-hidden whitespace-nowrap px-1 sm:px-2 mx-auto">
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-2 sm:px-3.5 md:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs md:text-sm font-medium transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
                       ? "bg-[#0B2B1B] text-[#EED08E]"
                       : "text-stone-600 hover:text-[#0B2B1B] hover:bg-stone-200/40"

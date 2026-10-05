@@ -12,6 +12,7 @@ import { SolutionsAndTrust } from "@/components/home/solutions-and-trust";
 import { VideoStories } from "@/components/home/video-stories";
 import { ComboPackBanner } from "@/components/home/combo-pack-banner";
 import { TrustStats } from "@/components/home/trust-stats";
+import { ReviewsSection } from "@/components/home/reviews-section";
 import { Footer } from "@/components/layout/footer";
 import { CartDrawer, CartItem } from "@/components/cart/cart-drawer";
 import { ProductCustomizerModal } from "@/components/product/product-customizer-modal";
@@ -82,11 +83,14 @@ export default function Home() {
         {/* High-Quality Full Width Combo Pack Banner */}
         <ComboPackBanner />
 
-        {/* Sticky Card Stack Reveal Section (Positioned directly above Footer) */}
+        {/* Sticky Card Stack Reveal Section */}
         <SolutionsAndTrust
           onAddToCart={addToCart}
           onCustomizeProduct={(product) => router.push(`/products/${product.id}`)}
         />
+
+        {/* 3D Autoplay Carousel Review Section (Positioned directly above Footer) */}
+        <ReviewsSection onExploreProducts={scrollToCatalog} />
       </main>
 
       {/* Footer */}

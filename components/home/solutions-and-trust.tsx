@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Check, ShieldCheck, Flame, Globe2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { CartItem } from "@/components/cart/cart-drawer";
 import { ProductSKU } from "@/lib/products";
 
@@ -14,49 +15,167 @@ export function SolutionsAndTrust({
   onAddToCart,
   onCustomizeProduct,
 }: SolutionsAndTrustProps) {
-  const stats = [
-    {
-      value: "30+",
-      label: "Years of Sacred Trust",
-      description: "Handcrafting pure Mysore incense & heirloom brassware since 1996.",
-      icon: ShieldCheck,
-    },
-    {
-      value: "50M+",
-      label: "Incense Sticks Lit & Delivered",
-      description: "Spreading botanical aromas and ritual mindfulness worldwide.",
-      icon: Flame,
-    },
-    {
-      value: "100+",
-      label: "Serving Countries",
-      description: "Delivering curated corporate hampers & trunks globally.",
-      icon: Globe2,
-    },
-  ];
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    company: "",
+    budget: "",
+    quantity: "",
+    message: "",
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        company: "",
+        budget: "",
+        quantity: "",
+        message: "",
+      });
+    }, 4000);
+  };
 
   return (
     <div className="w-full bg-[#FAF7F2] py-16 sm:py-24 border-t border-[#EAE3D5]">
-      {/* 3 Metrics Trust Header Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-16">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-stone-200/80 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          {stats.map((stat, idx) => (
-            <div key={idx} className="flex flex-col items-center justify-center p-2">
-              <div className="w-10 h-10 rounded-full bg-[#0B2B1B]/5 border border-[#8C6215]/30 text-[#8C6215] flex items-center justify-center mb-3">
-                <stat.icon className="w-5 h-5" />
-              </div>
-              <span className="font-serif text-4xl sm:text-5xl font-bold text-[#0B2B1B] tracking-tight">
-                {stat.value}
-              </span>
-              <h3 className="font-serif text-sm sm:text-base font-semibold text-[#8C6215] mt-2">
-                {stat.label}
-              </h3>
-              <p className="text-xs text-stone-500 mt-1 font-light max-w-xs leading-relaxed">
-                {stat.description}
-              </p>
-            </div>
-          ))}
+      {/* GIFTING INQUIRY Section (Directly on section background, no outer card box) */}
+      <div id="gifting-inquiry" className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-20 space-y-8">
+        {/* Section Header */}
+        <div className="text-center space-y-2">
+          <h2 className="font-serif tracking-[0.2em] text-2xl sm:text-3xl font-bold text-[#8b5f10] uppercase">
+            GIFTING INQUIRY
+          </h2>
+          <p className="text-stone-700 text-xs sm:text-sm font-medium max-w-xl mx-auto">
+            Share your vision with us, and we&apos;ll create something extraordinary
+          </p>
         </div>
+
+        {/* Inquiry Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+          {/* Row 1: NAME & PHONE */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                NAME
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Your name"
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                PHONE
+              </label>
+              <input
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                placeholder="+91"
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+              />
+            </div>
+          </div>
+
+          {/* Row 2: EMAIL */}
+          <div>
+            <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+              EMAIL
+            </label>
+            <input
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="your@email.com"
+              className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+            />
+          </div>
+
+          {/* Row 3: COMPANY & BUDGET */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                COMPANY
+              </label>
+              <input
+                type="text"
+                value={formData.company}
+                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                placeholder="Brand or company name"
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+                BUDGET
+              </label>
+              <input
+                type="text"
+                value={formData.budget}
+                onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                placeholder="Approximate budget"
+                className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+              />
+            </div>
+          </div>
+
+          {/* Row 4: QUANTITY */}
+          <div>
+            <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+              QUANTITY
+            </label>
+            <input
+              type="text"
+              value={formData.quantity}
+              onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+              placeholder="Number of gifts"
+              className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs"
+            />
+          </div>
+
+          {/* Row 5: MESSAGE */}
+          <div>
+            <label className="block text-[11px] font-bold tracking-widest text-stone-900 uppercase mb-1.5 font-sans">
+              MESSAGE
+            </label>
+            <textarea
+              rows={4}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              placeholder="Looking for festive hampers for clients..."
+              className="w-full bg-white border border-stone-300 rounded-xl px-4 py-3 text-xs text-stone-900 font-medium placeholder:text-stone-500 focus:outline-none focus:ring-0 focus:border-stone-300 transition-colors shadow-xs resize-none"
+            />
+          </div>
+
+          {/* Submit Action */}
+          <div className="pt-3 text-center">
+            <button
+              type="submit"
+              className="bg-[#8b5f10] hover:bg-[#6f4b0d] text-white px-10 py-3.5 rounded-full text-xs font-bold tracking-widest uppercase shadow-md hover:shadow-lg transition-all cursor-pointer inline-flex items-center gap-2 active:scale-98"
+            >
+              <span>SUBMIT INQUIRY</span>
+            </button>
+
+            {submitted && (
+              <p className="text-xs font-bold text-emerald-800 mt-3 animate-in fade-in">
+                Thank you! Your gifting inquiry has been received. Our concierge will contact you shortly.
+              </p>
+            )}
+          </div>
+        </form>
       </div>
 
       {/* Sticky Overlapping Card Stack Reveal Container */}
