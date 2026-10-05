@@ -235,7 +235,7 @@ export function RitualAndQuestions() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push(`/products/${item.skuId}`);
+                        router.push(`/elements?box=${item.skuId}`);
                       }}
                       title={`Customise & Buy ${item.name}`}
                       aria-label={`Customise & Buy ${item.name}`}
@@ -385,8 +385,7 @@ export function RitualAndQuestions() {
                 <div className="mt-8">
                   <button
                     onClick={() => {
-                      const el = document.getElementById("gifting-gallery");
-                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                      router.push("/elements");
                     }}
                     className="bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] px-7 py-3 rounded-xl text-xs font-bold tracking-widest uppercase transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
                   >

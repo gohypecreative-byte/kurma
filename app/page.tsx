@@ -68,7 +68,7 @@ export default function Home() {
         <div id="catalog">
           <ProductShowcase
             onAddToCart={addToCart}
-            onCustomizeProduct={(product) => router.push(`/products/${product.id}`)}
+            onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
           />
         </div>
 
@@ -86,7 +86,7 @@ export default function Home() {
         {/* Sticky Card Stack Reveal Section */}
         <SolutionsAndTrust
           onAddToCart={addToCart}
-          onCustomizeProduct={(product) => router.push(`/products/${product.id}`)}
+          onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
         />
 
         {/* 3D Autoplay Carousel Review Section (Positioned directly above Footer) */}

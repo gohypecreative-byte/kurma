@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Eye, ShoppingBag, Star, Check, X, ArrowRight, Gift, ShieldCheck, Bookmark, SlidersHorizontal, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
@@ -235,6 +236,7 @@ function HamperCardItem({
   setSelectedHamper,
   handleAddToCart,
 }: HamperCardItemProps) {
+  const router = useRouter();
   const [activeIdx, setActiveIdx] = useState(0);
 
   // Combine primary image with secondary Kurma images for carousel
@@ -358,10 +360,10 @@ function HamperCardItem({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedHamper(hamper);
+                router.push(`/elements?box=${hamper.skuId || hamper.id}`);
               }}
               className="p-1 text-[#c0881b] hover:text-stone-900 transition-colors cursor-pointer"
-              title="Quick View Details"
+              title="Customise this hamper"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
             </button>
@@ -387,6 +389,7 @@ function HamperCardItem({
 }
 
 export function GiftingGallery() {
+  const router = useRouter();
   const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [selectedHamper, setSelectedHamper] = useState<HamperItem | null>(null);
@@ -435,18 +438,18 @@ export function GiftingGallery() {
             Artisanal Luxury Hampers & Gift Suites
           </h2>
 
-          {/* Filter Tabs - Single Line Fixed (No Scroll, No Wrap) */}
-          <div className="mt-8 flex flex-nowrap items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 max-w-full overflow-hidden whitespace-nowrap px-1 sm:px-2 mx-auto">
+          {/* Filter Tabs - Single Line Fixed (No Scroll, No Wrap, No Background Box) */}
+          <div className="mt-8 flex flex-nowrap items-center justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 max-w-full overflow-hidden whitespace-nowrap px-1 sm:px-2 mx-auto border-b border-stone-200/60 pb-1">
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-2 sm:px-3.5 md:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs md:text-sm font-medium transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-1 sm:px-2 py-2 text-[12px] sm:text-xs md:text-sm transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive
-                      ? "bg-[#0B2B1B] text-[#EED08E]"
-                      : "text-stone-600 hover:text-[#0B2B1B] hover:bg-stone-200/40"
+                      ? "text-[#0B2B1B] font-bold border-b-2 border-[#0B2B1B]"
+                      : "text-stone-500 hover:text-[#0B2B1B] font-medium"
                   }`}
                 >
                   {cat.label}
@@ -578,16 +581,31 @@ export function GiftingGallery() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      handleAddToCart(selectedHamper);
-                      setSelectedHamper(null);
-                    }}
-                    className="flex-1 max-w-[200px] bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] py-3 px-5 rounded-2xl text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-2"
-                  >
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>Add to Bag</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const targetId = selectedHamper.skuId || selectedHamper.id;
+                        setSelectedHamper(null);
+                        router.push(`/elements?box=${targetId}`);
+                      }}
+                      className="bg-stone-100 hover:bg-stone-200 text-stone-800 py-3 px-4 rounded-2xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                      title="Customise this hamper"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-[#c0881b]" />
+                      <span>Customise</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        handleAddToCart(selectedHamper);
+                        setSelectedHamper(null);
+                      }}
+                      className="bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] py-3 px-5 rounded-2xl text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>Add to Bag</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
