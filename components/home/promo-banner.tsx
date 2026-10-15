@@ -58,12 +58,13 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
-  // Auto-advance banner every 4s
+  // Auto-advance banner every 5s when visible
   useEffect(() => {
     if (reduced) return;
     const timer = setInterval(() => {
+      if (document.hidden) return;
       setCurrentIndex((prev) => (prev + 1) % bannerSlides.length);
-    }, 4200);
+    }, 5000);
     return () => clearInterval(timer);
   }, [reduced]);
 
@@ -141,14 +142,14 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
                     ? "translateX(calc(-100% - 22px))"
                     : "translateX(calc(100% + 22px))",
                 }}
-                className={`absolute top-0 w-[84vw] sm:w-[80vw] md:w-[76vw] max-w-[1020px] h-full rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out cursor-pointer ${
+                className={`absolute top-0 w-[90vw] sm:w-[80vw] md:w-[76vw] max-w-[1020px] h-full rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out cursor-pointer ${
                   isActive
                     ? "z-20 shadow-[0_8px_30px_rgba(0,0,0,0.22)] opacity-100 ring-1 ring-amber-400/30"
                     : "z-10 shadow-xs opacity-80 hover:opacity-100"
                 }`}
               >
                 <div
-                  className={`relative w-full h-full ${slide.bgGradient} flex items-center justify-between px-6 sm:px-12 md:px-16 overflow-hidden`}
+                  className={`relative w-full h-full ${slide.bgGradient} flex items-center justify-between px-4 sm:px-10 md:px-16 overflow-hidden`}
                 >
                   {/* Subtle geometric star lattice */}
                   <div
@@ -160,16 +161,16 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
                   />
 
                   {/* Left Content */}
-                  <div className="relative z-10 max-w-md text-white py-4 space-y-2 sm:space-y-3">
+                  <div className="relative z-10 max-w-md text-white py-3 sm:py-4 space-y-1.5 sm:space-y-3">
                     <span
-                      className={`text-[10px] sm:text-xs font-bold tracking-wider uppercase block ${slide.accentColor}`}
+                      className={`text-[9.5px] sm:text-xs font-bold tracking-wider uppercase block ${slide.accentColor}`}
                     >
                       {slide.tagline}
                     </span>
-                    <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-bold font-serif tracking-tight leading-tight">
+                    <h3 className="text-base sm:text-2xl md:text-3xl lg:text-[32px] font-bold font-serif tracking-tight leading-tight">
                       {slide.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-white/90 font-normal leading-relaxed line-clamp-2">
+                    <p className="text-[11px] sm:text-sm text-white/90 font-normal leading-relaxed line-clamp-2">
                       {slide.subtitle}
                     </p>
                     <div className="pt-1">
@@ -178,10 +179,10 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
                           e.stopPropagation();
                           onExploreGifts();
                         }}
-                        className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white text-stone-900 text-xs sm:text-sm font-semibold rounded-full inline-flex items-center gap-1.5 shadow-sm hover:bg-stone-50 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        className="px-3.5 sm:px-5 py-1.5 sm:py-2.5 bg-white text-stone-900 text-[11px] sm:text-sm font-semibold rounded-full inline-flex items-center gap-1.5 shadow-sm hover:bg-stone-50 hover:scale-105 active:scale-95 transition-all cursor-pointer"
                       >
                         <span>{slide.ctaText}</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-[#c0881b]" />
+                        <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#c0881b]" />
                       </button>
                     </div>
                   </div>

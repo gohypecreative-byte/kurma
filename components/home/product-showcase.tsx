@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Sparkles, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
+import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
 import { CartItem } from "@/components/cart/cart-drawer";
 
@@ -153,15 +153,15 @@ export function ProductCardItem({
     >
       {/* Modern Image Canvas */}
       <div
-        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl shadow-md ${
-          isDark ? "bg-[#04190e]" : "bg-[#f5f3ec]"
+        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl ${
+          isDark ? "bg-[#04190e] shadow-md" : "bg-transparent"
         }`}
       >
         <Image
           src={currentDisplayImg}
           alt={product.name}
           fill
-          unoptimized
+          loading="lazy"
           className={`absolute inset-0 w-full h-full ${
             objectFit || "object-contain object-center"
           } transition-transform duration-500 ease-out ${
@@ -169,7 +169,7 @@ export function ProductCardItem({
           } ${
             imageScale || "group-hover:scale-105"
           }`}
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 25vw"
         />
 
         {/* Bookmark Ribbon Icon in Top-Right Corner */}
@@ -353,7 +353,7 @@ export function ProductShowcase({
   };
 
   return (
-    <div className="w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat py-12 sm:py-16 text-white">
+    <div className="w-full bg-[#072515] sm:bg-[url('/images/textures/green-texture.png')] sm:bg-repeat py-10 sm:py-16 text-white mobile-defer-render">
       <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 space-y-12 lg:space-y-16">
         {/* SECTION 1: Our Four Initial Products */}
         <section className="space-y-7">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useMemo, useEffect, useRef, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   ChevronRight,
   SlidersHorizontal,
+  X,
 } from "lucide-react";
 
 interface BoxOption {
@@ -327,6 +328,25 @@ function CustomiseContent() {
 
   const [addedToCartSuccess, setAddedToCartSuccess] = useState(false);
 
+  // Step 2: Product Detail Modal Popup State
+  const [selectedProductModal, setSelectedProductModal] = useState<GoodyOption | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedProductModal(null);
+      }
+    };
+    if (selectedProductModal) {
+      window.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedProductModal]);
+
   // Calculate filled items in box
   const totalItemsSelected = useMemo(() => {
     return Object.values(selectedGoodies).reduce((sum, qty) => sum + qty, 0);
@@ -345,6 +365,55 @@ function CustomiseContent() {
 
   // Visible box options (first 6 or all 12)
   const visibleBoxes = showAllBoxes ? BOX_OPTIONS : BOX_OPTIONS.slice(0, 6);
+
+  const isFirstMount = useRef(true);
+
+  const scrollToStepContent = (step: 1 | 2 | 3 | 4) => {
+    const targetMap: Record<number, string> = {
+      1: "step-1-choose-box",
+      2: "step-2-fill-box",
+      3: "make-it-personal-heading",
+      4: "step-4-review-hamper",
+    };
+
+    const targetId = targetMap[step] || "stepper-header";
+
+    const doScroll = () => {
+      const el = document.getElementById(targetId) || document.getElementById("stepper-header");
+      if (el) {
+        const headerOffset = 85;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: "smooth",
+        });
+      }
+    };
+
+    doScroll();
+    requestAnimationFrame(doScroll);
+    setTimeout(doScroll, 40);
+    setTimeout(doScroll, 120);
+  };
+
+  const handleStepChange = (step: 1 | 2 | 3 | 4) => {
+    setCurrentStep(step);
+    scrollToStepContent(step);
+  };
+
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    scrollToStepContent(currentStep);
+  }, [currentStep]);
+
+  const handleSelectBox = (box: BoxOption) => {
+    setSelectedBox(box);
+    handleStepChange(2);
+  };
 
   const handleUpdateGoodyQty = (goodyId: string, delta: number) => {
     setSelectedGoodies((prev) => {
@@ -375,13 +444,33 @@ function CustomiseContent() {
       return;
     }
 
-    const goodiesSummaryList = Object.entries(selectedGoodies)
+    const goodiesList = Object.entries(selectedGoodies)
       .map(([goodyId, qty]) => {
         const item = GOODIES_OPTIONS.find((g) => g.id === goodyId);
-        return item ? `${qty}x ${item.name}` : "";
+        return item && qty > 0 ? { ...item, quantity: qty } : null;
       })
+      .filter(Boolean);
+
+    const goodiesSummaryList = goodiesList
+      .map((item) => (item ? `${item.quantity}x ${item.name}` : ""))
       .filter(Boolean)
       .join(", ");
+
+    // Save full custom hamper data for the dedicated checkout gift page
+    const hamperData = {
+      box: selectedBox,
+      goodies: goodiesList,
+      personalization,
+      grandTotal,
+      boxPrice,
+      goodiesPriceTotal,
+    };
+
+    try {
+      localStorage.setItem("kurma_custom_hamper", JSON.stringify(hamperData));
+    } catch (e) {
+      console.error(e);
+    }
 
     addToCart({
       id: `custom-hamper-${Date.now()}`,
@@ -400,16 +489,13 @@ function CustomiseContent() {
     });
 
     setAddedToCartSuccess(true);
-    setTimeout(() => setAddedToCartSuccess(false), 2500);
-    setIsCartOpen(true);
+    setIsCartOpen(false);
+
+    // Automatically navigate to the dedicated Checkout Gift page
+    router.push("/checkout-gift");
   };
 
-  const scrollToStepper = () => {
-    const el = document.getElementById("stepper-header");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
@@ -437,7 +523,7 @@ function CustomiseContent() {
 
               <div className="pt-2">
                 <button
-                  onClick={scrollToStepper}
+                  onClick={() => scrollToStepContent(currentStep)}
                   className="bg-[#eed08e] hover:bg-white text-[#072515] px-7 py-3.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2 cursor-pointer group"
                 >
                   <span>START BUILDING</span>
@@ -461,7 +547,7 @@ function CustomiseContent() {
         </section>
 
         {/* STEPPER PROGRESS HEADER & STEP CONTAINER (Matching User Screenshot 100%) */}
-        <section id="stepper-header" className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 pb-4 relative z-20">
+        <section id="stepper-header" className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 pb-4 relative z-20 scroll-mt-20 sm:scroll-mt-24">
           <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 md:p-12 shadow-xl">
             {/* 4-Step Stepper Progress Bar */}
             <div className="relative mb-10 pb-8 border-b border-stone-200/80">
@@ -471,7 +557,7 @@ function CustomiseContent() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4 relative z-10 text-center">
                 {/* STEP 1 */}
                 <button
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => handleStepChange(1)}
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
@@ -499,7 +585,7 @@ function CustomiseContent() {
 
                 {/* STEP 2 */}
                 <button
-                  onClick={() => setCurrentStep(2)}
+                  onClick={() => handleStepChange(2)}
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
@@ -527,7 +613,7 @@ function CustomiseContent() {
 
                 {/* STEP 3 */}
                 <button
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => handleStepChange(3)}
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
@@ -555,7 +641,7 @@ function CustomiseContent() {
 
                 {/* STEP 4 */}
                 <button
-                  onClick={() => setCurrentStep(4)}
+                  onClick={() => handleStepChange(4)}
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
@@ -583,7 +669,7 @@ function CustomiseContent() {
 
             {/* STEP 1: CHOOSE YOUR BOX CONTENT */}
             {currentStep === 1 && (
-              <div className="space-y-8 animate-in fade-in duration-300">
+              <div id="step-1-choose-box" className="space-y-8 animate-in fade-in duration-300 scroll-mt-24">
                 {/* Header Title Matching Screenshot */}
                 <div className="text-center max-w-2xl mx-auto space-y-3 pt-4">
                   <div className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider text-stone-500 uppercase">
@@ -605,11 +691,11 @@ function CustomiseContent() {
                     return (
                       <div
                         key={box.id}
-                        onClick={() => setSelectedBox(box)}
-                        className={`rounded-2xl p-4 sm:p-5 flex items-center gap-4 cursor-pointer transition-all duration-200 select-none ${
+                        onClick={() => handleSelectBox(box)}
+                        className={`rounded-2xl p-4 sm:p-5 flex items-center gap-4 cursor-pointer transition-all duration-200 select-none group ${
                           isSelected
                             ? "border-2 border-[#8C281F] bg-[#FAF5F5]/40 shadow-md scale-[1.01]"
-                            : "border border-stone-200/90 bg-white hover:border-[#8C281F]/40 hover:shadow-xs"
+                            : "border border-stone-200/90 bg-white hover:border-[#8C281F]/60 hover:shadow-xs hover:scale-[1.005]"
                         }`}
                       >
                         {/* Square Thumbnail Image */}
@@ -706,7 +792,7 @@ function CustomiseContent() {
                     {/* Next Step Action Button */}
                     <div className="flex justify-end pt-2">
                       <button
-                        onClick={() => setCurrentStep(2)}
+                        onClick={() => handleStepChange(2)}
                         className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 sm:px-10 py-3 rounded-full text-sm font-semibold tracking-wider uppercase transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2"
                       >
                         <span>Next</span>
@@ -726,7 +812,7 @@ function CustomiseContent() {
 
             {/* STEP 2: SELECT GOODIES (Matching User Screenshots 1, 2 & 3) */}
             {currentStep === 2 && (
-              <div className="space-y-8 animate-in fade-in duration-300">
+              <div id="step-2-fill-box" className="space-y-8 animate-in fade-in duration-300 scroll-mt-24">
                 {/* Header Title Matching Screenshot 1 */}
                 <div className="text-center max-w-2xl mx-auto space-y-3 pt-4">
                   <div className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider text-stone-500 uppercase">
@@ -748,8 +834,9 @@ function CustomiseContent() {
                     return (
                       <div
                         key={item.id}
-                        className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col justify-between group shadow-2xs hover:shadow-md ${
-                          qty > 0 ? "border-[#0B2B1B] ring-1 ring-[#0B2B1B]" : "border-stone-200/90"
+                        onClick={() => setSelectedProductModal(item)}
+                        className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col justify-between group shadow-2xs hover:shadow-md cursor-pointer ${
+                          qty > 0 ? "border-[#0B2B1B] ring-1 ring-[#0B2B1B]" : "border-stone-200/90 hover:border-stone-400"
                         }`}
                       >
                         <div>
@@ -762,10 +849,16 @@ function CustomiseContent() {
                               unoptimized
                               className="object-contain object-center p-2 sm:p-3 group-hover:scale-105 transition-transform duration-500"
                             />
+                            {/* Subtle Quick View hover pill badge */}
+                            <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center pointer-events-none">
+                              <span className="bg-[#0B2B1B]/90 text-[#eed08e] text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                                <span>View Details</span>
+                              </span>
+                            </div>
                           </div>
 
                           <div className="px-4">
-                            <h4 className="font-serif text-sm font-semibold text-[#0B2B1B] line-clamp-1">
+                            <h4 className="font-serif text-sm font-semibold text-[#0B2B1B] line-clamp-1 group-hover:text-[#8b5f10] transition-colors">
                               {item.name}
                             </h4>
                             <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5 font-sans">
@@ -775,14 +868,20 @@ function CustomiseContent() {
                         </div>
 
                         {/* Card Footer: Price & Dark Plus Action Button */}
-                        <div className="px-4 pb-4 pt-3 flex items-center justify-between">
+                        <div
+                          className="px-4 pb-4 pt-3 flex items-center justify-between"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <span className="font-serif text-sm font-bold text-stone-900">
                             ₹{item.price.toLocaleString("en-IN")}
                           </span>
 
                           {qty === 0 ? (
                             <button
-                              onClick={() => handleUpdateGoodyQty(item.id, 1)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUpdateGoodyQty(item.id, 1);
+                              }}
                               aria-label={`Add ${item.name}`}
                               className="w-8 h-8 rounded-full bg-[#121829] hover:bg-[#0B2B1B] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
                             >
@@ -791,7 +890,10 @@ function CustomiseContent() {
                           ) : (
                             <div className="flex items-center gap-1.5 bg-stone-100 rounded-full p-1 border border-stone-200">
                               <button
-                                onClick={() => handleUpdateGoodyQty(item.id, -1)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateGoodyQty(item.id, -1);
+                                }}
                                 className="w-6 h-6 rounded-full bg-white text-stone-700 flex items-center justify-center hover:bg-stone-200 cursor-pointer text-xs font-bold"
                               >
                                 <Minus className="w-3 h-3" />
@@ -800,10 +902,13 @@ function CustomiseContent() {
                                 {qty}
                               </span>
                               <button
-                                onClick={() => handleUpdateGoodyQty(item.id, 1)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUpdateGoodyQty(item.id, 1);
+                                }}
                                 className="w-6 h-6 rounded-full bg-[#121829] text-white flex items-center justify-center hover:bg-[#0B2B1B] cursor-pointer text-xs font-bold"
                               >
-                                <Plus className="w-3 h-3" />
+                                <Plus className="w-4 h-4" />
                               </button>
                             </div>
                           )}
@@ -823,12 +928,12 @@ function CustomiseContent() {
                   </button>
                 </div>
 
-                {/* Selected Box Summary Card Matching Screenshot 3 */}
+                {/* Selected Box & Added Goodies Summary Card */}
                 {selectedBox && (
                   <div className="pt-4">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
-                      {/* Left: Thumbnail & Title */}
-                      <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+                      {/* Left: Selected Box Info */}
+                      <div className="flex items-center gap-4 min-w-0 w-full md:w-auto shrink-0">
                         <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0 p-1">
                           <Image
                             src={selectedBox.image}
@@ -839,19 +944,64 @@ function CustomiseContent() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#0B2B1B] truncate">
+                          <h4 className="font-serif text-base font-bold text-[#0B2B1B] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-xs sm:text-sm text-stone-500 font-sans mt-0.5">
+                          <p className="text-xs text-stone-500 font-sans mt-0.5">
                             ₹{selectedBox.price.toLocaleString("en-IN")}
                           </p>
                         </div>
                       </div>
 
+                      {/* Middle: Added Goodies Item List with Quantity Controls */}
+                      <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
+                        <div className="flex items-center gap-3">
+                          {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                            const goody = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+                            if (!goody || qty === 0) return null;
+                            return (
+                              <div
+                                key={goodyId}
+                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 flex items-center gap-3 shrink-0 min-w-[240px]"
+                              >
+                                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 p-0.5">
+                                  <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                  <h5 className="font-serif text-xs font-semibold text-[#0B2B1B] truncate">
+                                    {goody.name}
+                                  </h5>
+                                  <p className="text-[10px] text-stone-500 font-sans">
+                                    ₹{goody.price.toLocaleString("en-IN")}
+                                  </p>
+
+                                  <div className="flex items-center gap-1.5 mt-1">
+                                    <button
+                                      onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                    >
+                                      -
+                                    </button>
+                                    <span className="text-[11px] font-bold text-stone-900">{qty}</span>
+                                    <button
+                                      onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
                       {/* Right: Vertical Separator & Total */}
-                      <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100">
-                        <div className="hidden sm:block h-10 w-[1px] bg-stone-200" />
-                        <div className="text-left sm:text-right">
+                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
+                        <div className="hidden md:block h-10 w-[1px] bg-stone-200" />
+                        <div className="text-left md:text-right">
                           <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-sans font-medium">
                             TOTAL
                           </span>
@@ -867,14 +1017,14 @@ function CustomiseContent() {
                 {/* Bottom Navigation Buttons (Back & Next) Matching Screenshot 3 */}
                 <div className="flex items-center justify-between pt-6 border-t border-stone-200/80 mt-6">
                   <button
-                    onClick={() => setCurrentStep(1)}
+                    onClick={() => handleStepChange(1)}
                     className="border border-stone-800 text-stone-800 hover:bg-stone-100 px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all cursor-pointer"
                   >
                     Back
                   </button>
 
                   <button
-                    onClick={() => setCurrentStep(3)}
+                    onClick={() => handleStepChange(3)}
                     className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     Next
@@ -885,9 +1035,9 @@ function CustomiseContent() {
 
             {/* STEP 3: MAKE IT PERSONAL (Matching User Screenshots 1, 2 & 3) */}
             {currentStep === 3 && (
-              <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto">
+              <div id="make-it-personal-form" className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
                 {/* Header Title Matching Screenshot 1 */}
-                <div className="text-center max-w-2xl mx-auto space-y-3 pt-4">
+                <div id="make-it-personal-heading" className="text-center max-w-2xl mx-auto space-y-3 pt-4 scroll-mt-24">
                   <div className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider text-stone-500 uppercase">
                     <Image src="/icon.png" alt="Kurma Emblem" width={14} height={14} className="w-3.5 h-3.5 object-contain" />
                     <span>STEP 3</span>
@@ -943,10 +1093,14 @@ function CustomiseContent() {
                     />
                   </div>
 
-                  {/* Free Greeting Card Choice Card Matching Screenshots 2 & 3 */}
-                  <div className="pt-4">
-                    <div className="w-full max-w-xs rounded-2xl border border-stone-200/90 bg-white overflow-hidden shadow-2xs hover:shadow-md transition-all p-4 group">
-                      <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-[#FAF5E9] mb-3">
+                  {/* Complimentary Greeting Card Card Matching Personal Note Width */}
+                  <div>
+                    <label className="block font-serif text-sm font-semibold text-stone-800 mb-2">
+                      Greeting card
+                    </label>
+                    <div className="w-full rounded-2xl border border-stone-200/90 bg-white p-3.5 sm:p-4 shadow-2xs hover:shadow-md transition-all group flex flex-row items-center gap-4 sm:gap-5">
+                      {/* Vertical Aspect Image on the Left */}
+                      <div className="relative w-24 sm:w-36 md:w-40 aspect-[3/4] rounded-xl overflow-hidden bg-[#FAF5E9] shrink-0 border border-stone-100 shadow-2xs">
                         <Image
                           src="/images/product/image.png"
                           alt="Kurma Classic Greeting Card"
@@ -956,21 +1110,34 @@ function CustomiseContent() {
                         />
                       </div>
 
-                      <h4 className="font-serif text-base font-semibold text-[#0B2B1B] leading-tight">
-                        Kurma Classic Greeting Card
-                      </h4>
-                      <p className="text-xs text-stone-500 font-sans mt-1 line-clamp-1">
-                        Elegant cream note card framed by a botanical pattern.
-                      </p>
-
-                      <div className="flex items-center justify-between mt-3 pt-2 border-t border-stone-100">
-                        <div className="flex items-center gap-1.5">
-                          <span className="line-through text-stone-400 text-xs font-sans">₹49</span>
-                          <span className="font-serif font-bold text-stone-900 text-base">₹0</span>
+                      {/* Card Details & Pricing on the Right */}
+                      <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#8b5f10] bg-[#FAF5E9] px-2.5 py-0.5 rounded-full border border-[#eed08e]/40">
+                              Complimentary
+                            </span>
+                          </div>
+                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#0B2B1B] mt-1.5 leading-snug">
+                            Kurma Classic Greeting Card
+                          </h4>
+                          <p className="text-xs sm:text-sm text-stone-500 font-sans mt-1 leading-relaxed line-clamp-2">
+                            Elegant cream note card framed by a botanical pattern. Included free with every bespoke gift box.
+                          </p>
                         </div>
 
-                        <div className="w-7 h-7 rounded-full bg-[#15803D] text-white flex items-center justify-center font-bold shadow-xs">
-                          <Check className="w-4 h-4 stroke-[3]" />
+                        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-stone-100">
+                          <div className="flex items-center gap-2">
+                            <span className="line-through text-stone-400 text-xs font-sans">₹49</span>
+                            <span className="font-serif font-bold text-stone-900 text-base sm:text-lg">₹0</span>
+                            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                              Included
+                            </span>
+                          </div>
+
+                          <div className="w-7 h-7 rounded-full bg-[#15803D] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                            <Check className="w-4 h-4 stroke-[3]" />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1013,15 +1180,6 @@ function CustomiseContent() {
                                 key={goodyId}
                                 className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 flex items-center gap-3 shrink-0 min-w-[240px]"
                               >
-                                {/* Red Remove Badge */}
-                                <button
-                                  onClick={() => handleUpdateGoodyQty(goodyId, -qty)}
-                                  className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-bold shadow-xs hover:bg-red-700 cursor-pointer"
-                                  title="Remove item"
-                                >
-                                  ✕
-                                </button>
-
                                 <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 p-0.5">
                                   <Image src={goody.image} alt={goody.name} fill className="object-contain" />
                                 </div>
@@ -1037,14 +1195,14 @@ function CustomiseContent() {
                                   <div className="flex items-center gap-1.5 mt-1">
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100"
+                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
                                     >
                                       -
                                     </button>
                                     <span className="text-[11px] font-bold text-stone-900">{qty}</span>
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100"
+                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
                                     >
                                       +
                                     </button>
@@ -1075,14 +1233,14 @@ function CustomiseContent() {
                 {/* Bottom Navigation Buttons (Back & Next) Matching Screenshot 3 */}
                 <div className="flex items-center justify-between pt-6 border-t border-stone-200/80 mt-6">
                   <button
-                    onClick={() => setCurrentStep(2)}
+                    onClick={() => handleStepChange(2)}
                     className="border border-stone-800 text-stone-800 hover:bg-stone-100 px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all cursor-pointer"
                   >
                     Back
                   </button>
 
                   <button
-                    onClick={() => setCurrentStep(4)}
+                    onClick={() => handleStepChange(4)}
                     className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     Next
@@ -1093,7 +1251,7 @@ function CustomiseContent() {
 
             {/* STEP 4: REVIEW & PLACE ORDER */}
             {currentStep === 4 && (
-              <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto">
+              <div id="step-4-review-hamper" className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
                 {/* Header */}
                 <div className="text-center space-y-2">
                   <div className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-stone-500 uppercase">
@@ -1196,15 +1354,6 @@ function CustomiseContent() {
                                 key={goodyId}
                                 className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 flex items-center gap-3 shrink-0 min-w-[240px]"
                               >
-                                {/* Red Remove Badge */}
-                                <button
-                                  onClick={() => handleUpdateGoodyQty(goodyId, -qty)}
-                                  className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-bold shadow-xs hover:bg-red-700 cursor-pointer"
-                                  title="Remove item"
-                                >
-                                  ✕
-                                </button>
-
                                 <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 p-0.5">
                                   <Image src={goody.image} alt={goody.name} fill className="object-contain" />
                                 </div>
@@ -1220,14 +1369,14 @@ function CustomiseContent() {
                                   <div className="flex items-center gap-1.5 mt-1">
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100"
+                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
                                     >
                                       -
                                     </button>
                                     <span className="text-[11px] font-bold text-stone-900">{qty}</span>
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100"
+                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
                                     >
                                       +
                                     </button>
@@ -1258,7 +1407,7 @@ function CustomiseContent() {
                 {/* Bottom Navigation Buttons: Back & Checkout gift */}
                 <div className="flex items-center justify-between pt-6 border-t border-stone-200/80 mt-6">
                   <button
-                    onClick={() => setCurrentStep(3)}
+                    onClick={() => handleStepChange(3)}
                     className="border border-stone-800 text-stone-800 hover:bg-stone-100 px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all cursor-pointer"
                   >
                     Back
@@ -1276,6 +1425,144 @@ function CustomiseContent() {
           </div>
         </section>
       </main>
+
+      {/* STEP 2: PRODUCT DETAILS POPUP MODAL */}
+      {selectedProductModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => setSelectedProductModal(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-lg sm:max-w-2xl bg-[#FAF8F5] rounded-3xl border border-[#eed08e]/50 shadow-2xl overflow-hidden p-5 sm:p-7 animate-in zoom-in-95 duration-200 text-stone-900 max-h-[92vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedProductModal(null)}
+              aria-label="Close details"
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-stone-200/80 hover:bg-stone-300 text-stone-700 flex items-center justify-center transition-colors cursor-pointer z-10"
+            >
+              <X className="w-4 h-4 stroke-[2.5]" />
+            </button>
+
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 sm:gap-7 items-center pt-2 sm:pt-0">
+              {/* Left Column: Image Canvas */}
+              <div className="sm:col-span-5 flex flex-col items-center">
+                <div className="relative aspect-[3/4] w-full max-w-[200px] sm:max-w-none rounded-2xl bg-[#F5F3EC] border border-stone-200/80 p-3 flex items-center justify-center overflow-hidden shadow-xs">
+                  <Image
+                    src={selectedProductModal.image}
+                    alt={selectedProductModal.name}
+                    fill
+                    unoptimized
+                    className="object-contain p-2"
+                  />
+                  {selectedProductModal.category && (
+                    <span className="absolute top-2.5 left-2.5 bg-[#0B2B1B] text-[#eed08e] text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
+                      {selectedProductModal.category}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Details & Hamper Actions */}
+              <div className="sm:col-span-7 space-y-4">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-[#8b5f10]">
+                    <span>Sacred Hamper Goody</span>
+                  </div>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0B2B1B] mt-1 leading-snug">
+                    {selectedProductModal.name}
+                  </h3>
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="font-serif text-2xl font-bold text-stone-900">
+                      ₹{selectedProductModal.price.toLocaleString("en-IN")}
+                    </span>
+                    <span className="text-xs text-stone-500 font-sans">
+                      (Inclusive of taxes)
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-white border border-stone-200/80 space-y-2">
+                  <h4 className="text-[11px] font-bold text-stone-800 uppercase tracking-wider">
+                    About this Creation
+                  </h4>
+                  <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed">
+                    {selectedProductModal.description}
+                  </p>
+                </div>
+
+                {/* Gifting Guarantee Badges */}
+                <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-600">
+                  <div className="flex items-center gap-1.5 p-2 rounded-xl bg-[#FAF5E9] border border-[#eed08e]/30">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                    <span>Pure Natural Blend</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 p-2 rounded-xl bg-[#FAF5E9] border border-[#eed08e]/30">
+                    <Gift className="w-3.5 h-3.5 text-[#8b5f10] shrink-0" />
+                    <span>Fragile-Safe Packed</span>
+                  </div>
+                </div>
+
+                {/* Hamper Capacity & Action CTA */}
+                <div className="pt-2 border-t border-stone-200/80 space-y-2.5">
+                  <div className="flex items-center justify-between text-xs text-stone-600">
+                    <span>Current Hamper Count:</span>
+                    <strong className="text-stone-900">
+                      {totalItemsSelected} / {selectedBox ? selectedBox.capacity : 4} items
+                    </strong>
+                  </div>
+
+                  {(() => {
+                    const modalQty = selectedGoodies[selectedProductModal.id] || 0;
+                    if (modalQty === 0) {
+                      return (
+                        <button
+                          onClick={() => handleUpdateGoodyQty(selectedProductModal.id, 1)}
+                          className="w-full py-3.5 px-6 rounded-full bg-[#121829] hover:bg-[#0B2B1B] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Add to Hamper (+ ₹{selectedProductModal.price})</span>
+                        </button>
+                      );
+                    }
+                    return (
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 bg-white rounded-full p-1.5 border border-stone-300 shadow-2xs">
+                          <button
+                            onClick={() => handleUpdateGoodyQty(selectedProductModal.id, -1)}
+                            className="w-7 h-7 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center hover:bg-stone-200 cursor-pointer font-bold"
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="font-serif font-bold text-sm text-stone-900 px-3">
+                            {modalQty} in box
+                          </span>
+                          <button
+                            onClick={() => handleUpdateGoodyQty(selectedProductModal.id, 1)}
+                            className="w-7 h-7 rounded-full bg-[#121829] text-white flex items-center justify-center hover:bg-[#0B2B1B] cursor-pointer font-bold"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => setSelectedProductModal(null)}
+                          className="flex-1 py-3 px-4 rounded-full bg-[#0B2B1B] text-[#eed08e] text-xs font-semibold uppercase tracking-wider hover:bg-[#123e28] transition-colors cursor-pointer text-center"
+                        >
+                          Done
+                        </button>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

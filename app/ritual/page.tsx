@@ -128,7 +128,7 @@ export default function RitualPage() {
         </section>
 
         {/* Botanical Purity Standards */}
-        <section className="bg-white rounded-3xl border border-stone-200/80 p-8 sm:p-12 lg:p-16 space-y-10">
+        <section className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-8 md:p-12 lg:p-16 space-y-10">
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
             <span className="text-xs font-cinzel font-semibold tracking-widest text-[#9B783E] uppercase">
               Uncompromising Quality

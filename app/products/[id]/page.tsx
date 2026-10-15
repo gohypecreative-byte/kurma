@@ -45,7 +45,6 @@ import {
   Copy,
   Bookmark,
   ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 
 // Sacred Element Fragrances that make up the Suite

@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
-  Sparkles,
   ShieldCheck,
   Leaf,
   Flame,
@@ -111,7 +110,6 @@ export default function ShopPage() {
               alt="Kurma Luxury Sacred Incense Suite"
               fill
               priority
-              unoptimized
               className="object-contain object-center filter drop-shadow-2xl transition-transform duration-700 hover:scale-102"
               sizes="(max-width: 1024px) 100vw, 80vw"
             />
@@ -128,18 +126,17 @@ export default function ShopPage() {
           </h2>
 
           {/* Clean Underline Category Navigation Tabs */}
-          <div className="flex flex-nowrap overflow-hidden items-center justify-center gap-2 sm:gap-4 md:gap-8 py-2 text-xs font-sans tracking-wider border-b border-stone-200">
+          <div className="flex items-center overflow-x-auto no-scrollbar justify-start sm:justify-center gap-3 sm:gap-6 md:gap-8 py-2 text-xs font-sans tracking-wider border-b border-stone-200 px-2">
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
               return (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`pb-2.5 transition-all whitespace-nowrap cursor-pointer uppercase tracking-widest text-[11px] sm:text-xs ${
-                    isActive
+                  className={`pb-2.5 transition-all whitespace-nowrap cursor-pointer uppercase tracking-widest text-[11px] sm:text-xs shrink-0 ${isActive
                       ? "text-[#8b5f10] border-b-2 border-[#8b5f10] font-bold"
                       : "text-stone-500 hover:text-stone-900 font-medium"
-                  }`}
+                    }`}
                 >
                   {cat.label} ({cat.count})
                 </button>
@@ -189,22 +186,22 @@ export default function ShopPage() {
               </div>
             </section>
 
-            {/* BANNER 1: COMBO PACK LUXURY SUITE PROMOTIONAL BANNER (Grand Luxury Size) */}
-            <div className="w-full bg-[#072515] rounded-3xl overflow-hidden shadow-2xl border border-[#eed08e]/35 grid grid-cols-1 lg:grid-cols-12 items-center p-8 sm:p-12 lg:p-16 gap-8 sm:gap-12 text-white relative min-h-[440px] sm:min-h-[520px] lg:min-h-[580px]">
-              <div className="lg:col-span-6 space-y-5 sm:space-y-6 z-10">
-                <span className="inline-block px-4 py-1.5 bg-[#eed08e]/20 text-[#eed08e] rounded-full text-xs font-bold tracking-widest uppercase border border-[#eed08e]/40">
+            {/* BANNER 1: COMBO PACK LUXURY SUITE PROMOTIONAL BANNER */}
+            <div className="w-full bg-[#072515] rounded-3xl overflow-hidden shadow-2xl border border-[#eed08e]/35 grid grid-cols-1 lg:grid-cols-12 items-center p-5 sm:p-8 md:p-12 lg:p-16 gap-6 sm:gap-8 lg:gap-12 text-white relative min-h-[380px] sm:min-h-[480px] lg:min-h-[580px]">
+              <div className="lg:col-span-6 space-y-4 sm:space-y-6 z-10">
+                <span className="inline-block px-3.5 sm:px-4 py-1.5 bg-[#eed08e]/20 text-[#eed08e] rounded-full text-[10.5px] sm:text-xs font-bold tracking-widest uppercase border border-[#eed08e]/40">
                   FLAGSHIP COMBINATION
                 </span>
-                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-normal text-white leading-[1.18]">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal text-white leading-[1.18]">
                   The Complete 5 Elements Luxury Fragrance Suite
                 </h3>
-                <p className="text-stone-300 text-sm sm:text-base font-sans max-w-xl leading-relaxed">
+                <p className="text-stone-300 text-xs sm:text-sm md:text-base font-sans max-w-xl leading-relaxed">
                   Experience Earth, Water, Fire, Air, and Space in a single curated suite. Comes with our solid cast brass turtle burner and personalized keepsake card.
                 </p>
-                <div className="pt-3 flex items-center gap-4">
+                <div className="pt-2 sm:pt-3 flex items-center gap-4">
                   <button
                     onClick={() => router.push("/products/5-elements-suite")}
-                    className="px-8 py-4 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-xs font-bold tracking-widest uppercase rounded-xl transition-all shadow-lg hover:shadow-xl cursor-pointer active:scale-98"
+                    className="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 sm:py-4 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-xs font-bold tracking-widest uppercase rounded-xl transition-all shadow-lg hover:shadow-xl cursor-pointer active:scale-98"
                   >
                     Customise &amp; Shop Suite
                   </button>
@@ -212,12 +209,12 @@ export default function ShopPage() {
               </div>
 
               {/* Banner Image (Grand Size, 100% Visible, No Crop) */}
-              <div className="lg:col-span-6 relative w-full h-[320px] sm:h-[440px] lg:h-[500px] flex items-center justify-center">
+              <div className="lg:col-span-6 relative w-full h-[240px] sm:h-[360px] lg:h-[500px] flex items-center justify-center">
                 <Image
                   src="/images/product/suite-clean.png"
                   alt="Kurma 5 Elements Complete Suite"
                   fill
-                  unoptimized
+                  loading="lazy"
                   className="object-contain object-center drop-shadow-2xl hover:scale-103 transition-transform duration-500"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
@@ -270,7 +267,7 @@ export default function ShopPage() {
                   src="/images/product/image8.png"
                   alt="Solid Cast Brass Turtle Incense Burner"
                   fill
-                  unoptimized
+                  loading="lazy"
                   className="object-contain object-center drop-shadow-2xl hover:scale-103 transition-transform duration-500"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />

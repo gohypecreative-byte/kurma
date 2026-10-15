@@ -226,14 +226,14 @@ export default function ReviewsPage() {
         </section>
 
         {/* Filter Underline Tabs */}
-        <div className="flex flex-nowrap overflow-hidden items-center justify-center gap-2 sm:gap-4 md:gap-8 py-2 text-xs font-cinzel tracking-wider border-b border-stone-200/60">
+        <div className="flex items-center overflow-x-auto no-scrollbar justify-start sm:justify-center gap-3 sm:gap-6 md:gap-8 py-2 text-xs font-cinzel tracking-wider border-b border-stone-200/60 px-2">
           {categories.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`pb-1.5 transition-all whitespace-nowrap cursor-pointer uppercase ${
+                className={`pb-1.5 transition-all whitespace-nowrap cursor-pointer uppercase shrink-0 ${
                   isActive
                     ? "text-stone-900 border-b-2 border-stone-900 font-semibold"
                     : "text-stone-400 hover:text-stone-800 font-normal"

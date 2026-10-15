@@ -134,12 +134,39 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+    overflow-x: clip;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: clip;
+    width: 100%;
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Mobile Performance & Smooth Scrolling Utilities */
+.mobile-defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 @keyframes marquee {
@@ -210,12 +237,30 @@
 html { scroll-behavior: smooth; scroll-padding-top: 100px; }
 [id] { scroll-margin-top: 100px; }
 button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
-button { cursor: pointer; }
-:focus-visible { outline: 2px solid #c0881b; outline-offset: 5px; }
-.skip-link { position: fixed; top: -100px; left: 16px; z-index: 100; padding: 12px 20px; background: #eed08e; color: #072515; border-radius: 8px; }
-.skip-link:focus { top: 12px; }
+:focus-visible:not(input):not(textarea):not(select) { outline: 2px solid #c0881b; outline-offset: 2px; }
+input, textarea, select { outline: none; }
+input:focus, input:focus-visible, textarea:focus, textarea:focus-visible, select:focus, select:focus-visible {
+  outline: none !important;
+  outline-style: none !important;
+  box-shadow: none !important;
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .animate-marquee { animation: none; max-width: 100%; overflow-x: auto; }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.touch-pan-x {
+  touch-action: pan-x;
+}
+.touch-pan-y {
+  touch-action: pan-y;
 }

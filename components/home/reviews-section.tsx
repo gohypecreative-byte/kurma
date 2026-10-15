@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { Star, Check, Quote } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { Star, Check, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ReviewsSectionProps {
   onExploreProducts?: () => void;
@@ -98,36 +97,89 @@ const REVIEWS: Review[] = [
 ];
 
 export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  const nextSlide = useCallback(() => {
-    setActiveIdx((prev) => (prev + 1) % REVIEWS.length);
+  // Calculate card width and gap dynamically for smooth snapping
+  const getCardMetrics = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return { cardWidth: 320, gap: 16 };
+    const firstCard = el.firstElementChild as HTMLElement;
+    const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 320;
+    const gap = 16;
+    return { cardWidth, gap };
   }, []);
 
-  const prevSlide = useCallback(() => {
-    setActiveIdx((prev) => (prev - 1 + REVIEWS.length) % REVIEWS.length);
-  }, []);
+  const scrollRafId = useRef<number | null>(null);
 
-  // Autoplay every 2.5 seconds (2500ms)
-  useEffect(() => {
-    if (isHovered) return;
-    const timer = setInterval(() => {
-      nextSlide();
-    }, 2500);
+  // Update active dot in real-time as user side-scrolls (throttled with rAF)
+  const handleScroll = useCallback(() => {
+    if (scrollRafId.current !== null) return;
+    scrollRafId.current = requestAnimationFrame(() => {
+      scrollRafId.current = null;
+      const el = scrollContainerRef.current;
+      if (!el) return;
+      const { cardWidth, gap } = getCardMetrics();
+      const index = Math.round(el.scrollLeft / (cardWidth + gap));
+      const clamped = Math.max(0, Math.min(REVIEWS.length - 1, index));
+      setActiveIdx((prev) => (prev !== clamped ? clamped : prev));
+    });
+  }, [getCardMetrics]);
 
-    return () => clearInterval(timer);
-  }, [isHovered, nextSlide]);
-
-  const getReviewAtOffset = (offset: number) => {
-    const index = (activeIdx + offset + REVIEWS.length) % REVIEWS.length;
-    return REVIEWS[index];
+  const scrollToReview = (index: number) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { cardWidth, gap } = getCardMetrics();
+    el.scrollTo({
+      left: index * (cardWidth + gap),
+      behavior: "smooth",
+    });
+    setActiveIdx(index);
   };
 
-  const prevReview = getReviewAtOffset(-1);
-  const currentReview = getReviewAtOffset(0);
-  const nextReview = getReviewAtOffset(1);
+  const nextSlide = () => {
+    const next = (activeIdx + 1) % REVIEWS.length;
+    scrollToReview(next);
+  };
+
+  const prevSlide = () => {
+    const prev = (activeIdx - 1 + REVIEWS.length) % REVIEWS.length;
+    scrollToReview(prev);
+  };
+
+  // Autoplay advances smoothly every 5 seconds only when section is in viewport
+  useEffect(() => {
+    if (isInteracting) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    let isVisible = false;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+
+    const timer = setInterval(() => {
+      if (!isVisible || document.hidden) return;
+      const { cardWidth, gap } = getCardMetrics();
+      const nextIdx = (activeIdx + 1) % REVIEWS.length;
+      el.scrollTo({
+        left: nextIdx * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIdx(nextIdx);
+    }, 5000);
+
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+    };
+  }, [isInteracting, activeIdx, getCardMetrics]);
 
   const toggleExpand = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -137,13 +189,11 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   return (
     <section
       id="reviews"
-      className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F4EFE6] to-[#FAF7F2] py-16 sm:py-20 lg:py-24 border-t border-[#EAE3D5] text-[#1C1917] relative overflow-hidden select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F4EFE6] to-[#FAF7F2] py-14 sm:py-20 lg:py-24 border-t border-[#EAE3D5] text-[#1C1917] relative select-none mobile-defer-render"
     >
-      <div className="max-w-[1500px] mx-auto px-4 sm:px-6 md:px-8">
+      <div className="max-w-[1500px] mx-auto">
         {/* Header Title Matching User Image */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4 sm:px-6">
           <div className="inline-flex items-center justify-center gap-2 mb-3.5 sm:mb-4">
             <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
               <Image
@@ -151,6 +201,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 alt="Kurma Emblem"
                 width={20}
                 height={20}
+                unoptimized
                 className="w-full h-full object-contain filter brightness-90 contrast-125"
               />
             </div>
@@ -159,58 +210,36 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             </span>
           </div>
 
-          <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal text-[#121829] leading-tight">
+          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-[#121829] leading-tight">
             What our customers <span className="italic font-serif text-[#8C281F]">say</span>
           </h2>
         </div>
 
-        {/* 3D Overlapping Carousel Container */}
-        <div className="relative flex items-center justify-center min-h-[380px] sm:min-h-[420px] max-w-6xl mx-auto">
-          {/* Cards Stack */}
-          <div className="relative w-full flex items-center justify-center">
-            {/* LEFT BACK CARD (Previous) */}
+        {/* NATIVE SMOOTH SIDE-SCROLLING HORIZONTAL TRACK */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          onTouchStart={() => setIsInteracting(true)}
+          onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2500)}
+          onMouseEnter={() => setIsInteracting(true)}
+          onMouseLeave={() => setIsInteracting(false)}
+          className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-2 px-5 sm:px-8 md:px-12 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
+          {REVIEWS.map((review) => (
             <div
-              onClick={prevSlide}
-              className="hidden md:block absolute left-2 lg:left-8 w-[380px] lg:w-[440px] bg-white/70 backdrop-blur-xs rounded-3xl border border-stone-200/70 p-6 shadow-md opacity-45 hover:opacity-75 transition-all duration-500 scale-90 cursor-pointer z-10 pointer-events-auto"
+              key={review.id}
+              className="flex-shrink-0 w-[86vw] max-w-[420px] sm:w-[480px] sm:max-w-none lg:w-[540px] snap-center flex flex-col justify-between bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 lg:p-10 shadow-lg shadow-stone-900/5 transition-all duration-300"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(prevReview.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
-                  <Quote className="w-4 h-4 opacity-70" />
-                </div>
-              </div>
-              <p className="text-stone-600 text-xs sm:text-sm italic leading-relaxed line-clamp-3 mb-6">
-                &ldquo;{prevReview.quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3 pt-3 border-t border-stone-100">
-                <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
-                  <Image src={prevReview.avatar} alt={prevReview.name} fill className="object-cover" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs font-bold text-stone-900 truncate">{prevReview.name}</div>
-                  <div className="text-[10px] text-stone-400 truncate">{prevReview.location}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* CENTER ACTIVE MAIN CARD */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentReview.id}
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="relative z-30 w-full max-w-[90vw] sm:max-w-[540px] lg:max-w-[620px] bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 lg:p-10 shadow-2xl shadow-stone-900/10 transition-all duration-300"
-              >
+              <div>
                 {/* Top Row: Stars + Quote Icon */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-1.5">
-                    {[...Array(currentReview.rating)].map((_, i) => (
+                <div className="flex items-center justify-between mb-4 sm:mb-5">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    {[...Array(review.rating)].map((_, i) => (
                       <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
@@ -220,92 +249,104 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 </div>
 
                 {/* Main Quote Text */}
-                <div className="mb-6 sm:mb-8">
+                <div className="mb-5 sm:mb-7">
                   <p className="text-stone-800 text-sm sm:text-base lg:text-lg italic font-normal leading-relaxed">
                     &ldquo;
-                    {expanded[currentReview.id] ? currentReview.fullReview : currentReview.quote}
+                    {expanded[review.id] ? review.fullReview : review.quote}
                     &rdquo;
                   </p>
-                  {currentReview.fullReview !== currentReview.quote && (
+                  {review.fullReview !== review.quote && (
                     <button
-                      onClick={(e) => toggleExpand(currentReview.id, e)}
+                      type="button"
+                      onClick={(e) => toggleExpand(review.id, e)}
                       className="mt-2 text-xs font-semibold text-emerald-700 hover:text-emerald-800 underline underline-offset-4 cursor-pointer"
                     >
-                      {expanded[currentReview.id] ? "Show Less" : "Read More"}
+                      {expanded[review.id] ? "Show Less" : "Read More"}
                     </button>
                   )}
                 </div>
+              </div>
 
-                {/* Bottom Profile & Purchased Product Bar */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-5 border-t border-stone-100">
-                  {/* Left: User Profile */}
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-stone-200 shadow-xs bg-stone-100">
-                      <Image
-                        src={currentReview.avatar}
-                        alt={currentReview.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-serif text-sm sm:text-base font-bold text-stone-900 leading-tight">
-                          {currentReview.name}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
-                          <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3]" />
-                          Verified
-                        </span>
-                      </div>
-                      <span className="text-[11px] sm:text-xs text-stone-500 block mt-0.5">
-                        {currentReview.reviewsCount} • {currentReview.location}
+              {/* Bottom Profile & Purchased Product Bar */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-5 border-t border-stone-100 mt-2">
+                {/* Left: User Profile */}
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-stone-200 shadow-xs bg-stone-100">
+                    <Image
+                      src={review.avatar}
+                      alt={review.name}
+                      fill
+                      loading="lazy"
+                      sizes="48px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="font-serif text-sm sm:text-base font-bold text-stone-900 leading-tight">
+                        {review.name}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-[9.5px] sm:text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
+                        <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3]" />
+                        Verified
                       </span>
                     </div>
-                  </div>
-
-                  {/* Right: Purchased Product Name */}
-                  <div className="text-left sm:text-right shrink-0">
-                    <span className="text-[9.5px] sm:text-[10px] font-semibold text-stone-400 tracking-wider uppercase block">
-                      {currentReview.categoryTag}
-                    </span>
-                    <span className="text-xs sm:text-sm font-semibold text-emerald-800 hover:text-[#0B2B1B] transition-colors block mt-0.5">
-                      {currentReview.productName}
+                    <span className="text-[11px] sm:text-xs text-stone-500 block mt-0.5">
+                      {review.reviewsCount} • {review.location}
                     </span>
                   </div>
                 </div>
-              </motion.div>
-            </AnimatePresence>
 
-            {/* RIGHT BACK CARD (Next) */}
-            <div
-              onClick={nextSlide}
-              className="hidden md:block absolute right-2 lg:right-8 w-[380px] lg:w-[440px] bg-white/70 backdrop-blur-xs rounded-3xl border border-stone-200/70 p-6 shadow-md opacity-45 hover:opacity-75 transition-all duration-500 scale-90 cursor-pointer z-10 pointer-events-auto"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(nextReview.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100">
-                  <Quote className="w-4 h-4 opacity-70" />
-                </div>
-              </div>
-              <p className="text-stone-600 text-xs sm:text-sm italic leading-relaxed line-clamp-3 mb-6">
-                &ldquo;{nextReview.quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3 pt-3 border-t border-stone-100">
-                <div className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100">
-                  <Image src={nextReview.avatar} alt={nextReview.name} fill className="object-cover" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs font-bold text-stone-900 truncate">{nextReview.name}</div>
-                  <div className="text-[10px] text-stone-400 truncate">{nextReview.location}</div>
+                {/* Right: Purchased Product Name */}
+                <div className="text-left sm:text-right shrink-0">
+                  <span className="text-[9px] sm:text-[10px] font-semibold text-stone-400 tracking-wider uppercase block">
+                    {review.categoryTag}
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-emerald-800 hover:text-[#0B2B1B] transition-colors block mt-0.5">
+                    {review.productName}
+                  </span>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* Navigation Controls: Touch/Click Arrows and Pagination Dots */}
+        <div className="flex items-center justify-center gap-3.5 mt-6 sm:mt-8 px-4">
+          <button
+            type="button"
+            onClick={prevSlide}
+            aria-label="Previous review"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-stone-300 bg-white shadow-xs hover:bg-stone-50 flex items-center justify-center text-stone-700 hover:text-black transition-all cursor-pointer active:scale-95"
+          >
+            <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
+          </button>
+
+          {/* Indicator Dots */}
+          <div className="flex items-center gap-1.5 px-1 sm:px-2">
+            {REVIEWS.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => scrollToReview(idx)}
+                aria-label={`Go to review ${idx + 1}`}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  idx === activeIdx
+                    ? "w-6 bg-[#0B2B1B]"
+                    : "w-2 bg-stone-300 hover:bg-stone-400"
+                }`}
+              />
+            ))}
           </div>
+
+          <button
+            type="button"
+            onClick={nextSlide}
+            aria-label="Next review"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-stone-300 bg-white shadow-xs hover:bg-stone-50 flex items-center justify-center text-stone-700 hover:text-black transition-all cursor-pointer active:scale-95"
+          >
+            <ChevronRight className="w-4 h-4 stroke-[2.2]" />
+          </button>
         </div>
       </div>
     </section>

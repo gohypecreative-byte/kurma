@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ShoppingBag,
-  Sparkles,
   X,
   Plus,
 } from "lucide-react";

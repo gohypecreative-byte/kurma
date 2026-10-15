@@ -18,6 +18,9 @@ import {
   ChevronRight,
   ArrowRight,
   Check,
+  Award,
+  Globe,
+  Feather,
 } from "lucide-react";
 
 export default function AboutPage() {
@@ -25,308 +28,444 @@ export default function AboutPage() {
 
   const corePillars = [
     {
-      title: "100% Charcoal-Free",
+      title: "100% Charcoal-Free Purity",
+      subtitle: "Clean Smoke • Zero Toxic Binders",
       description:
-        "Conventional incense releases toxic benzene and black soot. Kurma burns exclusively pure flower powders, natural plant resins, and therapeutic botanical oils.",
+        "Conventional incense burns black charcoal and synthetic binders that release harmful benzene. Kurma relies exclusively on pure flower powders, natural plant resins, and therapeutic botanical oils that burn cleanly.",
       icon: Leaf,
+      highlight: "Lab Certified Non-Toxic",
     },
     {
-      title: "Moradabad Brass Legacy",
+      title: "Moradabad Solid Brass Guild",
+      subtitle: "Century-Old Heritage Metalcraft",
       description:
-        "Every Kurma turtle burner and sacred medallion is individually hand-cast in solid brass by master metalsmiths in Moradabad, honoring century-old foundry craftsmanship.",
+        "Every Kurma turtle burner and sacred medallion is individually hand-cast in heavy solid brass by master metalsmiths in Moradabad, honoring generational repoussé techniques and antique patina finishes.",
       icon: ShieldCheck,
+      highlight: "Hand-Cast Brass Heirloom",
     },
     {
-      title: "Women Artisan Guilds",
+      title: "Empowering Women Artisans",
+      subtitle: "Mysore Botanical Collectives",
       description:
-        "Our sacred sticks are rolled by women artisan collectives in Mysore, offering fair living wages, healthcare, and dignified sacred livelihoods.",
+        "Our sacred agarbatti sticks are hand-rolled with devotion by rural women artisan collectives in Mysore, offering fair living wages, healthcare, and dignified spiritual livelihoods that honor tradition.",
       icon: HeartHandshake,
+      highlight: "Dignified Fair Livelihoods",
     },
     {
       title: "Pancha Mahabhuta Harmony",
+      subtitle: "Vedic Elemental Alchemy",
       description:
-        "Formulated by Ayurvedic Vaidyas to restore balance among the five cosmic elements—Earth, Water, Fire, Air, and Space—within your dwelling.",
+        "Carefully formulated by Ayurvedic Vaidyas to restore balance among the five cosmic building blocks—Earth, Water, Fire, Air, and Space—cultivating tranquility and grounded consciousness in your sanctuary.",
       icon: Sun,
+      highlight: "Ayurvedic Formulation",
     },
   ];
 
   const elementHighlights = [
     {
+      id: "earth",
       name: "Prithvi (Earth)",
-      desc: "Sacred Khus (Vetiver), Sandalwood & Forest Moss. Grounds erratic thoughts and restores deep inner stability.",
+      desc: "Sacred Khus (Vetiver), Sandalwood & Forest Moss. Calms erratic thoughts, grounds restless energy, and restores deep inner stability.",
       icon: Mountain,
-      accent: "border-amber-700/25 bg-amber-50/50 text-amber-900",
-      tag: "Root Chakra",
+      accent: "border-amber-700/25 bg-amber-50/70 text-amber-950",
+      tag: "Root Chakra • Muladhara",
+      elementColor: "#936329",
+      href: "/products/fragrance-earth",
+      image: "/images/product/earth-front.png",
     },
     {
+      id: "water",
       name: "Jal (Water)",
-      desc: "Sacred Blue Lotus, Crisp Rain Accord & Himalayan Amber. Cleanses emotional stagnation and restores creative fluidity.",
+      desc: "Sacred Blue Lotus, Crisp Rain Accord & Himalayan Amber. Cleanses emotional stagnation, washes away fatigue, and restores fluidity.",
       icon: Droplets,
-      accent: "border-sky-700/25 bg-sky-50/50 text-sky-900",
-      tag: "Sacral Chakra",
+      accent: "border-sky-700/25 bg-sky-50/70 text-sky-950",
+      tag: "Sacral Chakra • Svadhisthana",
+      elementColor: "#226a8d",
+      href: "/products/fragrance-water",
+      image: "/images/product/water-front.png",
     },
     {
+      id: "fire",
       name: "Agni (Fire)",
-      desc: "Golden Ceylon Clove, Cassia Bark & Smoked Dammar Resin. Ignites divine courage, clarity, and removes lethargy.",
+      desc: "Kashmiri Saffron, Golden Clove Bark & Smoked Dammar Resin. Ignites willpower, sharpens mental focus, and dispels lethargy.",
       icon: Flame,
-      accent: "border-orange-700/25 bg-orange-50/50 text-orange-900",
-      tag: "Solar Plexus",
+      accent: "border-orange-700/25 bg-orange-50/70 text-orange-950",
+      tag: "Solar Plexus • Manipura",
+      elementColor: "#b33f1b",
+      href: "/products/fragrance-fire",
+      image: "/images/product/fire-front.png",
     },
     {
+      id: "air",
       name: "Vayu (Air)",
-      desc: "Desi Gulab Petals, Temple Camphor & Morning Dew. Opens the heart, uplifts heavy energy, and liberates the breath.",
+      desc: "Desi Gulab Petals, Mountain Camphor & Alpine Breeze. Opens the heart, uplifts heavy atmospheres, and liberates the breath.",
       icon: Wind,
-      accent: "border-teal-700/25 bg-teal-50/50 text-teal-900",
-      tag: "Heart Chakra",
+      accent: "border-teal-700/25 bg-teal-50/70 text-teal-950",
+      tag: "Heart Chakra • Anahata",
+      elementColor: "#3e7968",
+      href: "/products/fragrance-air",
+      image: "/images/product/air-front.png",
     },
     {
+      id: "space",
       name: "Akasha (Space)",
-      desc: "Wild Assam Oudh (Agarwood), Sacred Loban (Frankincense) & Myrrh. Opens transcendent awareness and cosmic stillness.",
+      desc: "Wild Assam Oudh (Agarwood), Sacred Frankincense & Rare Myrrh. Opens transcendent awareness and invites deep cosmic stillness.",
       icon: Compass,
-      accent: "border-purple-700/25 bg-purple-50/50 text-purple-900",
-      tag: "Crown Chakra",
+      accent: "border-purple-700/25 bg-purple-50/70 text-purple-950",
+      tag: "Crown Chakra • Sahasrara",
+      elementColor: "#57407a",
+      href: "/products/fragrance-space",
+      image: "/images/product/space-front.png",
     },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
-      {/* Navbar */}
+      {/* Navigation */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-10 sm:space-y-14">
-        {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs font-sans text-stone-400">
-          <Link href="/" className="hover:text-stone-800 transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3 h-3 text-stone-300" />
-          <span className="text-stone-800 font-medium">About Kurma</span>
-        </nav>
+      {/* 1. EDITORIAL LUXURY HERITAGE HERO */}
+      <section className="w-full bg-[#072515] bg-[radial-gradient(ellipse_at_center,#0b3822_0%,#04160d_100%)] border-b border-[#eed08e]/30 text-white relative overflow-hidden py-10 sm:py-20 lg:py-24">
+        {/* Subtle Background Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(#eed08e_0.75px,transparent_0.75px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
 
-        {/* HERO SECTION: The Legend & Ethos (Clean, Simple, Borderless Luxury) */}
-        <section className="text-center max-w-3xl mx-auto pt-2 pb-4 sm:pt-6 sm:pb-8 space-y-4 sm:space-y-5">
-          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 text-[#8b5f10] text-[10.5px] sm:text-xs font-cinzel tracking-widest uppercase font-bold">
-            <span>The Legend of Kurma</span>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-7 text-center relative z-10">
+          {/* Brand Seal */}
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto relative">
+            <Image
+              src="/images/brand/kurma-turtle-transparent.png"
+              alt="Kurma Turtle Insignia"
+              fill
+              unoptimized
+              priority
+              className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]"
+            />
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-[44px] font-serif font-bold text-stone-900 leading-tight tracking-tight">
-            Scents That Connect Worlds.
-            <span className="block text-[#8b5f10] font-normal italic text-xl sm:text-3xl lg:text-[34px] mt-1 sm:mt-1.5">
-              Pure Fragrance &amp; Higher Consciousness.
-            </span>
-          </h1>
-
-          {/* Delicate Gold Diamond Divider */}
-          <div className="flex items-center justify-center gap-2 py-0.5">
-            <div className="h-px w-14 sm:w-20 bg-[#c0881b]/35" />
-            <div className="w-2 h-2 rotate-45 border border-[#c0881b] bg-[#fbf6ea]" />
-            <div className="h-px w-14 sm:w-20 bg-[#c0881b]/35" />
+          {/* Badge */}
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#eed08e]/50 bg-[#0c3823]/80 text-[#eed08e] text-xs font-serif tracking-widest uppercase">
+            <span>The Sacred Legend of Kurma</span>
           </div>
 
-          <p className="text-xs sm:text-base text-stone-600 leading-relaxed font-sans max-w-xl mx-auto px-2">
-            Kurma was born from an unyielding devotion to restore ancient Vedic purity to modern sanctuaries. In an era of synthetic fragrances and black charcoal binders, we chose the sacred path of 100% pure botanical craftsmanship.
+          {/* Main Title */}
+          <div className="space-y-2 max-w-4xl mx-auto">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-light text-white tracking-wide leading-tight">
+              Scents That Connect Worlds
+            </h1>
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-serif italic text-[#eed08e]">
+              Pure Fragrance &amp; Higher Consciousness
+            </p>
+          </div>
+
+          {/* Gold Diamond Accent Line */}
+          <div className="flex items-center justify-center gap-3 py-1">
+            <div className="h-px w-24 sm:w-36 bg-gradient-to-r from-transparent via-[#eed08e]/70 to-transparent" />
+            <div className="w-2.5 h-2.5 rotate-45 border border-[#eed08e] bg-[#072515]" />
+            <div className="h-px w-24 sm:w-36 bg-gradient-to-r from-transparent via-[#eed08e]/70 to-transparent" />
+          </div>
+
+          <p className="text-xs sm:text-base text-stone-300 leading-relaxed font-sans max-w-2xl mx-auto font-light">
+            Kurma was born from an unyielding devotion to restore ancient Vedic purity to modern sanctuaries. In an era of synthetic chemical perfumes and toxic charcoal binders, we chose the uncompromising path of 100% charcoal-free botanical craftsmanship.
           </p>
 
-          <div className="pt-1 flex items-center justify-center gap-2.5 sm:gap-3">
+          {/* Action CTAs */}
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-3.5 sm:gap-4">
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-[#c0881b] hover:bg-[#a97514] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-sm transition-all active:scale-98 cursor-pointer"
+              className="px-8 py-3.5 rounded-xl bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-xs font-sans font-bold uppercase tracking-widest shadow-lg hover:shadow-xl transition-all cursor-pointer active:scale-98"
             >
-              <span>Explore Creations</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Explore Master Shop
             </Link>
             <Link
               href="/elements"
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors shadow-2xs cursor-pointer"
+              className="px-8 py-3.5 rounded-xl border border-[#eed08e]/70 hover:border-[#eed08e] bg-white/10 hover:bg-white/15 text-white text-xs font-sans font-bold uppercase tracking-widest transition-all backdrop-blur-sm cursor-pointer"
             >
-              <span>5 Elements Suite</span>
+              5 Elements Suite
             </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* SECTION 2: The Cosmic Origin (Samudra Manthana) */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-          <div className="lg:col-span-5 relative aspect-square sm:aspect-[4/3] lg:aspect-square rounded-2xl overflow-hidden bg-white border border-stone-200/80 shadow-xs p-6 sm:p-8 flex items-center justify-center">
-            <div className="relative w-full h-full">
-              <Image
-                src="/images/product/suite-clean.png"
-                alt="Kurma Sacred Suite"
-                fill
-                className="object-contain drop-shadow-md"
-              />
+      {/* MAIN STORY CONTENT */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 space-y-16 sm:space-y-24">
+        {/* 2. THE COSMIC HERITAGE (Samudra Manthana Narrative) */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+          {/* Left Visual: Curated Master Suite Showcase */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative aspect-[4/3] sm:aspect-square rounded-3xl overflow-hidden bg-gradient-to-b from-white to-[#FAF8F5] border border-stone-200/90 shadow-xl p-8 flex items-center justify-center group">
+              <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-105">
+                <Image
+                  src="/images/product/suite-clean.png"
+                  alt="Kurma 5 Elements Complete Suite"
+                  fill
+                  unoptimized
+                  className="object-contain drop-shadow-2xl"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                />
+              </div>
+
+              {/* Float Tag */}
+              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between text-xs">
+                <span className="font-serif font-bold text-stone-900">
+                  The Definitive Suite
+                </span>
+                <span className="text-[#8b5f10] font-sans font-bold text-[11px] uppercase tracking-wider">
+                  135 Sacred Sticks
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-7 space-y-4 sm:space-y-5">
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-cinzel uppercase tracking-widest text-[#8b5f10] font-bold">
-                Cosmic Heritage
+          {/* Right Narrative */}
+          <div className="lg:col-span-7 space-y-5 sm:space-y-6">
+            <div className="space-y-2">
+              <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold">
+                Cosmic Heritage &amp; Foundation
               </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-stone-900 font-normal">
-                Why Kurma? The Great Cosmic Anchor
+              <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight">
+                Why Kurma? The Sacred Tortoise Avatar
               </h2>
             </div>
 
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
-              In Vedic cosmology, when the gods and demons churned the great Ocean of Milk (*Samudra Manthana*) to extract the nectar of eternal life (*Amrita*), the great mountain Mandara began to sink into the cosmic abyss.
+              In Vedic cosmology, when the gods and celestial beings churned the cosmic Ocean of Milk (<em className="italic text-stone-800">Samudra Manthana</em>) to retrieve the divine nectar of higher consciousness (<em className="italic text-stone-800">Amrita</em>), the colossal churning mountain Mandara began to sink into the cosmic abyss.
             </p>
 
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
-              Lord Vishnu assumed the sacred form of **Kurma**—the divine tortoise—diving to the ocean floor to sustain the universe upon His golden shell. From this serene foundation arose the sacred Parijata tree, celestial botanicals, and divine fragrances that brought harmony back to cosmos.
+              Lord Vishnu manifested as <strong className="font-semibold text-stone-900">Kurma</strong>—the divine tortoise—plunging into the primal depths to bear the entire cosmos upon His golden shell. From this unshakeable foundation arose the celestial Parijata bloom, sacred resins, and primordial incense that brought stillness to creation.
             </p>
 
-            <div className="border-l-2 border-[#c0881b] pl-3.5 py-2 space-y-1 bg-[#fbf6ea]/70 rounded-r-lg">
-              <p className="text-xs italic text-stone-800 font-serif leading-relaxed">
-                &quot;Just as the tortoise withdraws its limbs inward into supreme stillness, true sacred incense withdraws the restless senses into deep, peaceful meditation.&quot;
+            {/* Sacred Gita Quote Box */}
+            <div className="border-l-3 border-[#8b5f10] pl-4 py-3 bg-[#fbf6ea] rounded-r-2xl space-y-1.5 border border-l-0 border-[#eed08e]/50">
+              <p className="text-xs sm:text-sm italic text-stone-900 font-serif leading-relaxed">
+                &ldquo;Just as the tortoise withdraws its limbs inward into supreme stillness, true sacred incense withdraws the restless senses into peaceful meditation.&rdquo;
               </p>
-              <span className="text-[10px] uppercase font-cinzel text-stone-500 block">
-                — Bhagavad Gita, Chapter 2, Verse 58
+              <span className="text-[10px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block">
+                — Srimad Bhagavad Gita • Chapter 2, Verse 58
               </span>
             </div>
           </div>
         </section>
 
-        {/* SECTION 3: The 4 Core Pillars */}
-        <section className="space-y-6 sm:space-y-8">
-          <div className="text-center max-w-2xl mx-auto space-y-1.5">
-            <span className="text-[11px] font-cinzel uppercase tracking-widest text-[#8b5f10] font-bold">
-              Our Uncompromised Principles
+        {/* 3. THE 4 UNCOMPROMISED CORE PILLARS */}
+        <section className="space-y-10">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold">
+              Our Sacred Principles
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
-              Sacred Purity In Every Thread
+            <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal">
+              Sacred Purity in Every Thread
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 font-sans">
-              We reject harmful commercial shortcuts in favor of generational heritage, clean air, and spiritual sanctity.
+              We reject commercial shortcuts in favor of generational heritage, clean air, and uncompromised spiritual sanctity.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {corePillars.map((pillar, idx) => {
               const Icon = pillar.icon;
               return (
                 <div
                   key={idx}
-                  className="bg-white rounded-xl border border-stone-200/80 p-5 sm:p-6 space-y-3 shadow-2xs hover:shadow-sm transition-shadow"
+                  className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-7 space-y-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
                 >
-                  <div className="w-9 h-9 rounded-lg bg-[#fbf6ea] border border-[#eed08e]/70 text-[#c0881b] flex items-center justify-center shadow-2xs">
-                    <Icon className="w-4 h-4" />
+                  <div className="space-y-3.5">
+                    {/* Compact Icon & Title Row */}
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <div className="w-8 h-8 rounded-xl bg-[#072515] text-[#eed08e] border border-[#eed08e]/40 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                        <Icon className="w-4 h-4 stroke-[1.8]" />
+                      </div>
+                      <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900 leading-snug">
+                        {pillar.title}
+                      </h3>
+                    </div>
+
+                    <p className="text-[10.5px] font-sans text-[#8b5f10] font-bold uppercase tracking-wider">
+                      {pillar.subtitle}
+                    </p>
+
+                    <p className="text-xs text-stone-600 leading-relaxed font-sans">
+                      {pillar.description}
+                    </p>
                   </div>
-                  <h3 className="font-serif text-sm sm:text-base font-semibold text-stone-900">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-xs text-stone-600 leading-relaxed font-sans">
-                    {pillar.description}
-                  </p>
+
+                  <div className="pt-3 border-t border-stone-100 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-800">
+                    <Check className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>{pillar.highlight}</span>
+                  </div>
                 </div>
               );
             })}
           </div>
         </section>
 
-        {/* SECTION 4: The 5 Elements Essence Chart */}
-        <section className="space-y-6 sm:space-y-8 bg-white rounded-2xl border border-stone-200/80 p-6 sm:p-10 shadow-2xs">
-          <div className="text-center max-w-2xl mx-auto space-y-1.5">
-            <span className="text-[11px] font-cinzel uppercase tracking-widest text-[#8b5f10] font-bold">
-              Pancha Mahabhuta
+        {/* 4. THE 5 ELEMENTS (Pancha Mahabhuta) SANCTUARY SHOWCASE */}
+        <section className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 lg:p-12 shadow-sm space-y-10">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold">
+              Pancha Mahabhuta Alchemy
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
+            <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal">
               Harmonizing the Five Cosmic Elements
             </h2>
             <p className="text-xs sm:text-sm text-stone-500 font-sans">
-              Every Kurma fragrance formulation corresponds to one of the five primordial building blocks of human life and space.
+              Every Kurma formulation corresponds to one of the five primordial building blocks of human life and sanctuary space.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {elementHighlights.map((el) => {
               const Icon = el.icon;
               return (
-                <div
-                  key={el.name}
-                  className={`rounded-xl border p-4 sm:p-5 flex flex-col justify-between space-y-3 ${el.accent}`}
+                <Link
+                  key={el.id}
+                  href={el.href}
+                  className={`rounded-2xl border p-5 flex flex-col justify-between space-y-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group ${el.accent}`}
                 >
-                  <div className="space-y-2.5">
+                  <div className="space-y-3">
+                    {/* Element Icon & Chakra Tag */}
                     <div className="flex items-center justify-between">
-                      <div className="w-7 h-7 rounded-full bg-white/90 flex items-center justify-center shadow-2xs">
-                        <Icon className="w-3.5 h-3.5" />
+                      <div className="w-9 h-9 rounded-xl bg-white shadow-xs flex items-center justify-center text-stone-800">
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <span className="text-[9px] uppercase font-cinzel tracking-wider font-bold opacity-75">
-                        {el.tag}
+                      <span className="text-[10px] font-sans font-bold uppercase tracking-wider opacity-75">
+                        {el.name.split(" ")[0]}
                       </span>
                     </div>
 
-                    <h3 className="font-serif text-sm font-bold">
-                      {el.name}
-                    </h3>
+                    {/* Product Image preview */}
+                    <div className="relative w-full h-24 my-2">
+                      <Image
+                        src={el.image}
+                        alt={el.name}
+                        fill
+                        unoptimized
+                        className="object-contain filter drop-shadow-md group-hover:scale-105 transition-transform"
+                      />
+                    </div>
 
-                    <p className="text-xs leading-relaxed opacity-90 font-sans">
+                    <div className="space-y-1">
+                      <h3 className="font-serif text-sm sm:text-base font-bold text-stone-900">
+                        {el.name}
+                      </h3>
+                      <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-stone-500">
+                        {el.tag}
+                      </p>
+                    </div>
+
+                    <p className="text-xs leading-relaxed font-sans text-stone-700">
                       {el.desc}
                     </p>
                   </div>
-                </div>
+
+                  <div className="pt-2 flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider group-hover:underline">
+                    <span>Explore Fragrance</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
               );
             })}
           </div>
         </section>
 
-        {/* SECTION 5: Sustainable Luxury & Corporate Privilege */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center bg-[#f3f6ef] rounded-2xl border border-[#e2e8dc] p-6 sm:p-10 shadow-2xs">
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <span className="text-[10.5px] sm:text-xs font-cinzel uppercase tracking-[0.2em] text-[#8b5f10] font-bold block">
-                Bespoke Sanctuary &amp; Gifting
-              </span>
-              <h2 className="text-xl sm:text-3xl font-serif font-bold text-stone-900 leading-tight">
-                Heirloom Trunks for Modern Celebrations
-              </h2>
+        {/* 5. HEIRLOOM CRAFTSMANSHIP & SOLID BRASS GUILD */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center bg-[#072515] text-white rounded-3xl p-5 sm:p-8 md:p-12 lg:p-16 border border-[#eed08e]/35 relative overflow-hidden">
+          {/* Subtle Ambient Radial Lighting */}
+          <div className="absolute w-[400px] h-[400px] rounded-full bg-[#eed08e]/10 blur-3xl -top-20 -right-20 pointer-events-none" />
+
+          {/* Left Narrative */}
+          <div className="lg:col-span-7 space-y-6 z-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#eed08e]/15 border border-[#eed08e]/40 text-[#eed08e] text-xs font-serif uppercase tracking-widest">
+              <Award className="w-3.5 h-3.5" />
+              <span>Artisanal Heirloom Burners</span>
             </div>
 
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
-              From landmark corporate milestones and grand festive gifting to intimate temple sanctifications, Kurma curates deeply personalized heirloom trunks with debossed family monograms, engraved brass plaques, and pure silk tassels.
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-light text-white leading-tight">
+              Hand-Cast Solid Brass Turtle Burners
+            </h2>
+
+            <p className="text-xs sm:text-base text-stone-300 leading-relaxed font-sans max-w-xl">
+              Sculpted in pure solid brass by hereditary artisans in Moradabad, each turtle burner features detailed paisley repoussé carvings, an authentic antique hand-buffed patina, and a weighted base that provides sacred stability to your daily rituals.
             </p>
 
-            {/* Luxury Micro-Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-stone-700">
-              <div className="flex items-center gap-1.5 bg-white/80 border border-stone-200/80 px-2.5 py-1.5 rounded-lg shadow-2xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#c0881b] shrink-0" />
-                <span className="font-medium">Brass Plaque Engraving</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-stone-300 font-sans">
+              <div className="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <Check className="w-4 h-4 text-[#eed08e]" />
+                <span>Solid Cast Brass</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-white/80 border border-stone-200/80 px-2.5 py-1.5 rounded-lg shadow-2xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#c0881b] shrink-0" />
-                <span className="font-medium">Gold Debossed Sleeves</span>
+              <div className="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <Check className="w-4 h-4 text-[#eed08e]" />
+                <span>Single-Hole Burner</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-white/80 border border-stone-200/80 px-2.5 py-1.5 rounded-lg shadow-2xs">
-                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span className="font-medium">Pan-India Dispatch</span>
+              <div className="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <Check className="w-4 h-4 text-[#eed08e]" />
+                <span>Antique Patina</span>
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 flex items-center gap-4">
               <Link
-                href="/contact"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#c0881b] hover:bg-[#a97514] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-sm transition-all active:scale-98 cursor-pointer"
+                href="/products/turtle-incense-holder"
+                className="px-8 py-3.5 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-xs font-sans font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-98"
               >
-                <span>Inquire for Bespoke Trunks</span>
-                <ArrowRight className="w-4 h-4" />
+                Customise Turtle Burner
               </Link>
             </div>
           </div>
 
-          {/* Luxury Full-Bleed Image Showcase */}
-          <div className="relative aspect-[16/11] sm:aspect-[4/3] rounded-xl overflow-hidden shadow-xs border border-stone-200/80 group">
+          {/* Right Product Image */}
+          <div className="lg:col-span-5 relative w-full h-[300px] sm:h-[400px] flex items-center justify-center z-10">
             <Image
-              src="/images/product/image9.png"
-              alt="Kurma Flagship Green Marble Gift Trunk"
+              src="/images/product/turtle-holder-clean.png"
+              alt="Handcrafted Solid Brass Turtle Incense Holder"
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              unoptimized
+              className="object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.85)] hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 1024px) 100vw, 40vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[11px] font-medium backdrop-blur-xs bg-black/40 px-3 py-1.5 rounded-lg border border-white/20">
-              <span className="font-serif">Flagship Green Marble Trunk</span>
-              <span className="text-[#eed08e] font-cinzel font-bold text-[10px] tracking-wider uppercase">
-                Vedic Heirloom
-              </span>
+          </div>
+        </section>
+
+        {/* 6. BESPOKE SANCTUARY & EXECUTIVE GIFT TRUNKS */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#FAF8F5] rounded-3xl border border-stone-200/90 p-8 sm:p-12 shadow-sm">
+          {/* Trunk Image */}
+          <div className="lg:col-span-5 relative w-full h-[280px] sm:h-[360px] rounded-2xl overflow-hidden bg-white border border-stone-200 p-6 flex items-center justify-center">
+            <Image
+              src="/images/product/marble-box-clean.png"
+              alt="Kurma Flagship Marble Keepsake Trunk"
+              fill
+              unoptimized
+              className="object-contain hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 1024px) 100vw, 40vw"
+            />
+          </div>
+
+          <div className="lg:col-span-7 space-y-4 sm:space-y-5">
+            <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block">
+              Bespoke Sanctuary Privileges
+            </span>
+
+            <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight">
+              Heirloom Trunks for Milestone Celebrations
+            </h2>
+
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
+              From landmark corporate gifting and wedding celebrations to intimate temple consecrations, Kurma creates bespoke keepsake trunks with personalized engraved brass plaques, hand-lettered blessing scrolls, and pure silk tassels.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <Link
+                href="/contact"
+                className="px-7 py-3 rounded-xl bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-md active:scale-98"
+              >
+                Request Bespoke Consultation
+              </Link>
+              <Link
+                href="/shop"
+                className="px-7 py-3 rounded-xl border border-stone-300 hover:border-stone-400 bg-white text-stone-800 text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-xs"
+              >
+                Browse Ready Trunks
+              </Link>
             </div>
           </div>
         </section>

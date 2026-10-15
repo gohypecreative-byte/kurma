@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Cinzel } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,12 @@ const cinzel = Cinzel({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: "Kurma | Premium Corporate Gifting",
@@ -55,7 +61,6 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-white text-stone-900 selection:bg-amber-100 selection:text-amber-900">
-        <a href="#main-content" className="skip-link">Skip to content</a>
         <CartProvider>{children}</CartProvider>
       </body>
     </html>
