@@ -28,6 +28,7 @@ interface BoxOption {
   price: number;
   image: string;
   description?: string;
+  active?: boolean;
 }
 
 interface GoodyOption {
@@ -275,9 +276,77 @@ function CustomiseContent() {
   // Customizer Step State: 1 | 2 | 3 | 4
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
+  // Dynamic Boxes & Goodies (syncing with admin customize configurations)
+  const [boxes, setBoxes] = useState<BoxOption[]>(BOX_OPTIONS);
+  const [goodiesList, setGoodiesList] = useState<GoodyOption[]>(GOODIES_OPTIONS);
+
+  // Hydrate from kurma_custom_boxes and kurma_custom_goodies (administered exclusively by admin)
+  useEffect(() => {
+    const loadAdminConfigurations = () => {
+      try {
+        const storedBoxes = localStorage.getItem("kurma_custom_boxes");
+        if (storedBoxes) {
+          const parsed = JSON.parse(storedBoxes);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const activeOnly = parsed.filter((b: BoxOption) => b.active !== false);
+            if (activeOnly.length > 0) {
+              setBoxes(activeOnly);
+            }
+          }
+        }
+
+        const storedGoodies = localStorage.getItem("kurma_custom_goodies");
+        if (storedGoodies) {
+          const parsed = JSON.parse(storedGoodies);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const activeOnly = parsed.filter((g: GoodyOption & { active?: boolean }) => g.active !== false);
+            if (activeOnly.length > 0) {
+              setGoodiesList(activeOnly);
+            }
+          }
+        }
+      } catch {}
+    };
+
+    loadAdminConfigurations();
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "kurma_custom_boxes" || e.key === "kurma_custom_goodies") {
+        loadAdminConfigurations();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("kurma_custom_boxes_updated", loadAdminConfigurations);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("kurma_custom_boxes_updated", loadAdminConfigurations);
+    };
+  }, []);
+
   // Step 1: Selected Box (null by default, or auto-selected from URL searchParams)
   const [selectedBox, setSelectedBox] = useState<BoxOption | null>(null);
   const [showAllBoxes, setShowAllBoxes] = useState(false);
+
+  // Synchronize selectedBox if admin edited its price, capacity, or details
+  useEffect(() => {
+    if (selectedBox) {
+      const fresh = boxes.find((b) => b.id === selectedBox.id);
+      if (fresh) {
+        if (
+          fresh.title !== selectedBox.title ||
+          fresh.price !== selectedBox.price ||
+          fresh.capacity !== selectedBox.capacity ||
+          fresh.size !== selectedBox.size ||
+          fresh.image !== selectedBox.image ||
+          fresh.description !== selectedBox.description
+        ) {
+          setSelectedBox(fresh);
+        }
+      }
+    }
+  }, [boxes, selectedBox]);
 
   // Auto-select box if URL searchParams contain box or product ID
   useEffect(() => {
@@ -287,20 +356,20 @@ function CustomiseContent() {
     const paramLower = rawParam.toLowerCase().trim();
     const mappedBoxId = PRODUCT_TO_BOX_MAP[paramLower];
 
-    let matchedBox = BOX_OPTIONS.find((b) => b.id.toLowerCase() === paramLower);
+    let matchedBox = boxes.find((b) => b.id.toLowerCase() === paramLower);
 
     if (!matchedBox && mappedBoxId) {
-      matchedBox = BOX_OPTIONS.find((b) => b.id.toLowerCase() === mappedBoxId.toLowerCase());
+      matchedBox = boxes.find((b) => b.id.toLowerCase() === mappedBoxId.toLowerCase());
     }
 
     if (!matchedBox) {
-      matchedBox = BOX_OPTIONS.find(
+      matchedBox = boxes.find(
         (b) => b.title.toLowerCase().includes(paramLower) || paramLower.includes(b.id.toLowerCase())
       );
     }
 
     if (!matchedBox && rawParam) {
-      matchedBox = BOX_OPTIONS[0];
+      matchedBox = boxes[0];
     }
 
     if (matchedBox) {
@@ -313,7 +382,7 @@ function CustomiseContent() {
         }
       }, 150);
     }
-  }, [searchParams]);
+  }, [searchParams, boxes]);
 
   // Step 2: Selected Goodies (goodyId -> quantity)
   const [selectedGoodies, setSelectedGoodies] = useState<Record<string, number>>({});
@@ -352,19 +421,24 @@ function CustomiseContent() {
     return Object.values(selectedGoodies).reduce((sum, qty) => sum + qty, 0);
   }, [selectedGoodies]);
 
+  // Helper to get goody by ID (from dynamic admin list or fallback)
+  const getGoodyById = (id: string): GoodyOption | undefined => {
+    return goodiesList.find((g) => g.id === id) || GOODIES_OPTIONS.find((g) => g.id === id);
+  };
+
   // Calculate total price: Box Price + Goodies Total
   const goodiesPriceTotal = useMemo(() => {
     return Object.entries(selectedGoodies).reduce((sum, [goodyId, qty]) => {
-      const item = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+      const item = getGoodyById(goodyId);
       return sum + (item ? item.price * qty : 0);
     }, 0);
-  }, [selectedGoodies]);
+  }, [selectedGoodies, goodiesList]);
 
   const boxPrice = selectedBox ? selectedBox.price : 0;
   const grandTotal = boxPrice + goodiesPriceTotal;
 
-  // Visible box options (first 6 or all 12)
-  const visibleBoxes = showAllBoxes ? BOX_OPTIONS : BOX_OPTIONS.slice(0, 6);
+  // Visible box options (first 6 or all)
+  const visibleBoxes = showAllBoxes ? boxes : boxes.slice(0, 6);
 
   const isFirstMount = useRef(true);
 
@@ -444,14 +518,14 @@ function CustomiseContent() {
       return;
     }
 
-    const goodiesList = Object.entries(selectedGoodies)
+    const selectedItems = Object.entries(selectedGoodies)
       .map(([goodyId, qty]) => {
-        const item = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+        const item = getGoodyById(goodyId);
         return item && qty > 0 ? { ...item, quantity: qty } : null;
       })
       .filter(Boolean);
 
-    const goodiesSummaryList = goodiesList
+    const goodiesSummaryList = selectedItems
       .map((item) => (item ? `${item.quantity}x ${item.name}` : ""))
       .filter(Boolean)
       .join(", ");
@@ -459,7 +533,7 @@ function CustomiseContent() {
     // Save full custom hamper data for the dedicated checkout gift page
     const hamperData = {
       box: selectedBox,
-      goodies: goodiesList,
+      goodies: selectedItems,
       personalization,
       grandTotal,
       boxPrice,
@@ -547,21 +621,21 @@ function CustomiseContent() {
         </section>
 
         {/* STEPPER PROGRESS HEADER & STEP CONTAINER (Matching User Screenshot 100%) */}
-        <section id="stepper-header" className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 pt-8 sm:pt-12 pb-4 relative z-20 scroll-mt-20 sm:scroll-mt-24">
-          <div className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 md:p-12 shadow-xl">
+        <section id="stepper-header" className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-6 sm:pt-12 pb-4 relative z-20 scroll-mt-20 sm:scroll-mt-24">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-8 md:p-12 shadow-xl">
             {/* 4-Step Stepper Progress Bar */}
-            <div className="relative mb-10 pb-8 border-b border-stone-200/80">
+            <div className="relative mb-6 sm:mb-10 pb-6 sm:pb-8 border-b border-stone-200/80">
               {/* Connecting Horizontal Line */}
               <div className="absolute top-5 left-[12%] right-[12%] h-[1.5px] bg-stone-200 -z-0 hidden sm:block" />
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4 relative z-10 text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4 relative z-10 text-center">
                 {/* STEP 1 */}
                 <button
                   onClick={() => handleStepChange(1)}
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-sm font-bold transition-all duration-300 ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
                       currentStep === 1
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : currentStep > 1
@@ -569,10 +643,10 @@ function CustomiseContent() {
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
                     }`}
                   >
-                    {currentStep > 1 ? <Check className="w-5 h-5 stroke-[2.5]" /> : "1"}
+                    {currentStep > 1 ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" /> : "1"}
                   </div>
                   <span
-                    className={`font-serif text-base sm:text-lg font-semibold mt-3 transition-colors ${
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
                       currentStep === 1 ? "text-[#0B2B1B]" : "text-stone-700"
                     }`}
                   >
@@ -589,7 +663,7 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-sm font-bold transition-all duration-300 ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
                       currentStep === 2
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : currentStep > 2
@@ -597,10 +671,10 @@ function CustomiseContent() {
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
                     }`}
                   >
-                    {currentStep > 2 ? <Check className="w-5 h-5 stroke-[2.5]" /> : "2"}
+                    {currentStep > 2 ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" /> : "2"}
                   </div>
                   <span
-                    className={`font-serif text-base sm:text-lg font-semibold mt-3 transition-colors ${
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
                       currentStep === 2 ? "text-[#0B2B1B]" : "text-stone-700"
                     }`}
                   >
@@ -617,7 +691,7 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-sm font-bold transition-all duration-300 ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
                       currentStep === 3
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : currentStep > 3
@@ -625,10 +699,10 @@ function CustomiseContent() {
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
                     }`}
                   >
-                    {currentStep > 3 ? <Check className="w-5 h-5 stroke-[2.5]" /> : "3"}
+                    {currentStep > 3 ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" /> : "3"}
                   </div>
                   <span
-                    className={`font-serif text-base sm:text-lg font-semibold mt-3 transition-colors ${
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
                       currentStep === 3 ? "text-[#0B2B1B]" : "text-stone-700"
                     }`}
                   >
@@ -645,7 +719,7 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-serif text-sm font-bold transition-all duration-300 ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
                       currentStep === 4
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
@@ -654,7 +728,7 @@ function CustomiseContent() {
                     4
                   </div>
                   <span
-                    className={`font-serif text-base sm:text-lg font-semibold mt-3 transition-colors ${
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
                       currentStep === 4 ? "text-[#0B2B1B]" : "text-stone-700"
                     }`}
                   >
@@ -829,7 +903,7 @@ function CustomiseContent() {
 
                 {/* Goodies Selection Grid Matching Screenshots 2 & 3 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
-                  {GOODIES_OPTIONS.map((item) => {
+                  {goodiesList.map((item) => {
                     const qty = selectedGoodies[item.id] || 0;
                     return (
                       <div
@@ -957,7 +1031,7 @@ function CustomiseContent() {
                       <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
                         <div className="flex items-center gap-3">
                           {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                            const goody = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+                            const goody = getGoodyById(goodyId);
                             if (!goody || qty === 0) return null;
                             return (
                               <div
@@ -1173,7 +1247,7 @@ function CustomiseContent() {
                       <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
                         <div className="flex items-center gap-3">
                           {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                            const goody = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+                            const goody = getGoodyById(goodyId);
                             if (!goody || qty === 0) return null;
                             return (
                               <div
@@ -1284,7 +1358,7 @@ function CustomiseContent() {
                         {Object.entries(selectedGoodies)
                           .filter(([_, qty]) => qty > 0)
                           .map(([goodyId, qty]) => {
-                            const goody = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+                            const goody = getGoodyById(goodyId);
                             return goody ? (qty > 1 ? `${goody.name} (x${qty})` : goody.name) : null;
                           })
                           .filter(Boolean)
@@ -1347,7 +1421,7 @@ function CustomiseContent() {
                       <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
                         <div className="flex items-center gap-3">
                           {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                            const goody = GOODIES_OPTIONS.find((g) => g.id === goodyId);
+                            const goody = getGoodyById(goodyId);
                             if (!goody || qty === 0) return null;
                             return (
                               <div

@@ -191,26 +191,26 @@ export default function ReviewsPage() {
           </p>
 
           {/* Ratings Metric Pill */}
-          <div className="inline-flex items-center gap-6 px-6 py-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs">
+          <div className="inline-flex flex-wrap sm:flex-nowrap items-center justify-center gap-3 sm:gap-6 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs max-w-full">
             <div className="text-left">
               <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <span className="text-xs font-semibold text-stone-900 mt-1 block">
+              <span className="text-[11px] sm:text-xs font-semibold text-stone-900 mt-1 block">
                 4.9 out of 5 Stars
               </span>
             </div>
-            <div className="h-8 w-px bg-stone-200" />
+            <div className="h-7 w-px bg-stone-200 hidden xs:block" />
             <div className="text-left">
-              <span className="text-sm font-bold text-stone-900">1,280+</span>
-              <span className="text-[11px] text-stone-500 block">Verified Buyers</span>
+              <span className="text-xs sm:text-sm font-bold text-stone-900">1,280+</span>
+              <span className="text-[10px] sm:text-[11px] text-stone-500 block">Verified Buyers</span>
             </div>
-            <div className="h-8 w-px bg-stone-200" />
+            <div className="h-7 w-px bg-stone-200 hidden xs:block" />
             <div className="text-left">
-              <span className="text-sm font-bold text-stone-900">98%</span>
-              <span className="text-[11px] text-stone-500 block">Recommendation</span>
+              <span className="text-xs sm:text-sm font-bold text-stone-900">98%</span>
+              <span className="text-[10px] sm:text-[11px] text-stone-500 block">Recommendation</span>
             </div>
           </div>
 

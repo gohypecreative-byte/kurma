@@ -47,46 +47,45 @@ export function Footer() {
     }
   };
 
-
   return (
-    <footer className="w-full bg-[#061e13] text-[#EED08E] border-t border-[#EED08E]/20 relative font-sans">
+    <footer className="w-full max-w-full overflow-hidden bg-[#072515] text-[#EED08E] border-t border-[#EED08E]/20 relative font-sans">
       {/* Main Footer Grid */}
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 md:px-8 lg:px-12 py-5 sm:py-14 lg:py-20">
-        <div className="grid grid-cols-3 lg:grid-cols-12 gap-x-2.5 sm:gap-x-6 lg:gap-x-12 gap-y-4 sm:gap-y-8 lg:gap-y-12">
+      <div className="mx-auto max-w-7xl w-full px-3 xs:px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-14 pb-8 sm:pb-12 overflow-hidden">
+        <div className="grid grid-cols-[repeat(3,minmax(0,1fr))] lg:grid-cols-12 gap-x-2 xs:gap-x-3 sm:gap-x-6 lg:gap-x-12 gap-y-6 sm:gap-y-8 lg:gap-y-12 w-full max-w-full">
           {/* Column 1: GET IN TOUCH */}
-          <div className="col-span-1 lg:col-span-3 min-w-0 space-y-1.5 sm:space-y-4">
-            <h3 className="text-[10px] xs:text-[11px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#EED08E]">
+          <div className="col-span-1 lg:col-span-3 min-w-0 w-full overflow-hidden space-y-2 sm:space-y-4">
+            <h3 className="text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.05em] xs:tracking-[0.1em] sm:tracking-[0.18em] text-[#EED08E] truncate block">
               GET IN TOUCH
             </h3>
 
-            <div className="space-y-1 sm:space-y-3 pt-0.5 sm:pt-2 text-[10px] xs:text-[11px] sm:text-xs lg:text-sm text-[#EED08E]/90 font-light">
+            <div className="space-y-1 sm:space-y-2.5 pt-0.5 sm:pt-1 text-[8.5px] xs:text-[9.5px] sm:text-xs text-[#EED08E]/90 font-light w-full">
               <a
                 href="mailto:XXXXXX@XXXXXX.com"
-                className="flex items-center gap-1.5 hover:text-white transition-colors min-w-0"
+                className="flex items-center gap-1 sm:gap-1.5 hover:text-white transition-colors min-w-0 w-full"
               >
-                <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-[#EED08E] shrink-0" />
-                <span className="truncate">XXXXXX@XXXXXX.com</span>
+                <Mail className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-[#EED08E] shrink-0" />
+                <span className="truncate min-w-0 flex-1">XXXXXX@XXXXXX.c...</span>
               </a>
 
               <a
                 href="tel:+91XXXXXXXXXX"
-                className="flex items-center gap-1.5 hover:text-white transition-colors min-w-0"
+                className="flex items-center gap-1 sm:gap-1.5 hover:text-white transition-colors min-w-0 w-full"
               >
-                <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-[#EED08E] shrink-0" />
-                <span className="truncate">+91 XXXXX XXXXX</span>
+                <Phone className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-[#EED08E] shrink-0" />
+                <span className="truncate min-w-0 flex-1">+91 XXXXX XXXXX</span>
               </a>
             </div>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-1.5 sm:gap-4 pt-1 sm:pt-3">
+            <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-3 pt-1 sm:pt-2">
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Instagram"
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
+                className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
               >
-                <InstagramIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <InstagramIcon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
               </a>
 
               <a
@@ -94,9 +93,9 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="LinkedIn"
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
+                className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
               >
-                <LinkedinIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <LinkedinIcon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
               </a>
 
               <a
@@ -104,20 +103,20 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="Facebook"
-                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
+                className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
               >
-                <FacebookIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <FacebookIcon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
               </a>
             </div>
           </div>
 
           {/* Column 2: NAVIGATION */}
-          <div className="col-span-1 lg:col-span-3 min-w-0 space-y-1.5 sm:space-y-4">
-            <h3 className="text-[10px] xs:text-[11px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#EED08E]">
+          <div className="col-span-1 lg:col-span-3 min-w-0 w-full overflow-hidden space-y-2 sm:space-y-4">
+            <h3 className="text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.05em] xs:tracking-[0.1em] sm:tracking-[0.18em] text-[#EED08E] truncate block">
               NAVIGATION
             </h3>
 
-            <ul className="space-y-1 sm:space-y-2.5 pt-0.5 sm:pt-0 text-[10.5px] xs:text-[11px] sm:text-xs lg:text-sm text-[#EED08E]/80 font-light">
+            <ul className="space-y-1 sm:space-y-2 pt-0.5 sm:pt-1 text-[9px] xs:text-[10px] sm:text-xs text-[#EED08E]/85 font-light w-full">
               <li>
                 <Link href="/" className="hover:text-white transition-colors block truncate">
                   Home
@@ -147,44 +146,44 @@ export function Footer() {
           </div>
 
           {/* Column 3: INFORMATION */}
-          <div className="col-span-1 lg:col-span-3 min-w-0 space-y-1.5 sm:space-y-4">
-            <h3 className="text-[10px] xs:text-[11px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#EED08E]">
+          <div className="col-span-1 lg:col-span-3 min-w-0 w-full overflow-hidden space-y-2 sm:space-y-4">
+            <h3 className="text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.05em] xs:tracking-[0.1em] sm:tracking-[0.18em] text-[#EED08E] truncate block">
               INFORMATION
             </h3>
 
-            <ul className="space-y-1 sm:space-y-2.5 pt-0.5 sm:pt-0 text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm text-[#EED08E]/80 font-light leading-snug">
+            <ul className="space-y-1 sm:space-y-1.5 pt-0.5 sm:pt-1 text-[8px] xs:text-[9px] sm:text-xs text-[#EED08E]/85 font-light leading-snug w-full">
               <li>
-                <Link href="/gift-trunks" className="hover:text-white transition-colors block">
+                <Link href="/gift-trunks" className="hover:text-white transition-colors block break-words">
                   Artisan Hampers &amp; Trunks
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors block">
+                <Link href="/contact" className="hover:text-white transition-colors block break-words">
                   Corporate &amp; Wedding Orders
                 </Link>
               </li>
               <li>
-                <Link href="/reviews" className="hover:text-white transition-colors block">
+                <Link href="/reviews" className="hover:text-white transition-colors block break-words">
                   Client Testimonials
                 </Link>
               </li>
               <li>
-                <Link href="/shipping-policy" className="hover:text-white transition-colors block">
+                <Link href="/shipping-policy" className="hover:text-white transition-colors block break-words">
                   Shipping &amp; Delivery Policy
                 </Link>
               </li>
               <li>
-                <Link href="/refund-policy" className="hover:text-white transition-colors block">
+                <Link href="/refund-policy" className="hover:text-white transition-colors block break-words">
                   Cancellation &amp; Refund Policy
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors block">
+                <Link href="/privacy" className="hover:text-white transition-colors block break-words">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-white transition-colors block">
+                <Link href="/terms" className="hover:text-white transition-colors block break-words">
                   Terms &amp; Conditions
                 </Link>
               </li>
@@ -192,29 +191,29 @@ export function Footer() {
           </div>
 
           {/* Column 4: NEWSLETTER */}
-          <div className="col-span-3 lg:col-span-3 min-w-0 space-y-1.5 sm:space-y-4 pt-3 lg:pt-0 border-t border-[#EED08E]/15 lg:border-t-0">
-            <h3 className="text-[10px] xs:text-[11px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.14em] sm:tracking-[0.2em] text-[#EED08E]">
+          <div className="col-span-3 lg:col-span-3 min-w-0 w-full max-w-full overflow-hidden space-y-1.5 sm:space-y-3 pt-5 lg:pt-0 border-t border-[#EED08E]/15 lg:border-t-0">
+            <h3 className="text-[10px] xs:text-[11px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.08em] sm:tracking-[0.18em] text-[#EED08E]">
               NEWSLETTER
             </h3>
 
-            <p className="text-[9.5px] xs:text-[10.5px] sm:text-xs text-[#EED08E]/80 uppercase tracking-wider font-light leading-relaxed">
+            <p className="text-[8.5px] xs:text-[9.5px] sm:text-xs text-[#EED08E]/80 uppercase tracking-wider font-light leading-relaxed">
               SIGN UP TO RECEIVE THE LATEST NEWS &amp; EXCLUSIVE GIFT RELEASES.
             </p>
 
-            <form onSubmit={handleSubscribe} className="pt-1 sm:pt-2">
-              <div className="flex flex-row items-stretch gap-1.5 sm:gap-2 max-w-md">
+            <form onSubmit={handleSubscribe} className="pt-1 sm:pt-2 w-full max-w-full">
+              <div className="flex flex-row items-stretch w-full max-w-md">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="ENTER EMAIL ADDRESS"
                   required
-                  className="bg-black/20 border border-[#EED08E]/40 text-[#EED08E] placeholder:text-[#EED08E]/50 px-3 sm:px-4 py-2 sm:py-2.5 text-[10px] xs:text-[11px] sm:text-xs tracking-wider uppercase focus:outline-none focus:border-[#EED08E] flex-1 min-w-0"
+                  className="bg-transparent border border-[#EED08E]/40 text-[#EED08E] placeholder:text-[#EED08E]/50 px-2.5 xs:px-3 sm:px-4 py-2 sm:py-2.5 text-[9.5px] xs:text-[10.5px] sm:text-xs tracking-wider uppercase focus:outline-none focus:border-[#EED08E] flex-1 min-w-0 rounded-none h-9 sm:h-10"
                 />
 
                 <button
                   type="submit"
-                  className="bg-[#8C6215] text-white hover:bg-[#A37318] px-3.5 sm:px-5 py-2 sm:py-2.5 text-[10px] xs:text-[11px] sm:text-xs font-bold tracking-widest uppercase transition-colors shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+                  className="bg-[#8C6215] hover:bg-[#A37318] text-white px-3.5 xs:px-4 sm:px-6 py-2 sm:py-2.5 text-[9.5px] xs:text-[10.5px] sm:text-xs font-bold tracking-widest uppercase transition-colors shrink-0 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-9 sm:h-10"
                 >
                   {isSubscribed ? (
                     <Check className="w-3.5 h-3.5 text-emerald-300" />
@@ -234,32 +233,28 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom Copyright Bar & Scroll to Top Button */}
-      <div className="border-t border-[#EED08E]/20 py-6 px-4 sm:px-6 lg:px-12 text-center text-xs text-[#EED08E]/70 font-sans relative">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="tracking-widest">
+      {/* Bottom Copyright Bar */}
+      <div className="border-t border-[#EED08E]/15 py-6 px-3 xs:px-4 sm:px-6 lg:px-12 text-center text-xs text-[#EED08E]/75 font-sans w-full max-w-full overflow-hidden">
+        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4 w-full">
+          <p className="text-[10px] xs:text-[10.5px] sm:text-xs leading-relaxed tracking-wider font-light max-w-xs sm:max-w-none mx-auto">
             &copy; {new Date().getFullYear()} Kurma Corporate &amp; Luxury Gifting. All rights reserved.
           </p>
 
           {/* Footer Legal Quick Links */}
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] text-[#EED08E]/85">
+          <div className="flex flex-wrap items-center justify-center gap-x-2.5 xs:gap-x-4 sm:gap-x-6 gap-y-1.5 text-[9px] xs:text-[10px] sm:text-[11.5px] text-[#EED08E]/85 font-light">
             <Link href="/terms" className="hover:text-white transition-colors">
               Terms &amp; Conditions
             </Link>
-            <span className="text-[#EED08E]/30 hidden sm:inline">•</span>
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <span className="text-[#EED08E]/30 hidden sm:inline">•</span>
             <Link href="/shipping-policy" className="hover:text-white transition-colors">
               Shipping &amp; Delivery
             </Link>
-            <span className="text-[#EED08E]/30 hidden sm:inline">•</span>
             <Link href="/refund-policy" className="hover:text-white transition-colors">
               Cancellation &amp; Refunds
             </Link>
           </div>
-
         </div>
       </div>
     </footer>

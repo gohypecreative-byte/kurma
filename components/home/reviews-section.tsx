@@ -189,9 +189,9 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   return (
     <section
       id="reviews"
-      className="w-full bg-gradient-to-b from-[#FAF7F2] via-[#F4EFE6] to-[#FAF7F2] py-14 sm:py-20 lg:py-24 border-t border-[#EAE3D5] text-[#1C1917] relative select-none mobile-defer-render"
+      className="w-full max-w-full overflow-hidden bg-gradient-to-b from-[#FAF7F2] via-[#F4EFE6] to-[#FAF7F2] py-14 sm:py-20 lg:py-24 border-t border-[#EAE3D5] text-[#1C1917] relative select-none mobile-defer-render"
     >
-      <div className="max-w-[1500px] mx-auto">
+      <div className="max-w-[1500px] w-full mx-auto overflow-hidden">
         {/* Header Title Matching User Image */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4 sm:px-6">
           <div className="inline-flex items-center justify-center gap-2 mb-3.5 sm:mb-4">

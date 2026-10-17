@@ -74,15 +74,15 @@ function SearchContent() {
         <div className="max-w-2xl mx-auto mb-6">
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="relative flex items-center bg-white rounded-full border border-[#eed08e] hover:border-[#c0881b] shadow-sm focus-within:border-[#8b5f10] focus-within:ring-2 focus-within:ring-[#eed08e]/50 transition-all p-1.5 pl-4 pr-1.5 gap-2"
+            className="relative flex items-center bg-white rounded-full border border-[#eed08e] hover:border-[#c0881b] shadow-sm focus-within:border-[#8b5f10] focus-within:ring-2 focus-within:ring-[#eed08e]/50 transition-all p-1 sm:p-1.5 pl-3 sm:pl-4 pr-1 sm:pr-1.5 gap-1.5 sm:gap-2"
           >
-            <Search className="w-5 h-5 text-[#8b5f10] shrink-0 pointer-events-none" />
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#8b5f10] shrink-0 pointer-events-none" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by scent, element, brass burner, or gift box..."
-              className="flex-1 min-w-0 bg-transparent border-none outline-none ring-0 text-sm sm:text-base text-stone-900 placeholder:text-stone-400 font-sans py-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+              placeholder="Search scent, element, brass burner, or box..."
+              className="flex-1 min-w-0 bg-transparent border-none outline-none ring-0 text-xs sm:text-base text-stone-900 placeholder:text-stone-400 font-sans py-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               style={{ outline: "none", boxShadow: "none", border: "none" }}
               autoFocus
             />
@@ -93,15 +93,15 @@ function SearchContent() {
                 className="p-1 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 cursor-pointer transition-colors shrink-0"
                 aria-label="Clear search"
               >
-                <X className="w-4 h-4 pointer-events-none" />
+                <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 pointer-events-none" />
               </button>
             )}
             <button
               type="submit"
-              className="shrink-0 px-5 py-2.5 bg-gradient-to-r from-[#072515] to-[#0c3823] hover:from-[#0a311d] hover:to-[#125032] active:bg-[#051a0f] text-[#eed08e] border border-[#eed08e]/35 hover:border-[#eed08e]/70 text-xs font-bold rounded-full uppercase tracking-[0.14em] transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+              className="shrink-0 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#072515] to-[#0c3823] hover:from-[#0a311d] hover:to-[#125032] active:bg-[#051a0f] text-[#eed08e] border border-[#eed08e]/35 hover:border-[#eed08e]/70 text-[11px] sm:text-xs font-bold rounded-full uppercase tracking-[0.12em] sm:tracking-[0.14em] transition-all shadow-xs cursor-pointer flex items-center gap-1 sm:gap-1.5"
             >
               <span>Search</span>
-              <ChevronRight className="w-3.5 h-3.5 text-[#eed08e]/80 hidden xs:inline-block" />
+              <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#eed08e]/80 hidden xs:inline-block" />
             </button>
           </form>
 

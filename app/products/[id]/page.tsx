@@ -673,38 +673,38 @@ export default function ProductDetailPage() {
               )}
 
               {/* Heritage Craftsmanship Guarantee Bar */}
-              <div className="bg-[#fcfaf6] sm:bg-[#fbf6ea]/40 rounded-xl sm:rounded-2xl border border-stone-200/90 sm:border-[#eed08e]/50 p-2.5 sm:p-3.5 shadow-2xs grid grid-cols-3 divide-x divide-stone-200/80 sm:divide-[#eed08e]/40 text-center">
+              <div className="bg-[#fcfaf6] sm:bg-[#fbf6ea]/40 rounded-xl sm:rounded-2xl border border-stone-200/90 sm:border-[#eed08e]/50 p-2 sm:p-3.5 shadow-2xs grid grid-cols-3 divide-x divide-stone-200/80 sm:divide-[#eed08e]/40 text-center">
                 <div className="px-1 sm:px-2 flex flex-col items-center justify-center text-center">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 flex items-center justify-center mb-1.5 shadow-2xs">
-                    <Leaf className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#c0881b]" />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 flex items-center justify-center mb-1 shadow-2xs">
+                    <Leaf className="w-3 h-3 sm:w-4 sm:h-4 text-[#c0881b]" />
                   </div>
-                  <span className="text-[9px] sm:text-[11px] font-cinzel font-bold text-stone-900 tracking-wider uppercase leading-tight whitespace-nowrap">
+                  <span className="text-[8.5px] sm:text-[11px] font-cinzel font-bold text-stone-900 tracking-wider uppercase leading-tight">
                     Charcoal-Free
                   </span>
-                  <p className="text-[8px] sm:text-[10px] text-stone-500 font-sans leading-tight mt-0.5 whitespace-nowrap">
-                    Temple Flora &amp; Resins
+                  <p className="text-[7.5px] sm:text-[10px] text-stone-500 font-sans leading-tight mt-0.5">
+                    Temple Flora
                   </p>
                 </div>
                 <div className="px-1 sm:px-2 flex flex-col items-center justify-center text-center">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 flex items-center justify-center mb-1.5 shadow-2xs">
-                    <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#c0881b]" />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 flex items-center justify-center mb-1 shadow-2xs">
+                    <Droplets className="w-3 h-3 sm:w-4 sm:h-4 text-[#c0881b]" />
                   </div>
-                  <span className="text-[9px] sm:text-[11px] font-cinzel font-bold text-stone-900 tracking-wider uppercase leading-tight whitespace-nowrap">
+                  <span className="text-[8.5px] sm:text-[11px] font-cinzel font-bold text-stone-900 tracking-wider uppercase leading-tight">
                     Mysore Guilds
                   </span>
-                  <p className="text-[8px] sm:text-[10px] text-stone-500 font-sans leading-tight mt-0.5 whitespace-nowrap">
-                    Master Hand-Rolled
+                  <p className="text-[7.5px] sm:text-[10px] text-stone-500 font-sans leading-tight mt-0.5">
+                    Master Rolled
                   </p>
                 </div>
                 <div className="px-1 sm:px-2 flex flex-col items-center justify-center text-center">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 flex items-center justify-center mb-1.5 shadow-2xs">
-                    <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#c0881b]" />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#fbf6ea] border border-[#eed08e]/70 flex items-center justify-center mb-1 shadow-2xs">
+                    <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4 text-[#c0881b]" />
                   </div>
-                  <span className="text-[9px] sm:text-[11px] font-cinzel font-bold text-stone-900 tracking-wider uppercase leading-tight whitespace-nowrap">
-                    Heirloom Brass
+                  <span className="text-[8.5px] sm:text-[11px] font-cinzel font-bold text-stone-900 tracking-wider uppercase leading-tight">
+                    Solid Brass
                   </span>
-                  <p className="text-[8px] sm:text-[10px] text-stone-500 font-sans leading-tight mt-0.5 whitespace-nowrap">
-                    Solid Moradabad Cast
+                  <p className="text-[7.5px] sm:text-[10px] text-stone-500 font-sans leading-tight mt-0.5">
+                    Moradabad Cast
                   </p>
                 </div>
               </div>

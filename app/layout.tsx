@@ -60,7 +60,7 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <body className="min-h-full flex flex-col bg-white text-stone-900 selection:bg-amber-100 selection:text-amber-900">
+      <body className="min-h-full w-full max-w-full overflow-x-hidden relative flex flex-col bg-white text-stone-900 selection:bg-amber-100 selection:text-amber-900">
         <CartProvider>{children}</CartProvider>
       </body>
     </html>

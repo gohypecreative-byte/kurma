@@ -199,7 +199,7 @@ export default function ContactPage() {
                     </span>
                     <a
                       href="mailto:concierge@kurma.com"
-                      className="mt-0.5 block hover:text-[#8b5f10] transition-colors font-medium text-stone-700"
+                      className="mt-0.5 block hover:text-[#8b5f10] transition-colors font-medium text-stone-700 break-all sm:break-normal"
                     >
                       concierge@kurma.com / corporate@kurma.com
                     </a>

@@ -67,8 +67,25 @@ export function CartDrawer({
   const amountNeededForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const shippingProgress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
-  const discountAmount = appliedCoupon ? Math.round(subtotal * 0.1) : 0;
-  const shippingFee = items.length === 0 ? 0 : isFreeShipping ? 0 : 49;
+  const isCouponFreeShipping = appliedCoupon === "ROYALSHIP";
+  const discountRate =
+    appliedCoupon === "SOVEREIGN20"
+      ? 0.2
+      : appliedCoupon === "DIWALI2026"
+      ? 0.15
+      : 0.1;
+
+  const discountAmount = !appliedCoupon
+    ? 0
+    : appliedCoupon === "KURMAWELCOME"
+    ? Math.min(subtotal, 300)
+    : appliedCoupon === "WEDDINGBLESSINGS"
+    ? Math.min(subtotal, 1000)
+    : appliedCoupon === "ROYALSHIP"
+    ? 0
+    : Math.round(subtotal * discountRate);
+
+  const shippingFee = items.length === 0 ? 0 : (isFreeShipping || isCouponFreeShipping) ? 0 : 49;
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -76,11 +93,38 @@ export function CartDrawer({
     setCouponError("");
     if (!couponCode.trim()) return;
 
-    if (couponCode.trim().toUpperCase() === "SACRED10" || couponCode.trim().toUpperCase() === "KURMA10") {
-      setAppliedCoupon(couponCode.trim().toUpperCase());
+    const clean = couponCode.trim().toUpperCase();
+    const DEFAULT_VALID_CODES = [
+      "DIWALI2026",
+      "ROYALSHIP",
+      "KURMAWELCOME",
+      "SOVEREIGN20",
+      "FESTIVEBRASS",
+      "SACRED10",
+      "KURMA10",
+      "HERITAGE10",
+      "WEDDINGBLESSINGS",
+      "VEDICFLORA",
+    ];
+
+    let allValid = DEFAULT_VALID_CODES;
+    try {
+      const stored = localStorage.getItem("kurma_admin_discounts");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          allValid = parsed
+            .filter((d: any) => d.status === "Active")
+            .map((d: any) => (d.title || d.code || "").toUpperCase());
+        }
+      }
+    } catch {}
+
+    if (allValid.includes(clean)) {
+      setAppliedCoupon(clean);
       setCouponCode("");
     } else {
-      setCouponError("Invalid coupon. Try 'SACRED10' for 10% off!");
+      setCouponError("Invalid coupon code. Try 'DIWALI2026' or 'SACRED10'!");
     }
   };
 
@@ -291,7 +335,21 @@ export function CartDrawer({
                     </div>
                     {appliedCoupon && (
                       <div className="flex items-center justify-between text-[11px] text-emerald-700 font-medium bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                        <span>Code &apos;{appliedCoupon}&apos; Applied (-10%)</span>
+                        <span>
+                          Code &apos;{appliedCoupon}&apos; Applied (
+                          {appliedCoupon === "DIWALI2026"
+                            ? "-15%"
+                            : appliedCoupon === "SOVEREIGN20"
+                            ? "-20%"
+                            : appliedCoupon === "KURMAWELCOME"
+                            ? "-₹300"
+                            : appliedCoupon === "WEDDINGBLESSINGS"
+                            ? "-₹1,000"
+                            : appliedCoupon === "ROYALSHIP"
+                            ? "Free Express Air"
+                            : "-10%"}
+                          )
+                        </span>
                         <button
                           type="button"
                           onClick={() => setAppliedCoupon(null)}

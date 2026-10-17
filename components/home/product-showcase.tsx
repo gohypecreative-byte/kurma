@@ -278,7 +278,7 @@ export function ProductCardItem({
               }}
               title={`Customise & Buy ${product.name}`}
               aria-label={`Customise & Buy ${product.name}`}
-              className={`p-1 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer ${
+              className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${
                 isDark
                   ? "text-[#eed08e] hover:text-white hover:bg-white/10"
                   : "text-[#c0881b] hover:text-stone-900 hover:bg-stone-100"
@@ -295,7 +295,7 @@ export function ProductCardItem({
             }}
             title={`Quick add ${product.name} to cart`}
             aria-label={`Quick add ${product.name} to cart`}
-            className={`p-1 rounded-md transition-all duration-200 hover:scale-110 cursor-pointer ${
+            className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${
               isDark
                 ? "text-stone-300 hover:text-white hover:bg-white/10"
                 : "text-stone-800 hover:text-black hover:bg-stone-100"

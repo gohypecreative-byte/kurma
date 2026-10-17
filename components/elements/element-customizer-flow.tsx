@@ -205,9 +205,11 @@ export function ElementCustomizerFlow({
     placedAt: string;
   } | null>(null);
 
-  // Coupon
+  // Coupon State
   const [couponCode, setCouponCode] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState("");
 
   // Determine current product data
   const currentElementData = ELEMENT_DATA[activeElementKey] || ELEMENT_DATA.all;
@@ -244,10 +246,59 @@ export function ElementCustomizerFlow({
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
+    setCouponError("");
+    if (!couponCode.trim()) return;
+
     const clean = couponCode.trim().toUpperCase();
-    if (clean === "SACRED10" || clean === "KURMA10") {
-      setAppliedDiscount(Math.round(subtotal * 0.1));
+    const VALID_CODES = [
+      "DIWALI2026",
+      "ROYALSHIP",
+      "KURMAWELCOME",
+      "SOVEREIGN20",
+      "FESTIVEBRASS",
+      "SACRED10",
+      "KURMA10",
+      "HERITAGE10",
+      "WEDDINGBLESSINGS",
+      "VEDICFLORA",
+      "ATELIERVIP",
+    ];
+
+    let isValid = VALID_CODES.includes(clean);
+
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("kurma_admin_discounts");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            const found = parsed.find(
+              (d: any) =>
+                (d.title?.toUpperCase() === clean || d.id?.toUpperCase() === clean) &&
+                d.status === "Active"
+            );
+            if (found) isValid = true;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to parse discounts from storage", err);
+      }
+    }
+
+    if (isValid) {
+      let disc = Math.round(subtotal * 0.10);
+      if (clean === "SOVEREIGN20") disc = Math.round(subtotal * 0.20);
+      else if (clean === "DIWALI2026") disc = Math.round(subtotal * 0.15);
+      else if (clean === "ATELIERVIP") disc = Math.round(subtotal * 0.18);
+      else if (clean === "KURMAWELCOME") disc = Math.min(subtotal, 300);
+      else if (clean === "WEDDINGBLESSINGS") disc = Math.min(subtotal, 1000);
+      else if (clean === "ROYALSHIP") disc = 0; // standard free express shipping
+      
+      setAppliedDiscount(disc);
+      setAppliedCouponCode(clean);
       setCouponCode("");
+    } else {
+      setCouponError("Invalid voucher code. Try 'DIWALI2026' or 'SACRED10'!");
     }
   };
 
@@ -466,10 +517,10 @@ export function ElementCustomizerFlow({
           </div>
 
           {/* RIGHT COLUMN: Interactive Customizer & Express Checkout */}
-          <div className="lg:col-span-7 bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 shadow-sm p-6 sm:p-8 space-y-7">
+          <div className="lg:col-span-7 bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 shadow-sm p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-7">
             {/* Header: Title & Dynamic Price */}
             <div className="border-b border-stone-100 pb-5">
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
                     {format === "trunk"
@@ -491,7 +542,7 @@ export function ElementCustomizerFlow({
                   </p>
                 </div>
 
-                <div className="text-right shrink-0">
+                <div className="text-left sm:text-right shrink-0 flex items-center sm:flex-col justify-between sm:justify-start gap-2 sm:gap-0 pt-1 sm:pt-0">
                   <span className="text-2xl font-bold text-stone-900 block">
                     ₹{basePrice}
                   </span>
@@ -581,7 +632,7 @@ export function ElementCustomizerFlow({
                     <span className="text-[11px] font-semibold text-stone-700 block">
                       Choose Sacred Element:
                     </span>
-                    <div className="grid grid-cols-5 gap-1.5">
+                    <div className="grid grid-cols-3 min-[440px]:grid-cols-5 gap-1.5 sm:gap-2">
                       {[
                         { key: "Earth", label: "Prithvi", note: "Vetiver" },
                         { key: "Water", label: "Jal", note: "Lotus" },
@@ -750,12 +801,12 @@ export function ElementCustomizerFlow({
                 </div>
 
                 {/* Bottom CTA to Proceed to Express Pay */}
-                <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
-                  <div>
+                <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 sm:gap-4">
+                  <div className="flex items-center justify-between sm:block">
                     <span className="text-[10px] text-stone-400 uppercase font-cinzel block">
                       Total Package
                     </span>
-                    <span className="text-xl font-bold text-stone-900">
+                    <span className="text-xl sm:text-2xl font-bold text-stone-900">
                       ₹{subtotal}
                     </span>
                   </div>
@@ -763,7 +814,7 @@ export function ElementCustomizerFlow({
                   <button
                     type="button"
                     onClick={() => setViewState("checkout")}
-                    className="flex-1 max-w-xs py-3.5 px-6 rounded-xl bg-[#c0881b] hover:bg-[#a97514] active:scale-98 text-white font-cinzel font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto sm:max-w-xs py-3.5 px-6 rounded-xl bg-[#c0881b] hover:bg-[#a97514] active:scale-98 text-white font-cinzel font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Lock className="w-3.5 h-3.5" />
                     <span>Proceed to Pay (₹{subtotal})</span>
@@ -870,44 +921,44 @@ export function ElementCustomizerFlow({
                     Payment Method
                   </label>
 
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                     <button
                       type="button"
                       onClick={() => setPaymentMethod("upi")}
-                      className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      className={`p-2 sm:p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
                         paymentMethod === "upi"
                           ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
                           : "border-stone-200 bg-stone-50 text-stone-600"
                       }`}
                     >
                       <QrCode className="w-4 h-4 text-[#c0881b]" />
-                      <span className="text-xs">UPI / QR</span>
+                      <span className="text-[11px] sm:text-xs">UPI / QR</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setPaymentMethod("card")}
-                      className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      className={`p-2 sm:p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
                         paymentMethod === "card"
                           ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
                           : "border-stone-200 bg-stone-50 text-stone-600"
                       }`}
                     >
                       <CreditCard className="w-4 h-4 text-[#c0881b]" />
-                      <span className="text-xs">Cards</span>
+                      <span className="text-[11px] sm:text-xs">Cards</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setPaymentMethod("cod")}
-                      className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      className={`p-2 sm:p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
                         paymentMethod === "cod"
                           ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
                           : "border-stone-200 bg-stone-50 text-stone-600"
                       }`}
                     >
                       <Banknote className="w-4 h-4 text-[#c0881b]" />
-                      <span className="text-xs">COD</span>
+                      <span className="text-[11px] sm:text-xs">COD</span>
                     </button>
                   </div>
 
@@ -932,9 +983,91 @@ export function ElementCustomizerFlow({
                   )}
                 </div>
 
+                {/* Coupon Code Section */}
+                <div className="space-y-2 pt-2 border-t border-stone-100">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-stone-800 uppercase tracking-wider font-cinzel flex items-center gap-1.5">
+                      <Tag className="w-3.5 h-3.5 text-[#c0881b]" />
+                      <span>Sacred Voucher / Coupon</span>
+                    </label>
+                    <span className="text-[10px] text-stone-400">e.g. DIWALI2026</span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      placeholder="Enter promo code"
+                      className="flex-1 text-xs px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl uppercase tracking-wider focus:bg-white focus:border-[#c0881b] focus:outline-hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      className="px-4 py-2.5 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-semibold rounded-xl cursor-pointer transition-colors"
+                    >
+                      Apply
+                    </button>
+                  </div>
+
+                  {appliedCouponCode && (
+                    <div className="flex items-center justify-between text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200/80 font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                        <span>
+                          Code <strong>{appliedCouponCode}</strong> Applied (
+                          {appliedCouponCode === "DIWALI2026"
+                            ? "15% Festive Privilege"
+                            : appliedCouponCode === "SOVEREIGN20"
+                            ? "20% Royal Patron Concession"
+                            : appliedCouponCode === "ATELIERVIP"
+                            ? "18% Private Atelier Tier"
+                            : appliedCouponCode === "KURMAWELCOME"
+                            ? "₹300 First Purchase Gift"
+                            : appliedCouponCode === "WEDDINGBLESSINGS"
+                            ? "₹1,000 Wedding Concession"
+                            : appliedCouponCode === "ROYALSHIP"
+                            ? "Free Express Delivery"
+                            : "10% Sacred Blessing"}
+                          )
+                        </span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAppliedCouponCode(null);
+                          setAppliedDiscount(0);
+                        }}
+                        className="text-stone-400 hover:text-stone-700 font-bold ml-2 cursor-pointer text-xs"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {couponError && <p className="text-[11px] text-rose-600">{couponError}</p>}
+                </div>
+
                 {/* Final Breakdown & Pay CTA */}
                 <div className="pt-2 border-t border-stone-100 space-y-3">
-                  <div className="flex justify-between items-baseline text-stone-900">
+                  <div className="space-y-1.5 text-xs text-stone-600">
+                    <div className="flex justify-between">
+                      <span>Bespoke Creation Subtotal</span>
+                      <span className="font-semibold text-stone-900">₹{subtotal}</span>
+                    </div>
+                    {appliedDiscount > 0 && (
+                      <div className="flex justify-between text-emerald-700 font-medium">
+                        <span>Sacred Voucher Discount</span>
+                        <span>-₹{appliedDiscount}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>Express Temple Delivery</span>
+                      <span className="text-emerald-700 font-semibold">FREE</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-baseline text-stone-900 pt-2 border-t border-stone-100">
                     <span className="font-serif text-sm font-bold">Total Amount Due</span>
                     <span className="text-xl font-bold text-[#c0881b]">₹{grandTotal}</span>
                   </div>

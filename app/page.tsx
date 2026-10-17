@@ -42,7 +42,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#072515] sm:bg-[url('/images/textures/green-texture.png')] sm:bg-repeat text-white selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-[#072515] sm:bg-[url('/images/textures/green-texture.png')] sm:bg-repeat text-white selection:bg-[#eed08e] selection:text-[#072515]">
       <ScrollProgress />
       {/* E-Commerce Header with Cart Drawer Trigger */}
       <Navbar
@@ -52,7 +52,7 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden">
         <MotionConfig reducedMotion="user">
         {/* Hero Section */}
         <Hero

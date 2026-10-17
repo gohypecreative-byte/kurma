@@ -100,7 +100,7 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
         <button
           onClick={handlePrev}
           aria-label="Previous banner"
-          className="absolute left-2 sm:left-4 md:left-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-stone-200/80 flex items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="hidden sm:flex absolute left-2 sm:left-4 md:left-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-stone-200/80 items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
         </button>
@@ -109,7 +109,7 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
         <button
           onClick={handleNext}
           aria-label="Next banner"
-          className="absolute right-2 sm:right-4 md:right-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-stone-200/80 flex items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="hidden sm:flex absolute right-2 sm:right-4 md:right-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-stone-200/80 items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <ChevronRight className="w-5 h-5 stroke-[2.2]" />
         </button>

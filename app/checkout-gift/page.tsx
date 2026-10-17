@@ -148,8 +148,21 @@ function CheckoutGiftContent() {
     return hamper.grandTotal;
   }, [hamper]);
 
-  const discountAmount = appliedCoupon ? Math.round(subtotal * 0.1) : 0;
-  const isFreeShipping = subtotal >= 499;
+  const discountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    const code = appliedCoupon.toUpperCase();
+    if (code === "SOVEREIGN20") return Math.round(subtotal * 0.20);
+    if (code === "DIWALI2026") return Math.round(subtotal * 0.15);
+    if (code === "ATELIERVIP") return Math.round(subtotal * 0.18);
+    if (code === "KURMAWELCOME") return Math.min(subtotal, 300);
+    if (code === "WEDDINGBLESSINGS") return Math.min(subtotal, 1000);
+    if (code === "ROYALSHIP") return 0; // applied to shipping
+    // Default 10% for SACRED10, KURMA10, HERITAGE10, GIFT10, FESTIVEBRASS, VEDICFLORA
+    return Math.round(subtotal * 0.10);
+  }, [appliedCoupon, subtotal]);
+
+  const isCouponFreeShipping = appliedCoupon === "ROYALSHIP";
+  const isFreeShipping = subtotal >= 499 || isCouponFreeShipping;
   const shippingFee = isFreeShipping ? 0 : 49;
   const finalTotal = Math.max(0, subtotal - discountAmount + shippingFee);
 
@@ -158,15 +171,48 @@ function CheckoutGiftContent() {
     setCouponError("");
     if (!couponCode.trim()) return;
 
-    if (
-      couponCode.trim().toUpperCase() === "SACRED10" ||
-      couponCode.trim().toUpperCase() === "KURMA10" ||
-      couponCode.trim().toUpperCase() === "GIFT10"
-    ) {
-      setAppliedCoupon(couponCode.trim().toUpperCase());
+    const clean = couponCode.trim().toUpperCase();
+    const VALID_CODES = [
+      "DIWALI2026",
+      "ROYALSHIP",
+      "KURMAWELCOME",
+      "SOVEREIGN20",
+      "FESTIVEBRASS",
+      "SACRED10",
+      "KURMA10",
+      "HERITAGE10",
+      "WEDDINGBLESSINGS",
+      "VEDICFLORA",
+      "ATELIERVIP",
+      "GIFT10",
+    ];
+
+    let isValid = VALID_CODES.includes(clean);
+
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("kurma_admin_discounts");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            const found = parsed.find(
+              (d: any) =>
+                (d.title?.toUpperCase() === clean || d.id?.toUpperCase() === clean) &&
+                d.status === "Active"
+            );
+            if (found) isValid = true;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to read discounts from storage", err);
+      }
+    }
+
+    if (isValid) {
+      setAppliedCoupon(clean);
       setCouponCode("");
     } else {
-      setCouponError("Invalid coupon. Use 'SACRED10' for 10% off!");
+      setCouponError("Invalid coupon code. Try 'DIWALI2026' or 'SACRED10'!");
     }
   };
 
@@ -684,9 +730,36 @@ function CheckoutGiftContent() {
                   </button>
                 </div>
                 {appliedCoupon && (
-                  <p className="text-[11px] text-emerald-700 font-medium">
-                    ✓ Code &apos;{appliedCoupon}&apos; applied (-10%)
-                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-xl border border-emerald-200/80 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                      <span>
+                        Code <strong>{appliedCoupon}</strong> Applied (
+                        {appliedCoupon === "DIWALI2026"
+                          ? "15% Festive Privilege"
+                          : appliedCoupon === "SOVEREIGN20"
+                          ? "20% Royal Patron Concession"
+                          : appliedCoupon === "ATELIERVIP"
+                          ? "18% Private Sanctuary Tier"
+                          : appliedCoupon === "KURMAWELCOME"
+                          ? "₹300 Welcome Gift"
+                          : appliedCoupon === "WEDDINGBLESSINGS"
+                          ? "₹1,000 Wedding Concession"
+                          : appliedCoupon === "ROYALSHIP"
+                          ? "Free Express Delivery"
+                          : "10% Sacred Blessing"}
+                        )
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setAppliedCoupon(null)}
+                      className="text-stone-400 hover:text-stone-700 font-bold ml-2 cursor-pointer text-xs"
+                      title="Remove coupon"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 )}
                 {couponError && <p className="text-[11px] text-rose-600">{couponError}</p>}
               </form>
@@ -698,9 +771,23 @@ function CheckoutGiftContent() {
                   <span className="font-semibold text-stone-900">₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
 
-                {appliedCoupon && (
+                {appliedCoupon && discountAmount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-medium">
-                    <span>Sacred Blessing Discount (10%)</span>
+                    <span>
+                      Sacred Privilege Discount (
+                      {appliedCoupon === "DIWALI2026"
+                        ? "15%"
+                        : appliedCoupon === "SOVEREIGN20"
+                        ? "20%"
+                        : appliedCoupon === "ATELIERVIP"
+                        ? "18%"
+                        : appliedCoupon === "KURMAWELCOME"
+                        ? "₹300"
+                        : appliedCoupon === "WEDDINGBLESSINGS"
+                        ? "₹1,000"
+                        : "10%"}
+                      )
+                    </span>
                     <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
                   </div>
                 )}
