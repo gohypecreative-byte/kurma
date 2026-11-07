@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "motion/react";
 import {
   Eye,
   Play,
@@ -14,6 +14,8 @@ import {
   Check,
   X,
   ArrowRight,
+  SlidersHorizontal,
+  Plus,
 } from "lucide-react";
 import { PRODUCTS, ProductSKU, getProductById, formatPrice } from "@/lib/products";
 import { useCart } from "@/lib/cart-context";
@@ -24,6 +26,7 @@ export interface ShoppableReelItem {
   title: string;
   shortSubtitle: string;
   category: "Gift Boxes" | "Fragrances" | "Sacred Accessories";
+  categoryTag: string;
   price: number;
   originalPrice: number;
   discountBadge: string;
@@ -188,6 +191,26 @@ const PRODUCT_METADATA: Record<
   },
 };
 
+const CATEGORY_TAG_MAP: Record<string, string> = {
+  "marble-gift-box": "FLAGSHIP SUITE",
+  "5-elements-suite": "FLAGSHIP SUITE",
+  "turtle-incense-holder": "SACRED ACCESSORY",
+  "brass-turtle-holder": "SACRED ACCESSORY",
+  "medallion": "SACRED ACCESSORY",
+  "pashmina-pocket-square": "SACRED ACCESSORY",
+  "bookmark": "SACRED ACCESSORY",
+  "fragrance-earth": "ELEMENTAL BLEND",
+  "fragrance-water": "ELEMENTAL BLEND",
+  "fragrance-fire": "ELEMENTAL BLEND",
+  "fragrance-air": "ELEMENTAL BLEND",
+  "fragrance-space": "ELEMENTAL BLEND",
+  "fragrance-sandalwood": "SACRED BLEND",
+  "fragrance-temple-flora": "SACRED BLEND",
+  "fragrance-royal-oudh": "SACRED BLEND",
+  "mdf-gift-box": "HEIRLOOM SUITE",
+  "empty-marble-box": "HEIRLOOM KEEPSAKE",
+};
+
 function buildReelItems(): ShoppableReelItem[] {
   return ORDERED_PRODUCT_IDS.map((productId) => {
     const product = getProductById(productId) || PRODUCTS.find((p) => p.id === productId);
@@ -206,12 +229,17 @@ function buildReelItems(): ShoppableReelItem[] {
         ? product.gallery
         : [product.image];
 
+    const categoryTag =
+      CATEGORY_TAG_MAP[productId] ||
+      (meta?.badge ? meta.badge.toUpperCase() : product.category.toUpperCase());
+
     return {
       id: `reel-${product.id}`,
       productId: product.id,
       title: product.name,
       shortSubtitle: product.subtitle,
       category: product.category,
+      categoryTag,
       price: product.price,
       originalPrice: product.originalPrice || product.price,
       discountBadge: discount ? `${discount}% OFF` : "SPECIAL",
@@ -232,11 +260,60 @@ const REEL_ITEMS = buildReelItems();
 export function ShoppableVideoReels() {
   const router = useRouter();
   const { quickAddToCart } = useCart();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Pagination state (4 products per page, 4 pages total)
-  const [currentPage, setCurrentPage] = useState(0);
-  const totalPages = Math.ceil(REEL_ITEMS.length / 4);
+  // Dynamic Horizontal Translation Calculation
+  const [scrollRange, setScrollRange] = useState(0);
+
+  useEffect(() => {
+    const updateRange = () => {
+      if (trackRef.current) {
+        const scrollWidth = trackRef.current.scrollWidth;
+        const clientWidth = window.innerWidth;
+        setScrollRange(Math.max(0, scrollWidth - clientWidth + 120));
+      }
+    };
+
+    updateRange();
+    window.addEventListener("resize", updateRange);
+    return () => window.removeEventListener("resize", updateRange);
+  }, []);
+
+  // Vertical Scroll Progress mapped to Horizontal Ribbon
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start start", "end end"],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 85,
+    damping: 24,
+    restDelta: 0.001,
+  });
+
+  const x = useTransform(smoothProgress, [0, 1], [0, -scrollRange]);
+
+  // Autoplay Video when section enters viewport
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
 
   // Modal State
   const [activeModalReel, setActiveModalReel] = useState<ShoppableReelItem | null>(null);
@@ -247,69 +324,8 @@ export function ShoppableVideoReels() {
   // Cart feedback state
   const [addedItemIds, setAddedItemIds] = useState<Record<string, boolean>>({});
 
-  // Scroll controls
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
   // Hovered card for secondary gallery preview
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
-  const scrollRafId = useRef<number | null>(null);
-
-  const updateScrollState = useCallback(() => {
-    if (scrollRafId.current !== null) return;
-    scrollRafId.current = requestAnimationFrame(() => {
-      scrollRafId.current = null;
-      if (scrollContainerRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-        const newCanLeft = scrollLeft > 20;
-        const newCanRight = scrollLeft < scrollWidth - clientWidth - 20;
-        setCanScrollLeft((prev) => (prev !== newCanLeft ? newCanLeft : prev));
-        setCanScrollRight((prev) => (prev !== newCanRight ? newCanRight : prev));
-
-        // Track active page index
-        const pageIndex = Math.min(
-          totalPages - 1,
-          Math.max(0, Math.round(scrollLeft / (clientWidth || 1)))
-        );
-        setCurrentPage((prev) => (prev !== pageIndex ? pageIndex : prev));
-      }
-    });
-  }, [totalPages]);
-
-  useEffect(() => {
-    updateScrollState();
-    const current = scrollContainerRef.current;
-    if (current) {
-      current.addEventListener("scroll", updateScrollState, { passive: true });
-    }
-    return () => {
-      if (current) current.removeEventListener("scroll", updateScrollState);
-      if (scrollRafId.current !== null) cancelAnimationFrame(scrollRafId.current);
-    };
-  }, [updateScrollState]);
-
-  // Scroll 4 products at a time (1 full container width)
-  const handleScroll = (direction: "left" | "right") => {
-    if (scrollContainerRef.current) {
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -containerWidth : containerWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  // Jump directly to a page of 4 products
-  const goToPage = (pageIdx: number) => {
-    if (scrollContainerRef.current) {
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      scrollContainerRef.current.scrollTo({
-        left: pageIdx * containerWidth,
-        behavior: "smooth",
-      });
-      setCurrentPage(pageIdx);
-    }
-  };
 
   const handleAddToCart = (reel: ShoppableReelItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -391,177 +407,181 @@ export function ShoppableVideoReels() {
   }, [activeModalReel]);
 
   return (
-    <div className="w-full relative my-2">
-      {/* CLEAN CONTROLS (Arrows & Page Counter) */}
-      <div className="flex items-center justify-end pb-3">
-        <div className="flex items-center gap-2.5">
-          <span className="text-xs font-sans text-stone-500 font-medium">
-            {currentPage + 1} / {totalPages}
-          </span>
-          <button
-            onClick={() => handleScroll("left")}
-            disabled={!canScrollLeft}
-            aria-label="Previous 4 products"
-            className={`w-8 h-8 rounded-full border border-stone-300 bg-white shadow-xs flex items-center justify-center transition-all ${
-              canScrollLeft
-                ? "hover:bg-stone-50 hover:scale-105 text-stone-800 cursor-pointer"
-                : "opacity-35 cursor-not-allowed text-stone-400"
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleScroll("right")}
-            disabled={!canScrollRight}
-            aria-label="Next 4 products"
-            className={`w-8 h-8 rounded-full border border-stone-300 bg-white shadow-xs flex items-center justify-center transition-all ${
-              canScrollRight
-                ? "hover:bg-stone-50 hover:scale-105 text-stone-800 cursor-pointer"
-                : "opacity-35 cursor-not-allowed text-stone-400"
-            }`}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+    <section
+      ref={targetRef}
+      className="relative w-full bg-[#FAF7F2] select-none"
+      style={{ height: "300vh" }}
+    >
+      {/* STICKY FULL-SCREEN CINEMATIC VIEWPORT */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between py-6 sm:py-8">
+        {/* Full-Bleed Atmospheric Background Product Video */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
+          <video
+            ref={videoRef}
+            src="/videos/incense-burn.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover filter brightness-[0.65] contrast-125"
+          />
+          {/* Layered Cinematic Kurma Emerald & Vignette Gradients */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1C1B18] via-[#1C1B18]/55 to-[#1C1B18]/75" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#1C1B18]/30 to-[#1C1B18]/85" />
         </div>
-      </div>
 
-      {/* HORIZONTAL TRACK - EXACTLY 4 PRODUCTS AT A TIME ON DESKTOP */}
-      <div
-        ref={scrollContainerRef}
-        className="flex gap-4 sm:gap-5 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
-        style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          WebkitOverflowScrolling: "touch",
-        }}
-      >
-        {REEL_ITEMS.map((reel) => {
-          const isAdded = addedItemIds[reel.productId];
-          const isHovered = hoveredCardId === reel.id;
+        {/* TOP: FLOATING SECTION HEADER */}
+        <div className="relative w-full px-6 sm:px-12 md:px-16 flex items-center justify-between z-20">
+          <div>
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.28em] uppercase text-[#eed08e] block">
+              SACRED RITUALS &amp; HEIRLOOM EDITIONS
+            </span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-white tracking-tight font-normal sm:whitespace-nowrap mt-1">
+              Sacred Rituals &amp; Heirloom Creations
+            </h2>
+          </div>
 
-          // Alternate gallery angle image when hovered
-          const displayImage =
-            isHovered && reel.gallery.length > 1 ? reel.gallery[1] : reel.posterImage;
+          {/* Subtitle / Interaction Cue */}
+          <div className="hidden sm:flex items-center gap-2.5 text-xs text-stone-300 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-light">Scroll vertically to explore creations</span>
+          </div>
+        </div>
 
-          return (
-            <div
-              key={reel.id}
-              className="flex-shrink-0 w-[84%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(25%-0.9375rem)] snap-start flex flex-col group cursor-pointer"
-              onMouseEnter={() => setHoveredCardId(reel.id)}
-              onMouseLeave={() => setHoveredCardId(null)}
-              onClick={() => openModal(reel)}
-            >
-              {/* TOP: PORTRAIT CINEMATIC PRODUCT REEL CARD (9:15 aspect ratio) */}
-              <div className="relative aspect-[9/15] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#0c2a1a] via-[#05160d] to-[#020b06] shadow-md group-hover:shadow-2xl transition-all duration-300 border border-stone-200/70">
-                {/* Atmospheric Background Ambient Stage */}
+        {/* CENTER: SMOOTH HORIZONTAL SCROLLING TRACK */}
+        <div className="relative w-full flex-1 flex items-center overflow-hidden z-10 my-auto">
+          <motion.div
+            ref={trackRef}
+            style={{ x }}
+            className="flex items-center gap-6 sm:gap-8 px-6 sm:px-12 md:px-16"
+          >
+            {REEL_ITEMS.map((reel) => {
+              const isAdded = addedItemIds[reel.productId];
+              const isHovered = hoveredCardId === reel.id;
+              const displayImage =
+                isHovered && reel.gallery.length > 1 ? reel.gallery[1] : reel.posterImage;
+
+              return (
                 <div
-                  className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none transition-opacity duration-500 group-hover:opacity-70"
-                  style={{
-                    background: `radial-gradient(ellipse at 50% 40%, ${reel.elementColor} 0%, transparent 72%)`,
-                  }}
-                />
-
-                {/* PRODUCT VISUAL SHOWCASE */}
-                <div className="absolute inset-0 p-5 flex items-center justify-center">
-                  <div className="relative w-full h-[84%] transition-transform duration-700 ease-out group-hover:scale-108 group-hover:-translate-y-1">
-                    <Image
-                      src={displayImage}
-                      alt={reel.title}
-                      fill
-                      loading="lazy"
-                      className="object-contain filter drop-shadow-md transition-all duration-500"
-                      sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
+                  key={reel.id}
+                  className="w-[270px] sm:w-[310px] md:w-[340px] lg:w-[360px] shrink-0 flex flex-col group cursor-pointer"
+                  onMouseEnter={() => setHoveredCardId(reel.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
+                  onClick={() => openModal(reel)}
+                >
+                  {/* PORTRAIT CARD CONTAINER */}
+                  <div className="relative aspect-[9/13] w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-b from-stone-900/85 via-[#262626]/90 to-black/95 backdrop-blur-md border border-white/15 group-hover:border-[#eed08e]/60 shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                    {/* Glowing Element Ambient Light */}
+                    <div
+                      className="absolute inset-0 opacity-30 mix-blend-screen pointer-events-none group-hover:opacity-65 transition-opacity duration-500"
+                      style={{
+                        background: `radial-gradient(ellipse at 50% 40%, ${reel.elementColor} 0%, transparent 72%)`,
+                      }}
                     />
-                  </div>
-                </div>
 
-                {/* Center Hover Story Play Icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
-                  <div className="w-12 h-12 rounded-full bg-[#072515]/90 border border-[#eed08e]/70 backdrop-blur-md text-[#eed08e] flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform">
-                    <Play className="w-5 h-5 ml-0.5 fill-current" />
-                  </div>
-                </div>
-              </div>
+                    {/* High-Resolution Product Showcase */}
+                    <div className="absolute inset-0 p-5 sm:p-6 flex items-center justify-center">
+                      <div className="relative w-full h-[85%] transition-transform duration-700 ease-out group-hover:scale-108 group-hover:-translate-y-1">
+                        <Image
+                          src={displayImage}
+                          alt={reel.title}
+                          fill
+                          loading="lazy"
+                          className="object-contain filter drop-shadow-xl"
+                          sizes="(max-width: 640px) 270px, (max-width: 1024px) 340px, 380px"
+                        />
+                      </div>
+                    </div>
 
-              {/* BOTTOM: ATTACHED PRODUCT CARD & ADD TO CART */}
-              <div className="mt-2.5 p-2.5 bg-transparent rounded-2xl border border-stone-200/90 space-y-2">
-                {/* Product Info Row */}
-                <div className="flex items-center gap-2.5">
-                  <div className="relative w-11 h-11 flex-shrink-0 rounded-xl overflow-hidden bg-transparent border border-stone-200/80 p-0.5">
-                    <Image
-                      src={reel.thumbnail}
-                      alt={reel.title}
-                      fill
-                      loading="lazy"
-                      sizes="44px"
-                      className="object-contain"
-                    />
+                    {/* Hover Play Button */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
+                      <div className="w-12 h-12 rounded-full bg-[#1C1B18]/90 border border-[#eed08e]/80 text-[#eed08e] flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
+                        <Play className="w-5 h-5 ml-0.5 fill-current" />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-xs font-semibold text-stone-900 truncate font-sans">
-                      {reel.title}
-                    </h4>
-                    <div className="flex items-center gap-1.5 mt-0.5 text-xs">
-                      <span className="font-bold text-stone-900">
-                        {formatPrice(reel.price)}
+                  {/* Minimalist Info Row Directly Beneath Card */}
+                  <div className="mt-3 flex items-start justify-between gap-2 px-1">
+                    <div className="space-y-0.5 min-w-0 flex-1">
+                      <span className="text-[10px] font-bold tracking-widest uppercase text-[#eed08e] block">
+                        {reel.categoryTag}
                       </span>
-                      {reel.originalPrice > reel.price && (
-                        <span className="text-stone-400 line-through text-[11px]">
-                          {formatPrice(reel.originalPrice)}
+                      <h3 className="text-xs sm:text-[13.5px] font-medium tracking-tight leading-snug truncate text-white group-hover:text-[#eed08e] transition-colors">
+                        {reel.title}
+                      </h3>
+                      <div className="flex items-center gap-1.5 pt-0.5">
+                        <span className="text-xs sm:text-[13px] font-medium text-stone-200">
+                          {formatPrice(reel.price)}
                         </span>
-                      )}
-                      <span className="text-emerald-700 font-bold text-[10px] tracking-wide">
-                        {reel.discountBadge}
-                      </span>
+                        {reel.originalPrice > reel.price && (
+                          <span className="text-[11px] line-through text-stone-400">
+                            {formatPrice(reel.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons on Far Right */}
+                    <div className="flex items-center gap-1 shrink-0 pt-3">
+                      {/* Customize & Buy Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/elements?box=${reel.productId}`);
+                        }}
+                        title={`Customise & Buy ${reel.title}`}
+                        aria-label={`Customise & Buy ${reel.title}`}
+                        className="p-1.5 rounded-md text-[#eed08e] hover:text-white hover:bg-white/10 transition-all duration-200 hover:scale-110 cursor-pointer"
+                      >
+                        <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
+                      </button>
+
+                      {/* Quick Add to Cart Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => handleAddToCart(reel, e)}
+                        title={`Quick add ${reel.title} to cart`}
+                        aria-label={`Quick add ${reel.title} to cart`}
+                        className="p-1.5 rounded-md text-stone-300 hover:text-white hover:bg-white/10 transition-all duration-200 hover:scale-110 cursor-pointer"
+                      >
+                        {isAdded ? (
+                          <Check className="w-3.5 h-3.5 stroke-[2.5] text-emerald-400" />
+                        ) : (
+                          <Plus className="w-3.5 h-3.5 stroke-[2]" />
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>
+              );
+            })}
+          </motion.div>
+        </div>
 
-                {/* Full-Width Add To Cart Button */}
-                <button
-                  onClick={(e) => handleAddToCart(reel, e)}
-                  className={`w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-98 ${
-                    isAdded
-                      ? "bg-emerald-700 text-white"
-                      : "bg-[#072515] hover:bg-[#0c3823] text-white hover:text-[#eed08e]"
-                  }`}
-                >
-                  {isAdded ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Added to Bag</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingBag className="w-3.5 h-3.5" />
-                      <span>Add to Cart</span>
-                    </>
-                  )}
-                </button>
-              </div>
+        {/* BOTTOM: PROGRESS BAR & CINEMATIC INDICATOR */}
+        <div className="relative w-full px-6 sm:px-12 md:px-16 flex items-center justify-between text-xs text-stone-300 font-sans z-20 pt-2">
+          <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-stone-400">
+            <span className="text-[#eed08e] font-semibold">{REEL_ITEMS.length} Heirloom Editions</span>
+            <span>•</span>
+            <span className="hidden sm:inline">Click any creation to inspect in motion</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] uppercase tracking-widest text-stone-400 font-mono hidden sm:inline">Progress</span>
+            <div className="w-28 sm:w-48 h-1 bg-white/20 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-[#eed08e] to-[#c0881b] rounded-full"
+                style={{ scaleX: smoothProgress, transformOrigin: "0%" }}
+              />
             </div>
-          );
-        })}
+          </div>
+        </div>
       </div>
 
-      {/* SUBTLE PAGE INDICATOR DOTS (4 Pages) */}
-      <div className="flex items-center justify-center gap-1.5 pt-2">
-        {Array.from({ length: totalPages }).map((_, pageIdx) => (
-          <button
-            key={pageIdx}
-            onClick={() => goToPage(pageIdx)}
-            aria-label={`Go to page ${pageIdx + 1}`}
-            className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-              currentPage === pageIdx
-                ? "w-7 bg-[#8b5f10]"
-                : "w-2 bg-stone-300 hover:bg-stone-400"
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* FULLSCREEN SHOPPABLE PRODUCT REEL MODAL */}
+{/* FULLSCREEN SHOPPABLE PRODUCT REEL MODAL */}
       <AnimatePresence>
         {activeModalReel && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md">
@@ -631,7 +651,7 @@ export function ShoppableVideoReels() {
                 {/* Header Controls: Brand, Angle indicator, Close */}
                 <div className="flex items-center justify-between mt-2.5 text-white">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-[#072515] border border-[#eed08e]/60 flex items-center justify-center text-[#eed08e] font-serif text-xs font-bold shadow-xs">
+                    <div className="w-7 h-7 rounded-full bg-[#1C1B18] border border-[#eed08e]/60 flex items-center justify-center text-[#eed08e] font-serif text-xs font-bold shadow-xs">
                       K
                     </div>
                     <div>
@@ -674,6 +694,16 @@ export function ShoppableVideoReels() {
 
               {/* CENTER: PRODUCT PHOTOGRAPHY STORY STAGE */}
               <div className="relative flex-1 w-full h-full bg-gradient-to-b from-[#0b2416] via-[#04120a] to-black flex items-center justify-center overflow-hidden">
+                {/* Autoplaying Atmospheric Sacred Video */}
+                <video
+                  src="/videos/incense-burn.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover opacity-45 mix-blend-screen pointer-events-none"
+                />
+
                 {/* Radial Glow matching product element */}
                 <div
                   className="absolute inset-0 opacity-50 mix-blend-screen pointer-events-none"
@@ -763,7 +793,7 @@ export function ShoppableVideoReels() {
                         {activeModalReel.title}
                       </h4>
                       <div className="flex items-center gap-1.5 text-xs mt-0.5">
-                        <span className="font-extrabold text-[#072515]">
+                        <span className="font-extrabold text-[#1C1B18]">
                           {formatPrice(activeModalReel.price)}
                         </span>
                         {activeModalReel.originalPrice > activeModalReel.price && (
@@ -784,7 +814,7 @@ export function ShoppableVideoReels() {
                     className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-md cursor-pointer flex-shrink-0 ${
                       addedItemIds[activeModalReel.productId]
                         ? "bg-emerald-700 text-white"
-                        : "bg-[#072515] hover:bg-[#0c3823] text-white hover:text-[#eed08e]"
+                        : "bg-[#1C1B18] hover:bg-[#33312D] text-white hover:text-[#eed08e]"
                     }`}
                   >
                     {addedItemIds[activeModalReel.productId] ? (
@@ -818,6 +848,6 @@ export function ShoppableVideoReels() {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </section>
   );
 }

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
+import { AnimatedText, AnimatedWords } from "@/components/ui/animated-text";
 import {
   ArrowRight,
   Check,
@@ -268,10 +269,38 @@ const GOODIES_OPTIONS: GoodyOption[] = [
   },
 ];
 
+const CUSTOMISER_HERO_BANNERS = [
+  {
+    src: "/images/customizer/customise-5-elements.jpg",
+    alt: "Customise Kurma 5 Elements Presentation Suite",
+    title: "The 5 Elements Suite",
+  },
+  {
+    src: "/images/customizer/customise-wedding-trunk.jpg",
+    alt: "Customise Kurma Handcrafted Keepsake Trunk",
+    title: "Handcrafted Keepsake Trunk",
+  },
+  {
+    src: "/images/customizer/customise-corporate-marble.jpg",
+    alt: "Customise Kurma Italian Green Marble Box",
+    title: "Artisanal Green Marble Trunk",
+  },
+];
+
 function CustomiseContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { cartCount, setIsCartOpen, addToCart } = useCart();
+
+  // Hero banner auto-rotation
+  const [heroBannerIndex, setHeroBannerIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroBannerIndex((prev) => (prev + 1) % CUSTOMISER_HERO_BANNERS.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Customizer Step State: 1 | 2 | 3 | 4
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
@@ -572,55 +601,85 @@ function CustomiseContent() {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       {/* Top Navigation */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 w-full">
-        {/* HERO BANNER SECTION (Deep Green Theme matching Website) */}
-        <section className="relative w-full bg-[#072515] bg-[url('/images/textures/green-texture.png')] bg-repeat text-white border-b border-[#eed08e]/20 overflow-hidden py-12 sm:py-16 lg:py-20 px-4 sm:px-8 md:px-12">
-          {/* Subtle Gold Dot Pattern */}
-          <div className="absolute inset-0 bg-[radial-gradient(#eed08e_0.5px,transparent_0.5px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
-
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
-            {/* Left Content */}
-            <div className="lg:col-span-6 space-y-5 text-left">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] text-[#eed08e] uppercase">
-                <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-4 h-4 object-contain" />
-                <span>CUSTOMISE YOUR GIFT</span>
+        {/* HERO BANNER SECTION (Full-Width Immersive Cinematic Visual with Text Overlay) */}
+        <section className="relative w-full min-h-[480px] sm:min-h-[520px] lg:h-[580px] bg-[#0B0907] border-b border-[#DDD3C2] overflow-hidden flex items-center text-white">
+          {/* Background Images with Silky Smooth Crossfade */}
+          <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+            {CUSTOMISER_HERO_BANNERS.map((banner, idx) => (
+              <div
+                key={banner.src}
+                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                  idx === heroBannerIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
+              >
+                <Image
+                  src={banner.src}
+                  alt={banner.alt}
+                  fill
+                  priority={idx === 0}
+                  className="object-cover object-center filter brightness-[0.88] contrast-[1.03]"
+                  sizes="100vw"
+                />
               </div>
+            ))}
 
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal text-white leading-[1.15] tracking-tight">
-                Born from a love of,<br />
-                <span className="italic font-serif font-normal text-[#eed08e]">beautiful gifting</span>
-              </h1>
+            {/* Directional Ambient Vignette Gradient: Supreme text readability on left, product brilliance on right */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/25 sm:bg-gradient-to-r sm:from-[#0B0907]/92 sm:via-[#0B0907]/60 sm:to-transparent z-15" />
+          </div>
 
-              <div className="pt-2">
+          {/* Text Overlay Content */}
+          <div className="relative z-20 w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16">
+            <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-6 text-left">
+
+              <AnimatedText delay={0.1} yOffset={26}>
+                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white leading-[1.14] tracking-tight">
+                  Born from a love of,<br />
+                  <span className="italic font-serif font-normal text-[#EED08E]">beautiful gifting</span>
+                </h1>
+              </AnimatedText>
+
+              <p className="text-xs sm:text-sm md:text-base text-stone-200/90 leading-relaxed font-light max-w-lg">
+                Curate your own bespoke suite: choose your artisanal box, select signature elemental incense aromas, and personalise with solid brass turtle holders and custom medallions.
+              </p>
+
+              <div className="pt-2 sm:pt-3">
                 <button
+                  type="button"
                   onClick={() => scrollToStepContent(currentStep)}
-                  className="bg-[#eed08e] hover:bg-white text-[#072515] px-7 py-3.5 rounded-full text-xs font-bold tracking-widest uppercase transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2 cursor-pointer group"
+                  className="bg-[#FAF7F2] hover:bg-white text-[#1C1B18] px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl text-xs sm:text-sm font-bold tracking-widest uppercase transition-all shadow-xl hover:shadow-2xl inline-flex items-center gap-2.5 cursor-pointer active:scale-95 group"
                 >
                   <span>START BUILDING</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
+          </div>
 
-            {/* Right Hero Image (Restored layout with deep green container frame) */}
-            <div className="lg:col-span-6 relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-[#04190e]">
-              <Image
-                src="/images/product/suite-clean.png"
-                alt="Customise Luxury Gift Box"
-                fill
-                priority
-                unoptimized
-                className="object-cover object-center hover:scale-102 transition-transform duration-700"
+          {/* Elegant Slide Indicators (Bottom Right) */}
+          <div className="absolute bottom-5 right-5 sm:bottom-8 sm:right-10 lg:right-16 z-20 flex items-center gap-2 bg-black/45 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/15">
+            {CUSTOMISER_HERO_BANNERS.map((banner, idx) => (
+              <button
+                key={banner.src}
+                type="button"
+                onClick={() => setHeroBannerIndex(idx)}
+                aria-label={banner.title}
+                title={banner.title}
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  idx === heroBannerIndex
+                    ? "w-6 bg-[#EED08E]"
+                    : "w-2 bg-white/40 hover:bg-white/80"
+                }`}
               />
-            </div>
+            ))}
           </div>
         </section>
 
-        {/* STEPPER PROGRESS HEADER & STEP CONTAINER (Matching User Screenshot 100%) */}
+                {/* STEPPER PROGRESS HEADER & STEP CONTAINER (Matching User Screenshot 100%) */}
         <section id="stepper-header" className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-6 sm:pt-12 pb-4 relative z-20 scroll-mt-20 sm:scroll-mt-24">
           <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-8 md:p-12 shadow-xl">
             {/* 4-Step Stepper Progress Bar */}
@@ -639,7 +698,7 @@ function CustomiseContent() {
                       currentStep === 1
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : currentStep > 1
-                        ? "bg-[#0B2B1B] text-[#EED08E]"
+                        ? "bg-[#1E1E1C] text-white"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
                     }`}
                   >
@@ -647,7 +706,7 @@ function CustomiseContent() {
                   </div>
                   <span
                     className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 1 ? "text-[#0B2B1B]" : "text-stone-700"
+                      currentStep === 1 ? "text-[#1C1B18]" : "text-stone-700"
                     }`}
                   >
                     Choose your box
@@ -667,7 +726,7 @@ function CustomiseContent() {
                       currentStep === 2
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : currentStep > 2
-                        ? "bg-[#0B2B1B] text-[#EED08E]"
+                        ? "bg-[#1E1E1C] text-white"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
                     }`}
                   >
@@ -675,7 +734,7 @@ function CustomiseContent() {
                   </div>
                   <span
                     className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 2 ? "text-[#0B2B1B]" : "text-stone-700"
+                      currentStep === 2 ? "text-[#1C1B18]" : "text-stone-700"
                     }`}
                   >
                     Select Goodies
@@ -695,7 +754,7 @@ function CustomiseContent() {
                       currentStep === 3
                         ? "bg-[#121829] text-white shadow-md scale-110"
                         : currentStep > 3
-                        ? "bg-[#0B2B1B] text-[#EED08E]"
+                        ? "bg-[#1E1E1C] text-white"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
                     }`}
                   >
@@ -703,7 +762,7 @@ function CustomiseContent() {
                   </div>
                   <span
                     className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 3 ? "text-[#0B2B1B]" : "text-stone-700"
+                      currentStep === 3 ? "text-[#1C1B18]" : "text-stone-700"
                     }`}
                   >
                     Personalise It
@@ -729,7 +788,7 @@ function CustomiseContent() {
                   </div>
                   <span
                     className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 4 ? "text-[#0B2B1B]" : "text-stone-700"
+                      currentStep === 4 ? "text-[#1C1B18]" : "text-stone-700"
                     }`}
                   >
                     Review &amp; Place Order
@@ -745,14 +804,18 @@ function CustomiseContent() {
             {currentStep === 1 && (
               <div id="step-1-choose-box" className="space-y-8 animate-in fade-in duration-300 scroll-mt-24">
                 {/* Header Title Matching Screenshot */}
-                <div className="text-center max-w-2xl mx-auto space-y-3 pt-4">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider text-stone-500 uppercase">
-                    <Image src="/icon.png" alt="Kurma Emblem" width={14} height={14} className="w-3.5 h-3.5 object-contain" />
-                    <span>STEP 1</span>
+                <div className="text-center max-w-3xl mx-auto space-y-3 pt-4">
+                  <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
+                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+                      <span>STEP 1</span>
+                    </div>
+                    <AnimatedWords
+                      text="Choose your box"
+                      as="h2"
+                      className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                    />
                   </div>
-                  <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#0B2B1B] font-medium tracking-tight">
-                    Choose your box
-                  </h2>
                   <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl mx-auto">
                     Pick the size that fits your gifting moment. Includes: Gift Packaging, Notecard and Hand Wrapping
                   </p>
@@ -785,7 +848,7 @@ function CustomiseContent() {
 
                         {/* Box Specifications */}
                         <div className="min-w-0 flex-1 space-y-1">
-                          <h3 className="font-serif text-base sm:text-lg font-semibold text-[#0B2B1B] truncate">
+                          <h3 className="font-serif text-base sm:text-lg font-semibold text-[#1C1B18] truncate">
                             {box.title}
                           </h3>
                           <div className="text-xs text-stone-500 space-y-0.5 font-sans">
@@ -840,7 +903,7 @@ function CustomiseContent() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#0B2B1B] truncate">
+                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
                           <p className="text-xs sm:text-sm text-stone-500 font-sans mt-0.5">
@@ -867,7 +930,7 @@ function CustomiseContent() {
                     <div className="flex justify-end pt-2">
                       <button
                         onClick={() => handleStepChange(2)}
-                        className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 sm:px-10 py-3 rounded-full text-sm font-semibold tracking-wider uppercase transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2"
+                        className="bg-[#121829] hover:bg-[#33312D] text-white px-8 sm:px-10 py-3 rounded-full text-sm font-semibold tracking-wider uppercase transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center gap-2"
                       >
                         <span>Next</span>
                         <ChevronRight className="w-4 h-4 stroke-[2.5]" />
@@ -888,14 +951,18 @@ function CustomiseContent() {
             {currentStep === 2 && (
               <div id="step-2-fill-box" className="space-y-8 animate-in fade-in duration-300 scroll-mt-24">
                 {/* Header Title Matching Screenshot 1 */}
-                <div className="text-center max-w-2xl mx-auto space-y-3 pt-4">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider text-stone-500 uppercase">
-                    <Image src="/icon.png" alt="Kurma Emblem" width={14} height={14} className="w-3.5 h-3.5 object-contain" />
-                    <span>STEP 2</span>
+                <div className="text-center max-w-3xl mx-auto space-y-3 pt-4">
+                  <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
+                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+                      <span>STEP 2</span>
+                    </div>
+                    <AnimatedWords
+                      text="Fill your box"
+                      as="h2"
+                      className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                    />
                   </div>
-                  <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#0B2B1B] font-medium tracking-tight">
-                    Fill your box
-                  </h2>
                   <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl mx-auto">
                     Pick up to {selectedBox ? selectedBox.capacity : 4} items that fit your hamper
                   </p>
@@ -910,7 +977,7 @@ function CustomiseContent() {
                         key={item.id}
                         onClick={() => setSelectedProductModal(item)}
                         className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col justify-between group shadow-2xs hover:shadow-md cursor-pointer ${
-                          qty > 0 ? "border-[#0B2B1B] ring-1 ring-[#0B2B1B]" : "border-stone-200/90 hover:border-stone-400"
+                          qty > 0 ? "border-[#1C1B18] ring-1 ring-[#1C1B18]" : "border-stone-200/90 hover:border-stone-400"
                         }`}
                       >
                         <div>
@@ -925,14 +992,14 @@ function CustomiseContent() {
                             />
                             {/* Subtle Quick View hover pill badge */}
                             <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center pointer-events-none">
-                              <span className="bg-[#0B2B1B]/90 text-[#eed08e] text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                              <span className="bg-[#1C1B18]/90 text-[#eed08e] text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
                                 <span>View Details</span>
                               </span>
                             </div>
                           </div>
 
                           <div className="px-4">
-                            <h4 className="font-serif text-sm font-semibold text-[#0B2B1B] line-clamp-1 group-hover:text-[#8b5f10] transition-colors">
+                            <h4 className="font-serif text-sm font-semibold text-[#1C1B18] line-clamp-1 group-hover:text-[#8b5f10] transition-colors">
                               {item.name}
                             </h4>
                             <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5 font-sans">
@@ -957,7 +1024,7 @@ function CustomiseContent() {
                                 handleUpdateGoodyQty(item.id, 1);
                               }}
                               aria-label={`Add ${item.name}`}
-                              className="w-8 h-8 rounded-full bg-[#121829] hover:bg-[#0B2B1B] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
+                              className="w-8 h-8 rounded-full bg-[#121829] hover:bg-[#33312D] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -980,7 +1047,7 @@ function CustomiseContent() {
                                   e.stopPropagation();
                                   handleUpdateGoodyQty(item.id, 1);
                                 }}
-                                className="w-6 h-6 rounded-full bg-[#121829] text-white flex items-center justify-center hover:bg-[#0B2B1B] cursor-pointer text-xs font-bold"
+                                className="w-6 h-6 rounded-full bg-[#121829] text-white flex items-center justify-center hover:bg-[#33312D] cursor-pointer text-xs font-bold"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -1018,7 +1085,7 @@ function CustomiseContent() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base font-bold text-[#0B2B1B] truncate">
+                          <h4 className="font-serif text-base font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
                           <p className="text-xs text-stone-500 font-sans mt-0.5">
@@ -1043,7 +1110,7 @@ function CustomiseContent() {
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-xs font-semibold text-[#0B2B1B] truncate">
+                                  <h5 className="font-serif text-xs font-semibold text-[#1C1B18] truncate">
                                     {goody.name}
                                   </h5>
                                   <p className="text-[10px] text-stone-500 font-sans">
@@ -1099,7 +1166,7 @@ function CustomiseContent() {
 
                   <button
                     onClick={() => handleStepChange(3)}
-                    className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="bg-[#121829] hover:bg-[#33312D] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     Next
                   </button>
@@ -1111,14 +1178,18 @@ function CustomiseContent() {
             {currentStep === 3 && (
               <div id="make-it-personal-form" className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
                 {/* Header Title Matching Screenshot 1 */}
-                <div id="make-it-personal-heading" className="text-center max-w-2xl mx-auto space-y-3 pt-4 scroll-mt-24">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-medium tracking-wider text-stone-500 uppercase">
-                    <Image src="/icon.png" alt="Kurma Emblem" width={14} height={14} className="w-3.5 h-3.5 object-contain" />
-                    <span>STEP 3</span>
+                <div id="make-it-personal-heading" className="text-center max-w-3xl mx-auto space-y-3 pt-4 scroll-mt-24">
+                  <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
+                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+                      <span>STEP 3</span>
+                    </div>
+                    <AnimatedWords
+                      text="Make it personal"
+                      as="h2"
+                      className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                    />
                   </div>
-                  <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl text-[#0B2B1B] font-medium tracking-tight">
-                    Make it personal
-                  </h2>
                   <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl mx-auto">
                     Free with every gift box — no upsell.
                   </p>
@@ -1136,7 +1207,7 @@ function CustomiseContent() {
                         placeholder="e.g. Riya"
                         value={personalization.recipientName}
                         onChange={(e) => setPersonalization({ ...personalization, recipientName: e.target.value })}
-                        className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#0B2B1B]/20 text-sm sm:text-base shadow-2xs"
+                        className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#1C1B18]/20 text-sm sm:text-base shadow-2xs"
                       />
                     </div>
 
@@ -1149,7 +1220,7 @@ function CustomiseContent() {
                         placeholder="From"
                         value={personalization.senderName}
                         onChange={(e) => setPersonalization({ ...personalization, senderName: e.target.value })}
-                        className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#0B2B1B]/20 text-sm sm:text-base shadow-2xs"
+                        className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#1C1B18]/20 text-sm sm:text-base shadow-2xs"
                       />
                     </div>
                   </div>
@@ -1163,7 +1234,7 @@ function CustomiseContent() {
                       placeholder="A few warm words..."
                       value={personalization.giftNote}
                       onChange={(e) => setPersonalization({ ...personalization, giftNote: e.target.value })}
-                      className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#0B2B1B]/20 text-sm sm:text-base resize-none shadow-2xs"
+                      className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#1C1B18]/20 text-sm sm:text-base resize-none shadow-2xs"
                     />
                   </div>
 
@@ -1192,7 +1263,7 @@ function CustomiseContent() {
                               Complimentary
                             </span>
                           </div>
-                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#0B2B1B] mt-1.5 leading-snug">
+                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#1C1B18] mt-1.5 leading-snug">
                             Kurma Classic Greeting Card
                           </h4>
                           <p className="text-xs sm:text-sm text-stone-500 font-sans mt-1 leading-relaxed line-clamp-2">
@@ -1234,7 +1305,7 @@ function CustomiseContent() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base font-bold text-[#0B2B1B] truncate">
+                          <h4 className="font-serif text-base font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
                           <p className="text-xs text-stone-500 font-sans mt-0.5">
@@ -1259,7 +1330,7 @@ function CustomiseContent() {
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-xs font-semibold text-[#0B2B1B] truncate">
+                                  <h5 className="font-serif text-xs font-semibold text-[#1C1B18] truncate">
                                     {goody.name}
                                   </h5>
                                   <p className="text-[10px] text-stone-500 font-sans">
@@ -1315,7 +1386,7 @@ function CustomiseContent() {
 
                   <button
                     onClick={() => handleStepChange(4)}
-                    className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="bg-[#121829] hover:bg-[#33312D] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     Next
                   </button>
@@ -1327,14 +1398,18 @@ function CustomiseContent() {
             {currentStep === 4 && (
               <div id="step-4-review-hamper" className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
                 {/* Header */}
-                <div className="text-center space-y-2">
-                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest text-stone-500 uppercase">
-                    <span className="text-stone-400">✦</span>
-                    <span>STEP 4</span>
+                <div className="text-center max-w-3xl mx-auto space-y-2">
+                  <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
+                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+                      <span>STEP 4</span>
+                    </div>
+                    <AnimatedWords
+                      text="Review your hamper"
+                      as="h2"
+                      className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                    />
                   </div>
-                  <h2 className="font-serif text-3xl sm:text-4xl text-[#0B2B1B] font-medium">
-                    Review your hamper
-                  </h2>
                   <p className="text-xs sm:text-sm text-stone-600 font-sans">
                     Looks lovely. Anything to tweak?
                   </p>
@@ -1408,7 +1483,7 @@ function CustomiseContent() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base font-bold text-[#0B2B1B] truncate">
+                          <h4 className="font-serif text-base font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
                           <p className="text-xs text-stone-500 font-sans mt-0.5">
@@ -1433,7 +1508,7 @@ function CustomiseContent() {
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-xs font-semibold text-[#0B2B1B] truncate">
+                                  <h5 className="font-serif text-xs font-semibold text-[#1C1B18] truncate">
                                     {goody.name}
                                   </h5>
                                   <p className="text-[10px] text-stone-500 font-sans">
@@ -1489,7 +1564,7 @@ function CustomiseContent() {
 
                   <button
                     onClick={handleAddCustomHamperToCart}
-                    className="bg-[#121829] hover:bg-[#0B2B1B] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer flex items-center gap-2"
+                    className="bg-[#121829] hover:bg-[#33312D] text-white px-8 py-2.5 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wider transition-all shadow-md cursor-pointer flex items-center gap-2"
                   >
                     {addedToCartSuccess ? "Added!" : "Checkout gift"}
                   </button>
@@ -1533,7 +1608,7 @@ function CustomiseContent() {
                     className="object-contain p-2"
                   />
                   {selectedProductModal.category && (
-                    <span className="absolute top-2.5 left-2.5 bg-[#0B2B1B] text-[#eed08e] text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
+                    <span className="absolute top-2.5 left-2.5 bg-[#1E1E1C] text-white text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
                       {selectedProductModal.category}
                     </span>
                   )}
@@ -1546,7 +1621,7 @@ function CustomiseContent() {
                   <div className="text-[10px] font-bold uppercase tracking-widest text-[#8b5f10]">
                     <span>Sacred Hamper Goody</span>
                   </div>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0B2B1B] mt-1 leading-snug">
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18] mt-1 leading-snug">
                     {selectedProductModal.name}
                   </h3>
                   <div className="mt-2 flex items-baseline gap-2">
@@ -1595,7 +1670,7 @@ function CustomiseContent() {
                       return (
                         <button
                           onClick={() => handleUpdateGoodyQty(selectedProductModal.id, 1)}
-                          className="w-full py-3.5 px-6 rounded-full bg-[#121829] hover:bg-[#0B2B1B] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                          className="w-full py-3.5 px-6 rounded-full bg-[#121829] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                         >
                           <Plus className="w-4 h-4" />
                           <span>Add to Hamper (+ ₹{selectedProductModal.price})</span>
@@ -1616,7 +1691,7 @@ function CustomiseContent() {
                           </span>
                           <button
                             onClick={() => handleUpdateGoodyQty(selectedProductModal.id, 1)}
-                            className="w-7 h-7 rounded-full bg-[#121829] text-white flex items-center justify-center hover:bg-[#0B2B1B] cursor-pointer font-bold"
+                            className="w-7 h-7 rounded-full bg-[#121829] text-white flex items-center justify-center hover:bg-[#33312D] cursor-pointer font-bold"
                           >
                             <Plus className="w-3.5 h-3.5" />
                           </button>
@@ -1624,7 +1699,7 @@ function CustomiseContent() {
 
                         <button
                           onClick={() => setSelectedProductModal(null)}
-                          className="flex-1 py-3 px-4 rounded-full bg-[#0B2B1B] text-[#eed08e] text-xs font-semibold uppercase tracking-wider hover:bg-[#123e28] transition-colors cursor-pointer text-center"
+                          className="flex-1 py-3 px-4 rounded-full bg-[#1E1E1C] text-white text-xs font-semibold uppercase tracking-wider hover:bg-[#33312D] transition-colors cursor-pointer text-center"
                         >
                           Done
                         </button>
@@ -1648,7 +1723,7 @@ export default function CustomisePage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-[#0B2B1B] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#1C1B18] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

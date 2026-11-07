@@ -445,7 +445,7 @@ export function ElementCustomizerFlow({
             <button
               type="button"
               onClick={handleReset}
-              className="flex-1 py-3 px-4 rounded-xl bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-cinzel font-semibold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              className="flex-1 py-3 px-4 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-cinzel font-semibold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-colors"
             >
               <span>Customise Another Product</span>
             </button>
@@ -1004,7 +1004,7 @@ export function ElementCustomizerFlow({
                     <button
                       type="button"
                       onClick={handleApplyCoupon}
-                      className="px-4 py-2.5 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-semibold rounded-xl cursor-pointer transition-colors"
+                      className="px-4 py-2.5 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-semibold rounded-xl cursor-pointer transition-colors"
                     >
                       Apply
                     </button>

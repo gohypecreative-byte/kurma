@@ -3,14 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MotionConfig } from "motion/react";
-import { ChevronRight } from "lucide-react";
 import { RitualAndQuestions, ScrollProgress } from "@/components/home/experience";
 import { Navbar } from "@/components/layout/navbar";
 import { Hero } from "@/components/home/hero";
 import { PromoBanner } from "@/components/home/promo-banner";
 import { ProductShowcase } from "@/components/home/product-showcase";
 import { SolutionsAndTrust } from "@/components/home/solutions-and-trust";
-import { ShoppableVideoReels } from "@/components/shop/shoppable-video-reels";
 import { ComboPackBanner } from "@/components/home/combo-pack-banner";
 import { TrustStats } from "@/components/home/trust-stats";
 import { ReviewsSection } from "@/components/home/reviews-section";
@@ -42,7 +40,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-[#072515] sm:bg-[url('/images/textures/green-texture.png')] sm:bg-repeat text-white selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen w-full max-w-full flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
       <ScrollProgress />
       {/* E-Commerce Header with Cart Drawer Trigger */}
       <Navbar
@@ -52,66 +50,46 @@ export default function Home() {
       />
 
       {/* Main Content */}
-      <main id="main-content" className="flex-1 w-full max-w-full overflow-x-hidden">
+      <main id="main-content" className="flex-1 w-full max-w-full relative">
         <MotionConfig reducedMotion="user">
-        {/* Hero Section */}
-        <Hero
-          onExploreGifts={scrollToCatalog}
-          onExploreBestsellers={scrollToSolutions}
-        />
-
-        {/* Promo Banner Slider Section */}
-        <PromoBanner
-          onExploreGifts={scrollToCatalog}
-        />
-
-        {/* Master Catalog & 5 Elements Spotlight */}
-        <div id="catalog">
-          <ProductShowcase
-            onAddToCart={addToCart}
-            onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
+          {/* Sticky Hero Section (Pinned under top navbar while content below slides up over it) */}
+          <Hero
+            onExploreGifts={scrollToCatalog}
+            onExploreBestsellers={scrollToSolutions}
           />
-        </div>
 
-        {/* Sacred Shoppable Video Reels (Watch & Shop - 4 Products at a Time) */}
-        <section className="w-full bg-[#FAF8F5] py-14 sm:py-24 text-stone-900 border-t border-b border-[#072515]/10 mobile-defer-render">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-2">
-              <div>
-                <span className="text-xs font-semibold tracking-[0.25em] text-[#8C6215] uppercase">
-                  WATCH &amp; SHOP
-                </span>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-stone-900 tracking-tight font-normal mt-1">
-                  Sacred Rituals &amp; Heirloom Creations
-                </h2>
-                <div className="h-0.5 w-24 bg-[#c0881b] mt-2.5" />
-              </div>
-              <button
-                onClick={() => router.push("/shop")}
-                className="text-xs font-bold text-[#8b5f10] hover:text-[#6f4b0d] flex items-center gap-1 cursor-pointer self-start sm:self-end"
-              >
-                <span>Explore Full Shop</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+          {/* Overlapping Content Stack - Smoothly slides up and completely covers hero, then normal scroll continues */}
+          <div
+            id="home-content-stack"
+            className="relative z-10 bg-[#FAF7F2] shadow-[0_-20px_50px_rgba(28,27,24,0.12)] border-t border-[#EAE3D8] transform-gpu [transform:translate3d(0,0,0)] will-change-transform"
+          >
+            {/* Promo Banner Slider Section */}
+            <PromoBanner
+              onExploreGifts={scrollToCatalog}
+            />
+
+            {/* Master Catalog & 5 Elements Spotlight */}
+            <div id="catalog">
+              <ProductShowcase
+                onAddToCart={addToCart}
+                onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
+              />
             </div>
 
-            <ShoppableVideoReels />
+            <RitualAndQuestions />
+
+            {/* High-Quality Full Width Combo Pack Banner */}
+            <ComboPackBanner />
+
+            {/* Sticky Card Stack Reveal Section */}
+            <SolutionsAndTrust
+              onAddToCart={addToCart}
+              onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
+            />
+
+            {/* 3D Autoplay Carousel Review Section (Positioned directly above Footer) */}
+            <ReviewsSection onExploreProducts={scrollToCatalog} />
           </div>
-        </section>
-
-        <RitualAndQuestions />
-
-        {/* High-Quality Full Width Combo Pack Banner */}
-        <ComboPackBanner />
-
-        {/* Sticky Card Stack Reveal Section */}
-        <SolutionsAndTrust
-          onAddToCart={addToCart}
-          onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
-        />
-
-        {/* 3D Autoplay Carousel Review Section (Positioned directly above Footer) */}
-        <ReviewsSection onExploreProducts={scrollToCatalog} />
         </MotionConfig>
       </main>
 

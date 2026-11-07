@@ -1,10 +1,14 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useScroll, useTransform, useSpring, useReducedMotion } from "motion/react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
+import { AnimatedText, AnimatedWords } from "@/components/ui/animated-text";
+import { RealisticSmoke } from "@/components/home/realistic-smoke";
 import {
   Sun,
   Mountain,
@@ -25,13 +29,43 @@ import {
 
 export default function AboutPage() {
   const { cartCount, setIsCartOpen } = useCart();
+  const pillarsSectionRef = useRef<HTMLElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  const { scrollYProgress: pillarsScrollProgress } = useScroll({
+    target: pillarsSectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const smoothPillarsProgress = useSpring(pillarsScrollProgress, {
+    stiffness: 90,
+    damping: 24,
+    restDelta: 0.001,
+  });
+
+  // Parallax vertical offset for alternating cards on scroll
+  const parallaxYEven = useTransform(
+    smoothPillarsProgress,
+    [0, 1],
+    shouldReduceMotion ? [0, 0] : [16, -16]
+  );
+  const parallaxYOdd = useTransform(
+    smoothPillarsProgress,
+    [0, 1],
+    shouldReduceMotion ? [0, 0] : [-16, 16]
+  );
+  const parallaxGlowY = useTransform(
+    smoothPillarsProgress,
+    [0, 1],
+    shouldReduceMotion ? [0, 0] : [-35, 35]
+  );
 
   const corePillars = [
     {
       title: "100% Charcoal-Free Purity",
       subtitle: "Clean Smoke • Zero Toxic Binders",
       description:
-        "Conventional incense burns black charcoal and synthetic binders that release harmful benzene. Kurma relies exclusively on pure flower powders, natural plant resins, and therapeutic botanical oils that burn cleanly.",
+        "Handcrafted from pure flower powders, natural resins, and therapeutic botanical oils. 100% clean burning with zero toxic charcoal.",
       icon: Leaf,
       highlight: "Lab Certified Non-Toxic",
     },
@@ -39,7 +73,7 @@ export default function AboutPage() {
       title: "Moradabad Solid Brass Guild",
       subtitle: "Century-Old Heritage Metalcraft",
       description:
-        "Every Kurma turtle burner and sacred medallion is individually hand-cast in heavy solid brass by master metalsmiths in Moradabad, honoring generational repoussé techniques and antique patina finishes.",
+        "Individually hand-cast in pure solid brass by master metalsmiths in Moradabad, finished with an authentic antique patina.",
       icon: ShieldCheck,
       highlight: "Hand-Cast Brass Heirloom",
     },
@@ -47,7 +81,7 @@ export default function AboutPage() {
       title: "Empowering Women Artisans",
       subtitle: "Mysore Botanical Collectives",
       description:
-        "Our sacred agarbatti sticks are hand-rolled with devotion by rural women artisan collectives in Mysore, offering fair living wages, healthcare, and dignified spiritual livelihoods that honor tradition.",
+        "Hand-rolled with sacred devotion by women artisan collectives in Mysore, offering fair living wages and dignified livelihoods.",
       icon: HeartHandshake,
       highlight: "Dignified Fair Livelihoods",
     },
@@ -55,7 +89,7 @@ export default function AboutPage() {
       title: "Pancha Mahabhuta Harmony",
       subtitle: "Vedic Elemental Alchemy",
       description:
-        "Carefully formulated by Ayurvedic Vaidyas to restore balance among the five cosmic building blocks—Earth, Water, Fire, Air, and Space—cultivating tranquility and grounded consciousness in your sanctuary.",
+        "Ayurvedic formulations designed to restore balance across the five cosmic elements in your daily sanctuary.",
       icon: Sun,
       highlight: "Ayurvedic Formulation",
     },
@@ -65,9 +99,9 @@ export default function AboutPage() {
     {
       id: "earth",
       name: "Prithvi (Earth)",
-      desc: "Sacred Khus (Vetiver), Sandalwood & Forest Moss. Calms erratic thoughts, grounds restless energy, and restores deep inner stability.",
+      desc: "Sacred Khus, Sandalwood & Forest Moss. Grounds restless energy and restores stability.",
       icon: Mountain,
-      accent: "border-amber-700/25 bg-amber-50/70 text-amber-950",
+      accent: "border-[#c8b393] bg-[#FAF8F5] text-stone-900",
       tag: "Root Chakra • Muladhara",
       elementColor: "#936329",
       href: "/products/fragrance-earth",
@@ -76,9 +110,9 @@ export default function AboutPage() {
     {
       id: "water",
       name: "Jal (Water)",
-      desc: "Sacred Blue Lotus, Crisp Rain Accord & Himalayan Amber. Cleanses emotional stagnation, washes away fatigue, and restores fluidity.",
+      desc: "Sacred Blue Lotus, Crisp Rain & Amber. Cleanses emotional fatigue and restores fluidity.",
       icon: Droplets,
-      accent: "border-sky-700/25 bg-sky-50/70 text-sky-950",
+      accent: "border-[#bed3e2] bg-[#F4F8FB] text-stone-900",
       tag: "Sacral Chakra • Svadhisthana",
       elementColor: "#226a8d",
       href: "/products/fragrance-water",
@@ -87,9 +121,9 @@ export default function AboutPage() {
     {
       id: "fire",
       name: "Agni (Fire)",
-      desc: "Kashmiri Saffron, Golden Clove Bark & Smoked Dammar Resin. Ignites willpower, sharpens mental focus, and dispels lethargy.",
+      desc: "Kashmiri Saffron, Golden Clove & Dammar. Ignites willpower and sharpens mental focus.",
       icon: Flame,
-      accent: "border-orange-700/25 bg-orange-50/70 text-orange-950",
+      accent: "border-[#e8c7be] bg-[#FAF5F3] text-stone-900",
       tag: "Solar Plexus • Manipura",
       elementColor: "#b33f1b",
       href: "/products/fragrance-fire",
@@ -98,9 +132,9 @@ export default function AboutPage() {
     {
       id: "air",
       name: "Vayu (Air)",
-      desc: "Desi Gulab Petals, Mountain Camphor & Alpine Breeze. Opens the heart, uplifts heavy atmospheres, and liberates the breath.",
+      desc: "Desi Gulab Petals & Alpine Camphor. Opens the heart and uplifts the spirit.",
       icon: Wind,
-      accent: "border-teal-700/25 bg-teal-50/70 text-teal-950",
+      accent: "border-[#d0dfd8] bg-[#F5FAF8] text-stone-900",
       tag: "Heart Chakra • Anahata",
       elementColor: "#3e7968",
       href: "/products/fragrance-air",
@@ -109,9 +143,9 @@ export default function AboutPage() {
     {
       id: "space",
       name: "Akasha (Space)",
-      desc: "Wild Assam Oudh (Agarwood), Sacred Frankincense & Rare Myrrh. Opens transcendent awareness and invites deep cosmic stillness.",
+      desc: "Wild Assam Oudh, Frankincense & Myrrh. Invites transcendent awareness and stillness.",
       icon: Compass,
-      accent: "border-purple-700/25 bg-purple-50/70 text-purple-950",
+      accent: "border-[#d6cde3] bg-[#F8F5FB] text-stone-900",
       tag: "Crown Chakra • Sahasrara",
       elementColor: "#57407a",
       href: "/products/fragrance-space",
@@ -120,68 +154,55 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       {/* Navigation */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       {/* 1. EDITORIAL LUXURY HERITAGE HERO */}
-      <section className="w-full bg-[#072515] bg-[radial-gradient(ellipse_at_center,#0b3822_0%,#04160d_100%)] border-b border-[#eed08e]/30 text-white relative overflow-hidden py-10 sm:py-20 lg:py-24">
-        {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#eed08e_0.75px,transparent_0.75px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
+      <section className="relative w-full min-h-[460px] sm:min-h-[500px] lg:min-h-[540px] lg:h-[64vh] lg:max-h-[600px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center text-[#1C1B18]">
+        {/* Full-Bleed End-to-End Background Image */}
+        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+          <Image
+            src="/images/about/about-hero-banner-new.jpg"
+            alt="Kurma 5 Sacred Elements Suite, Handcrafted Solid Brass Turtle Burner and Mysore Sandalwood"
+            fill
+            priority
+            className="object-cover object-right md:object-[center_35%]"
+            sizes="100vw"
+          />
+          {/* Realistic Flowing Sandalwood Smoke Animation */}
+          <RealisticSmoke preset="about" />
+        </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-7 text-center relative z-10">
-          {/* Brand Seal */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto relative">
-            <Image
-              src="/images/brand/kurma-turtle-transparent.png"
-              alt="Kurma Turtle Insignia"
-              fill
-              unoptimized
-              priority
-              className="object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]"
-            />
-          </div>
+        {/* Content Container - Positioned to the side (left) so it doesn't overlap products */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16">
+          <div className="max-w-md sm:max-w-lg lg:max-w-[480px] xl:max-w-[520px] text-left space-y-4 sm:space-y-5">
+            {/* Main Title */}
+            <div>
+              <AnimatedText delay={0.1} yOffset={20}>
+                <h1 className="text-3xl sm:text-4xl lg:text-[44px] xl:text-5xl font-serif font-normal text-[#1C1B18] tracking-tight leading-[1.14]">
+                  Scents That Connect Worlds
+                </h1>
+              </AnimatedText>
+            </div>
 
-          {/* Badge */}
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-[#eed08e]/50 bg-[#0c3823]/80 text-[#eed08e] text-xs font-serif tracking-widest uppercase">
-            <span>The Sacred Legend of Kurma</span>
-          </div>
+            {/* Reduced, Impactful Description */}
+            <AnimatedText delay={0.25} yOffset={14}>
+              <p className="text-xs sm:text-sm md:text-base text-[#1C1B18] leading-relaxed font-sans max-w-md font-normal">
+                100% charcoal-free sacred botanical incense, crafted with devotion in Mysore for quiet living and peaceful meditation.
+              </p>
+            </AnimatedText>
 
-          {/* Main Title */}
-          <div className="space-y-2 max-w-4xl mx-auto">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-light text-white tracking-wide leading-tight">
-              Scents That Connect Worlds
-            </h1>
-            <p className="text-2xl sm:text-3xl lg:text-4xl font-serif italic text-[#eed08e]">
-              Pure Fragrance &amp; Higher Consciousness
-            </p>
-          </div>
-
-          {/* Gold Diamond Accent Line */}
-          <div className="flex items-center justify-center gap-3 py-1">
-            <div className="h-px w-24 sm:w-36 bg-gradient-to-r from-transparent via-[#eed08e]/70 to-transparent" />
-            <div className="w-2.5 h-2.5 rotate-45 border border-[#eed08e] bg-[#072515]" />
-            <div className="h-px w-24 sm:w-36 bg-gradient-to-r from-transparent via-[#eed08e]/70 to-transparent" />
-          </div>
-
-          <p className="text-xs sm:text-base text-stone-300 leading-relaxed font-sans max-w-2xl mx-auto font-light">
-            Kurma was born from an unyielding devotion to restore ancient Vedic purity to modern sanctuaries. In an era of synthetic chemical perfumes and toxic charcoal binders, we chose the uncompromising path of 100% charcoal-free botanical craftsmanship.
-          </p>
-
-          {/* Action CTAs */}
-          <div className="pt-3 flex flex-wrap items-center justify-center gap-3.5 sm:gap-4">
-            <Link
-              href="/shop"
-              className="px-8 py-3.5 rounded-xl bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-xs font-sans font-bold uppercase tracking-widest shadow-lg hover:shadow-xl transition-all cursor-pointer active:scale-98"
-            >
-              Explore Master Shop
-            </Link>
-            <Link
-              href="/elements"
-              className="px-8 py-3.5 rounded-xl border border-[#eed08e]/70 hover:border-[#eed08e] bg-white/10 hover:bg-white/15 text-white text-xs font-sans font-bold uppercase tracking-widest transition-all backdrop-blur-sm cursor-pointer"
-            >
-              5 Elements Suite
-            </Link>
+            {/* Action CTA */}
+            <div className="pt-2">
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full sm:rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-semibold tracking-wider uppercase shadow-md hover:shadow-lg transition-all active:scale-[0.98] group cursor-pointer"
+              >
+                <span>Explore Master Shop</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -192,39 +213,29 @@ export default function AboutPage() {
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
           {/* Left Visual: Curated Master Suite Showcase */}
           <div className="lg:col-span-5 relative">
-            <div className="relative aspect-[4/3] sm:aspect-square rounded-3xl overflow-hidden bg-gradient-to-b from-white to-[#FAF8F5] border border-stone-200/90 shadow-xl p-8 flex items-center justify-center group">
-              <div className="relative w-full h-full transition-transform duration-700 group-hover:scale-105">
-                <Image
-                  src="/images/product/suite-clean.png"
-                  alt="Kurma 5 Elements Complete Suite"
-                  fill
-                  unoptimized
-                  className="object-contain drop-shadow-2xl"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                />
-              </div>
-
-              {/* Float Tag */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between text-xs">
-                <span className="font-serif font-bold text-stone-900">
-                  The Definitive Suite
-                </span>
-                <span className="text-[#8b5f10] font-sans font-bold text-[11px] uppercase tracking-wider">
-                  135 Sacred Sticks
-                </span>
-              </div>
+            <div
+              className="relative w-full aspect-[1280/853] rounded-3xl overflow-hidden bg-[#1E1915] border border-stone-200/90 shadow-xl group"
+              style={{ aspectRatio: "1280 / 853" }}
+            >
+              <Image
+                src="/images/product/image7.png"
+                alt="Kurma 5 Elements Complete Suite"
+                fill
+                unoptimized
+                className="object-contain object-center group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+              />
             </div>
           </div>
 
           {/* Right Narrative */}
           <div className="lg:col-span-7 space-y-5 sm:space-y-6">
             <div className="space-y-2">
-              <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold">
-                Cosmic Heritage &amp; Foundation
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight">
-                Why Kurma? The Sacred Tortoise Avatar
-              </h2>
+              <AnimatedWords
+                text="Why Kurma? The Sacred Tortoise Avatar"
+                as="h2"
+                className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight"
+              />
             </div>
 
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
@@ -234,55 +245,53 @@ export default function AboutPage() {
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
               Lord Vishnu manifested as <strong className="font-semibold text-stone-900">Kurma</strong>—the divine tortoise—plunging into the primal depths to bear the entire cosmos upon His golden shell. From this unshakeable foundation arose the celestial Parijata bloom, sacred resins, and primordial incense that brought stillness to creation.
             </p>
-
-            {/* Sacred Gita Quote Box */}
-            <div className="border-l-3 border-[#8b5f10] pl-4 py-3 bg-[#fbf6ea] rounded-r-2xl space-y-1.5 border border-l-0 border-[#eed08e]/50">
-              <p className="text-xs sm:text-sm italic text-stone-900 font-serif leading-relaxed">
-                &ldquo;Just as the tortoise withdraws its limbs inward into supreme stillness, true sacred incense withdraws the restless senses into peaceful meditation.&rdquo;
-              </p>
-              <span className="text-[10px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block">
-                — Srimad Bhagavad Gita • Chapter 2, Verse 58
-              </span>
-            </div>
           </div>
         </section>
 
         {/* 3. THE 4 UNCOMPROMISED CORE PILLARS */}
-        <section className="space-y-10">
+        <section ref={pillarsSectionRef} className="space-y-10 relative">
+          {/* Subtle Parallax Ambient Glow */}
+          <motion.div
+            style={{ y: parallaxGlowY }}
+            className="absolute -top-12 left-1/2 -translate-x-1/2 w-[700px] max-w-full h-[320px] bg-[radial-gradient(ellipse_at_center,rgba(238,208,142,0.2)_0%,transparent_70%)] pointer-events-none blur-3xl -z-10"
+          />
+
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold">
-              Our Sacred Principles
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal">
-              Sacred Purity in Every Thread
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-500 font-sans">
-              We reject commercial shortcuts in favor of generational heritage, clean air, and uncompromised spiritual sanctity.
-            </p>
+            <AnimatedWords
+              text="Sacred Purity in Every Thread"
+              as="h2"
+              className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal justify-center"
+            />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-3 xl:gap-5">
             {corePillars.map((pillar, idx) => {
               const Icon = pillar.icon;
               return (
-                <div
+                <motion.div
                   key={idx}
-                  className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-7 space-y-4 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+                  initial={{ opacity: 0, y: 35 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{
+                    duration: 0.55,
+                    delay: idx * 0.1,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  style={{ y: idx % 2 === 0 ? parallaxYEven : parallaxYOdd }}
+                  whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                  className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-6 lg:px-4 lg:py-5 xl:px-5 xl:py-6 space-y-4 shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between group cursor-default"
                 >
                   <div className="space-y-3.5">
-                    {/* Compact Icon & Title Row */}
-                    <div className="flex items-center gap-2.5 sm:gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-[#072515] text-[#eed08e] border border-[#eed08e]/40 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                        <Icon className="w-4 h-4 stroke-[1.8]" />
+                    {/* Compact Icon & Title Row - Guaranteed single-line fit */}
+                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-[#1E1E1C] text-white border border-[#eed08e]/40 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                        <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
                       </div>
-                      <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900 leading-snug">
+                      <h3 className="font-serif text-[13.5px] sm:text-base lg:text-[12px] xl:text-[13.5px] 2xl:text-[15px] font-bold text-stone-900 tracking-tight min-w-0 leading-tight">
                         {pillar.title}
                       </h3>
                     </div>
-
-                    <p className="text-[10.5px] font-sans text-[#8b5f10] font-bold uppercase tracking-wider">
-                      {pillar.subtitle}
-                    </p>
 
                     <p className="text-xs text-stone-600 leading-relaxed font-sans">
                       {pillar.description}
@@ -293,48 +302,32 @@ export default function AboutPage() {
                     <Check className="w-3.5 h-3.5 text-emerald-700" />
                     <span>{pillar.highlight}</span>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
         </section>
 
         {/* 4. THE 5 ELEMENTS (Pancha Mahabhuta) SANCTUARY SHOWCASE */}
-        <section className="bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-10 lg:p-12 shadow-sm space-y-10">
+        <section className="bg-[#EDE1D1] rounded-2xl sm:rounded-3xl border border-[#DDD3C2] p-4 sm:p-8 lg:p-12 shadow-sm space-y-8 sm:space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold">
-              Pancha Mahabhuta Alchemy
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal">
-              Harmonizing the Five Cosmic Elements
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-500 font-sans">
-              Every Kurma formulation corresponds to one of the five primordial building blocks of human life and sanctuary space.
-            </p>
+            <AnimatedWords
+              text="Harmonizing the Five Cosmic Elements"
+              as="h2"
+              className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal justify-center"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {elementHighlights.map((el) => {
-              const Icon = el.icon;
-              return (
-                <Link
+            {elementHighlights.map((el) => (
+              <Link
                   key={el.id}
                   href={el.href}
                   className={`rounded-2xl border p-5 flex flex-col justify-between space-y-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group ${el.accent}`}
                 >
-                  <div className="space-y-3">
-                    {/* Element Icon & Chakra Tag */}
-                    <div className="flex items-center justify-between">
-                      <div className="w-9 h-9 rounded-xl bg-white shadow-xs flex items-center justify-center text-stone-800">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="text-[10px] font-sans font-bold uppercase tracking-wider opacity-75">
-                        {el.name.split(" ")[0]}
-                      </span>
-                    </div>
-
+                  <div className="space-y-3 text-center">
                     {/* Product Image preview */}
-                    <div className="relative w-full h-24 my-2">
+                    <div className="relative w-full h-28 my-1">
                       <Image
                         src={el.image}
                         alt={el.name}
@@ -348,9 +341,6 @@ export default function AboutPage() {
                       <h3 className="font-serif text-sm sm:text-base font-bold text-stone-900">
                         {el.name}
                       </h3>
-                      <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-stone-500">
-                        {el.tag}
-                      </p>
                     </div>
 
                     <p className="text-xs leading-relaxed font-sans text-stone-700">
@@ -358,111 +348,54 @@ export default function AboutPage() {
                     </p>
                   </div>
 
-                  <div className="pt-2 flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider group-hover:underline">
+                  <div className="pt-2 flex items-center justify-center gap-1 text-[11px] font-bold uppercase tracking-wider group-hover:underline">
                     <span>Explore Fragrance</span>
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* 5. HEIRLOOM CRAFTSMANSHIP & SOLID BRASS GUILD */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center bg-[#072515] text-white rounded-3xl p-5 sm:p-8 md:p-12 lg:p-16 border border-[#eed08e]/35 relative overflow-hidden">
-          {/* Subtle Ambient Radial Lighting */}
-          <div className="absolute w-[400px] h-[400px] rounded-full bg-[#eed08e]/10 blur-3xl -top-20 -right-20 pointer-events-none" />
-
-          {/* Left Narrative */}
-          <div className="lg:col-span-7 space-y-6 z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#eed08e]/15 border border-[#eed08e]/40 text-[#eed08e] text-xs font-serif uppercase tracking-widest">
-              <Award className="w-3.5 h-3.5" />
-              <span>Artisanal Heirloom Burners</span>
-            </div>
-
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-light text-white leading-tight">
-              Hand-Cast Solid Brass Turtle Burners
-            </h2>
-
-            <p className="text-xs sm:text-base text-stone-300 leading-relaxed font-sans max-w-xl">
-              Sculpted in pure solid brass by hereditary artisans in Moradabad, each turtle burner features detailed paisley repoussé carvings, an authentic antique hand-buffed patina, and a weighted base that provides sacred stability to your daily rituals.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs text-stone-300 font-sans">
-              <div className="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
-                <Check className="w-4 h-4 text-[#eed08e]" />
-                <span>Solid Cast Brass</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
-                <Check className="w-4 h-4 text-[#eed08e]" />
-                <span>Single-Hole Burner</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10">
-                <Check className="w-4 h-4 text-[#eed08e]" />
-                <span>Antique Patina</span>
-              </div>
-            </div>
-
-            <div className="pt-2 flex items-center gap-4">
-              <Link
-                href="/products/turtle-incense-holder"
-                className="px-8 py-3.5 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-xs font-sans font-bold uppercase tracking-widest rounded-xl transition-all shadow-lg active:scale-98"
-              >
-                Customise Turtle Burner
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Product Image */}
-          <div className="lg:col-span-5 relative w-full h-[300px] sm:h-[400px] flex items-center justify-center z-10">
-            <Image
-              src="/images/product/turtle-holder-clean.png"
-              alt="Handcrafted Solid Brass Turtle Incense Holder"
-              fill
-              unoptimized
-              className="object-contain filter drop-shadow-[0_20px_40px_rgba(0,0,0,0.85)] hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 1024px) 100vw, 40vw"
-            />
+              ))}
           </div>
         </section>
 
         {/* 6. BESPOKE SANCTUARY & EXECUTIVE GIFT TRUNKS */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#FAF8F5] rounded-3xl border border-stone-200/90 p-8 sm:p-12 shadow-sm">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center bg-[#EDE1D1] rounded-2xl sm:rounded-3xl border border-[#DDD3C2] p-4 sm:p-8 lg:p-12 shadow-sm">
           {/* Trunk Image */}
-          <div className="lg:col-span-5 relative w-full h-[280px] sm:h-[360px] rounded-2xl overflow-hidden bg-white border border-stone-200 p-6 flex items-center justify-center">
+          <div
+            className="lg:col-span-5 relative w-full aspect-[1280/853] rounded-2xl overflow-hidden bg-white border border-[#DDD3C2] shadow-sm group"
+            style={{ aspectRatio: "1280 / 853" }}
+          >
             <Image
-              src="/images/product/marble-box-clean.png"
+              src="/images/product/image9.png"
               alt="Kurma Flagship Marble Keepsake Trunk"
               fill
               unoptimized
-              className="object-contain hover:scale-105 transition-transform duration-500"
+              className="object-contain object-center group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 1024px) 100vw, 40vw"
             />
           </div>
 
           <div className="lg:col-span-7 space-y-4 sm:space-y-5">
-            <span className="text-[11px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block">
-              Bespoke Sanctuary Privileges
-            </span>
 
-            <h2 className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight">
-              Heirloom Trunks for Milestone Celebrations
-            </h2>
+            <AnimatedWords
+              text="Heirloom Trunks for Milestone Celebrations"
+              as="h2"
+              className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight"
+            />
 
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-sans">
               From landmark corporate gifting and wedding celebrations to intimate temple consecrations, Kurma creates bespoke keepsake trunks with personalized engraved brass plaques, hand-lettered blessing scrolls, and pure silk tassels.
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <Link
                 href="/contact"
-                className="px-7 py-3 rounded-xl bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-md active:scale-98"
+                className="px-7 py-3 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-md active:scale-98"
               >
                 Request Bespoke Consultation
               </Link>
               <Link
                 href="/shop"
-                className="px-7 py-3 rounded-xl border border-stone-300 hover:border-stone-400 bg-white text-stone-800 text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-xs"
+                className="px-7 py-3 rounded-xl border border-[#DDD3C2] hover:border-stone-400 bg-white text-stone-800 text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-xs"
               >
                 Browse Ready Trunks
               </Link>

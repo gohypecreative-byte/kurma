@@ -174,7 +174,7 @@ export default function ReviewsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 space-y-12 sm:space-y-16">
@@ -217,7 +217,7 @@ export default function ReviewsPage() {
           <div className="pt-2">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-sm cursor-pointer"
             >
               <PenLine className="w-3.5 h-3.5" />
               <span>Share Your Experience</span>
@@ -300,7 +300,7 @@ export default function ReviewsPage() {
       {/* Review Submission Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl border border-stone-200 max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative">
+          <div className="bg-white rounded-2xl border border-stone-200 max-w-lg w-full max-h-[92vh] overflow-y-auto p-5 sm:p-8 space-y-5 shadow-2xl relative">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 p-1 text-stone-400 hover:text-stone-800 cursor-pointer"
@@ -333,7 +333,7 @@ export default function ReviewsPage() {
                       value={formAuthor}
                       onChange={(e) => setFormAuthor(e.target.value)}
                       placeholder="e.g. Maya Iyer"
-                      className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#072515]"
+                      className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#1E1E1C]"
                     />
                   </div>
                   <div>
@@ -342,7 +342,7 @@ export default function ReviewsPage() {
                       value={formLocation}
                       onChange={(e) => setFormLocation(e.target.value)}
                       placeholder="e.g. Mumbai"
-                      className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#072515]"
+                      className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#1E1E1C]"
                     />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function ReviewsPage() {
                   <select
                     value={formProduct}
                     onChange={(e) => setFormProduct(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#1E1E1C]"
                   >
                     <option value="Elements in Harmony Marble Gift Box">Elements in Harmony Marble Gift Box</option>
                     <option value="Kurma MDF Keepsake Gift Box">Kurma MDF Keepsake Gift Box</option>
@@ -390,7 +390,7 @@ export default function ReviewsPage() {
                     value={formTitle}
                     onChange={(e) => setFormTitle(e.target.value)}
                     placeholder="Summary of your experience"
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#1E1E1C]"
                   />
                 </div>
 
@@ -402,7 +402,7 @@ export default function ReviewsPage() {
                     value={formContent}
                     onChange={(e) => setFormContent(e.target.value)}
                     placeholder="Describe the fragrance, burning experience, or gift box quality..."
-                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-hidden focus:border-[#1E1E1C]"
                   />
                 </div>
 
@@ -416,7 +416,7 @@ export default function ReviewsPage() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-lg bg-[#072515] text-[#eed08e] font-cinzel font-semibold uppercase tracking-wider hover:bg-[#0c3823] cursor-pointer"
+                    className="px-5 py-2 rounded-lg bg-[#1E1E1C] text-white font-cinzel font-semibold uppercase tracking-wider hover:bg-[#0c3823] cursor-pointer"
                   >
                     Submit Review
                   </button>

@@ -58,7 +58,7 @@ export default function GiftTrunksPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-10 space-y-12 sm:space-y-16">
@@ -74,7 +74,7 @@ export default function GiftTrunksPage() {
           <div className="flex items-center justify-center gap-3 pt-2">
             <button
               onClick={() => handleCustomize(trunkProducts[0])}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#072515] hover:bg-[#0d3b23] text-[#eed08e] text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-sm cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-sm cursor-pointer active:scale-95"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>Launch Bespoke Customizer</span>
@@ -97,6 +97,8 @@ export default function GiftTrunksPage() {
                 discount={getDiscountPercent(product.price, product.originalPrice)}
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
+                objectFit="object-contain object-center"
+                imagePadding="p-2.5 sm:p-3.5"
               />
             ))}
           </div>

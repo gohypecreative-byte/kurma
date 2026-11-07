@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring } from "motion/react";
-import { ArrowRight, Plus, Heart, Check, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, HelpCircle, Bookmark } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
+import { Plus, Heart, Check, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
 
@@ -30,6 +30,8 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹4,299",
     originalPrice: "₹4,999",
     image: "/images/product/suite-portrait.jpg",
+    cleanImage: "/images/product/suite-clean.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/suite-portrait.jpg",
       "/images/product/suite-clean.png",
@@ -46,6 +48,8 @@ const BESTSELLER_ITEMS = [
     price: 4599,
     priceDisplay: "₹4,599",
     image: "/images/product/trunk-portrait.jpg",
+    cleanImage: "/images/product/mdf-box-clean.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/trunk-portrait.jpg",
       "/images/product/mdf-box-clean.png",
@@ -63,6 +67,8 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹2,899",
     originalPrice: "₹5,699",
     image: "/images/product/earth-portrait.jpg",
+    cleanImage: "/images/product/earth-front.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/earth-portrait.jpg",
       "/images/product/earth-front.png",
@@ -79,6 +85,8 @@ const BESTSELLER_ITEMS = [
     price: 4899,
     priceDisplay: "₹4,899",
     image: "/images/product/fire-portrait.jpg",
+    cleanImage: "/images/product/fire-front.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/fire-portrait.jpg",
       "/images/product/fire-front.png",
@@ -96,6 +104,8 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹4,999",
     originalPrice: "₹5,999",
     image: "/images/product/marble-portrait.jpg",
+    cleanImage: "/images/product/marble-box-clean.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/marble-portrait.jpg",
       "/images/product/marble-box-clean.png",
@@ -113,6 +123,8 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹899",
     originalPrice: "₹1,199",
     image: "/images/product/turtle-holder-portrait.jpg",
+    cleanImage: "/images/product/turtle-holder-clean.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/turtle-holder-portrait.jpg",
       "/images/product/turtle-holder-clean.png",
@@ -130,6 +142,8 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹499",
     originalPrice: "₹599",
     image: "/images/product/water-portrait.jpg",
+    cleanImage: "/images/product/water-front.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/water-portrait.jpg",
       "/images/product/water-front.png",
@@ -147,6 +161,8 @@ const BESTSELLER_ITEMS = [
     priceDisplay: "₹499",
     originalPrice: "₹599",
     image: "/images/product/space-portrait.jpg",
+    cleanImage: "/images/product/space-front.png",
+    video: "/videos/incense-burn.mp4",
     images: [
       "/images/product/space-portrait.jpg",
       "/images/product/space-front.png",
@@ -161,7 +177,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-wedding",
     badge: "WEDDING",
     title: "Wedding & Festive Gifting",
-    description: "Return gifts, welcome hampers & festive suites curated with sacred agarbatti & solid brassware.",
+    description: "Return gifts & luxury festive suites.",
     tags: ["Return Gifts", "Bulk Orders", "Wedding Suites"],
     image: "/images/product/earth-portrait.jpg",
     images: [
@@ -175,7 +191,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-corporate",
     badge: "CORPORATE",
     title: "Corporate & Executive Suites",
-    description: "Diwali hampers, client appreciation & employee gifting with GST billing & custom brass plaques.",
+    description: "Executive hampers & client appreciation.",
     tags: ["Diwali Hampers", "Branded Trunks", "Bulk Gifting"],
     image: "/images/product/fire-portrait.jpg",
     images: [
@@ -189,7 +205,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-custom",
     badge: "BESPOKE",
     title: "Custom & Bespoke Rituals",
-    description: "Pick your hamper, select your 5 elemental agarbatti fragrances, and personalize with custom brass seals.",
+    description: "Bespoke curation & custom brass seals.",
     tags: ["Build Yours", "Brass Engraving", "Custom Blends"],
     image: "/images/product/water-portrait.jpg",
     images: [
@@ -203,7 +219,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-celebrations",
     badge: "CELEBRATION",
     title: "Sacred Celebrations",
-    description: "Griha Pravesh, Puja rituals, Anniversaries & housewarming gifts infused with pure essential aromas.",
+    description: "Sacred puja rituals & celebrations.",
     tags: ["Griha Pravesh", "Puja Rituals", "Anniversary"],
     image: "/images/product/space-portrait.jpg",
     images: [
@@ -217,7 +233,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-grihapravesh",
     badge: "HOUSEWARMING",
     title: "Griha Pravesh & Sanctum Blessing",
-    description: "Purify new beginnings with charcoal-free sacred resins, holy woods, and solid brass turtle auspiciousness.",
+    description: "Auspicious purification for new homes.",
     tags: ["New Home", "Vastu Shanti", "Auspicious"],
     image: "/images/product/air-portrait.jpg",
     images: [
@@ -231,7 +247,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-deepawali",
     badge: "FESTIVAL OF LIGHTS",
     title: "Deepawali & Grand Festivities",
-    description: "Illuminating heirloom boxes, fragrant temple sambrani, and regal brassware to celebrate divine radiance.",
+    description: "Heirloom suites for grand festivities.",
     tags: ["Diwali Suites", "Royal Packaging", "Bulk Festive"],
     image: "/images/product/marble-portrait.jpg",
     images: [
@@ -245,7 +261,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-anniversary",
     badge: "MILESTONE",
     title: "Anniversary & Heirloom Keepsakes",
-    description: "Honor enduring bonds with custom brass engraved plaques, gold foil crests, and everlasting scents.",
+    description: "Milestone keepsakes & engraved brassware.",
     tags: ["Heirloom Brass", "Engraved Keepsake", "Timeless"],
     image: "/images/product/trunk-portrait.jpg",
     images: [
@@ -259,7 +275,7 @@ const OCCASIONS_ITEMS = [
     id: "occasion-wellness",
     badge: "SANCTUARY",
     title: "Wellness & Dhyana Rituals",
-    description: "Calibrate mindfulness and yoga sanctuaries with calming Himalayan cedarwood and pure botanical oils.",
+    description: "Calming scents for mindfulness & dhyana.",
     tags: ["Yoga Sanctuaries", "Meditation", "Ayurvedic"],
     image: "/images/product/turtle-holder-portrait.jpg",
     images: [
@@ -311,7 +327,7 @@ function BestsellerCard({
   return (
     <div
       onClick={() => router.push(`/products/${item.skuId}`)}
-      className="flex-shrink-0 w-[84%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(25%-0.9375rem)] snap-start group relative flex flex-col cursor-pointer select-none transition-all duration-300"
+      className="flex-shrink-0 w-[88%] sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] snap-start group relative flex flex-col cursor-pointer select-none transition-all duration-300"
     >
       {/* Modern Image Canvas with in-card scrolling/carousel */}
       <div className="relative w-full aspect-[3/4] overflow-hidden rounded-2xl bg-transparent flex items-center justify-center">
@@ -321,7 +337,7 @@ function BestsellerCard({
           fill
           loading="lazy"
           className={`absolute inset-0 w-full h-full ${
-            currentImg.includes("portrait") ? "object-cover" : "object-contain p-2"
+            currentImg.includes("portrait") ? "object-cover" : "object-contain p-1 sm:p-1.5"
           } object-center group-hover:scale-105 transition-all duration-500 ease-out`}
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
         />
@@ -447,7 +463,7 @@ function BestsellerCard({
             className="p-1 rounded-md text-stone-800 hover:text-black hover:bg-stone-100 transition-all duration-200 hover:scale-110 cursor-pointer"
           >
             {isAdded ? (
-              <Check className="w-3.5 h-3.5 stroke-[2.5] text-emerald-600" />
+              <Check className="w-3.5 h-3.5 stroke-[2.5] text-[#7A5A28]" />
             ) : (
               <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
             )}
@@ -561,49 +577,14 @@ function OccasionCard({
         </div>
 
         {/* Content details */}
-        <div className="pt-4 px-1 pb-0">
-          <span className="bg-[#EBF3F5] text-[#2C5E69] text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md inline-block">
-            {item.badge}
-          </span>
-
-          <h3 className="font-serif text-lg sm:text-xl font-medium text-[#0B2B1B] mt-2.5 group-hover:text-[#8C6215] transition-colors">
+        <div className="pt-3 px-1 pb-2">
+          <h3 className="font-serif text-base sm:text-lg font-medium text-[#1C1B18] group-hover:text-[#8C6215] transition-colors truncate">
             {item.title}
           </h3>
-
-          <p className="text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
-            {item.description}
-          </p>
-
         </div>
       </div>
 
-      {/* Footer Pills & Action Button */}
-      <div className="pt-4 px-1 pb-1 mt-3 border-t border-stone-200/60 flex items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-1.5">
-          {item.tags.map((tag, i) => (
-            <span
-              key={i}
-              className="border border-stone-200/80 text-stone-600 text-[10.5px] px-2.5 py-0.5 rounded-full bg-stone-50/50"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            const el = document.getElementById("gifting-gallery");
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth" });
-            }
-          }}
-          aria-label={`Explore ${item.title}`}
-          className="w-8 h-8 rounded-full bg-stone-100 text-stone-700 group-hover:bg-[#0B2B1B] group-hover:text-[#EED08E] flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
-        >
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
     </div>
   );
 }
@@ -762,64 +743,19 @@ export function RitualAndQuestions() {
   return (
     <>
       {/* 'Our Bestsellers' Section */}
-      <section className="bg-[#FAF8F5] py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5]">
-        <div className="mx-auto max-w-7xl">
+      <section id="bestsellers" className="bg-[#FAF7F2] py-14 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D8]">
+        <div className="mx-auto max-w-[1520px] w-full">
           {/* Section Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-[#0B2B1B] uppercase mb-2">
-              <div className="w-6 h-6 rounded-full bg-[#0B2B1B]/10 p-1 flex items-center justify-center border border-[#8C6215]/30 shadow-xs">
-                <Image
-                  src="/icon.png"
-                  alt="Kurma Emblem"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 object-contain"
-                />
-              </div>
-              <span>KURMA&apos;S FAVORITES</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium tracking-tight">
-              Our <span className="italic font-serif font-normal text-[#991B1B]">Bestsellers</span>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
+              Our <span className="italic font-serif font-normal">Bestsellers</span>
             </h2>
-          </div>
-
-          {/* CLEAN CONTROLS (Arrows & Page Counter) like third image */}
-          <div className="flex items-center justify-end pb-3">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xs font-sans text-stone-500 font-medium">
-                {bestsellerPage + 1} / {totalBestsellerPages}
-              </span>
-              <button
-                onClick={() => handleBestsellersScroll("left")}
-                disabled={!canScrollBestsellersLeft}
-                aria-label="Previous products"
-                className={`w-8 h-8 rounded-full border border-stone-300 bg-white shadow-xs flex items-center justify-center transition-all ${
-                  canScrollBestsellersLeft
-                    ? "hover:bg-stone-50 hover:scale-105 text-stone-800 cursor-pointer"
-                    : "opacity-35 cursor-not-allowed text-stone-400"
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleBestsellersScroll("right")}
-                disabled={!canScrollBestsellersRight}
-                aria-label="Next products"
-                className={`w-8 h-8 rounded-full border border-stone-300 bg-white shadow-xs flex items-center justify-center transition-all ${
-                  canScrollBestsellersRight
-                    ? "hover:bg-stone-50 hover:scale-105 text-stone-800 cursor-pointer"
-                    : "opacity-35 cursor-not-allowed text-stone-400"
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
           </div>
 
           {/* 4 Card Bestsellers Horizontal Carousel with Smooth Snapping */}
           <div
             ref={bestsellersScrollRef}
-            className="flex gap-4 sm:gap-5 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
+            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -843,6 +779,7 @@ export function RitualAndQuestions() {
             {Array.from({ length: totalBestsellerPages }).map((_, pageIdx) => (
               <button
                 key={pageIdx}
+                type="button"
                 onClick={() => goToBestsellersPage(pageIdx)}
                 aria-label={`Go to bestsellers page ${pageIdx + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
@@ -865,59 +802,12 @@ export function RitualAndQuestions() {
       <section className="bg-[#FAF7F2] py-14 sm:py-24 px-4 sm:px-6 md:px-8 lg:px-12 border-t border-[#EAE3D5] w-full mobile-defer-render">
         <div className="mx-auto max-w-[1700px] w-full">
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] text-[#0B2B1B] uppercase mb-2">
-              <div className="w-6 h-6 rounded-full bg-[#0B2B1B]/10 p-1 flex items-center justify-center border border-[#8C6215]/30 shadow-xs">
-                <Image
-                  src="/icon.png"
-                  alt="Kurma Emblem"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 object-contain"
-                />
-              </div>
-              <span>THE KURMA&apos;S OCCASION</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium tracking-tight">
-              What brings you here <span className="italic font-serif font-normal text-[#991B1B]">today</span>?
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
+              What brings you here <span className="italic font-serif font-normal">today</span>?
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-stone-600 max-w-xl mx-auto">
-              Tell us the occasion — we&apos;ll find you the perfect gift.
-            </p>
           </div>
 
-          {/* CLEAN CONTROLS (Arrows & Page Counter) like third image */}
-          <div className="flex items-center justify-end pb-3">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xs font-sans text-stone-500 font-medium">
-                {occasionsPage + 1} / {totalOccasionsPages}
-              </span>
-              <button
-                onClick={() => handleOccasionsScroll("left")}
-                disabled={!canScrollOccasionsLeft}
-                aria-label="Previous occasions"
-                className={`w-8 h-8 rounded-full border border-stone-300 bg-white shadow-xs flex items-center justify-center transition-all ${
-                  canScrollOccasionsLeft
-                    ? "hover:bg-stone-50 hover:scale-105 text-stone-800 cursor-pointer"
-                    : "opacity-35 cursor-not-allowed text-stone-400"
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleOccasionsScroll("right")}
-                disabled={!canScrollOccasionsRight}
-                aria-label="Next occasions"
-                className={`w-8 h-8 rounded-full border border-stone-300 bg-white shadow-xs flex items-center justify-center transition-all ${
-                  canScrollOccasionsRight
-                    ? "hover:bg-stone-50 hover:scale-105 text-stone-800 cursor-pointer"
-                    : "opacity-35 cursor-not-allowed text-stone-400"
-                }`}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
 
           {/* Occasion Cards Horizontal Carousel with Smooth Snapping */}
           <div
@@ -998,39 +888,57 @@ const FAQ_ITEMS = [
 
 function KurmaFAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
+
+  const handleMouseEnter = (idx: number) => {
+    setOpenIndex(idx);
+  };
+
+  const handleMouseLeave = () => {
+    setOpenIndex(null);
+  };
+
+  const handleToggle = (idx: number) => {
+    const isCurrentlyOpen = openIndex !== null ? openIndex === idx : pinnedIndex === idx;
+    if (isCurrentlyOpen) {
+      setOpenIndex(null);
+      setPinnedIndex(null);
+    } else {
+      setPinnedIndex(idx);
+      setOpenIndex(idx);
+    }
+  };
 
   return (
-    <section id="faq" className="bg-[#FAF7F2] py-16 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5] overflow-hidden">
+    <section id="faq" className="bg-[#FAF7F2] py-10 sm:py-14 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D5] overflow-hidden">
       <div className="mx-auto max-w-4xl">
         {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] text-[#0B2B1B] uppercase mb-2">
-            <HelpCircle className="w-4 h-4 text-[#8C6215]" />
-            <span>FREQUENTLY ASKED QUESTIONS</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#0B2B1B] font-medium tracking-tight">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
             Everything You Need to Know <span className="italic font-serif font-normal text-[#8C6215]">About Kurma</span>
           </h2>
         </div>
 
         {/* Accordion Questions List */}
-        <div className="space-y-4">
+        <div className="space-y-2.5 sm:space-y-3" onMouseLeave={handleMouseLeave}>
           {FAQ_ITEMS.map((faq, idx) => {
-            const isOpen = openIndex === idx;
+            const isOpen = openIndex !== null ? openIndex === idx : pinnedIndex === idx;
 
             return (
               <div
                 key={idx}
-                className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden transition-all duration-300 hover:border-[#8C6215]/50"
+                onMouseEnter={() => handleMouseEnter(idx)}
+                className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden transition-all duration-300 hover:border-[#1E1E1C]/40"
               >
                 <button
-                  onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
+                  type="button"
+                  onClick={() => handleToggle(idx)}
+                  className="w-full py-3.5 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
                 >
-                  <span className="font-serif text-base sm:text-lg font-medium text-[#0B2B1B] pr-2">
+                  <span className="font-serif text-base sm:text-lg font-medium text-[#1C1B18] pr-2">
                     {faq.question}
                   </span>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "bg-[#0B2B1B] text-[#EED08E] rotate-180" : "bg-stone-100 text-stone-600"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "bg-[#1E1E1C] text-white rotate-180" : "bg-stone-100 text-stone-700"}`}>
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>
@@ -1042,9 +950,9 @@ function KurmaFAQSection() {
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="px-5 sm:px-6 pb-6 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 font-sans overflow-hidden"
+                      className="px-4 sm:px-5 pb-4 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 font-sans overflow-hidden"
                     >
-                      <p className="pt-3">{faq.answer}</p>
+                      <p className="pt-2">{faq.answer}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

@@ -53,7 +53,7 @@ function SearchContent() {
   }, [query, selectedCategory]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -98,7 +98,7 @@ function SearchContent() {
             )}
             <button
               type="submit"
-              className="shrink-0 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#072515] to-[#0c3823] hover:from-[#0a311d] hover:to-[#125032] active:bg-[#051a0f] text-[#eed08e] border border-[#eed08e]/35 hover:border-[#eed08e]/70 text-[11px] sm:text-xs font-bold rounded-full uppercase tracking-[0.12em] sm:tracking-[0.14em] transition-all shadow-xs cursor-pointer flex items-center gap-1 sm:gap-1.5"
+              className="shrink-0 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-[#1E1E1C] hover:bg-[#33312D] text-white border border-[#1E1E1C] text-[11px] sm:text-xs font-bold rounded-full uppercase tracking-[0.12em] sm:tracking-[0.14em] transition-all shadow-xs cursor-pointer flex items-center gap-1 sm:gap-1.5"
             >
               <span>Search</span>
               <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#eed08e]/80 hidden xs:inline-block" />
@@ -115,7 +115,7 @@ function SearchContent() {
                 onClick={() => setQuery(kw)}
                 className={`text-xs px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
                   query === kw
-                    ? "bg-[#072515] text-[#eed08e] border-[#072515]"
+                    ? "bg-[#1E1E1C] text-white border-[#1E1E1C]"
                     : "bg-white text-stone-600 border-stone-200 hover:border-[#8b5f10] hover:text-[#8b5f10]"
                 }`}
               >
@@ -134,7 +134,7 @@ function SearchContent() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
                 selectedCategory === cat.id
-                  ? "bg-[#072515] text-[#eed08e] shadow-sm"
+                  ? "bg-[#1E1E1C] text-white shadow-sm"
                   : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-50"
               }`}
             >
@@ -184,7 +184,7 @@ function SearchContent() {
                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                   />
                   {product.badge && (
-                    <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-wider uppercase bg-[#072515] text-[#eed08e] border border-[#eed08e]/40 shadow-xs">
+                    <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-wider uppercase bg-[#1E1E1C] text-white border border-[#eed08e]/40 shadow-xs">
                       {product.badge}
                     </span>
                   )}
@@ -222,7 +222,7 @@ function SearchContent() {
                       <button
                         type="button"
                         onClick={() => quickAddToCart(product)}
-                        className="px-3 py-1.5 rounded-lg bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                         title="Add to Cart"
                       >
                         <ShoppingBag className="w-3.5 h-3.5 pointer-events-none" />
@@ -258,7 +258,7 @@ function SearchContent() {
                 setQuery("");
                 setSelectedCategory("all");
               }}
-              className="px-5 py-2.5 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-semibold uppercase tracking-wider cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-[#1E1E1C] text-white text-xs font-semibold uppercase tracking-wider cursor-pointer"
             >
               Browse All Creations
             </button>

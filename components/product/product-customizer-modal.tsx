@@ -184,7 +184,7 @@ function CustomizerContent({
   };
 
   return (
-    <div className="w-full max-w-4xl bg-white text-stone-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-[#eed08e]/50 animate-in zoom-in-95 duration-200 flex flex-col md:flex-row max-h-[92vh] relative">
+    <div className="w-full max-w-4xl bg-white text-stone-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-y-auto md:overflow-hidden border border-[#eed08e]/50 animate-in zoom-in-95 duration-200 flex flex-col md:flex-row max-h-[92vh] relative">
       {/* Close Button */}
       <button
         onClick={onClose}
@@ -195,7 +195,7 @@ function CustomizerContent({
       </button>
 
       {/* LEFT COLUMN: Gallery & Product Visuals */}
-      <div className="w-full md:w-5/12 bg-[#072515] p-5 sm:p-7 flex flex-col justify-between text-white relative overflow-hidden">
+      <div className="w-full md:w-5/12 bg-[#ECE4D8] text-[#1C1B18] p-4 sm:p-7 flex flex-col justify-between relative overflow-hidden">
         {/* Background texture subtle shine */}
         <div
           className="absolute inset-0 opacity-10 pointer-events-none"
@@ -208,11 +208,11 @@ function CustomizerContent({
         <div>
           {/* Category & Badge */}
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#eed08e]">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#8b5f10]">
               {product.category}
             </span>
             {product.badge && (
-              <span className="text-[10px] font-semibold bg-[#eed08e]/20 text-[#eed08e] px-2.5 py-0.5 rounded-full border border-[#eed08e]/40">
+              <span className="text-[10px] font-semibold bg-[#8b5f10]/15 text-[#8b5f10] px-2.5 py-0.5 rounded-full border border-[#8b5f10]/30">
                 {product.badge}
               </span>
             )}
@@ -257,15 +257,15 @@ function CustomizerContent({
         </div>
 
         {/* Highlights Specs at bottom of image panel */}
-        <div className="pt-4 border-t border-white/10 mt-4 space-y-1.5 hidden sm:block">
-          <h4 className="text-[11px] font-semibold text-[#eed08e] uppercase tracking-wider flex items-center gap-1.5 font-cinzel">
+        <div className="pt-4 border-t border-[#DDD3C2] mt-4 space-y-1.5 hidden sm:block">
+          <h4 className="text-[11px] font-semibold text-[#8b5f10] uppercase tracking-wider flex items-center gap-1.5 font-cinzel">
             <Layers className="w-3.5 h-3.5" />
             Sacred Formulation
           </h4>
-          <ul className="text-xs text-stone-300 space-y-1">
+          <ul className="text-xs text-stone-700 space-y-1">
             {product.details.slice(0, 3).map((item, idx) => (
               <li key={idx} className="flex items-start gap-1.5 leading-snug">
-                <span className="text-[#eed08e]">•</span>
+                <span className="text-[#8b5f10]">•</span>
                 <span>{item}</span>
               </li>
             ))}

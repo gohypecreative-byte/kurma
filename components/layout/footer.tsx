@@ -1,260 +1,221 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import Link from "next/link";
-import { Mail, Phone, Check } from "lucide-react";
-
-function InstagramIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  );
-}
-
-function LinkedinIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect x="2" y="9" width="4" height="12" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  );
-}
-
-function FacebookIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
+import Image from "next/image";
+import { motion, useScroll, useTransform, useSpring, useReducedMotion } from "motion/react";
 
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const footerRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setIsSubscribed(true);
-      setTimeout(() => {
-        setEmail("");
-        setIsSubscribed(false);
-      }, 4000);
-    }
-  };
+  // Scroll Progress linked to Footer entering and completing in viewport
+  const { scrollYProgress } = useScroll({
+    target: footerRef,
+    offset: ["start end", "end end"],
+  });
+
+  // Natural emergence physics: Grand Kurma gracefully rises from below the bottom edge
+  const kurmaY = useTransform(scrollYProgress, [0, 0.35, 0.75], [70, 20, 0]);
+  const kurmaOpacity = useTransform(scrollYProgress, [0, 0.25, 0.65], [0, 0.5, 1]);
+
+  // Silky smooth spring for luxury tactile feedback
+  const springKurmaY = useSpring(kurmaY, { stiffness: 90, damping: 20, mass: 0.8 });
+  const springKurmaOpacity = useSpring(kurmaOpacity, { stiffness: 100, damping: 22 });
 
   return (
-    <footer className="w-full max-w-full overflow-hidden bg-[#072515] text-[#EED08E] border-t border-[#EED08E]/20 relative font-sans">
-      {/* Main Footer Grid */}
-      <div className="mx-auto max-w-7xl w-full px-3 xs:px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-14 pb-8 sm:pb-12 overflow-hidden">
-        <div className="grid grid-cols-[repeat(3,minmax(0,1fr))] lg:grid-cols-12 gap-x-2 xs:gap-x-3 sm:gap-x-6 lg:gap-x-12 gap-y-6 sm:gap-y-8 lg:gap-y-12 w-full max-w-full">
-          {/* Column 1: GET IN TOUCH */}
-          <div className="col-span-1 lg:col-span-3 min-w-0 w-full overflow-hidden space-y-2 sm:space-y-4">
-            <h3 className="text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.05em] xs:tracking-[0.1em] sm:tracking-[0.18em] text-[#EED08E] truncate block">
-              GET IN TOUCH
+    <footer
+      ref={footerRef}
+      className="relative w-full max-w-full overflow-hidden bg-[#FAF7F2] text-[#1C1B18] border-t border-[#EAE3D8] font-sans"
+    >
+      {/* Background Product Suite Layer (Matching Website's Products & Color Palette) */}
+      <div className="absolute inset-x-0 bottom-0 h-[68%] sm:h-[62%] lg:h-[58%] pointer-events-none select-none overflow-hidden z-0">
+        <Image
+          src="/images/footer/kurma-footer-products.jpg"
+          alt="Kurma 5 Sacred Elements Suite, Brass Turtle Burner and Mysore Sandalwood on Warm Linen"
+          fill
+          priority={false}
+          className="object-cover object-[center_65%] sm:object-center opacity-80"
+          sizes="100vw"
+        />
+        {/* Top Smooth Gradient Fade from website cream into products */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F2] via-[#FAF7F2]/70 via-40% to-transparent" />
+        {/* Soft bottom mist haze */}
+        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-36 lg:h-44 bg-gradient-to-t from-[#FAF7F2] via-[#FAF7F2]/75 to-transparent" />
+      </div>
+
+      {/* Main Footer Content Container - Structured to keep columns and bottom Kurma together in view */}
+      <div className="relative z-10 w-full max-w-[1800px] mx-auto px-5 sm:px-10 md:px-12 lg:px-16 xl:px-20 min-h-fit sm:min-h-[70vh] lg:min-h-[78vh] flex flex-col justify-between pt-8 sm:pt-14 lg:pt-16 pb-4 sm:pb-6">
+        {/* Main Footer Grid - Responsive 2-column on mobile, 4-column on desktop */}
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-x-6 sm:gap-x-10 lg:gap-x-12 xl:gap-x-16 gap-y-7 sm:gap-y-10 lg:gap-y-12 w-full">
+          {/* Column 1: Brand Info (full width col-span-2 on mobile, 4 cols on desktop) */}
+          <div className="col-span-2 lg:col-span-4 xl:col-span-4 space-y-3 sm:space-y-5 lg:space-y-6">
+            {/* Brand Logo & Name - Prominently Sized */}
+            <Link href="/" className="inline-flex items-center gap-3 sm:gap-4 group cursor-pointer" aria-label="Kurma Home">
+              <div className="relative w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
+                <Image
+                  src="/images/brand/kurma-turtle-transparent.png"
+                  alt="Kurma Logo"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+                />
+              </div>
+              <span className="font-serif text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-semibold tracking-tight text-[#1C1B18] leading-none">
+                Kurma
+              </span>
+            </Link>
+
+            {/* Headline */}
+            <h3 className="font-serif text-xl sm:text-3xl lg:text-[34px] font-medium text-[#1C1B18] tracking-tight leading-snug">
+              Your sacred daily ritual
             </h3>
 
-            <div className="space-y-1 sm:space-y-2.5 pt-0.5 sm:pt-1 text-[8.5px] xs:text-[9.5px] sm:text-xs text-[#EED08E]/90 font-light w-full">
-              <a
-                href="mailto:XXXXXX@XXXXXX.com"
-                className="flex items-center gap-1 sm:gap-1.5 hover:text-white transition-colors min-w-0 w-full"
-              >
-                <Mail className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-[#EED08E] shrink-0" />
-                <span className="truncate min-w-0 flex-1">XXXXXX@XXXXXX.c...</span>
-              </a>
-
-              <a
-                href="tel:+91XXXXXXXXXX"
-                className="flex items-center gap-1 sm:gap-1.5 hover:text-white transition-colors min-w-0 w-full"
-              >
-                <Phone className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 text-[#EED08E] shrink-0" />
-                <span className="truncate min-w-0 flex-1">+91 XXXXX XXXXX</span>
-              </a>
-            </div>
-
-            {/* Social Icons */}
-            <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-3 pt-1 sm:pt-2">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram"
-                className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
-              >
-                <InstagramIcon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
-              </a>
-
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="LinkedIn"
-                className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
-              >
-                <LinkedinIcon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
-              </a>
-
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook"
-                className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 rounded-full border border-[#EED08E]/40 text-[#EED08E] hover:text-white hover:border-white flex items-center justify-center transition-colors shrink-0"
-              >
-                <FacebookIcon className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
-              </a>
-            </div>
+            {/* Description */}
+            <p className="text-xs sm:text-base lg:text-[17px] text-stone-600 leading-relaxed font-sans max-w-md font-normal">
+              Kurma brings 100% charcoal-free temple botanicals, pure Mysore sandalwood, and Moradabad brass heirlooms into quiet rituals for your home.
+            </p>
           </div>
 
-          {/* Column 2: NAVIGATION */}
-          <div className="col-span-1 lg:col-span-3 min-w-0 w-full overflow-hidden space-y-2 sm:space-y-4">
-            <h3 className="text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.05em] xs:tracking-[0.1em] sm:tracking-[0.18em] text-[#EED08E] truncate block">
-              NAVIGATION
-            </h3>
-
-            <ul className="space-y-1 sm:space-y-2 pt-0.5 sm:pt-1 text-[9px] xs:text-[10px] sm:text-xs text-[#EED08E]/85 font-light w-full">
+          {/* Column 2: "Menu" (1 col on mobile, 2 cols on desktop) */}
+          <div className="col-span-1 lg:col-span-2 xl:col-span-2 space-y-3 sm:space-y-5">
+            <h4 className="text-base sm:text-lg lg:text-xl font-serif sm:font-sans font-semibold text-[#1C1B18] tracking-tight">
+              Menu
+            </h4>
+            <ul className="space-y-2.5 sm:space-y-3.5 text-xs sm:text-[15px] lg:text-base text-stone-600 font-normal">
               <li>
-                <Link href="/" className="hover:text-white transition-colors block truncate">
+                <Link href="/" className="hover:text-black transition-colors block">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="hover:text-white transition-colors block truncate">
-                  Shop
+                <Link href="/shop" className="hover:text-black transition-colors block">
+                  Master Shop
                 </Link>
               </li>
               <li>
-                <Link href="/elements" className="hover:text-white transition-colors block truncate">
-                  5 Elements
+                <Link href="/elements" className="hover:text-black transition-colors block">
+                  5 Elements Suite
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-white transition-colors block truncate">
-                  About
+                <Link href="/gift-trunks" className="hover:text-black transition-colors block">
+                  Bespoke Trunks
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors block truncate">
-                  Contact
+                <Link href="/ritual" className="hover:text-black transition-colors block">
+                  Sacred Ritual
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-black transition-colors block">
+                  Our Story
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: INFORMATION */}
-          <div className="col-span-1 lg:col-span-3 min-w-0 w-full overflow-hidden space-y-2 sm:space-y-4">
-            <h3 className="text-[9.5px] xs:text-[10.5px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.05em] xs:tracking-[0.1em] sm:tracking-[0.18em] text-[#EED08E] truncate block">
-              INFORMATION
-            </h3>
-
-            <ul className="space-y-1 sm:space-y-1.5 pt-0.5 sm:pt-1 text-[8px] xs:text-[9px] sm:text-xs text-[#EED08E]/85 font-light leading-snug w-full">
+          {/* Column 3: "Navigation" (1 col on mobile, 3 cols on desktop) */}
+          <div className="col-span-1 lg:col-span-3 xl:col-span-3 space-y-3 sm:space-y-5">
+            <h4 className="text-base sm:text-lg lg:text-xl font-serif sm:font-sans font-semibold text-[#1C1B18] tracking-tight">
+              Navigation
+            </h4>
+            <ul className="space-y-2.5 sm:space-y-3.5 text-xs sm:text-[15px] lg:text-base text-stone-600 font-normal">
               <li>
-                <Link href="/gift-trunks" className="hover:text-white transition-colors block break-words">
-                  Artisan Hampers &amp; Trunks
+                <Link href="/contact" className="hover:text-black transition-colors block">
+                  Contact Concierge
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors block break-words">
-                  Corporate &amp; Wedding Orders
+                <Link href="/reviews" className="hover:text-black transition-colors block">
+                  Client Reviews
                 </Link>
               </li>
               <li>
-                <Link href="/reviews" className="hover:text-white transition-colors block break-words">
-                  Client Testimonials
+                <Link href="/shipping-policy" className="hover:text-black transition-colors block">
+                  Shipping Policy
                 </Link>
               </li>
               <li>
-                <Link href="/shipping-policy" className="hover:text-white transition-colors block break-words">
-                  Shipping &amp; Delivery Policy
+                <Link href="/refund-policy" className="hover:text-black transition-colors block">
+                  Refund &amp; Returns
                 </Link>
               </li>
               <li>
-                <Link href="/refund-policy" className="hover:text-white transition-colors block break-words">
-                  Cancellation &amp; Refund Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-white transition-colors block break-words">
+                <Link href="/privacy" className="hover:text-black transition-colors block">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-white transition-colors block break-words">
-                  Terms &amp; Conditions
+                <Link href="/terms" className="hover:text-black transition-colors block">
+                  Terms of Service
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: NEWSLETTER */}
-          <div className="col-span-3 lg:col-span-3 min-w-0 w-full max-w-full overflow-hidden space-y-1.5 sm:space-y-3 pt-5 lg:pt-0 border-t border-[#EED08E]/15 lg:border-t-0">
-            <h3 className="text-[10px] xs:text-[11px] sm:text-xs lg:text-sm font-serif font-semibold uppercase tracking-[0.08em] sm:tracking-[0.18em] text-[#EED08E]">
-              NEWSLETTER
-            </h3>
-
-            <p className="text-[8.5px] xs:text-[9.5px] sm:text-xs text-[#EED08E]/80 uppercase tracking-wider font-light leading-relaxed">
-              SIGN UP TO RECEIVE THE LATEST NEWS &amp; EXCLUSIVE GIFT RELEASES.
-            </p>
-
-            <form onSubmit={handleSubscribe} className="pt-1 sm:pt-2 w-full max-w-full">
-              <div className="flex flex-row items-stretch w-full max-w-md">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ENTER EMAIL ADDRESS"
-                  required
-                  className="bg-transparent border border-[#EED08E]/40 text-[#EED08E] placeholder:text-[#EED08E]/50 px-2.5 xs:px-3 sm:px-4 py-2 sm:py-2.5 text-[9.5px] xs:text-[10.5px] sm:text-xs tracking-wider uppercase focus:outline-none focus:border-[#EED08E] flex-1 min-w-0 rounded-none h-9 sm:h-10"
-                />
-
-                <button
-                  type="submit"
-                  className="bg-[#8C6215] hover:bg-[#A37318] text-white px-3.5 xs:px-4 sm:px-6 py-2 sm:py-2.5 text-[9.5px] xs:text-[10.5px] sm:text-xs font-bold tracking-widest uppercase transition-colors shrink-0 cursor-pointer flex items-center justify-center gap-1.5 rounded-none h-9 sm:h-10"
-                >
-                  {isSubscribed ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-300" />
-                  ) : (
-                    <span>SUBMIT</span>
-                  )}
-                </button>
-              </div>
-
-              {isSubscribed && (
-                <span className="text-[10px] sm:text-[11px] text-emerald-400 block mt-1.5 font-sans">
-                  Thank you! You are now subscribed to Kurma dispatches.
-                </span>
-              )}
-            </form>
+          {/* Column 4: "More products" (2 cols on mobile with 2 sub-columns, 3 cols on desktop) */}
+          <div className="col-span-2 sm:col-span-2 lg:col-span-3 xl:col-span-3 space-y-3 sm:space-y-5 pt-2 sm:pt-0 border-t border-stone-200/50 sm:border-t-0">
+            <h4 className="text-base sm:text-lg lg:text-xl font-serif sm:font-sans font-semibold text-[#1C1B18] tracking-tight">
+              More products
+            </h4>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 sm:block sm:space-y-3.5 text-xs sm:text-[15px] lg:text-base text-stone-600 font-normal">
+              <li>
+                <Link href="/elements?box=fragrance-earth" className="hover:text-black transition-colors block">
+                  Prithvi &bull; Sacred Earth
+                </Link>
+              </li>
+              <li>
+                <Link href="/elements?box=fragrance-water" className="hover:text-black transition-colors block">
+                  Jal &bull; Mystic Water
+                </Link>
+              </li>
+              <li>
+                <Link href="/elements?box=fragrance-fire" className="hover:text-black transition-colors block">
+                  Agni &bull; Golden Fire
+                </Link>
+              </li>
+              <li>
+                <Link href="/elements?box=fragrance-air" className="hover:text-black transition-colors block">
+                  Vayu &bull; Mountain Air
+                </Link>
+              </li>
+              <li>
+                <Link href="/elements?box=fragrance-space" className="hover:text-black transition-colors block">
+                  Akash &bull; Cosmic Space
+                </Link>
+              </li>
+              <li>
+                <Link href="/products/turtle-incense-holder" className="hover:text-black transition-colors block">
+                  Brass Turtle Burner
+                </Link>
+              </li>
+              <li className="col-span-2 sm:col-span-1">
+                <Link href="/gift-trunks" className="hover:text-black transition-colors block">
+                  Flagship Marble Suite
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Copyright Bar */}
-      <div className="border-t border-[#EED08E]/15 py-6 px-3 xs:px-4 sm:px-6 lg:px-12 text-center text-xs text-[#EED08E]/75 font-sans w-full max-w-full overflow-hidden">
-        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4 w-full">
-          <p className="text-[10px] xs:text-[10.5px] sm:text-xs leading-relaxed tracking-wider font-light max-w-xs sm:max-w-none mx-auto">
-            &copy; {new Date().getFullYear()} Kurma Corporate &amp; Luxury Gifting. All rights reserved.
-          </p>
-
-          {/* Footer Legal Quick Links */}
-          <div className="flex flex-wrap items-center justify-center gap-x-2.5 xs:gap-x-4 sm:gap-x-6 gap-y-1.5 text-[9px] xs:text-[10px] sm:text-[11.5px] text-[#EED08E]/85 font-light">
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms &amp; Conditions
-            </Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/shipping-policy" className="hover:text-white transition-colors">
-              Shipping &amp; Delivery
-            </Link>
-            <Link href="/refund-policy" className="hover:text-white transition-colors">
-              Cancellation &amp; Refunds
-            </Link>
-          </div>
+        {/* MAIN HIGHLIGHT: GRAND DISPLAY WATERMARK - Perfectly fitted within view */}
+        <div className="relative w-full pt-4 sm:pt-6 lg:pt-8 pb-1 sm:pb-3 flex items-center justify-center overflow-hidden pointer-events-none select-none">
+          {/* Grand "Kurma" Serif Wordmark - Increased Font Size */}
+          <motion.span
+            style={
+              reduced
+                ? {}
+                : {
+                  y: springKurmaY,
+                  opacity: springKurmaOpacity,
+                }
+            }
+            className="relative z-20 font-serif font-medium text-[19vw] sm:text-[17vw] md:text-[16vw] lg:text-[15vw] xl:text-[14.5vw] leading-[0.82] tracking-tight text-white/95 drop-shadow-[0_4px_30px_rgba(0,0,0,0.18)] block whitespace-nowrap text-center"
+          >
+            Kurma
+          </motion.span>
         </div>
       </div>
     </footer>

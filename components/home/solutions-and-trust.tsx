@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { motion, useScroll, useTransform, useSpring, useReducedMotion } from "motion/react";
 import { CartItem } from "@/components/cart/cart-drawer";
 import { ProductSKU } from "@/lib/products";
 
@@ -15,137 +15,203 @@ export function SolutionsAndTrust({
   onAddToCart,
   onCustomizeProduct,
 }: SolutionsAndTrustProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    company: "",
-    budget: "",
-    quantity: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        company: "",
-        budget: "",
-        quantity: "",
-        message: "",
-      });
-    }, 4000);
-  };
+  // Scroll tracking across the sticky section
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Silky smooth spring physics for effortless scroll response
+  const smoothProgress = useSpring(scrollYProgress, {
+    damping: 24,
+    stiffness: 120,
+    mass: 0.2,
+  });
+
+  // Slide 1 (The Wedding Edit): Seamless slide-in
+  const slide1YMotion = useTransform(smoothProgress, [0.08, 0.46], ["100%", "0%"]);
+  const slide1OpacityMotion = useTransform(smoothProgress, [0.08, 0.22], [0, 1]);
+
+  // Slide 2 (For Business): Seamless slide-in
+  const slide2YMotion = useTransform(smoothProgress, [0.52, 0.90], ["100%", "0%"]);
+  const slide2OpacityMotion = useTransform(smoothProgress, [0.52, 0.66], [0, 1]);
+
+  // Reduced motion fallbacks
+  const slide1Y = shouldReduceMotion ? "0%" : slide1YMotion;
+  const slide1Opacity = shouldReduceMotion
+    ? useTransform(smoothProgress, [0.15, 0.45], [0, 1])
+    : slide1OpacityMotion;
+
+  const slide2Y = shouldReduceMotion ? "0%" : slide2YMotion;
+  const slide2Opacity = shouldReduceMotion
+    ? useTransform(smoothProgress, [0.55, 0.85], [0, 1])
+    : slide2OpacityMotion;
 
   return (
-    <div id="solutions" className="w-full bg-[#FAF7F2] py-10 sm:py-20 lg:py-24 border-t border-[#EAE3D5] mobile-defer-render">
-      {/* Stacked Cards Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 space-y-6 sm:space-y-10 lg:space-y-12">
-        {/* Card 1: THE WEDDING EDIT (Sticky on desktop, natural flow on mobile) */}
-        <div className="relative lg:sticky lg:top-20 z-10 bg-white rounded-3xl overflow-hidden shadow-lg lg:shadow-2xl border border-stone-200/80 min-h-[380px] sm:min-h-[500px] lg:min-h-[540px] grid grid-cols-1 lg:grid-cols-12 group">
-          {/* Left Content Box */}
-          <div className="lg:col-span-6 p-5 sm:p-8 md:p-12 lg:p-16 flex flex-col justify-between bg-white z-10">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-[0.25em] text-[#0B2B1B] uppercase mb-4">
-                <span className="text-amber-700 text-sm">✦</span>
-                <span>THE WEDDING EDIT</span>
-              </div>
-
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#0B2B1B] font-medium leading-tight">
-                Sacred fragrance suites for timeless{" "}
-                <span className="italic font-serif font-normal text-[#991B1B]">
-                  festive celebrations
-                </span>
-              </h2>
-
-              <p className="mt-4 text-xs sm:text-sm md:text-base text-stone-600 leading-relaxed font-light">
-                Handcrafted 100% charcoal-free elemental incense suites and solid cast brass turtle holders, custom-curated for wedding return gifts, sacred rituals, and royal celebrations.
-              </p>
-            </div>
-
-            <div className="mt-6 sm:mt-8">
-              <a
-                href="#gifting-gallery"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const el = document.getElementById("gifting-gallery");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="w-full sm:w-auto text-center inline-block bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl text-xs font-bold tracking-widest uppercase shadow-md transition-all cursor-pointer"
-              >
-                START A FREE CONSULTATION
-              </a>
-            </div>
-          </div>
-
-          {/* Right High Quality Wedding Gift Image */}
-          <div className="lg:col-span-6 min-h-[220px] sm:min-h-[300px] lg:min-h-full bg-stone-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+    <section
+      id="solutions"
+      ref={containerRef}
+      className="relative w-full bg-[#FAF7F2] select-none"
+      style={{ height: "230vh" }}
+    >
+      {/* Sticky Stage: Spanning full width and height without any empty space */}
+      <div className="sticky top-0 w-full h-screen overflow-hidden">
+        {/* Fullscreen Banner: Fills the entire section without empty space underneath */}
+        <div className="relative w-full h-full overflow-hidden bg-[#0B0907]">
+          {/* ================= SLIDE 1: THE COMPLETE SUITE ================= */}
+          <div className="absolute inset-0 w-full h-full overflow-hidden z-10">
+            {/* Bespoke High-Res Cinematic Image */}
             <Image
-              src="/images/product/image7.png"
-              alt="Wedding Gifting Experience"
-              width={500}
-              height={500}
-              loading="lazy"
-              className="max-w-full max-h-[360px] sm:max-h-[460px] w-auto h-auto object-contain rounded-2xl group-hover:scale-105 transition-transform duration-700 shadow-xs"
+              src="/images/product/suite-5-elements-fullscreen.jpg"
+              alt="Sacred 5 elements luxury suite"
+              fill
+              priority
+              className="object-cover object-center filter brightness-[0.88] contrast-[1.02]"
+              sizes="100vw"
             />
-          </div>
-        </div>
 
-        {/* Card 2: FOR BUSINESS (Sticky on desktop, natural flow on mobile) */}
-        <div className="relative lg:sticky lg:top-28 z-20 bg-white rounded-3xl overflow-hidden shadow-lg lg:shadow-2xl border border-stone-200/80 min-h-[380px] sm:min-h-[500px] lg:min-h-[540px] grid grid-cols-1 lg:grid-cols-12 group">
-          {/* Left Content Box */}
-          <div className="lg:col-span-5 p-5 sm:p-8 md:p-12 lg:p-14 flex flex-col justify-between bg-white z-10">
-            <div>
-              <div className="inline-flex items-center gap-1.5 bg-[#0B2B1B] text-[#EED08E] text-[10px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-md mb-4 sm:mb-6 shadow-xs">
-                <Check className="w-3.5 h-3.5 text-[#EED08E]" />
-                <span>FOR BUSINESS</span>
+            {/* Luxury Ambient Gradient Overlay for Supreme Text Contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 sm:bg-gradient-to-r sm:from-[#0B0907]/90 sm:via-[#0B0907]/50 sm:to-transparent pointer-events-none" />
+
+            {/* Text Overlay Content */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
+              <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] text-white font-medium leading-[1.16] tracking-tight">
+                  Sacred 5 elements{" "}
+                  <span className="italic font-serif font-normal text-[#EED08E]">
+                    luxury suite
+                  </span>
+                </h2>
+
+                <p className="text-xs sm:text-sm md:text-[15px] text-stone-200/90 leading-relaxed font-light max-w-md">
+                  All five elemental aromas handcrafted with 100% charcoal-free pure botanical extracts, solid cast brass turtle burner and keepsake medallion.
+                </p>
+
+                <div className="pt-1 sm:pt-2">
+                  <a
+                    href="#gifting-gallery"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById("gifting-gallery");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="inline-block text-center bg-[#FAF7F2] hover:bg-white text-[#1C1B18] px-6 py-2.5 sm:px-7 sm:py-3 rounded-lg sm:rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-md active:scale-95 cursor-pointer"
+                  >
+                    EXPLORE THE SUITE
+                  </a>
+                </div>
               </div>
-
-              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#0B2B1B] font-medium leading-tight">
-                Corporate{" "}
-                <span className="italic font-serif font-normal">gifting</span>
-              </h2>
-
-              <p className="mt-4 text-xs sm:text-sm md:text-base text-stone-600 leading-relaxed font-light">
-                Not another dry fruit box. Curated, branded, and delivered so your
-                clients and team actually remember who sent it.
-              </p>
-            </div>
-
-            <div className="mt-6 sm:mt-8">
-              <a
-                href="#gifting-gallery"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const el = document.getElementById("gifting-gallery");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="w-full sm:w-auto block bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl text-xs font-bold tracking-widest uppercase shadow-md transition-all text-center cursor-pointer"
-              >
-                ENQUIRE FOR BULK ORDERS
-              </a>
             </div>
           </div>
 
-          {/* Right High Quality Corporate Gift Image */}
-          <div className="lg:col-span-7 min-h-[220px] sm:min-h-[300px] lg:min-h-full bg-stone-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+          {/* ================= SLIDE 2: THE WEDDING EDIT ================= */}
+          <motion.div
+            style={{
+              y: slide1Y,
+              opacity: slide1Opacity,
+            }}
+            className="absolute inset-0 w-full h-full overflow-hidden z-20 pointer-events-auto"
+          >
+            {/* Bespoke High-Res Cinematic Image */}
             <Image
-              src="/images/product/image9.png"
-              alt="Corporate Gifting Suite"
-              width={500}
-              height={500}
+              src="/images/product/suite-wedding-fullscreen.jpg"
+              alt="Sacred fragrance suites for timeless festive celebrations"
+              fill
               loading="lazy"
-              className="max-w-full max-h-[360px] sm:max-h-[460px] w-auto h-auto object-contain rounded-2xl group-hover:scale-105 transition-transform duration-700 shadow-xs"
+              className="object-cover object-center filter brightness-[0.88] contrast-[1.02]"
+              sizes="100vw"
             />
-          </div>
+
+            {/* Luxury Ambient Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 sm:bg-gradient-to-r sm:from-[#0B0907]/90 sm:via-[#0B0907]/50 sm:to-transparent pointer-events-none" />
+
+            {/* Text Overlay Content */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
+              <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] text-white font-medium leading-[1.16] tracking-tight">
+                  Sacred fragrance suites for timeless{" "}
+                  <span className="italic font-serif font-normal text-[#EED08E]">
+                    festive celebrations
+                  </span>
+                </h2>
+
+                <p className="text-xs sm:text-sm md:text-[15px] text-stone-200/90 leading-relaxed font-light max-w-md">
+                  Handcrafted 100% charcoal-free elemental incense suites and solid cast brass turtle holders, custom-curated for wedding return gifts, sacred rituals, and royal celebrations.
+                </p>
+
+                <div className="pt-1 sm:pt-2">
+                  <a
+                    href="#gifting-gallery"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById("gifting-gallery");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="inline-block text-center bg-[#FAF7F2] hover:bg-white text-[#1C1B18] px-6 py-2.5 sm:px-7 sm:py-3 rounded-lg sm:rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-md active:scale-95 cursor-pointer"
+                  >
+                    START A FREE CONSULTATION
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ================= SLIDE 3: FOR BUSINESS ================= */}
+          <motion.div
+            style={{
+              y: slide2Y,
+              opacity: slide2Opacity,
+            }}
+            className="absolute inset-0 w-full h-full overflow-hidden z-30 pointer-events-auto"
+          >
+            {/* Bespoke High-Res Cinematic Image */}
+            <Image
+              src="/images/product/suite-corporate-fullscreen.jpg"
+              alt="Corporate gifting"
+              fill
+              loading="lazy"
+              className="object-cover object-center filter brightness-[0.88] contrast-[1.02]"
+              sizes="100vw"
+            />
+
+            {/* Luxury Ambient Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 sm:bg-gradient-to-r sm:from-[#0B0907]/90 sm:via-[#0B0907]/50 sm:to-transparent pointer-events-none" />
+
+            {/* Text Overlay Content */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
+              <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] text-white font-medium leading-[1.16] tracking-tight">
+                  Corporate{" "}
+                  <span className="italic font-serif font-normal text-[#EED08E]">
+                    gifting
+                  </span>
+                </h2>
+
+                <p className="text-xs sm:text-sm md:text-[15px] text-stone-200/90 leading-relaxed font-light max-w-md">
+                  Not another dry fruit box. Curated, branded, and delivered so your clients and team actually remember who sent it.
+                </p>
+
+                <div className="pt-1 sm:pt-2">
+                  <a
+                    href="#gifting-gallery"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById("gifting-gallery");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="inline-block text-center bg-[#FAF7F2] hover:bg-white text-[#1C1B18] px-6 py-2.5 sm:px-7 sm:py-3 rounded-lg sm:rounded-xl text-xs font-bold tracking-wider uppercase transition-all shadow-md active:scale-95 cursor-pointer"
+                  >
+                    ENQUIRE FOR BULK ORDERS
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

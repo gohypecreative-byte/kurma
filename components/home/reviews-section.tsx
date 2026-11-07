@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { Star, Check, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ReviewsSectionProps {
   onExploreProducts?: () => void;
@@ -189,29 +189,13 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   return (
     <section
       id="reviews"
-      className="w-full max-w-full overflow-hidden bg-gradient-to-b from-[#FAF7F2] via-[#F4EFE6] to-[#FAF7F2] py-14 sm:py-20 lg:py-24 border-t border-[#EAE3D5] text-[#1C1917] relative select-none mobile-defer-render"
+      className="w-full max-w-full overflow-hidden bg-[#FAF7F2] py-14 sm:py-20 lg:py-24 border-t border-[#EAE3D8] text-[#1C1917] relative select-none mobile-defer-render"
     >
       <div className="max-w-[1500px] w-full mx-auto overflow-hidden">
         {/* Header Title Matching User Image */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4 sm:px-6">
-          <div className="inline-flex items-center justify-center gap-2 mb-3.5 sm:mb-4">
-            <div className="relative w-5 h-5 flex items-center justify-center shrink-0">
-              <Image
-                src="/images/brand/kurma-turtle-transparent.png"
-                alt="Kurma Emblem"
-                width={20}
-                height={20}
-                unoptimized
-                className="w-full h-full object-contain filter brightness-90 contrast-125"
-              />
-            </div>
-            <span className="text-xs sm:text-sm font-semibold tracking-[0.28em] text-[#0B2B1B] uppercase">
-              OUR STELLAR REVIEWS
-            </span>
-          </div>
-
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-[#121829] leading-tight">
-            What our customers <span className="italic font-serif text-[#8C281F]">say</span>
+          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-[#1C1B18] leading-tight">
+            What our customers <span className="italic font-serif">say</span>
           </h2>
         </div>
 
@@ -236,15 +220,12 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
               className="flex-shrink-0 w-[86vw] max-w-[420px] sm:w-[480px] sm:max-w-none lg:w-[540px] snap-center flex flex-col justify-between bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 lg:p-10 shadow-lg shadow-stone-900/5 transition-all duration-300"
             >
               <div>
-                {/* Top Row: Stars + Quote Icon */}
-                <div className="flex items-center justify-between mb-4 sm:mb-5">
+                {/* Top Row: Stars */}
+                <div className="flex items-center mb-4 sm:mb-5">
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     {[...Array(review.rating)].map((_, i) => (
                       <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-amber-400 text-amber-400" />
                     ))}
-                  </div>
-                  <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-100/90 shadow-2xs">
-                    <Quote className="w-4 sm:w-5 h-4 sm:h-5 opacity-80" />
                   </div>
                 </div>
 
@@ -259,7 +240,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                     <button
                       type="button"
                       onClick={(e) => toggleExpand(review.id, e)}
-                      className="mt-2 text-xs font-semibold text-emerald-700 hover:text-emerald-800 underline underline-offset-4 cursor-pointer"
+                      className="mt-2 text-xs font-semibold text-[#7A5A28] hover:text-[#1C1B18] underline underline-offset-4 cursor-pointer"
                     >
                       {expanded[review.id] ? "Show Less" : "Read More"}
                     </button>
@@ -267,43 +248,21 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 </div>
               </div>
 
-              {/* Bottom Profile & Purchased Product Bar */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-5 border-t border-stone-100 mt-2">
-                {/* Left: User Profile */}
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-stone-200 shadow-xs bg-stone-100">
-                    <Image
-                      src={review.avatar}
-                      alt={review.name}
-                      fill
-                      loading="lazy"
-                      sizes="48px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <span className="font-serif text-sm sm:text-base font-bold text-stone-900 leading-tight">
-                        {review.name}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-[9.5px] sm:text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
-                        <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3]" />
-                        Verified
-                      </span>
-                    </div>
-                    <span className="text-[11px] sm:text-xs text-stone-500 block mt-0.5">
-                      {review.reviewsCount} • {review.location}
-                    </span>
-                  </div>
+              {/* Bottom Profile Bar */}
+              <div className="flex items-center gap-2.5 sm:gap-3 pt-4 sm:pt-5 border-t border-stone-100 mt-2">
+                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-stone-200 shadow-xs bg-stone-100">
+                  <Image
+                    src={review.avatar}
+                    alt={review.name}
+                    fill
+                    loading="lazy"
+                    sizes="48px"
+                    className="object-cover"
+                  />
                 </div>
-
-                {/* Right: Purchased Product Name */}
-                <div className="text-left sm:text-right shrink-0">
-                  <span className="text-[9px] sm:text-[10px] font-semibold text-stone-400 tracking-wider uppercase block">
-                    {review.categoryTag}
-                  </span>
-                  <span className="text-xs sm:text-sm font-semibold text-emerald-800 hover:text-[#0B2B1B] transition-colors block mt-0.5">
-                    {review.productName}
+                <div>
+                  <span className="font-serif text-sm sm:text-base font-bold text-stone-900 leading-tight block">
+                    {review.name}
                   </span>
                 </div>
               </div>
@@ -332,7 +291,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 aria-label={`Go to review ${idx + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === activeIdx
-                    ? "w-6 bg-[#0B2B1B]"
+                    ? "w-6 bg-[#1E1E1C]"
                     : "w-2 bg-stone-300 hover:bg-stone-400"
                 }`}
               />

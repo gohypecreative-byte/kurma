@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { Eye, ShoppingBag, Star, Check, X, ArrowRight, Gift, ShieldCheck, Bookmark, SlidersHorizontal, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, ShoppingBag, Check, X, ArrowRight, Gift, Bookmark, SlidersHorizontal, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
 export interface HamperItem {
@@ -226,6 +226,7 @@ interface HamperCardItemProps {
   toggleWishlist: (id: string) => void;
   setSelectedHamper: (hamper: HamperItem) => void;
   handleAddToCart: (hamper: HamperItem) => void;
+  index?: number;
 }
 
 function HamperCardItem({
@@ -235,6 +236,7 @@ function HamperCardItem({
   toggleWishlist,
   setSelectedHamper,
   handleAddToCart,
+  index = 0,
 }: HamperCardItemProps) {
   const router = useRouter();
   const [activeIdx, setActiveIdx] = useState(0);
@@ -253,19 +255,30 @@ function HamperCardItem({
   const currentDisplayImg = images[activeIdx] || hamper.image;
 
   return (
-    <div
-      onClick={() => setSelectedHamper(hamper)}
-      className="group transition-all duration-300 flex flex-col justify-between cursor-pointer select-none relative hover:-translate-y-1"
+    <motion.div
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px 0px" }}
+      transition={{
+        duration: 0.85,
+        delay: (index % 4) * 0.09,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="w-full h-full will-change-[transform,opacity]"
     >
+      <div
+        onClick={() => setSelectedHamper(hamper)}
+        className="group transition-all duration-300 flex flex-col justify-between cursor-pointer select-none relative hover:-translate-y-1 w-full h-full"
+      >
       <div>
-        {/* Vertical Portrait Image Canvas (Aspect 3:4) with object-contain */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#F7F4EE] border border-stone-200/60 flex items-center justify-center p-2 sm:p-3">
+        {/* Vertical Portrait Image Canvas (Aspect 3:4) - Full Bleed Edge-to-Edge */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#F7F4EE] border border-[#DDD3C2] shadow-xs">
           <Image
             src={currentDisplayImg}
             alt={hamper.name}
             fill
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-contain object-center p-2 sm:p-3 group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 25vw"
           />
 
@@ -277,13 +290,13 @@ function HamperCardItem({
               toggleWishlist(hamper.id);
             }}
             aria-label="Save to Wishlist"
-            className="absolute top-3 right-3 z-10 p-1 text-stone-700 hover:text-stone-900 drop-shadow-sm transition-transform active:scale-90 hover:scale-110 cursor-pointer"
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/35 hover:bg-black/60 text-white backdrop-blur-xs drop-shadow-sm transition-transform active:scale-90 hover:scale-110 cursor-pointer"
           >
             <Bookmark
               className={`w-4 h-4 transition-colors ${
                 likedIds[hamper.id]
-                  ? "fill-stone-800 text-stone-800 stroke-[2]"
-                  : "fill-transparent text-stone-700 stroke-[2]"
+                  ? "fill-[#eed08e] text-[#eed08e] stroke-[2]"
+                  : "fill-transparent text-white stroke-[2]"
               }`}
             />
           </button>
@@ -320,7 +333,7 @@ function HamperCardItem({
 
           {/* Slide Indicator Dots at Bottom Center */}
           {images.length > 1 && (
-            <div className="absolute bottom-2 inset-x-0 flex items-center justify-center gap-1.5 z-10 pointer-events-auto">
+            <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1.5 z-10 pointer-events-auto">
               {images.map((_, idx) => (
                 <button
                   key={idx}
@@ -330,10 +343,10 @@ function HamperCardItem({
                     setActiveIdx(idx);
                   }}
                   aria-label={`Show image ${idx + 1}`}
-                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                  className={`transition-all duration-300 rounded-full cursor-pointer shadow-xs ${
                     idx === activeIdx
-                      ? "w-2.5 h-1.5 bg-stone-800 shadow-xs"
-                      : "w-1.5 h-1.5 bg-stone-400/60 hover:bg-stone-600"
+                      ? "w-2.5 h-1.5 bg-white shadow-md"
+                      : "w-1.5 h-1.5 bg-white/60 hover:bg-white"
                   }`}
                 />
               ))}
@@ -344,11 +357,11 @@ function HamperCardItem({
         {/* Card Info Below Image */}
         <div className="mt-2.5 px-0.5 flex items-start justify-between gap-1.5 sm:gap-2">
           <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
-            <h3 className="font-serif text-xs sm:text-[13.5px] font-medium text-[#0B2B1B] group-hover:text-[#8C6215] transition-colors truncate">
+            <h3 className="font-serif text-xs sm:text-[13.5px] font-medium text-[#1C1B18] group-hover:text-[#8C6215] transition-colors truncate">
               {hamper.name}
             </h3>
             <div className="flex items-center gap-1.5">
-              <span className="text-xs sm:text-[12.5px] font-medium text-[#0B2B1B]">
+              <span className="text-xs sm:text-[12.5px] font-medium text-[#1C1B18]">
                 RS. {hamper.price.toLocaleString("en-IN")}
               </span>
               {hamper.originalPrice && (
@@ -382,7 +395,7 @@ function HamperCardItem({
               title="Add to Cart"
             >
               {addedIds[hamper.id] ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
+                <Check className="w-3.5 h-3.5 text-[#7A5A28] stroke-[2.5]" />
               ) : (
                 <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
               )}
@@ -391,13 +404,13 @@ function HamperCardItem({
         </div>
       </div>
     </div>
+  </motion.div>
   );
 }
 
 export function GiftingGallery() {
   const router = useRouter();
   const { addToCart } = useCart();
-  const [activeCategory, setActiveCategory] = useState<string>("all");
   const [selectedHamper, setSelectedHamper] = useState<HamperItem | null>(null);
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const [likedIds, setLikedIds] = useState<Record<string, boolean>>({});
@@ -405,18 +418,6 @@ export function GiftingGallery() {
   const toggleWishlist = (id: string) => {
     setLikedIds((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-
-  const categories = [
-    { id: "all", label: "All Hampers", count: HAMPER_ITEMS.length },
-    { id: "leatherette", label: "Leatherette Trays", count: HAMPER_ITEMS.filter(i => i.category === "leatherette").length },
-    { id: "wicker", label: "Wicker & Burlap", count: HAMPER_ITEMS.filter(i => i.category === "wicker").length },
-    { id: "brass", label: "Puja & Brassware", count: HAMPER_ITEMS.filter(i => i.category === "brass").length },
-    { id: "crates", label: "Artisan Crates & Chests", count: HAMPER_ITEMS.filter(i => i.category === "crates").length },
-  ];
-
-  const filteredItems = activeCategory === "all" 
-    ? HAMPER_ITEMS 
-    : HAMPER_ITEMS.filter(item => item.category === activeCategory);
 
   const handleAddToCart = (hamper: HamperItem) => {
     addToCart({
@@ -436,41 +437,22 @@ export function GiftingGallery() {
   };
 
   return (
-    <section id="gifting-gallery" className="bg-[#FAF7F2] py-16 sm:py-20 px-4 sm:px-6 md:px-8 lg:py-24 border-t border-[#EAE3D5] text-[#1C1917] w-full mobile-defer-render">
+    <section id="gifting-gallery" className="bg-[#ECE4D8] py-16 sm:py-20 px-4 sm:px-6 md:px-8 lg:py-24 border-t border-b border-[#DDD3C2] text-[#1C1B18] w-full mobile-defer-render">
       <div className="mx-auto max-w-[1700px] w-full">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-          <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-medium tracking-tight text-[#0B2B1B] leading-tight">
+        <div className="text-center max-w-5xl mx-auto mb-8 sm:mb-12 px-2">
+          <h2 className="font-serif text-lg xs:text-xl sm:text-3xl md:text-4xl lg:text-[44px] xl:text-5xl font-medium tracking-tight text-[#1C1B18] leading-tight sm:whitespace-nowrap">
             Artisanal Luxury Hampers &amp; Gift Suites
           </h2>
-
-          {/* Filter Tabs - Smooth horizontal scroll on mobile, centered on desktop */}
-          <div className="mt-6 sm:mt-8 flex items-center overflow-x-auto no-scrollbar justify-start sm:justify-center gap-3 sm:gap-6 md:gap-8 max-w-full px-2 mx-auto border-b border-stone-200/60 pb-1">
-            {categories.map((cat) => {
-              const isActive = activeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`px-1.5 sm:px-2 py-2 text-xs sm:text-sm transition-all duration-200 cursor-pointer whitespace-nowrap shrink-0 ${
-                    isActive
-                      ? "text-[#0B2B1B] font-bold border-b-2 border-[#0B2B1B]"
-                      : "text-stone-500 hover:text-[#0B2B1B] font-medium"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
-          </div>
         </div>
 
         {/* Hampers Image Grid - 12 Items with Hover Left/Right Navigation Arrows */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-          {filteredItems.map((hamper) => (
+          {HAMPER_ITEMS.map((hamper, idx) => (
             <HamperCardItem
               key={hamper.id}
               hamper={hamper}
+              index={idx}
               likedIds={likedIds}
               addedIds={addedIds}
               toggleWishlist={toggleWishlist}
@@ -480,25 +462,7 @@ export function GiftingGallery() {
           ))}
         </div>
 
-        {/* Bottom Banner */}
-        <div className="mt-16 rounded-2xl bg-gradient-to-r from-[#F4EFE6] via-[#FAF7F2] to-[#F4EFE6] p-8 border border-[#E2D6C3] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#0B2B1B] text-[#EED08E] flex items-center justify-center shrink-0 shadow">
-              <Gift className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="font-serif text-xl text-[#0B2B1B] font-medium">Need Custom Corporate or Wedding Hampers?</h4>
-              <p className="text-sm text-stone-600 mt-1">We create bespoke bulk gift suites with custom brass plaques, wax seals, and custom fragrance blends.</p>
-            </div>
-          </div>
-          <a
-            href="#catalog"
-            className="shrink-0 bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] px-6 py-3 rounded-full text-xs font-semibold tracking-wider uppercase flex items-center gap-2 shadow transition-all"
-          >
-            <span>Inquire Custom Hampers</span>
-            <ArrowRight className="w-4 h-4" />
-          </a>
-        </div>
+
       </div>
 
       {/* Quick View Modal */}
@@ -528,21 +492,12 @@ export function GiftingGallery() {
                   unoptimized
                   className="object-cover"
                 />
-                <div className="absolute top-4 left-4 bg-[#0B2B1B] text-[#EED08E] text-xs font-medium px-3 py-1 rounded-full border border-[#EED08E]/30">
-                  {selectedHamper.tag}
-                </div>
               </div>
 
               {/* Modal Details */}
               <div className="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-between overflow-y-auto">
                 <div>
-                  <div className="flex items-center gap-2 text-amber-500 text-xs font-medium mb-2">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    <span className="font-semibold text-stone-800">{selectedHamper.rating.toFixed(1)}</span>
-                    <span className="text-stone-400">({selectedHamper.reviewsCount} verified reviews)</span>
-                  </div>
-
-                  <h3 className="font-serif text-2xl text-[#0B2B1B] font-medium leading-tight">
+                  <h3 className="font-serif text-2xl text-[#1C1B18] font-medium leading-tight">
                     {selectedHamper.name}
                   </h3>
 
@@ -559,16 +514,11 @@ export function GiftingGallery() {
                     <ul className="space-y-2">
                       {selectedHamper.inclusions.map((item, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-xs text-stone-700">
-                          <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                          <Check className="w-4 h-4 text-[#7A5A28] shrink-0 mt-0.5" />
                           <span>{item}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  <div className="mt-6 flex items-center gap-3 text-xs text-stone-500 border-t border-stone-100 pt-4">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Free Pan-India Express Shipping & Gift Card Included</span>
                   </div>
                 </div>
 
@@ -577,7 +527,7 @@ export function GiftingGallery() {
                   <div>
                     <span className="text-xs text-stone-400 block">Total Suite Price</span>
                     <div className="flex items-baseline gap-2">
-                      <span className="font-serif text-2xl font-bold text-[#0B2B1B]">
+                      <span className="font-serif text-2xl font-bold text-[#1C1B18]">
                         {selectedHamper.priceDisplay}
                       </span>
                       {selectedHamper.originalPrice && (
@@ -607,7 +557,7 @@ export function GiftingGallery() {
                         handleAddToCart(selectedHamper);
                         setSelectedHamper(null);
                       }}
-                      className="bg-[#0B2B1B] text-[#EED08E] hover:bg-[#16442D] py-3 px-5 rounded-2xl text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      className="bg-[#1E1E1C] text-white hover:bg-[#33312D] py-3 px-5 rounded-2xl text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <ShoppingBag className="w-4 h-4" />
                       <span>Add to Bag</span>

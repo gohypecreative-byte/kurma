@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useReducedMotion } from "motion/react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PromoBannerProps {
   onExploreGifts: () => void;
@@ -26,30 +26,30 @@ const bannerSlides: BannerSlide[] = [
     bgGradient: "bg-gradient-to-r from-[#0b3320] via-[#0f432a] to-[#155938]",
     accentColor: "text-[#eed08e]",
     tagline: "Flagship Luxury Keepsake",
-    title: "Elements in Harmony Marble Gift Box",
-    subtitle: "Complete 5 Elements suite, solid brass turtle burner, medallion & tassel bookmark",
+    title: "Elements in Harmony Marble Box",
+    subtitle: "Complete 5 elements suite with solid brass burner.",
     ctaText: "Explore Marble Box",
-    productImage: "/images/product/image9.png",
+    productImage: "/images/product/banner-marble-box.jpg",
   },
   {
     id: 1,
     bgGradient: "bg-gradient-to-r from-[#072818] via-[#0d3f27] to-[#125032]",
     accentColor: "text-[#eed08e]",
-    tagline: "Pure Fragrance • Higher Consciousness",
+    tagline: "Pure Fragrance",
     title: "The 5 Sacred Elements Collection",
-    subtitle: "Earth, Water, Fire, Air, Space — 100% charcoal-free handcrafted luxury incense sticks",
+    subtitle: "100% charcoal-free handcrafted luxury incense.",
     ctaText: "Discover 5 Elements",
-    productImage: "/images/product/image7.png",
+    productImage: "/images/product/banner-5-elements.jpg",
   },
   {
     id: 2,
     bgGradient: "bg-gradient-to-r from-[#051f13] via-[#0a351f] to-[#10472c]",
     accentColor: "text-[#eed08e]",
-    tagline: "Artisanal Wood & Pashmina Craft",
-    title: "Kurma MDF Gift Box & Pashmina Square",
-    subtitle: "Rigid gold-foil stamped keepsake trunk with tailored compartments and custom engraving",
+    tagline: "Artisanal Craft",
+    title: "Kurma MDF Keepsake Trunk",
+    subtitle: "Rigid keepsake trunk with custom engraving.",
     ctaText: "View Heritage Box",
-    productImage: "/images/product/image.png",
+    productImage: "/images/product/banner-heritage-trunk.jpg",
   },
 ];
 
@@ -91,7 +91,7 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
 
   return (
     <section
-      className="w-full bg-[#FAF7F2] py-8 sm:py-12 border-t border-b border-[#EAE3D5] overflow-hidden relative select-none"
+      className="w-full bg-[#FAF7F2] py-8 sm:py-12 border-b border-[#EAE3D8] overflow-hidden relative select-none"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -100,7 +100,7 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
         <button
           onClick={handlePrev}
           aria-label="Previous banner"
-          className="hidden sm:flex absolute left-2 sm:left-4 md:left-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-stone-200/80 items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="hidden sm:flex absolute left-2 sm:left-4 md:left-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-[#E8E2D8] items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
         </button>
@@ -109,7 +109,7 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
         <button
           onClick={handleNext}
           aria-label="Next banner"
-          className="hidden sm:flex absolute right-2 sm:right-4 md:right-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-stone-200/80 items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="hidden sm:flex absolute right-2 sm:right-4 md:right-7 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white shadow-[0_4px_16px_rgba(0,0,0,0.18)] border border-[#E8E2D8] items-center justify-center text-stone-700 hover:text-black hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <ChevronRight className="w-5 h-5 stroke-[2.2]" />
         </button>
@@ -144,58 +144,32 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
                 }}
                 className={`absolute top-0 w-[90vw] sm:w-[80vw] md:w-[76vw] max-w-[1020px] h-full rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out cursor-pointer ${
                   isActive
-                    ? "z-20 shadow-[0_8px_30px_rgba(0,0,0,0.22)] opacity-100 ring-1 ring-amber-400/30"
+                    ? "z-20 shadow-[0_8px_30px_rgba(0,0,0,0.22)] opacity-100 ring-1 ring-[#1E1E1C]/15"
                     : "z-10 shadow-xs opacity-80 hover:opacity-100"
                 }`}
               >
-                <div
-                  className={`relative w-full h-full ${slide.bgGradient} flex items-center justify-between px-4 sm:px-10 md:px-16 overflow-hidden`}
-                >
-                  {/* Subtle geometric star lattice */}
-                  <div
-                    className="absolute inset-0 opacity-15 pointer-events-none"
-                    style={{
-                      backgroundImage: `radial-gradient(circle at center, rgba(255,255,255,0.4) 1px, transparent 1px)`,
-                      backgroundSize: "28px 28px",
-                    }}
+                <div className="relative w-full h-full overflow-hidden group">
+                  {/* Full Card Image Background - Clearly visible, bright and covering 100% with zero gaps */}
+                  <Image
+                    src={slide.productImage}
+                    alt={slide.title}
+                    fill
+                    priority={idx === 0}
+                    className="object-cover object-center sm:object-right filter brightness-[1.04] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-105"
+                    sizes="(max-width: 1024px) 90vw, 1020px"
                   />
 
-                  {/* Left Content */}
-                  <div className="relative z-10 max-w-md text-white py-3 sm:py-4 space-y-1.5 sm:space-y-3">
-                    <span
-                      className={`text-[9.5px] sm:text-xs font-bold tracking-wider uppercase block ${slide.accentColor}`}
-                    >
-                      {slide.tagline}
-                    </span>
-                    <h3 className="text-base sm:text-2xl md:text-3xl lg:text-[32px] font-bold font-serif tracking-tight leading-tight">
+                  {/* Subtle, gentle gradient scrim so the image is clearly visible while text stays sharp */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 sm:via-black/20 to-transparent pointer-events-none" />
+
+                  {/* Left Content - Responsive width and clean typography */}
+                  <div className="relative z-10 h-full flex flex-col justify-center px-4 sm:px-8 lg:px-10 max-w-[65%] sm:max-w-[50%] lg:max-w-[38%] text-white space-y-1 sm:space-y-1.5 pointer-events-none">
+                    <h3 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-[21px] xl:text-[22px] font-serif font-normal text-white tracking-tight leading-snug sm:leading-normal sm:whitespace-nowrap drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                       {slide.title}
                     </h3>
-                    <p className="text-[11px] sm:text-sm text-white/90 font-normal leading-relaxed line-clamp-2">
+                    <p className="text-[11px] sm:text-xs md:text-sm text-stone-200/95 font-light leading-relaxed truncate max-w-full drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                       {slide.subtitle}
                     </p>
-                    <div className="pt-1">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onExploreGifts();
-                        }}
-                        className="px-3.5 sm:px-5 py-1.5 sm:py-2.5 bg-white text-stone-900 text-[11px] sm:text-sm font-semibold rounded-full inline-flex items-center gap-1.5 shadow-sm hover:bg-stone-50 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                      >
-                        <span>{slide.ctaText}</span>
-                        <ArrowRight className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#c0881b]" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Right Product Image */}
-                  <div className="relative w-[36%] h-[84%] shrink-0 rounded-2xl overflow-hidden shadow-2xl hidden sm:block border border-amber-300/30 bg-stone-950">
-                    <Image
-                      src={slide.productImage}
-                      alt={slide.title}
-                      fill
-                      className="object-cover"
-                      sizes="400px"
-                    />
                   </div>
                 </div>
               </div>

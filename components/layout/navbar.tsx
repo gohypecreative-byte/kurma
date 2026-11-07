@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -17,7 +18,7 @@ import {
   ChevronRight,
   PhoneCall,
 } from "lucide-react";
-import { PRODUCTS, formatPrice } from "@/lib/products";
+import { PRODUCTS, formatPrice, ProductSKU } from "@/lib/products";
 
 interface NavbarProps {
   cartCount: number;
@@ -49,6 +50,90 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [drawerSearchQuery, setDrawerSearchQuery] = useState("");
+
+  const searchCollections = [
+    {
+      title: "The 5 Sacred Elements Incense",
+      href: "/shop",
+      image: "/images/product/earth-front.png",
+      itemCount: "5 Sacred Elemental Aromas",
+    },
+    {
+      title: "Gift Trunks & Keepsake Suites",
+      href: "/gift-trunks",
+      image: "/images/product/marble-box-clean.png",
+      itemCount: "4 Heirloom Keepsake Boxes",
+    },
+    {
+      title: "Solid Brass Turtle Burners & Accessories",
+      href: "/products/turtle-incense-holder",
+      image: "/images/product/turtle-holder-clean.png",
+      itemCount: "Handcrafted Solid Brass Burners",
+    },
+    {
+      title: "Sacred Rituals & Meditation",
+      href: "/ritual",
+      image: "/images/product/banner-heritage-trunk.jpg",
+      itemCount: "Morning & Evening Ritual Guides",
+    },
+  ];
+
+  const recommendedProducts = useMemo(() => {
+    const list: Array<ProductSKU & { displayImage?: string }> = [
+      {
+        ...PRODUCTS.find((p) => p.id === "turtle-incense-holder")!,
+        displayImage: "/images/product/turtle-holder-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
+        displayImage: "/images/product/suite-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "marble-gift-box")!,
+        displayImage: "/images/product/marble-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "fragrance-earth")!,
+        displayImage: "/images/product/earth-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "fragrance-water")!,
+        displayImage: "/images/product/water-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "fragrance-fire")!,
+        displayImage: "/images/product/fire-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "fragrance-air")!,
+        displayImage: "/images/product/air-portrait.jpg",
+      },
+      {
+        ...PRODUCTS.find((p) => p.id === "fragrance-space")!,
+        displayImage: "/images/product/space-portrait.jpg",
+      },
+    ];
+    return list.filter((p) => Boolean(p && p.id));
+  }, []);
+
+  useEffect(() => {
+    if (searchOpen) {
+      const timer = setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [searchOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && searchOpen) {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchOpen]);
 
   // Auth User State
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -290,7 +375,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
       {/* ========================================================================= */}
       {/* 1. TOP STICKY HEADER (z-[60] to remain securely above standard content) */}
       {/* ========================================================================= */}
-      <header className="sticky top-0 z-[60] w-full bg-white sm:bg-white/98 backdrop-blur-none sm:backdrop-blur-md border-b border-stone-200/80 text-stone-900 shadow-xs">
+      <header className="sticky top-0 z-[60] w-full bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#EAE3D8] text-[#1C1B18] shadow-2xs">
         <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <Link
@@ -338,7 +423,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                 >
                   <span>{link.name}</span>
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#8b5f10] rounded-full animate-in fade-in zoom-in-95 duration-200" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1C1B18] rounded-full animate-in fade-in zoom-in-95 duration-200" />
                   )}
                 </Link>
               );
@@ -355,7 +440,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               title="Search (Ctrl+K)"
               className={`w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border flex items-center justify-center transition-colors cursor-pointer touch-manipulation shadow-2xs hover:shadow-xs ${
                 searchOpen
-                  ? "bg-[#072515] text-[#eed08e] border-[#eed08e]/70"
+                  ? "bg-[#1E1E1C] text-white border-[#1E1E1C]"
                   : "bg-[#faf9f6] hover:bg-[#fbf6ea] active:bg-stone-200 text-stone-700 hover:text-[#8b5f10] border-stone-200 hover:border-[#c0881b]"
               }`}
             >
@@ -371,9 +456,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     type="button"
                     onClick={handleToggleAccountMenu}
                     aria-label={`Account menu for ${user.name}`}
-                    className="h-10 sm:h-11 px-2.5 sm:px-3.5 shrink-0 rounded-full border border-[#eed08e]/70 bg-[#072515] text-[#eed08e] hover:bg-[#0c3823] active:bg-[#061e11] flex items-center gap-1.5 sm:gap-2 transition-colors shadow-xs cursor-pointer touch-manipulation"
+                    className="h-10 sm:h-11 px-2.5 sm:px-3.5 shrink-0 rounded-full border border-[#1E1E1C] bg-[#1E1E1C] text-white hover:bg-[#33312D] active:bg-black flex items-center gap-1.5 sm:gap-2 transition-colors shadow-xs cursor-pointer touch-manipulation"
                   >
-                    <div className="w-5 h-5 rounded-full bg-[#eed08e] text-[#072515] flex items-center justify-center text-[10px] font-bold pointer-events-none">
+                    <div className="w-5 h-5 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center text-[10px] font-bold pointer-events-none">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="hidden md:inline text-xs font-semibold tracking-wide max-w-[90px] truncate pointer-events-none">
@@ -446,12 +531,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     setSearchOpen(false);
                     setAccountMenuOpen(false);
                   }}
-                  className="w-10 h-10 md:w-auto md:h-11 md:px-3.5 shrink-0 rounded-full border border-stone-200 hover:border-[#c0881b] bg-[#faf9f6] hover:bg-[#fbf6ea] active:bg-stone-200 text-stone-700 hover:text-[#8b5f10] flex items-center justify-center md:gap-1.5 transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
+                  className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] active:bg-stone-200 text-[#1C1B18] hover:text-black flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
                 >
                   <User className="w-4.5 h-4.5 stroke-[1.8] pointer-events-none" />
-                  <span className="hidden md:inline text-xs font-semibold tracking-wider uppercase font-sans pointer-events-none">
-                    Login
-                  </span>
                 </Link>
               )}
             </div>
@@ -461,11 +543,11 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               type="button"
               onClick={handleOpenCartDrawer}
               aria-label={`View shopping cart with ${cartCount} items`}
-              className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-stone-200 hover:border-[#c0881b] bg-[#faf9f6] hover:bg-[#fbf6ea] active:bg-stone-200 text-stone-800 hover:text-[#8b5f10] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
+              className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] active:bg-stone-200 text-[#1C1B18] hover:text-black flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
             >
               <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-stone-700 pointer-events-none" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#072515] text-[#eed08e] border border-[#eed08e]/70 rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs pointer-events-none">
+                <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#1E1E1C] text-white border border-[#DDD6CB] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs pointer-events-none">
                   {cartCount}
                 </span>
               )}
@@ -480,7 +562,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               aria-controls="mobile-navigation"
               className={`w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border flex items-center justify-center transition-colors cursor-pointer touch-manipulation shadow-2xs hover:shadow-xs lg:hidden ${
                 mobileMenuOpen
-                  ? "bg-[#072515] text-[#eed08e] border-[#eed08e]/70"
+                  ? "bg-[#1E1E1C] text-white border-[#1E1E1C]"
                   : "bg-[#faf9f6] hover:bg-[#fbf6ea] active:bg-stone-200 text-stone-700 hover:text-[#8b5f10] border-stone-200 hover:border-[#c0881b]"
               }`}
             >
@@ -570,7 +652,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           onClick={() => setMobileMenuOpen(false)}
                           className={`flex items-center justify-between px-3.5 py-3 rounded-xl transition-all cursor-pointer touch-manipulation ${
                             isActive
-                              ? "bg-[#072515] text-[#eed08e] font-bold shadow-xs"
+                              ? "bg-[#1E1E1C] text-white font-bold shadow-xs"
                               : "bg-[#FAF8F5] hover:bg-stone-100 text-stone-800 border border-stone-200/70"
                           }`}
                         >
@@ -606,7 +688,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                       <div className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-stone-200 space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center text-xs font-bold">
+                            <div className="w-8 h-8 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center text-xs font-bold">
                               {user.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
@@ -644,7 +726,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                               setMobileMenuOpen(false);
                               router.push("/elements");
                             }}
-                            className="py-2.5 px-3 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-semibold text-center active:bg-[#0c3823] cursor-pointer shadow-xs touch-manipulation"
+                            className="py-2.5 px-3 rounded-xl bg-[#1E1E1C] text-white text-xs font-semibold text-center active:bg-[#33312D] cursor-pointer shadow-xs touch-manipulation"
                           >
                             Custom Hamper
                           </button>
@@ -656,7 +738,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           href="/login"
                           prefetch={true}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="w-full py-3.5 px-4 rounded-xl bg-[#072515] hover:bg-[#0c3823] active:bg-[#051a0f] text-[#eed08e] text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
+                          className="w-full py-3.5 px-4 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] active:bg-black text-white text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
                         >
                           <User className="w-4.5 h-4.5 pointer-events-none" />
                           <span>Login / Sacred Account</span>
@@ -683,231 +765,289 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               document.body
             )}
 
-          {/* ROOT-LEVEL LUXURY SEARCH SIDE DRAWER (SLIDES IN SMOOTHLY FROM RIGHT LIKE CART PANEL) */}
-          {searchOpen &&
-            createPortal(
-              <div
-                className="fixed inset-0 z-[80] overflow-hidden select-none"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Search Creations Side Drawer"
-              >
-                {/* Backdrop (matching cart panel) */}
+          {/* TOP FULL-WIDTH LUXURY SEARCH OVERLAY (ATTACHED TIGHTLY TO TOP WITH SMOOTH SLIDE-DOWN ANIMATION) */}
+          {createPortal(
+            <AnimatePresence>
+              {searchOpen && (
                 <div
-                  className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
-                  onClick={handleCloseSearchModal}
-                  aria-hidden="true"
-                />
+                  className="fixed inset-0 z-[100] overflow-hidden select-none"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Search Kurma Creations & Collections"
+                >
+                  {/* Backdrop below panel */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="fixed inset-0 bg-stone-950/65 backdrop-blur-xs"
+                    onClick={handleCloseSearchModal}
+                    aria-hidden="true"
+                  />
 
-                {/* Slide-over Panel (smooth slide-in from right) */}
-                <div className="fixed inset-y-0 right-0 flex max-w-full sm:pl-10">
-                  <div className="w-screen sm:w-[440px] max-w-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 text-stone-900">
-                    {/* Header matching cart drawer with sacred Kurma insignia */}
-                    <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[#eed08e]/30 bg-[#fbf6ea]/80 shrink-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#072515] border border-[#eed08e]/40 text-[#eed08e] flex items-center justify-center shadow-xs">
-                          <Search className="w-4 h-4 text-[#eed08e]" />
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-bold text-[#8b5f10] uppercase tracking-[0.22em] block leading-none">
-                            Sacred Discovery
+                  {/* Top Dropdown Panel Attached Tightly Against Top (top: 0) with Smooth Slide-Down */}
+                  <motion.div
+                    initial={{ y: "-100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-100%" }}
+                    transition={{
+                      type: "spring",
+                      damping: 32,
+                      stiffness: 300,
+                      mass: 0.8,
+                    }}
+                    className="fixed top-0 inset-x-0 z-[110] bg-[#FAF8F5] border-b border-[#DDD3C2] rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain text-stone-900"
+                  >
+                    {/* Top Row: Navigation Links, Kurma Brand Logo & Icons (matching reference header) */}
+                    <div className="w-full border-b border-[#EAE3D8] bg-[#FAF8F5] shrink-0">
+                      <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
+                        {/* Brand Logo */}
+                        <Link
+                          href="/"
+                          onClick={() => setSearchOpen(false)}
+                          className="flex items-center gap-2 sm:gap-3 group shrink-0"
+                          aria-label="Kurma Home"
+                        >
+                          <div className="relative w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
+                            <Image
+                              src="/images/brand/kurma-turtle-transparent.png"
+                              alt="Kurma Logo"
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-contain pointer-events-none"
+                            />
+                          </div>
+                          <span className="font-serif tracking-[0.16em] sm:tracking-[0.2em] text-lg sm:text-[22px] font-bold text-stone-900 leading-none">
+                            KURMA
                           </span>
-                          <h2 className="text-base sm:text-lg font-serif font-bold text-stone-900 leading-tight mt-0.5">
-                            Search Creations
-                          </h2>
+                        </Link>
+
+                        {/* Desktop Navigation Links */}
+                        <nav className="hidden lg:flex items-center space-x-7 xl:space-x-8 text-[13px] xl:text-[13.5px] font-semibold uppercase tracking-wider">
+                          {desktopNavLinks.map((link) => {
+                            const isActive =
+                              link.href === "/"
+                                ? pathname === "/"
+                                : pathname?.startsWith(link.href);
+
+                            return (
+                              <Link
+                                key={link.name}
+                                href={link.href}
+                                onClick={() => setSearchOpen(false)}
+                                className={`relative py-2 transition-colors cursor-pointer ${
+                                  isActive
+                                    ? "text-[#8b5f10] font-semibold"
+                                    : "text-stone-700 hover:text-[#8b5f10]"
+                                }`}
+                              >
+                                <span>{link.name}</span>
+                              </Link>
+                            );
+                          })}
+                        </nav>
+
+                        {/* Right Action Icons */}
+                        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                          {/* Active Search indicator button */}
+                          <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border bg-[#1E1E1C] text-white border-[#1E1E1C] flex items-center justify-center shadow-2xs">
+                            <Search className="w-4.5 h-4.5 stroke-[1.8]" />
+                          </div>
+
+                          {/* Login / User button */}
+                          <Link
+                            href="/login"
+                            onClick={() => setSearchOpen(false)}
+                            aria-label="Patron Sign In"
+                            className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] text-[#1C1B18] flex items-center justify-center transition-colors shadow-2xs"
+                          >
+                            <User className="w-4.5 h-4.5 stroke-[1.8]" />
+                          </Link>
+
+                          {/* Cart Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSearchOpen(false);
+                              handleOpenCartDrawer();
+                            }}
+                            className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] text-[#1C1B18] flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
+                          >
+                            <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-stone-700" />
+                            {cartCount > 0 && (
+                              <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#1E1E1C] text-white border border-[#DDD6CB] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs">
+                                {cartCount}
+                              </span>
+                            )}
+                          </button>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setSearchOpen(false)}
-                        className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-full transition-colors cursor-pointer shrink-0"
-                        aria-label="Close search drawer"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
                     </div>
 
-                    {/* Search Input Bar (Kurma Luxury Gold Border & Pill Design) */}
-                    <div className="p-4 sm:p-5 border-b border-[#eed08e]/30 bg-gradient-to-b from-[#fbf6ea]/70 to-[#FAF8F5] shrink-0">
+                    {/* Search Bar Row & Content Container */}
+                    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 sm:space-y-7">
+                    {/* Search Bar Row (Refined Input with Search Icon + X Close Button beside it) */}
+                    <div className="flex items-center gap-3 sm:gap-4 w-full">
                       <form
                         onSubmit={handleSearchSubmit}
-                        className="relative flex items-center bg-white rounded-full border border-[#eed08e] hover:border-[#c0881b] shadow-xs focus-within:border-[#8b5f10] focus-within:ring-2 focus-within:ring-[#eed08e]/50 transition-all p-1.5 pl-3.5 sm:pl-4 pr-1.5 gap-2"
+                        className="flex-1 relative flex items-center bg-[#F1ECE4] hover:bg-[#EBE4DA] focus-within:bg-white rounded-xl border border-[#DDD3C2] focus-within:border-[#8b5f10] focus-within:ring-2 focus-within:ring-[#eed08e]/50 transition-all p-1.5 pl-4 sm:pl-6 pr-3 shadow-inner"
                       >
-                        <Search className="w-4.5 h-4.5 text-[#8b5f10] shrink-0 pointer-events-none" />
                         <input
                           ref={searchInputRef}
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Search incense, brass burners, luxury boxes..."
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none ring-0 text-xs sm:text-sm text-stone-900 placeholder:text-stone-400 font-sans py-1.5 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                          placeholder="Search here...."
+                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm md:text-base text-stone-900 placeholder:text-stone-400 font-sans py-1 sm:py-1.5 focus:outline-none focus:ring-0"
                           style={{ outline: "none", boxShadow: "none", border: "none" }}
                         />
                         {searchQuery && (
                           <button
                             type="button"
                             onClick={() => setSearchQuery("")}
-                            className="p-1 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 cursor-pointer touch-manipulation transition-colors shrink-0"
-                            aria-label="Clear search query"
+                            className="p-1 rounded-full text-stone-400 hover:text-stone-700 transition-colors mr-1 cursor-pointer"
+                            aria-label="Clear search input"
                           >
-                            <X className="w-3.5 h-3.5 pointer-events-none" />
+                            <X className="w-3.5 h-3.5" />
                           </button>
                         )}
                         <button
                           type="submit"
-                          className="shrink-0 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#072515] to-[#0c3823] hover:from-[#0a311d] hover:to-[#125032] active:bg-[#051a0f] text-[#eed08e] border border-[#eed08e]/35 hover:border-[#eed08e]/70 text-[11px] sm:text-xs font-bold rounded-full uppercase tracking-[0.14em] transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center gap-1.5"
+                          aria-label="Submit search"
+                          className="p-1 text-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
                         >
-                          <span>Search</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-[#eed08e]/80 hidden xs:inline-block" />
+                          <Search className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.8]" />
                         </button>
                       </form>
+
+                      {/* Close 'X' Button on the Far Right */}
+                      <button
+                        type="button"
+                        onClick={() => setSearchOpen(false)}
+                        aria-label="Close search overlay"
+                        className="p-2 sm:p-2.5 rounded-full hover:bg-stone-200/70 text-stone-600 hover:text-stone-950 transition-colors cursor-pointer shrink-0 touch-manipulation"
+                      >
+                        <X className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.9]" />
+                      </button>
                     </div>
 
-                    {/* Scrollable Content Area */}
-                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4">
-                      {/* Popular Searches when no query typed */}
-                      {!searchQuery && (
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2.5">
-                              <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#8b5f10] font-sans">
-                                Popular Searches
-                              </p>
-                              <div className="flex-1 h-px bg-[#eed08e]/30" />
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {popularKeywords.map((kw) => (
-                                <button
-                                  key={kw}
-                                  type="button"
-                                  onClick={() => setSearchQuery(kw)}
-                                  className="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-[#eed08e]/70 hover:bg-[#072515] hover:text-[#eed08e] hover:border-[#072515] text-stone-700 transition-all cursor-pointer touch-manipulation shadow-2xs"
-                                >
-                                  {kw}
-                                </button>
-                              ))}
-                            </div>
+                    {/* Main Content Area: Collections & Recommended Products when no query */}
+                    {!searchQuery.trim() ? (
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-7 sm:gap-8 lg:gap-12 items-start pt-1">
+                        {/* LEFT COLUMN: Collections List (exact layout from screenshot) */}
+                        <div className="md:col-span-5 lg:col-span-5 space-y-3.5">
+                          <div className="flex items-center justify-between pb-1">
+                            <h3 className="text-sm sm:text-base font-bold text-stone-900 font-serif tracking-tight">
+                              Collections
+                            </h3>
                           </div>
 
-                          {/* Quick Curated Collections */}
-                          <div className="pt-2">
-                            <div className="flex items-center gap-2 mb-2.5">
-                              <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#8b5f10] font-sans">
-                                Curated Collections
-                              </p>
-                              <div className="flex-1 h-px bg-[#eed08e]/30" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2.5">
-                              {[
-                                { label: "Gift Trunks", href: "/gift-trunks", count: "Heirloom" },
-                                { label: "5 Elements", href: "/elements", count: "Customise" },
-                                { label: "Artisanal Incense", href: "/shop", count: "Pure Resins" },
-                                { label: "Sacred Rituals", href: "/ritual", count: "Wisdom" },
-                              ].map((cat) => (
-                                <Link
-                                  key={cat.label}
-                                  href={cat.href}
-                                  onClick={() => setSearchOpen(false)}
-                                  className="p-3 rounded-xl bg-white border border-stone-200/90 hover:border-[#c0881b] hover:shadow-xs transition-all flex flex-col justify-between group cursor-pointer shadow-2xs"
-                                >
-                                  <span className="text-xs font-semibold text-stone-900 group-hover:text-[#8b5f10] transition-colors font-serif">
-                                    {cat.label}
-                                  </span>
-                                  <span className="text-[10px] text-stone-500 mt-1 uppercase tracking-wider font-medium flex items-center justify-between">
-                                    <span>{cat.count}</span>
-                                    <span className="text-[#8b5f10] group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-                                  </span>
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Featured Creations preview */}
-                          <div className="pt-2">
-                            <div className="flex items-center gap-2 mb-2.5">
-                              <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#8b5f10] font-sans">
-                                Signature Creations
-                              </p>
-                              <div className="flex-1 h-px bg-[#eed08e]/30" />
-                            </div>
-                            <div className="space-y-2">
-                              {PRODUCTS.slice(0, 3).map((prod) => (
-                                <div
-                                  key={prod.id}
-                                  onClick={() => handleSelectProduct(prod.id)}
-                                  className="p-2.5 rounded-xl bg-white border border-stone-200/80 hover:border-[#c0881b] flex items-center justify-between gap-3 transition-all cursor-pointer group shadow-2xs hover:shadow-xs"
-                                >
-                                  <div className="flex items-center gap-3 min-w-0">
-                                    <div className="relative w-11 h-11 rounded-lg bg-[#FAF8F5] border border-stone-200/80 overflow-hidden shrink-0 p-0.5">
-                                      <Image
-                                        src={prod.image}
-                                        alt={prod.name}
-                                        fill
-                                        unoptimized
-                                        className="object-contain group-hover:scale-105 transition-transform pointer-events-none"
-                                      />
-                                    </div>
-                                    <div className="min-w-0">
-                                      <h4 className="text-xs font-semibold text-stone-900 group-hover:text-[#8b5f10] truncate transition-colors font-serif">
-                                        {prod.name}
-                                      </h4>
-                                      <p className="text-[10.5px] text-stone-500 truncate">
-                                        {prod.subtitle}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2 shrink-0">
-                                    <span className="text-xs font-bold text-stone-900 font-serif">
-                                      {formatPrice(prod.price)}
-                                    </span>
-                                    <ChevronRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-[#8b5f10] transition-colors pointer-events-none" />
-                                  </div>
+                          <div className="divide-y divide-[#E6DDD0]">
+                            {searchCollections.map((col) => (
+                              <Link
+                                key={col.title}
+                                href={col.href}
+                                onClick={() => setSearchOpen(false)}
+                                className="flex items-center gap-3.5 py-3 group cursor-pointer hover:bg-[#F3EFEA]/80 px-2 rounded-lg transition-all"
+                              >
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden bg-white border border-[#DDD3C2] shrink-0 p-1 shadow-2xs group-hover:scale-103 transition-transform">
+                                  <Image
+                                    src={col.image}
+                                    alt={col.title}
+                                    fill
+                                    className="object-contain p-0.5 pointer-events-none"
+                                  />
                                 </div>
-                              ))}
-                            </div>
+                                <div className="min-w-0 flex-1">
+                                  <span className="text-xs sm:text-[13.5px] font-semibold text-stone-900 group-hover:text-[#8b5f10] transition-colors block font-serif truncate">
+                                    {col.title}
+                                  </span>
+                                  <span className="text-[10.5px] text-stone-500 font-sans block mt-0.5">
+                                    {col.itemCount}
+                                  </span>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-[#8b5f10] group-hover:translate-x-0.5 transition-all shrink-0" />
+                              </Link>
+                            ))}
                           </div>
                         </div>
-                      )}
 
-                      {/* Live Search Results */}
-                      {searchQuery && (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between pb-2 text-xs text-stone-500 font-sans border-b border-stone-100">
-                            <span>
-                              Found {searchResults.length}{" "}
-                              {searchResults.length === 1 ? "creation" : "creations"}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSearchOpen(false);
-                                router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-                              }}
-                              className="text-[#8b5f10] font-bold hover:underline cursor-pointer touch-manipulation"
-                            >
-                              View all in full search &rarr;
-                            </button>
+                        {/* RIGHT COLUMN: Recommended Products (Filling the empty space on the side) */}
+                        <div className="md:col-span-7 lg:col-span-7 md:border-l md:border-[#DDD3C2]/70 md:pl-7 lg:pl-10 space-y-3.5">
+                          <div className="flex items-center justify-between pb-1">
+                            <h3 className="text-sm sm:text-base font-bold text-stone-900 font-serif tracking-tight">
+                              Recommended Products
+                            </h3>
                           </div>
 
-                          {searchResults.length > 0 ? (
-                            searchResults.map((product) => (
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+                            {recommendedProducts.map((product) => (
                               <div
                                 key={product.id}
                                 onClick={() => handleSelectProduct(product.id)}
-                                className="p-3 rounded-2xl bg-white hover:bg-[#FAF8F5] border border-stone-200/80 hover:border-[#8b5f10] flex items-center justify-between gap-3.5 transition-all cursor-pointer group shadow-2xs hover:shadow-xs"
+                                title={product.name}
+                                className="group/item bg-white hover:bg-[#FAF8F5] rounded-lg border border-[#DDD3C2] hover:border-[#8b5f10] p-2 sm:p-2.5 flex flex-col justify-between transition-all shadow-2xs hover:shadow-md cursor-pointer select-none"
+                              >
+                                <div className="relative w-full aspect-[3/4] rounded-md overflow-hidden bg-[#FAF8F5] flex items-center justify-center">
+                                  <Image
+                                    src={product.displayImage || product.image}
+                                    alt={product.name}
+                                    fill
+                                    className="object-contain object-center group-hover/item:scale-105 transition-transform duration-500"
+                                    sizes="(max-width: 640px) 45vw, 15vw"
+                                  />
+                                </div>
+
+                                <div className="mt-2 pt-1.5 border-t border-stone-100 flex items-center justify-center">
+                                  <span className="text-xs font-bold text-stone-900 group-hover/item:text-[#8b5f10] font-sans tracking-tight transition-colors">
+                                    Rs. {product.price.toLocaleString("en-IN")}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Live Search Results View */
+                      <div className="space-y-4 pt-1">
+                        <div className="flex items-center justify-between pb-2 text-xs text-stone-500 font-sans border-b border-[#DDD3C2]/60">
+                          <span>
+                            Found <strong className="text-stone-900">{searchResults.length}</strong>{" "}
+                            {searchResults.length === 1 ? "creation" : "creations"} matching &ldquo;{searchQuery}&rdquo;
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSearchOpen(false);
+                              router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+                            }}
+                            className="text-[#8b5f10] font-bold hover:underline cursor-pointer touch-manipulation"
+                          >
+                            View in full catalog &rarr;
+                          </button>
+                        </div>
+
+                        {searchResults.length > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {searchResults.map((product) => (
+                              <div
+                                key={product.id}
+                                onClick={() => handleSelectProduct(product.id)}
+                                className="p-3 rounded-lg bg-white hover:bg-[#FAF8F5] border border-stone-200/90 hover:border-[#8b5f10] flex items-center justify-between gap-3.5 transition-all cursor-pointer group shadow-2xs hover:shadow-xs"
                               >
                                 <div className="flex items-center gap-3.5 min-w-0">
-                                  <div className="relative w-12 h-12 rounded-xl bg-white border border-stone-200 overflow-hidden shrink-0 p-1">
+                                  <div className="relative w-12 h-12 rounded-md bg-[#FAF8F5] border border-stone-200 overflow-hidden shrink-0 p-1">
                                     <Image
                                       src={product.image}
                                       alt={product.name}
                                       fill
-                                      unoptimized
-                                      className="object-contain group-hover:scale-105 transition-transform pointer-events-none"
+                                      className="object-contain p-0.5 group-hover:scale-105 transition-transform pointer-events-none"
                                     />
                                   </div>
                                   <div className="min-w-0">
-                                    <h4 className="text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-[#8b5f10] truncate transition-colors">
+                                    <h4 className="text-xs sm:text-sm font-semibold text-stone-900 group-hover:text-[#8b5f10] truncate transition-colors font-serif">
                                       {product.name}
                                     </h4>
                                     <p className="text-[11px] text-stone-500 truncate">
@@ -920,50 +1060,36 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                                 </div>
 
                                 <div className="flex items-center gap-2 shrink-0">
-                                  <span className="text-xs sm:text-sm font-bold text-stone-900 font-serif">
-                                    {formatPrice(product.price)}
+                                  <span className="text-xs sm:text-sm font-bold text-stone-900 font-sans tracking-tight">
+                                    Rs. {product.price.toLocaleString("en-IN")}
                                   </span>
                                   <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-[#8b5f10] transition-colors pointer-events-none" />
                                 </div>
                               </div>
-                            ))
-                          ) : (
-                            <div className="py-12 text-center space-y-3">
-                              <div className="w-12 h-12 rounded-full bg-[#fbf6ea] text-[#c0881b] flex items-center justify-center mx-auto border border-[#eed08e]/50">
-                                <Search className="w-6 h-6 stroke-[1.5]" />
-                              </div>
-                              <p className="text-sm font-medium text-stone-800">
-                                No creations found for &ldquo;{searchQuery}&rdquo;
-                              </p>
-                              <p className="text-xs text-stone-500 max-w-xs mx-auto">
-                                Try searching for &ldquo;brass&rdquo;, &ldquo;sandalwood&rdquo;, &ldquo;trunk&rdquo;, or &ldquo;suite&rdquo;.
-                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="py-10 text-center space-y-3">
+                            <div className="w-12 h-12 rounded-full bg-[#FAF8F5] text-[#8b5f10] flex items-center justify-center mx-auto border border-[#DDD3C2]">
+                              <Search className="w-6 h-6 stroke-[1.5]" />
                             </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Drawer Footer */}
-                    <div className="p-4 bg-[#fbf6ea]/70 border-t border-stone-200 flex items-center justify-between text-xs text-stone-600 shrink-0">
-                      <Link
-                        href={searchQuery ? `/search?q=${encodeURIComponent(searchQuery)}` : "/search"}
-                        prefetch={true}
-                        onClick={() => setSearchOpen(false)}
-                        className="text-[#8b5f10] font-semibold hover:underline flex items-center gap-1.5"
-                      >
-                        <span>Explore full search catalog</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </Link>
-                      <span className="text-[11px] text-stone-400 font-mono hidden sm:inline">
-                        ESC to close
-                      </span>
-                    </div>
+                            <p className="text-sm font-medium text-stone-800">
+                              No creations found for &ldquo;{searchQuery}&rdquo;
+                            </p>
+                            <p className="text-xs text-stone-500 max-w-xs mx-auto">
+                              Try searching for &ldquo;brass&rdquo;, &ldquo;turtle&rdquo;, &ldquo;sandalwood&rdquo;, &ldquo;trunk&rdquo;, or &ldquo;suite&rdquo;.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </div>
-              </div>,
-              document.body
+                </motion.div>
+              </div>
             )}
+          </AnimatePresence>,
+          document.body
+        )}
         </>
       )}
     </>

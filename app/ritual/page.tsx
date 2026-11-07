@@ -77,7 +77,7 @@ export default function RitualPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 space-y-16 sm:space-y-20">
@@ -146,7 +146,7 @@ export default function RitualPage() {
               const Icon = std.icon;
               return (
                 <div key={i} className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#072515] text-[#eed08e] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-[#1E1E1C] text-white flex items-center justify-center">
                     <Icon className="w-5 h-5 stroke-[1.75]" />
                   </div>
                   <h3 className="font-serif text-base font-semibold text-stone-900">
@@ -213,7 +213,7 @@ export default function RitualPage() {
           <div className="pt-2">
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-md cursor-pointer"
             >
               <span>Explore The Collection</span>
               <ArrowRight className="w-4 h-4" />

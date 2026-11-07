@@ -1,138 +1,179 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
-import { ArrowRight, Leaf, Flame, ShieldCheck, PenTool } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
+import { RealisticSmoke } from "@/components/home/realistic-smoke";
 
 interface HeroProps {
   onExploreGifts: () => void;
   onExploreBestsellers?: () => void;
 }
 
+const LUXURY_EASE = [0.22, 1, 0.36, 1] as const;
+
 export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
-  const trustFeatures = [
-    {
-      icon: Leaf,
-      title: "100% Organic",
-      subtitle: "Charcoal-Free",
-    },
-    {
-      icon: Flame,
-      title: "5 Sacred Elements",
-      subtitle: "Pure Resins",
-    },
-    {
-      icon: ShieldCheck,
-      title: "Solid Cast Brass",
-      subtitle: "Turtle Stand",
-    },
-    {
-      icon: PenTool,
-      title: "Bespoke Engraving",
-      subtitle: "Every SKU",
-    },
-  ];
+  const shouldReduceMotion = useReducedMotion();
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Subtle depth dimming as the overlapping content stack glides over the hero
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const dimOpacity = useTransform(scrollYProgress, [0, 0.8, 1], [0, 0.08, 0.22]);
 
   return (
     <section
+      ref={heroRef}
       id="home"
-      className="relative w-full min-h-[520px] lg:h-[calc(100vh-80px)] bg-[#072515] overflow-hidden flex flex-col justify-between text-white"
+      className="sticky top-16 sm:top-20 z-0 w-full h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] min-h-[580px] sm:min-h-[620px] bg-[#EDE1D1] border-b border-[#CBB8A1] overflow-hidden flex items-center text-[#1C1B18] transform-gpu [transform:translate3d(0,0,0)]"
     >
-      {/* Unified Hero Banner Canvas */}
-      <div className="relative flex-1 flex items-center py-6 sm:py-10 lg:py-16">
-        {/* Desktop-Only Right-Side Hero Image - Seamlessly Blended */}
-        <div className="hidden lg:block absolute inset-y-0 right-0 w-[58%] xl:w-[62%] h-full pointer-events-none z-0">
+      <div className="w-full h-full flex items-center relative">
+        {/* Full-Bleed Editorial Background Banner */}
+        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
           <Image
-            src="/images/product/image7.png"
-            alt="Kurma 5 Elements Sacred Agarbatti Luxury Incense Suite"
+            src="/images/hero/kurma-hero-banner-new.jpg"
+            alt="Kurma 5 Elements Sacred Incense Suite & Brass Turtle Burner"
             fill
             priority
-            className="object-contain object-right p-4 sm:p-6 filter brightness-[1.02] contrast-[1.03]"
-            sizes="(max-width: 1024px) 100vw, 62vw"
+            className="object-cover object-right md:object-[center_35%]"
+            sizes="100vw"
           />
-          {/* Seamless Edge Gradient Blend into Deep Green */}
-          <div className="absolute inset-y-0 left-0 w-48 sm:w-80 lg:w-96 bg-gradient-to-r from-[#072515] via-[#072515]/90 to-transparent pointer-events-none" />
+          {/* Soft Left Ambient Gradient for Supreme Text Contrast */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#EDE1D1]/90 via-[#EDE1D1]/55 to-transparent sm:via-[#EDE1D1]/40 lg:from-[#EDE1D1]/70 lg:via-transparent" />
+
+          {/* Realistic Flowing Sandalwood Smoke Animation */}
+          <RealisticSmoke />
         </div>
 
-        {/* Content Container (Headline, Diamond Divider, Mobile Visual, and Action CTAs) */}
-        <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 z-10">
-          <div className="max-w-xl lg:max-w-[520px] xl:max-w-[580px] space-y-4 sm:space-y-6">
-            {/* Clean Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] xl:text-[58px] font-serif font-normal text-white leading-[1.15] tracking-tight">
-              Elements in Harmony. <br />
-              <span className="italic font-normal text-[#eed08e]">
-                Higher Consciousness.
-              </span>
-            </h1>
-
-            {/* Gold Diamond Accent Line */}
-            <div className="flex items-center gap-3">
-              <div className="h-px w-16 sm:w-20 bg-[#eed08e]/60" />
-              <div className="w-2 h-2 rotate-45 border border-[#eed08e] bg-[#072515]" />
-              <div className="h-px w-16 sm:w-20 bg-[#eed08e]/60" />
-            </div>
-
-            {/* Mobile-Only Dedicated Product Showcase Frame */}
-            <div className="relative w-full h-[200px] xs:h-[230px] sm:h-[280px] my-3 sm:my-4 lg:hidden flex items-center justify-center">
-              <div className="absolute inset-0 bg-radial from-[#eed08e]/12 via-[#eed08e]/4 to-transparent rounded-2xl pointer-events-none" />
-              <Image
-                src="/images/product/image7.png"
-                alt="Kurma 5 Elements Sacred Agarbatti Luxury Incense Suite"
-                fill
-                priority
-                className="object-contain drop-shadow-lg"
-                sizes="(max-width: 1024px) 100vw, 62vw"
-              />
-            </div>
-
-            {/* Action Buttons - Fully Functional & Touch-Optimized */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1 w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={onExploreGifts}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#072515] text-sm sm:text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] group cursor-pointer"
+        {/* Content Container (Headline, Subtitle, and Action CTAs) */}
+        <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 z-10 py-12 sm:py-16 lg:py-20">
+          <div className="max-w-xl lg:max-w-[560px] xl:max-w-[640px] space-y-4 sm:space-y-6">
+            {/* Framer Motion Animated Headline */}
+            {shouldReduceMotion ? (
+              <h1 className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-normal text-[#1C1B18] leading-[1.14] tracking-tight">
+                <span className="block">Elements in Harmony.</span>
+                <span className="block italic font-normal text-[#7A5A28] sm:whitespace-nowrap">
+                  Higher Consciousness.
+                </span>
+              </h1>
+            ) : (
+              <motion.h1
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.14, delayChildren: 0.1 },
+                  },
+                }}
+                className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-normal text-[#1C1B18] leading-[1.14] tracking-tight"
               >
-                <span>Explore Collection</span>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 group-hover:translate-x-1" />
-              </button>
+                <motion.span
+                  variants={{
+                    hidden: { opacity: 0, y: 28 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.85, ease: LUXURY_EASE },
+                    },
+                  }}
+                  className="block"
+                >
+                  Elements in Harmony.
+                </motion.span>
+                <motion.span
+                  variants={{
+                    hidden: { opacity: 0, y: 28 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.9, ease: LUXURY_EASE },
+                    },
+                  }}
+                  className="block italic font-normal text-[#7A5A28] sm:whitespace-nowrap"
+                >
+                  Higher Consciousness.
+                </motion.span>
+              </motion.h1>
+            )}
 
-              <button
-                type="button"
-                onClick={onExploreBestsellers || onExploreGifts}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4 bg-[#0a311d]/90 hover:bg-[#0e3d25] text-[#eed08e] text-sm sm:text-base font-medium rounded-xl border border-[#eed08e]/50 hover:border-[#eed08e] transition-all duration-200 shadow-md active:scale-[0.98] cursor-pointer"
+            {/* Framer Motion Animated Subtext */}
+            {shouldReduceMotion ? (
+              <p className="text-xs sm:text-sm md:text-base text-[#3E362D] leading-relaxed max-w-md font-light">
+                Handcrafted 100% charcoal-free sacred incense suites, pure botanical resins, and solid cast brassware made for quiet living.
+              </p>
+            ) : (
+              <motion.p
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.35, ease: LUXURY_EASE }}
+                className="text-xs sm:text-sm md:text-base text-[#3E362D] leading-relaxed max-w-md font-light"
               >
-                View Marble Trunk
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+                Handcrafted 100% charcoal-free sacred incense suites, pure botanical resins, and solid cast brassware made for quiet living.
+              </motion.p>
+            )}
 
-      {/* Trust Features Footer Bar */}
-      <div className="relative z-20 w-full border-t border-[#eed08e]/25 bg-[#04190e] sm:bg-[#04190e]/92 sm:backdrop-blur-md py-3.5 sm:py-4">
-        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-          <div className="flex items-center justify-start lg:justify-between overflow-x-auto no-scrollbar touch-pan-x gap-4 lg:gap-0 lg:grid lg:grid-cols-4 lg:divide-x divide-[#eed08e]/20">
-            {trustFeatures.map((feat, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-center gap-2.5 sm:gap-3 shrink-0 whitespace-nowrap px-4 sm:px-6 lg:px-3 xl:px-6 py-1"
-              >
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-[#eed08e]/50 bg-[#0b331f] flex items-center justify-center shrink-0 text-[#eed08e] shadow-xs">
-                  <feat.icon className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.6]" />
-                </div>
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
-                  <span className="text-xs sm:text-[13px] font-semibold text-white tracking-wide">
-                    {feat.title}
-                  </span>
-                  <span className="text-[#eed08e]/60 text-xs">•</span>
-                  <span className="text-[11px] sm:text-xs text-[#eed08e] font-medium">
-                    {feat.subtitle}
-                  </span>
-                </div>
+            {/* Action Buttons - Matching Luxury Pill Style */}
+            {shouldReduceMotion ? (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={onExploreGifts}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] group cursor-pointer"
+                >
+                  <span>Explore Collection</span>
+                  <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 group-hover:translate-x-1" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onExploreBestsellers || onExploreGifts}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#FAF7F2]/90 hover:bg-white text-[#1E1B18] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl border border-[#CBB8A1] hover:border-[#1E1E1C] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
+                >
+                  View Marble Trunk
+                </button>
               </div>
-            ))}
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.48, ease: LUXURY_EASE }}
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1 w-full sm:w-auto"
+              >
+                <button
+                  type="button"
+                  onClick={onExploreGifts}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] group cursor-pointer"
+                >
+                  <span>Explore Collection</span>
+                  <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 group-hover:translate-x-1" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onExploreBestsellers || onExploreGifts}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#FAF7F2]/90 hover:bg-white text-[#1E1B18] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl border border-[#CBB8A1] hover:border-[#1E1E1C] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
+                >
+                  View Marble Trunk
+                </button>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Subtle depth dimming overlay as next section slides over it */}
+      {!shouldReduceMotion && (
+        <motion.div
+          style={{ opacity: dimOpacity }}
+          className="absolute inset-0 bg-black pointer-events-none z-20 will-change-[opacity]"
+        />
+      )}
     </section>
   );
 }

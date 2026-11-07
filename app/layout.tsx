@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Playfair_Display, Cinzel } from "next/font/google";
 import "./globals.css";
+import "lenis/dist/lenis.css";
 import { cn } from "@/lib/utils";
 import { CartProvider } from "@/lib/cart-context";
+import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,7 +53,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn(
-        "h-full",
+        "min-h-full overflow-x-clip",
         "antialiased",
         geistSans.variable,
         geistMono.variable,
@@ -60,8 +62,10 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <body className="min-h-full w-full max-w-full overflow-x-hidden relative flex flex-col bg-white text-stone-900 selection:bg-amber-100 selection:text-amber-900">
-        <CartProvider>{children}</CartProvider>
+      <body className="min-h-screen w-full max-w-full relative flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
+        <SmoothScrollProvider>
+          <CartProvider>{children}</CartProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );

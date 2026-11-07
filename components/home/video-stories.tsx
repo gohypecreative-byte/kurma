@@ -171,7 +171,7 @@ export function VideoStories({
   const activeNormalizedIndex = ((currentIndex % total) + total) % total;
 
   return (
-    <section className="w-full bg-[#f3f6ef] py-16 sm:py-24 text-stone-900 border-t border-b border-[#072515]/15 overflow-hidden select-none">
+    <section className="w-full bg-[#FAF7F2] py-16 sm:py-24 text-stone-900 border-t border-b border-[#EAE3D8] overflow-hidden select-none">
       <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 space-y-8">
         {/* Section Heading */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -297,13 +297,13 @@ export function VideoStories({
                       >
                         {story.tag}
                       </span>
-                      <span className="text-xs font-bold text-[#072515]">
+                      <span className="text-xs font-bold text-[#1C1B18]">
                         ₹{story.price.toLocaleString("en-IN")}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold text-[#072515] leading-snug line-clamp-1 group-hover:text-[#8C6215] transition-colors">
+                      <h4 className="text-xs font-bold text-[#1C1B18] leading-snug line-clamp-1 group-hover:text-[#8C6215] transition-colors">
                         {story.title}
                       </h4>
                       <p className="text-[10px] text-stone-600 mt-0.5 line-clamp-1">
@@ -325,7 +325,7 @@ export function VideoStories({
                             quantity: 1,
                           });
                         }}
-                        className="w-full py-1.5 px-2 bg-[#072515] hover:bg-[#124229] text-[#EED08E] text-[11px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95 mt-1"
+                        className="w-full py-1.5 px-2 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95 mt-1"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Add to Sacred Cart</span>

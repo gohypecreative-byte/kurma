@@ -236,7 +236,7 @@ function CheckoutGiftContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#072515] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-3 border-[#1E1E1C] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -256,7 +256,7 @@ function CheckoutGiftContent() {
               <span className="text-xs font-bold text-[#8b5f10] uppercase tracking-[0.25em]">
                 GIFT HAMPER CONFIRMED
               </span>
-              <h1 className="font-serif text-3xl sm:text-4xl text-[#072515] font-normal">
+              <h1 className="font-serif text-3xl sm:text-4xl text-[#1C1B18] font-normal">
                 Sacred Blessings Dispatched
               </h1>
               <p className="text-sm text-stone-600 max-w-md mx-auto">
@@ -265,7 +265,7 @@ function CheckoutGiftContent() {
             </div>
 
             <div className="inline-block bg-[#FAF8F5] rounded-2xl border border-[#eed08e]/50 px-6 py-3 font-mono text-sm text-stone-800">
-              Order ID: <strong className="text-[#072515]">{orderId}</strong>
+              Order ID: <strong className="text-[#1C1B18]">{orderId}</strong>
             </div>
 
             {/* Hamper details recap */}
@@ -284,14 +284,14 @@ function CheckoutGiftContent() {
               </div>
               <div className="flex items-center justify-between text-xs text-stone-600 pt-1">
                 <span>Total Amount Paid:</span>
-                <strong className="text-base font-serif text-[#072515]">₹{finalTotal.toLocaleString("en-IN")}</strong>
+                <strong className="text-base font-serif text-[#1C1B18]">₹{finalTotal.toLocaleString("en-IN")}</strong>
               </div>
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/elements"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-bold uppercase tracking-wider transition-all shadow-md"
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md"
               >
                 Create Another Gift
               </Link>
@@ -310,15 +310,15 @@ function CheckoutGiftContent() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       {/* Breadcrumb Header */}
       <div className="bg-[#fbf6ea]/70 border-b border-[#eed08e]/30 py-3 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto flex items-center gap-2 text-xs text-stone-500 font-sans">
-          <Link href="/" className="hover:text-[#072515] transition-colors">Home</Link>
+          <Link href="/" className="hover:text-[#1C1B18] transition-colors">Home</Link>
           <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
-          <Link href="/elements" className="hover:text-[#072515] transition-colors">Customise Hamper</Link>
+          <Link href="/elements" className="hover:text-[#1C1B18] transition-colors">Customise Hamper</Link>
           <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
           <span className="text-[#8b5f10] font-semibold">Checkout Gift</span>
         </div>
@@ -331,7 +331,7 @@ function CheckoutGiftContent() {
             <Gift className="w-4 h-4 text-[#8b5f10]" />
             <span>SACRED GIFT CHECKOUT</span>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#072515] font-normal tracking-tight">
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1C1B18] font-normal tracking-tight">
             Complete Your Gift Hamper
           </h1>
           <p className="text-xs sm:text-sm text-stone-600 font-sans">
@@ -344,9 +344,9 @@ function CheckoutGiftContent() {
           <div className="lg:col-span-7 xl:col-span-8 space-y-6">
             <form onSubmit={handlePlaceOrder} id="checkout-gift-form" className="space-y-6">
               {/* CARD 1: RECIPIENT & DELIVERY DETAILS */}
-              <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-xs space-y-5">
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-7 shadow-xs space-y-5">
                 <div className="flex items-center gap-3 border-b border-stone-100 pb-3">
-                  <div className="w-8 h-8 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center font-bold text-xs">
                     1
                   </div>
                   <div>
@@ -467,9 +467,9 @@ function CheckoutGiftContent() {
               </div>
 
               {/* CARD 2: SENDER DETAILS */}
-              <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-xs space-y-5">
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-7 shadow-xs space-y-5">
                 <div className="flex items-center gap-3 border-b border-stone-100 pb-3">
-                  <div className="w-8 h-8 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center font-bold text-xs">
                     2
                   </div>
                   <div>
@@ -529,9 +529,9 @@ function CheckoutGiftContent() {
               </div>
 
               {/* CARD 3: PAYMENT METHOD SELECTION */}
-              <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-xs space-y-5">
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-7 shadow-xs space-y-5">
                 <div className="flex items-center gap-3 border-b border-stone-100 pb-3">
-                  <div className="w-8 h-8 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center font-bold text-xs">
                     3
                   </div>
                   <div>
@@ -550,14 +550,14 @@ function CheckoutGiftContent() {
                     onClick={() => setPaymentMethod("upi")}
                     className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
                       paymentMethod === "upi"
-                        ? "border-[#072515] bg-[#FAF5E9]/60 shadow-xs"
+                        ? "border-[#1E1E1C] bg-[#FAF5E9]/60 shadow-xs"
                         : "border-stone-200 hover:border-stone-300 bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <QrCode className="w-5 h-5 text-[#8b5f10]" />
                       {paymentMethod === "upi" && (
-                        <div className="w-4 h-4 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 stroke-[3]" />
                         </div>
                       )}
@@ -573,14 +573,14 @@ function CheckoutGiftContent() {
                     onClick={() => setPaymentMethod("card")}
                     className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
                       paymentMethod === "card"
-                        ? "border-[#072515] bg-[#FAF5E9]/60 shadow-xs"
+                        ? "border-[#1E1E1C] bg-[#FAF5E9]/60 shadow-xs"
                         : "border-stone-200 hover:border-stone-300 bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <CreditCard className="w-5 h-5 text-[#8b5f10]" />
                       {paymentMethod === "card" && (
-                        <div className="w-4 h-4 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 stroke-[3]" />
                         </div>
                       )}
@@ -596,14 +596,14 @@ function CheckoutGiftContent() {
                     onClick={() => setPaymentMethod("cod")}
                     className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
                       paymentMethod === "cod"
-                        ? "border-[#072515] bg-[#FAF5E9]/60 shadow-xs"
+                        ? "border-[#1E1E1C] bg-[#FAF5E9]/60 shadow-xs"
                         : "border-stone-200 hover:border-stone-300 bg-white"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <Banknote className="w-5 h-5 text-[#8b5f10]" />
                       {paymentMethod === "cod" && (
-                        <div className="w-4 h-4 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center">
+                        <div className="w-4 h-4 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 stroke-[3]" />
                         </div>
                       )}
@@ -625,8 +625,8 @@ function CheckoutGiftContent() {
 
           {/* RIGHT COLUMN: GIFT HAMPER SUMMARY & TOTALS (4-5 Cols) */}
           <div className="lg:col-span-5 xl:col-span-4 space-y-6 lg:sticky lg:top-24">
-            <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-6 shadow-sm space-y-5">
-              <h3 className="font-serif text-lg font-bold text-[#072515] pb-3 border-b border-stone-100">
+            <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-sm space-y-5">
+              <h3 className="font-serif text-lg font-bold text-[#1C1B18] pb-3 border-b border-stone-100">
                 <span>Gift Hamper Summary</span>
               </h3>
 
@@ -652,7 +652,7 @@ function CheckoutGiftContent() {
                     <p className="text-[11px] text-stone-500 font-sans">
                       Size: {hamper.box.size}
                     </p>
-                    <p className="text-xs font-bold text-[#072515] font-serif mt-0.5">
+                    <p className="text-xs font-bold text-[#1C1B18] font-serif mt-0.5">
                       ₹{hamper.box.price.toLocaleString("en-IN")}
                     </p>
                   </div>
@@ -724,7 +724,7 @@ function CheckoutGiftContent() {
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs font-semibold rounded-xl cursor-pointer transition-colors"
+                    className="px-4 py-2 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-semibold rounded-xl cursor-pointer transition-colors"
                   >
                     Apply
                   </button>
@@ -806,7 +806,7 @@ function CheckoutGiftContent() {
 
                 <div className="flex justify-between text-base font-bold text-stone-900 pt-3 border-t border-stone-200">
                   <span className="font-serif">Total Payable</span>
-                  <span className="text-xl font-serif text-[#072515]">
+                  <span className="text-xl font-serif text-[#1C1B18]">
                     ₹{finalTotal.toLocaleString("en-IN")}
                   </span>
                 </div>
@@ -816,7 +816,7 @@ function CheckoutGiftContent() {
               <button
                 type="submit"
                 form="checkout-gift-form"
-                className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-gradient-to-r from-[#072515] to-[#0c3823] hover:from-[#0a311d] hover:to-[#125032] text-[#eed08e] text-xs sm:text-sm font-bold uppercase tracking-[0.15em] shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99] whitespace-nowrap"
+                className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs sm:text-sm font-bold uppercase tracking-[0.15em] shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99] whitespace-nowrap"
               >
                 <span>Place Order</span>
                 <ArrowRight className="w-4 h-4 text-[#eed08e]" />
@@ -845,7 +845,7 @@ export default function CheckoutGiftPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-[#072515] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#1E1E1C] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

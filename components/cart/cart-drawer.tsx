@@ -64,8 +64,6 @@ export function CartDrawer({
   const totalCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const freeShippingThreshold = 499;
   const isFreeShipping = subtotal >= freeShippingThreshold;
-  const amountNeededForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const shippingProgress = Math.min(100, (subtotal / freeShippingThreshold) * 100);
 
   const isCouponFreeShipping = appliedCoupon === "ROYALSHIP";
   const discountRate =
@@ -182,31 +180,6 @@ export function CartDrawer({
           {/* STEP 1: CART VIEW */}
           {checkoutStep === "cart" && (
             <>
-              {/* Free Shipping Progress Bar */}
-              {items.length > 0 && (
-                <div className="bg-[#072515] text-white px-4 sm:px-6 py-2.5 border-b border-[#0d3f27]">
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    {isFreeShipping ? (
-                      <span className="font-semibold text-[#eed08e] flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        Unlocked FREE Sacred Delivery!
-                      </span>
-                    ) : (
-                      <span className="text-stone-300 truncate mr-2">
-                        Add <strong className="text-[#eed08e]">₹{amountNeededForFreeShipping}</strong> more for FREE Shipping
-                      </span>
-                    )}
-                    <span className="text-[11px] text-stone-400 shrink-0 ml-auto">₹499 Threshold</span>
-                  </div>
-                  <div className="w-full bg-stone-800 rounded-full h-1.5 overflow-hidden">
-                    <div
-                      className="bg-linear-to-r from-[#c0881b] to-[#eed08e] h-full transition-all duration-500 rounded-full"
-                      style={{ width: `${shippingProgress}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-
               {/* Items List */}
               <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-3 divide-y divide-stone-100">
                 {items.length === 0 ? (
@@ -227,7 +200,7 @@ export function CartDrawer({
                         onClose();
                         onExploreProducts();
                       }}
-                      className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-[#c0881b] hover:bg-[#a97514] text-white text-xs font-semibold rounded-lg shadow-sm transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-semibold rounded-lg shadow-sm transition-all cursor-pointer"
                     >
                       <span>Explore Incense</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -334,7 +307,7 @@ export function CartDrawer({
                       </button>
                     </div>
                     {appliedCoupon && (
-                      <div className="flex items-center justify-between text-[11px] text-emerald-700 font-medium bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                      <div className="flex items-center justify-between text-[11px] text-[#7A5A28] font-medium bg-[#F5EFEB] px-2.5 py-1 rounded-md border border-[#E5DDD0]">
                         <span>
                           Code &apos;{appliedCoupon}&apos; Applied (
                           {appliedCoupon === "DIWALI2026"
@@ -372,7 +345,7 @@ export function CartDrawer({
                     </div>
 
                     {appliedCoupon && (
-                      <div className="flex justify-between text-emerald-700">
+                      <div className="flex justify-between text-[#7A5A28]">
                         <span>Discount (10%)</span>
                         <span className="font-semibold">-₹{discountAmount}</span>
                       </div>
@@ -382,7 +355,7 @@ export function CartDrawer({
                       <span>Sacred Shipping</span>
                       <span>
                         {isFreeShipping ? (
-                          <span className="text-emerald-700 font-semibold">FREE</span>
+                          <span className="text-[#7A5A28] font-semibold">FREE</span>
                         ) : (
                           "₹49"
                         )}
@@ -398,7 +371,7 @@ export function CartDrawer({
                   {/* Checkout CTA */}
                   <button
                     onClick={handleProceedCheckout}
-                    className="w-full py-3 px-4 bg-[#c0881b] hover:bg-[#a97514] text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                    className="w-full py-3 px-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                   >
                     <span>Proceed to Checkout</span>
                     <ArrowRight className="w-4 h-4" />
@@ -406,7 +379,7 @@ export function CartDrawer({
 
                   <div className="flex items-center justify-center gap-3 sm:gap-4 text-[10.5px] text-stone-500 pt-0.5">
                     <span className="flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#7A5A28] shrink-0" />
                       100% Charcoal-Free
                     </span>
                     <span>•</span>
@@ -563,7 +536,7 @@ export function CartDrawer({
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-3 px-3 sm:px-4 bg-[#c0881b] hover:bg-[#a97514] text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer text-center"
+                    className="flex-1 py-3 px-3 sm:px-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer text-center"
                   >
                     Place Sacred Order (₹{grandTotal})
                   </button>
@@ -610,7 +583,7 @@ export function CartDrawer({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-stone-500">Payment:</span>
-                  <span className="font-bold text-emerald-700 uppercase">
+                  <span className="font-bold text-[#7A5A28] uppercase">
                     {shippingDetails.paymentMethod === "cod" ? "Cash on Delivery" : "Online Confirmed"}
                   </span>
                 </div>
@@ -618,7 +591,7 @@ export function CartDrawer({
 
               <button
                 onClick={handleCloseAndReset}
-                className="w-full py-3 bg-[#c0881b] hover:bg-[#a97514] text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer"
+                className="w-full py-3 bg-[#1E1E1C] hover:bg-[#33312D] text-white font-semibold text-xs rounded-xl shadow-md transition-all cursor-pointer"
               >
                 Continue Shopping
               </button>

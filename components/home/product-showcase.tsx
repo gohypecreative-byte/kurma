@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
+import { AnimatedWords } from "@/components/ui/animated-text";
 import { CartItem } from "@/components/cart/cart-drawer";
 
 interface ProductShowcaseProps {
@@ -104,6 +105,7 @@ export interface ProductCardItemProps {
   imageScale?: string;
   containerAspect?: string;
   objectFit?: string;
+  cardBg?: string;
 }
 
 export function ProductCardItem({
@@ -122,6 +124,7 @@ export function ProductCardItem({
   imageScale,
   containerAspect,
   objectFit,
+  cardBg,
 }: ProductCardItemProps) {
   const router = useRouter();
   const isDark = theme ? theme === "dark" : variant === "dark";
@@ -145,6 +148,11 @@ export function ProductCardItem({
   };
 
   const currentDisplayImg = images[activeImgIdx] || primarySrc;
+  const isLightCard =
+    Boolean(cardBg?.includes("bg-white")) ||
+    (!cardBg && !isDark) ||
+    product.id === "fragrance-air" ||
+    product.id === "fragrance-temple-flora";
 
   return (
     <div
@@ -154,7 +162,7 @@ export function ProductCardItem({
       {/* Modern Image Canvas */}
       <div
         className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl ${
-          isDark ? "bg-[#04190e] shadow-md" : "bg-transparent"
+          cardBg || (isDark ? "bg-[#1E1E1C] shadow-md" : "bg-[#FAF7F2] border border-[#DDD3C2] shadow-sm hover:shadow-md transition-shadow")
         }`}
       >
         <Image
@@ -163,9 +171,9 @@ export function ProductCardItem({
           fill
           loading="lazy"
           className={`absolute inset-0 w-full h-full ${
-            objectFit || "object-contain object-center"
+            objectFit || "object-cover object-center"
           } transition-transform duration-500 ease-out ${
-            imagePadding !== undefined ? imagePadding : "p-1.5 sm:p-2"
+            imagePadding !== undefined ? imagePadding : "p-0"
           } ${
             imageScale || "group-hover:scale-105"
           }`}
@@ -180,12 +188,20 @@ export function ProductCardItem({
           }}
           title={isSaved ? "Saved to Wishlist" : "Save to Wishlist"}
           aria-label={isSaved ? "Saved to Wishlist" : "Save to Wishlist"}
-          className="absolute top-3.5 right-3.5 z-10 p-1 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] transition-transform active:scale-90 hover:scale-110 cursor-pointer"
+          className={`absolute top-3.5 right-3.5 z-10 p-1 ${
+            isLightCard
+              ? "text-stone-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]"
+              : "text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+          } transition-transform active:scale-90 hover:scale-110 cursor-pointer`}
         >
           <Bookmark
             className={`w-4 h-4 transition-colors ${
               isSaved
-                ? "fill-white text-white stroke-[2]"
+                ? isLightCard
+                  ? "fill-stone-800 text-stone-800 stroke-[2]"
+                  : "fill-white text-white stroke-[2]"
+                : isLightCard
+                ? "fill-transparent text-stone-800 stroke-[2]"
                 : "fill-transparent text-white stroke-[2]"
             }`}
           />
@@ -227,8 +243,12 @@ export function ProductCardItem({
                 key={idx}
                 className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                   idx === activeImgIdx
-                    ? isDark ? "bg-white scale-125 shadow-xs" : "bg-stone-800 scale-125 shadow-xs"
-                    : isDark ? "bg-white/40" : "bg-stone-400/50"
+                    ? isLightCard
+                      ? "bg-stone-800 scale-125 shadow-xs"
+                      : "bg-white scale-125 shadow-xs"
+                    : isLightCard
+                    ? "bg-stone-400/50"
+                    : "bg-white/40"
                 }`}
               />
             ))}
@@ -304,7 +324,7 @@ export function ProductCardItem({
             {addedId === product.id ? (
               <Check
                 className={`w-3.5 h-3.5 stroke-[2.5] ${
-                  isDark ? "text-emerald-400" : "text-emerald-600"
+                  isDark ? "text-stone-200" : "text-[#7A5A28]"
                 }`}
               />
             ) : (
@@ -324,13 +344,41 @@ export function ProductShowcase({
   const [activeMode, setActiveMode] = useState<PurchasingMode>("direct");
   const [addedId, setAddedId] = useState<string | null>(null);
 
-  // 1. The Four Initial Flagship Products (Gift Boxes & Complete Suites)
+  // 1. The Four Initial Flagship Products (Gift Boxes & Complete Suites) with Full-Bleed 3:4 Portrait Imagery
   const initialGiftBoxes = [
-    PRODUCTS.find((p) => p.id === "marble-gift-box"),
-    PRODUCTS.find((p) => p.id === "mdf-gift-box"),
-    PRODUCTS.find((p) => p.id === "5-elements-suite"),
-    PRODUCTS.find((p) => p.id === "empty-marble-box"),
-  ].filter(Boolean) as ProductSKU[];
+    {
+      ...PRODUCTS.find((p) => p.id === "marble-gift-box")!,
+      image: "/images/product/marble-portrait.jpg",
+      gallery: [
+        "/images/product/marble-portrait.jpg",
+        "/images/product/image9.png",
+      ],
+    },
+    {
+      ...PRODUCTS.find((p) => p.id === "mdf-gift-box")!,
+      image: "/images/product/trunk-portrait.jpg",
+      gallery: [
+        "/images/product/trunk-portrait.jpg",
+        "/images/product/image.png",
+      ],
+    },
+    {
+      ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
+      image: "/images/product/suite-portrait.jpg",
+      gallery: [
+        "/images/product/suite-portrait.jpg",
+        "/images/product/image7.png",
+      ],
+    },
+    {
+      ...PRODUCTS.find((p) => p.id === "empty-marble-box")!,
+      image: "/images/product/marble-portrait.jpg",
+      gallery: [
+        "/images/product/marble-portrait.jpg",
+        "/images/product/image9.png",
+      ],
+    },
+  ];
 
   // 2. 5 Individual Fragrance Boxes (Single Products)
   const singleFragrances = PRODUCTS.filter((p) => p.category === "Fragrances");
@@ -353,28 +401,17 @@ export function ProductShowcase({
   };
 
   return (
-    <div className="w-full bg-[#072515] sm:bg-[url('/images/textures/green-texture.png')] sm:bg-repeat py-10 sm:py-16 text-white mobile-defer-render">
-      <div className="w-full px-4 sm:px-6 lg:px-12 xl:px-16 space-y-12 lg:space-y-16">
+    <div className="w-full bg-[#ECE4D8] py-12 sm:py-20 text-[#1C1B18] border-t border-b border-[#DDD3C2] mobile-defer-render">
+      <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 space-y-12 lg:space-y-16">
         {/* SECTION 1: Our Four Initial Products */}
         <section className="space-y-7">
           {/* Section Header */}
-          <div className="text-center space-y-2.5 max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-serif text-white font-normal">
-              Our Four Initial Products
-            </h2>
-
-            {/* Delicate Gold Diamond Divider */}
-            <div className="flex items-center justify-center gap-3 pt-0.5">
-              <div className="h-px w-16 bg-[#eed08e]" />
-              <div className="w-2.5 h-2.5 rotate-45 border border-[#eed08e] bg-[#072515] flex items-center justify-center">
-                <div className="w-1 h-1 bg-[#eed08e]" />
-              </div>
-              <div className="h-px w-16 bg-[#eed08e]" />
-            </div>
-
-            <p className="text-stone-300 text-xs sm:text-sm max-w-xl mx-auto">
-              Ready-to-ship luxury gift boxes and fragrance suites. Click (+) to add directly to your sacred cart.
-            </p>
+          <div className="text-center max-w-3xl mx-auto">
+            <AnimatedWords
+              text="Our Four Initial Products"
+              as="h2"
+              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#1C1B18] font-medium tracking-tight justify-center"
+            />
           </div>
 
           {/* 4 Flagship Initial Products Grid (Full width, 4 columns on desktop) */}
@@ -391,30 +428,24 @@ export function ProductShowcase({
                 discount={getDiscountPercent(product.price, product.originalPrice)}
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
-                theme="dark"
-                imagePadding="p-1 sm:p-2"
+                theme="light"
+                imagePadding="p-0"
                 imageScale="group-hover:scale-105"
                 containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-contain object-center"
+                objectFit="object-cover object-center"
               />
             ))}
           </div>
         </section>
 
         {/* SECTION 2: Sacred Agarbatti & Incense Collection */}
-        <section className="space-y-6 pt-4 border-t border-[#eed08e]/15">
-          <div className="flex items-center justify-between border-b border-[#eed08e]/20 pb-3">
-            <div>
-              <h3 className="text-lg sm:text-xl font-serif text-white font-normal">
-                Sacred Agarbatti &amp; Incense Rituals
-              </h3>
-              <p className="text-xs text-stone-300 mt-0.5">
-                100% Charcoal-free elemental incense boxes &amp; solid brass turtle burners
-              </p>
-            </div>
-            <span className="text-xs text-[#eed08e] font-semibold hidden sm:inline">
-              Pure Essential Aromas
-            </span>
+        <section className="space-y-6 pt-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <AnimatedWords
+              text="Sacred Agarbatti & Incense Rituals"
+              as="h3"
+              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#1C1B18] font-medium tracking-tight text-center justify-center"
+            />
           </div>
 
           {/* 4 Distinct Agarbatti Products Grid (Full width, 4 columns) */}
@@ -422,19 +453,35 @@ export function ProductShowcase({
             {[
               {
                 ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
-                image: "/images/product/image7.png",
+                image: "/images/product/suite-portrait.jpg",
+                gallery: [
+                  "/images/product/suite-portrait.jpg",
+                  "/images/product/image7.png",
+                ],
               },
               {
                 ...PRODUCTS.find((p) => p.id === "turtle-incense-holder")!,
-                image: "/images/product/image8.png",
+                image: "/images/product/turtle-holder-portrait.jpg",
+                gallery: [
+                  "/images/product/turtle-holder-portrait.jpg",
+                  "/images/product/image8.png",
+                ],
               },
               {
                 ...PRODUCTS.find((p) => p.id === "fragrance-earth")!,
-                image: "/images/product/earth-front.png",
+                image: "/images/product/earth-portrait.jpg",
+                gallery: [
+                  "/images/product/earth-portrait.jpg",
+                  "/images/product/earth-front.png",
+                ],
               },
               {
                 ...PRODUCTS.find((p) => p.id === "fragrance-fire")!,
-                image: "/images/product/fire-front.png",
+                image: "/images/product/fire-portrait.jpg",
+                gallery: [
+                  "/images/product/fire-portrait.jpg",
+                  "/images/product/fire-front.png",
+                ],
               },
             ].map((product) => (
               <ProductCardItem
@@ -448,11 +495,11 @@ export function ProductShowcase({
                 discount={getDiscountPercent(product.price, product.originalPrice)}
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
-                theme="dark"
-                imagePadding="p-1 sm:p-2"
+                theme="light"
+                imagePadding="p-0"
                 imageScale="group-hover:scale-105"
                 containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-contain object-center"
+                objectFit="object-cover object-center"
               />
             ))}
           </div>
