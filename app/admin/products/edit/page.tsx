@@ -84,62 +84,111 @@ function ProductEditorInner() {
     }, 3500);
   };
 
-  // Load product from localStorage or fallback PRODUCTS
+  // Load product from backend API or localStorage / PRODUCTS fallback
   useEffect(() => {
-    try {
-      let catalog: ProductSKU[] = PRODUCTS;
-      const stored = localStorage.getItem("kurma_admin_products");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          catalog = parsed;
-        }
-      }
-      setAllProducts(catalog);
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const res = await fetch("/api/admin/products");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products) && data.products.length > 0 && isMounted) {
+          const catalog: ProductSKU[] = data.products.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            subtitle: p.subtitle || "Handcrafted Luxury • Sacred Kurma Atelier",
+            category: p.category || "Gift Boxes",
+            price: p.price,
+            originalPrice: p.originalPrice || Math.round(p.price * 1.25),
+            image: p.image,
+            description: p.description || "",
+            details: p.details || [
+              "Ethically sourced sacred ingredients",
+              "Hand-finished sacred artisan craftsmanship",
+              "Complimentary deckle-edge calligraphy blessing",
+            ],
+            customizationFields: [],
+          }));
+          setAllProducts(catalog);
+          if (data.inventoryStock) setInventoryStock(data.inventoryStock);
 
-      let stockMap: Record<string, number> = {
-        "mdf-gift-box": 12,
-        "marble-gift-box": 8,
-        "brass-turtle-holder": 19,
-        "fragrance-earth": 6,
-        "fragrance-water": 42,
-        "fragrance-fire": 31,
-        "fragrance-air": 55,
-        "fragrance-space": 24,
-      };
-      const storedStock = localStorage.getItem("kurma_inventory_stock");
-      if (storedStock) {
-        stockMap = { ...stockMap, ...JSON.parse(storedStock) };
-      }
-      setInventoryStock(stockMap);
-
-      // Load saved atelier preset image order if present
-      const storedPresets = localStorage.getItem("kurma_atelier_presets");
-      if (storedPresets) {
-        const parsed = JSON.parse(storedPresets);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setPresetList(parsed);
+          const current = catalog.find((p) => p.id === productId) || catalog[0];
+          if (current) {
+            setName(current.name);
+            setSubtitle(current.subtitle || "Handcrafted Luxury • Sacred Kurma Atelier");
+            setCategory(current.category);
+            setPrice(current.price);
+            setOriginalPrice(current.originalPrice || Math.round(current.price * 1.25));
+            setStock(data.inventoryStock?.[current.id] ?? 12);
+            setImage(current.image || "/images/product/image.png");
+            setDescription(current.description || "");
+            if (current.details && current.details.length > 0) {
+              setDetails(current.details);
+            }
+          }
+          return;
         }
+      } catch (err) {
+        console.warn("Could not fetch product from backend API, using local fallback", err);
       }
 
-      // Find current product
-      const current = catalog.find((p) => p.id === productId) || catalog[0];
-      if (current) {
-        setName(current.name);
-        setSubtitle(current.subtitle || "Handcrafted Luxury • Sacred Kurma Atelier");
-        setCategory(current.category);
-        setPrice(current.price);
-        setOriginalPrice(current.originalPrice || Math.round(current.price * 1.25));
-        setStock(stockMap[current.id] ?? 12);
-        setImage(current.image || "/images/product/image.png");
-        setDescription(current.description || "");
-        if (current.details && current.details.length > 0) {
-          setDetails(current.details);
+      try {
+        let catalog: ProductSKU[] = PRODUCTS;
+        const stored = localStorage.getItem("kurma_admin_products");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            catalog = parsed;
+          }
         }
-      }
-    } catch {
-      // ignore
+        if (isMounted) setAllProducts(catalog);
+
+        let stockMap: Record<string, number> = {
+          "mdf-gift-box": 12,
+          "marble-gift-box": 8,
+          "brass-turtle-holder": 19,
+          "fragrance-earth": 6,
+          "fragrance-water": 42,
+          "fragrance-fire": 31,
+          "fragrance-air": 55,
+          "fragrance-space": 24,
+        };
+        const storedStock = localStorage.getItem("kurma_inventory_stock");
+        if (storedStock) {
+          stockMap = { ...stockMap, ...JSON.parse(storedStock) };
+        }
+        if (isMounted) setInventoryStock(stockMap);
+
+        // Load saved atelier preset image order if present
+        const storedPresets = localStorage.getItem("kurma_atelier_presets");
+        if (storedPresets) {
+          const parsed = JSON.parse(storedPresets);
+          if (Array.isArray(parsed) && parsed.length > 0 && isMounted) {
+            setPresetList(parsed);
+          }
+        }
+
+        // Find current product
+        const current = catalog.find((p) => p.id === productId) || catalog[0];
+        if (current && isMounted) {
+          setName(current.name);
+          setSubtitle(current.subtitle || "Handcrafted Luxury • Sacred Kurma Atelier");
+          setCategory(current.category);
+          setPrice(current.price);
+          setOriginalPrice(current.originalPrice || Math.round(current.price * 1.25));
+          setStock(stockMap[current.id] ?? 12);
+          setImage(current.image || "/images/product/image.png");
+          setDescription(current.description || "");
+          if (current.details && current.details.length > 0) {
+            setDetails(current.details);
+          }
+        }
+      } catch {}
     }
+
+    loadData();
+    return () => {
+      isMounted = false;
+    };
   }, [productId]);
 
   // Handle Image File Upload (Reads as Data URL for immediate preview and saving)
@@ -285,8 +334,8 @@ function ProductEditorInner() {
     setDetails(details.filter((_, i) => i !== index));
   };
 
-  // Save changes to localStorage and update state
-  const handleSaveProduct = (e?: React.FormEvent) => {
+  // Save changes to backend API and localStorage
+  const handleSaveProduct = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!name.trim()) {
       triggerToast("Product title cannot be empty.");
@@ -322,10 +371,31 @@ function ProductEditorInner() {
       localStorage.setItem("kurma_admin_products", JSON.stringify(updatedCatalog));
       localStorage.setItem("kurma_inventory_stock", JSON.stringify(updatedStockMap));
 
+      // Call backend API
+      try {
+        await fetch("/api/admin/products", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: productId,
+            name: name.trim(),
+            subtitle: subtitle.trim(),
+            category,
+            price: Number(price),
+            originalPrice: Number(originalPrice),
+            stock: Number(stock),
+            image,
+            description: description.trim(),
+          }),
+        });
+      } catch (apiErr) {
+        console.warn("Failed to update product in Neon DB, saved locally", apiErr);
+      }
+
       triggerToast(`Saved "${name}" successfully!`);
       setTimeout(() => {
         setIsSaving(false);
-        router.push("/admin");
+        router.push("/admin?route=products");
       }, 700);
     } catch {
       setIsSaving(false);

@@ -733,15 +733,23 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
                         <Link
                           href="/login"
                           prefetch={true}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="w-full py-3.5 px-4 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] active:bg-black text-white text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
+                          className="w-full py-3 px-3 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] active:bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
                         >
-                          <User className="w-4.5 h-4.5 pointer-events-none" />
-                          <span>Login / Sacred Account</span>
+                          <User className="w-3.5 h-3.5 pointer-events-none" />
+                          <span>Sign In</span>
+                        </Link>
+                        <Link
+                          href="/signup"
+                          prefetch={true}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="w-full py-3 px-3 rounded-xl bg-[#F3EFE8] hover:bg-[#EBE5DC] border border-[#DDD6CB] active:bg-stone-200 text-[#1C1B18] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
+                        >
+                          <span>Sign Up</span>
                         </Link>
                       </div>
                     )}

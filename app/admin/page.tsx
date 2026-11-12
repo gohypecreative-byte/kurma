@@ -44,6 +44,8 @@ import {
   Layers,
   ChevronLeft,
   Percent,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
 import AdminAnalyticsDashboard from "@/components/admin/AdminAnalyticsDashboard";
@@ -595,7 +597,7 @@ export interface AdminCustomBox {
   active: boolean;
 }
 
-export const INITIAL_CUSTOM_BOXES: AdminCustomBox[] = [
+const INITIAL_CUSTOM_BOXES: AdminCustomBox[] = [
   {
     id: "celebration",
     title: "The Celebration Box",
@@ -815,67 +817,188 @@ export default function AdminDashboardPage() {
     "fragrance-space": 24,
   });
 
-  // Load persisted products & inventory & categories from localStorage on mount
+  // Dynamic Neon Backend Synchronization State
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isDbConnected, setIsDbConnected] = useState(true);
+  const [overviewData, setOverviewData] = useState<{
+    metrics: { sessions: number; totalSales: number; ordersCount: number; conversionRate: string };
+    tasks: { ordersToFulfill: number; paymentsToCapture: number; monogramsToChisel: number };
+    recentOrders: AdminOrder[];
+    topProducts: Array<{ id: string; name: string; image: string; soldCount: number; revenue: number }>;
+    salesChartData: Array<{ date: string; current: number; previous: number }>;
+  } | null>(null);
+
+  // Function to dynamically fetch all data from backend API routes
+  const fetchAdminData = async (isManual = false) => {
+    setIsSyncing(true);
+    try {
+      const [
+        overviewRes,
+        ordersRes,
+        productsRes,
+        categoriesRes,
+        boxesRes,
+        customersRes,
+        discountsRes,
+      ] = await Promise.allSettled([
+        fetch("/api/admin/overview"),
+        fetch("/api/admin/orders"),
+        fetch("/api/admin/products"),
+        fetch("/api/admin/categories"),
+        fetch("/api/admin/custom-boxes"),
+        fetch("/api/admin/customers"),
+        fetch("/api/admin/discounts"),
+      ]);
+
+      let hasSuccess = false;
+
+      // 1. Overview metrics & chart
+      if (overviewRes.status === "fulfilled" && overviewRes.value.ok) {
+        const data = await overviewRes.value.json();
+        if (data.metrics) {
+          setOverviewData(data);
+          hasSuccess = true;
+        }
+      }
+
+      // 2. Orders
+      if (ordersRes.status === "fulfilled" && ordersRes.value.ok) {
+        const data = await ordersRes.value.json();
+        if (Array.isArray(data.orders)) {
+          setOrders(data.orders);
+          try {
+            localStorage.setItem("kurma_admin_orders", JSON.stringify(data.orders));
+          } catch {}
+          hasSuccess = true;
+        }
+      }
+
+      // 3. Products & Live Inventory
+      if (productsRes.status === "fulfilled" && productsRes.value.ok) {
+        const data = await productsRes.value.json();
+        if (Array.isArray(data.products) && data.products.length > 0) {
+          const mapped: ProductSKU[] = data.products.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            subtitle: p.subtitle || "Handcrafted Luxury • Sacred Kurma Atelier",
+            category: p.category || "Gift Boxes",
+            price: p.price,
+            originalPrice: p.originalPrice || Math.round(p.price * 1.25),
+            image: p.image || "/images/product/image.png",
+            description: p.description || "",
+            details: p.details || [
+              "Ethically sourced sacred ingredients",
+              "Hand-finished sacred artisan craftsmanship",
+              "Complimentary deckle-edge calligraphy blessing",
+            ],
+            customizationFields: [],
+          }));
+          setProductsList(mapped);
+          try {
+            localStorage.setItem("kurma_admin_products", JSON.stringify(mapped));
+          } catch {}
+          if (data.inventoryStock) {
+            setInventoryStock(data.inventoryStock);
+            try {
+              localStorage.setItem("kurma_inventory_stock", JSON.stringify(data.inventoryStock));
+            } catch {}
+          }
+          hasSuccess = true;
+        }
+      }
+
+      // 4. Categories
+      if (categoriesRes.status === "fulfilled" && categoriesRes.value.ok) {
+        const data = await categoriesRes.value.json();
+        if (Array.isArray(data.categories) && data.categories.length > 0) {
+          setCategories(data.categories);
+          try {
+            localStorage.setItem("kurma_admin_categories", JSON.stringify(data.categories));
+          } catch {}
+          hasSuccess = true;
+        }
+      }
+
+      // 5. Custom Boxes
+      if (boxesRes.status === "fulfilled" && boxesRes.value.ok) {
+        const data = await boxesRes.value.json();
+        if (Array.isArray(data.customBoxes) && data.customBoxes.length > 0) {
+          setCustomBoxes(data.customBoxes);
+          try {
+            localStorage.setItem("kurma_custom_boxes", JSON.stringify(data.customBoxes));
+          } catch {}
+          hasSuccess = true;
+        }
+      }
+
+      // 6. Patrons & Customers
+      if (customersRes.status === "fulfilled" && customersRes.value.ok) {
+        const data = await customersRes.value.json();
+        if (Array.isArray(data.customers) && data.customers.length > 0) {
+          setCustomers(data.customers);
+          hasSuccess = true;
+        }
+      }
+
+      // 7. Discounts & Festive Vouchers
+      if (discountsRes.status === "fulfilled" && discountsRes.value.ok) {
+        const data = await discountsRes.value.json();
+        if (Array.isArray(data.discounts) && data.discounts.length > 0) {
+          setDiscounts(data.discounts);
+          try {
+            localStorage.setItem("kurma_admin_discounts", JSON.stringify(data.discounts));
+          } catch {}
+          hasSuccess = true;
+        }
+      }
+
+      setIsDbConnected(hasSuccess);
+      if (isManual) {
+        triggerNotification("Neon DB synchronized: All metrics, orders & creations are live!");
+      }
+    } catch (err) {
+      console.warn("Could not sync with Neon DB, fallback active", err);
+      setIsDbConnected(false);
+      if (isManual) {
+        triggerNotification("Working with cached local sanctuary records.");
+      }
+    } finally {
+      setIsLoadingData(false);
+      setIsSyncing(false);
+    }
+  };
+
+  // Load persisted products & inventory & categories on mount, then trigger live fetch
   useEffect(() => {
     try {
       const stored = localStorage.getItem("kurma_admin_products");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setProductsList(parsed);
-        }
-      } else {
-        localStorage.setItem("kurma_admin_products", JSON.stringify(PRODUCTS));
+        if (Array.isArray(parsed) && parsed.length > 0) setProductsList(parsed);
       }
 
       const storedCats = localStorage.getItem("kurma_admin_categories");
       if (storedCats) {
         const parsed = JSON.parse(storedCats);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCategories(parsed);
-        }
-      } else {
-        localStorage.setItem("kurma_admin_categories", JSON.stringify(INITIAL_CATEGORIES));
+        if (Array.isArray(parsed) && parsed.length > 0) setCategories(parsed);
       }
 
       const storedStock = localStorage.getItem("kurma_inventory_stock");
       if (storedStock) {
         setInventoryStock(JSON.parse(storedStock));
-      } else {
-        localStorage.setItem("kurma_inventory_stock", JSON.stringify({
-          "mdf-gift-box": 12,
-          "marble-gift-box": 8,
-          "brass-turtle-holder": 19,
-          "fragrance-earth": 6,
-          "fragrance-water": 42,
-          "fragrance-fire": 31,
-          "fragrance-air": 55,
-          "fragrance-space": 24,
-        }));
       }
 
-      // Hydrate custom boxes from localStorage
       const storedBoxes = localStorage.getItem("kurma_custom_boxes");
       if (storedBoxes) {
         const parsed = JSON.parse(storedBoxes);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setCustomBoxes(parsed);
-        }
-      } else {
-        localStorage.setItem("kurma_custom_boxes", JSON.stringify(INITIAL_CUSTOM_BOXES));
+        if (Array.isArray(parsed) && parsed.length > 0) setCustomBoxes(parsed);
       }
 
-      // Hydrate discounts from localStorage
       const storedDiscounts = localStorage.getItem("kurma_admin_discounts");
       if (storedDiscounts) {
-        try {
-          const parsed = JSON.parse(storedDiscounts);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setDiscounts(parsed);
-          }
-        } catch {}
-      } else {
-        localStorage.setItem("kurma_admin_discounts", JSON.stringify(CURATED_MASTER_DISCOUNTS));
+        const parsed = JSON.parse(storedDiscounts);
+        if (Array.isArray(parsed) && parsed.length > 0) setDiscounts(parsed);
       }
 
       const handleStorageChange = (e: StorageEvent) => {
@@ -895,9 +1018,9 @@ export default function AdminDashboardPage() {
       window.addEventListener("storage", handleStorageChange);
       const handleCustomUpdate = () => {
         try {
-          const stored = localStorage.getItem("kurma_custom_boxes");
-          if (stored) {
-            const parsed = JSON.parse(stored);
+          const storedB = localStorage.getItem("kurma_custom_boxes");
+          if (storedB) {
+            const parsed = JSON.parse(storedB);
             if (Array.isArray(parsed) && parsed.length > 0) setCustomBoxes(parsed);
           }
         } catch {}
@@ -905,9 +1028,9 @@ export default function AdminDashboardPage() {
       window.addEventListener("kurma_custom_boxes_updated", handleCustomUpdate);
       const handleDiscountsUpdate = () => {
         try {
-          const stored = localStorage.getItem("kurma_admin_discounts");
-          if (stored) {
-            const parsed = JSON.parse(stored);
+          const storedD = localStorage.getItem("kurma_admin_discounts");
+          if (storedD) {
+            const parsed = JSON.parse(storedD);
             if (Array.isArray(parsed) && parsed.length > 0) setDiscounts(parsed);
           }
         } catch {}
@@ -934,6 +1057,9 @@ export default function AdminDashboardPage() {
     } catch {
       // ignore
     }
+
+    // Initiate real-time data fetch from Neon
+    fetchAdminData();
   }, []);
 
   // Search & Filter queries
@@ -964,8 +1090,20 @@ export default function AdminDashboardPage() {
     description: "",
   });
 
-  // Handler to add a new product to catalog
-  const handleAddProduct = (e: React.FormEvent) => {
+  // Create Order Form State
+  const [createOrderForm, setCreateOrderForm] = useState({
+    customerName: "",
+    customerEmail: "",
+    boxTitle: "Elements in Harmony Marble Gift Box (₹3,499)",
+    giftNote: "May this festive light illuminate your home sanctuary with boundless peace.",
+    recipientName: "Dev & Riya Sharma",
+    senderName: "The Sharma Family",
+    paymentMethod: "UPI" as "UPI" | "Card" | "Net Banking" | "Cash on Delivery",
+    amount: 3499,
+  });
+
+  // Handler to add a new product to catalog (Synced to Neon DB)
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProductData.name.trim()) return;
 
@@ -994,13 +1132,23 @@ export default function AdminDashboardPage() {
 
     const updatedList = [newProduct, ...productsList];
     setProductsList(updatedList);
+    const updatedStock = { ...inventoryStock, [newId]: Number(newProductData.stock) || 20 };
+    setInventoryStock(updatedStock);
+
     try {
       localStorage.setItem("kurma_admin_products", JSON.stringify(updatedList));
-      const updatedStock = { ...inventoryStock, [newId]: Number(newProductData.stock) || 20 };
-      setInventoryStock(updatedStock);
       localStorage.setItem("kurma_inventory_stock", JSON.stringify(updatedStock));
-    } catch {
-      // ignore
+
+      await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newProductData,
+          id: newId,
+        }),
+      });
+    } catch (err) {
+      console.warn("Failed to persist product to Neon DB", err);
     }
 
     setCategories((prev) =>
@@ -1030,13 +1178,14 @@ export default function AdminDashboardPage() {
     triggerNotification(`Creation "${newProduct.name}" added to Kurma catalog!`);
   };
 
-  const deleteProduct = (id: string, name: string) => {
+  const deleteProduct = async (id: string, name: string) => {
     const updatedList = productsList.filter((p) => p.id !== id);
     setProductsList(updatedList);
     try {
       localStorage.setItem("kurma_admin_products", JSON.stringify(updatedList));
-    } catch {
-      // ignore
+      await fetch(`/api/admin/products?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    } catch (err) {
+      console.warn("Failed to delete product in Neon DB", err);
     }
     triggerNotification(`Product "${name}" removed from catalog.`);
   };
@@ -1104,28 +1253,300 @@ export default function AdminDashboardPage() {
     });
   }, [orders, ordersSubView, orderStatusFilter, orderSearchQuery]);
 
-  // Adjust stock counter
-  const updateStock = (sku: string, delta: number) => {
-    setInventoryStock((prev) => {
-      const current = prev[sku] ?? 10;
-      const next = Math.max(0, current + delta);
-      return { ...prev, [sku]: next };
-    });
-    triggerNotification(`Inventory updated for SKU ${sku}`);
+  // Update Order Status (Fulfillment)
+  const updateOrderStatus = async (orderId: string, nextStatus: string) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, fulfillmentStatus: nextStatus as any } : o))
+    );
+    if (inspectOrder?.id === orderId) {
+      setInspectOrder((prev) => (prev ? { ...prev, fulfillmentStatus: nextStatus as any } : null));
+    }
+    try {
+      await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: orderId, fulfillmentStatus: nextStatus }),
+      });
+      fetch("/api/admin/overview")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.metrics) setOverviewData(d);
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.warn("Failed to update order status on server", err);
+    }
+    triggerNotification(`Order status updated to "${nextStatus}"`);
   };
 
-  // Toggle Category Visibility
-  const toggleCategoryVisibility = (id: string) => {
-    setCategories((prev) => {
-      const updated = prev.map((cat) => (cat.id === id ? { ...cat, visible: !cat.visible } : cat));
-      try {
-        localStorage.setItem("kurma_admin_categories", JSON.stringify(updated));
-      } catch {
-        // ignore
+  // Update Order Payment Status
+  const updatePaymentStatus = async (orderId: string, nextStatus: string) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, paymentStatus: nextStatus as any } : o))
+    );
+    if (inspectOrder?.id === orderId) {
+      setInspectOrder((prev) => (prev ? { ...prev, paymentStatus: nextStatus as any } : null));
+    }
+    try {
+      await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: orderId, paymentStatus: nextStatus }),
+      });
+      fetch("/api/admin/overview")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.metrics) setOverviewData(d);
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.warn("Failed to update payment status on server", err);
+    }
+    triggerNotification(`Order payment marked as "${nextStatus}"`);
+  };
+
+  // Delete Order
+  const deleteOrder = async (orderId: string) => {
+    if (!confirm("Are you sure you want to remove this order from records?")) return;
+    setOrders((prev) => prev.filter((o) => o.id !== orderId));
+    try {
+      await fetch(`/api/admin/orders?id=${encodeURIComponent(orderId)}`, { method: "DELETE" });
+      fetch("/api/admin/overview")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.metrics) setOverviewData(d);
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.warn("Failed to delete order on server", err);
+    }
+    if (inspectOrder?.id === orderId) setInspectOrder(null);
+    triggerNotification("Order removed from records.");
+  };
+
+  // Handle Create Order (Synced to Neon DB)
+  const handleCreateOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const patronName = createOrderForm.customerName || (customers[0]?.name ?? "Patron");
+    const patronEmail = createOrderForm.customerEmail || (customers[0]?.email ?? "patron@kurmaluxury.com");
+
+    const payload = {
+      customerName: patronName,
+      customerEmail: patronEmail,
+      city: "Mumbai, MH",
+      boxTitle: createOrderForm.boxTitle,
+      totalAmount: createOrderForm.amount,
+      paymentMethod: createOrderForm.paymentMethod,
+      paymentStatus: "Paid",
+      fulfillmentStatus: "Processing",
+      channel: "Direct Atelier",
+      courier: "BlueDart Express",
+      personalization: {
+        recipientName: createOrderForm.recipientName,
+        senderName: createOrderForm.senderName,
+        giftNote: createOrderForm.giftNote,
+        greetingCard: true,
+      },
+      items: [
+        {
+          sku: "pancha-5-elements",
+          name: createOrderForm.boxTitle,
+          price: createOrderForm.amount,
+          quantity: 1,
+          image: "/images/product/marble-box-clean.png",
+        },
+      ],
+    };
+
+    try {
+      const res = await fetch("/api/admin/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        const newOrd: AdminOrder = {
+          id: data.order.id,
+          orderNumber: data.order.orderNumber,
+          customerName: data.order.customerName,
+          customerEmail: data.order.customerEmail,
+          customerPhone: data.order.customerPhone || "+91 98200 00000",
+          city: data.order.city,
+          date: "Just now",
+          boxTitle: data.order.boxTitle,
+          boxImage: data.order.boxImage,
+          itemsCount: 1,
+          items: data.order.items || [],
+          totalAmount: data.order.totalAmount,
+          paymentMethod: data.order.paymentMethod,
+          paymentStatus: data.order.paymentStatus,
+          fulfillmentStatus: data.order.fulfillmentStatus,
+          channel: data.order.channel,
+          courier: data.order.carrier || "BlueDart Express",
+          awb: data.order.trackingNumber || "BLU-9912",
+          personalization: data.order.personalization || payload.personalization,
+        };
+        setOrders((prev) => [newOrd, ...prev]);
+        fetch("/api/admin/overview")
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.metrics) setOverviewData(d);
+          })
+          .catch(() => {});
       }
-      return updated;
-    });
+    } catch (err) {
+      console.warn("Failed to create order on server", err);
+    }
+
+    setIsCreateOrderOpen(false);
+    triggerNotification("New order created and added to fulfillment queue.");
+  };
+
+  // Adjust stock counter (Synced to Neon DB)
+  const updateStock = async (sku: string, delta: number) => {
+    const current = inventoryStock[sku] ?? 10;
+    const next = Math.max(0, current + delta);
+    const updated = { ...inventoryStock, [sku]: next };
+    setInventoryStock(updated);
+    try {
+      localStorage.setItem("kurma_inventory_stock", JSON.stringify(updated));
+      await fetch("/api/admin/products", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: sku, stock: next }),
+      });
+    } catch (err) {
+      console.warn("Failed to update stock in Neon DB", err);
+    }
+    triggerNotification(`Inventory updated for SKU ${sku} (${next} units)`);
+  };
+
+  // Add Category (Synced to Neon DB)
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryData.title.trim()) return;
+
+    const newCat: AdminCategory = {
+      id: `cat-${Date.now()}`,
+      title: newCategoryData.title.trim(),
+      slug: newCategoryData.slug.trim() || newCategoryData.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      parentId: null,
+      productCount: 0,
+      visible: true,
+      targetRevenue: Number(newCategoryData.targetRevenue) || 50000,
+      salesProgress: 0,
+    };
+
+    const updated = [...categories, newCat];
+    setCategories(updated);
+    try {
+      localStorage.setItem("kurma_admin_categories", JSON.stringify(updated));
+      const res = await fetch("/api/admin/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCat),
+      });
+      const data = await res.json();
+      if (data.category) {
+        setCategories((prev) => prev.map((c) => (c.id === newCat.id ? data.category : c)));
+      }
+    } catch (err) {
+      console.warn("Failed to create category on server", err);
+    }
+
+    setNewCategoryData({ title: "", slug: "", targetRevenue: 50000 });
+    setIsAddCategoryOpen(false);
+    triggerNotification(`Category "${newCat.title}" created.`);
+  };
+
+  // Toggle Category Visibility (Synced to Neon DB)
+  const toggleCategoryVisibility = async (id: string) => {
+    const target = categories.find((c) => c.id === id);
+    const nextVis = target ? !target.visible : true;
+    const updated = categories.map((cat) => (cat.id === id ? { ...cat, visible: nextVis } : cat));
+    setCategories(updated);
+    try {
+      localStorage.setItem("kurma_admin_categories", JSON.stringify(updated));
+      await fetch("/api/admin/categories", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, visible: nextVis }),
+      });
+    } catch (err) {
+      console.warn("Failed to update category visibility on server", err);
+    }
     triggerNotification("Category visibility updated in sanctuary catalog");
+  };
+
+  // Delete Category
+  const deleteCategory = async (id: string, title: string) => {
+    if (!confirm(`Are you sure you want to remove category "${title}"?`)) return;
+    const updated = categories.filter((c) => c.id !== id);
+    setCategories(updated);
+    try {
+      localStorage.setItem("kurma_admin_categories", JSON.stringify(updated));
+      await fetch(`/api/admin/categories?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    } catch (err) {
+      console.warn("Failed to delete category on server", err);
+    }
+    triggerNotification(`Category "${title}" removed.`);
+  };
+
+  // Add Customer (Synced to Neon DB)
+  const handleAddCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCustomerData.name.trim()) return;
+
+    const initials = newCustomerData.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
+    const newPatron: AdminCustomer = {
+      id: `cust-${Date.now()}`,
+      name: newCustomerData.name.trim(),
+      email: newCustomerData.email.trim(),
+      initials: initials || "KP",
+      location: newCustomerData.location.trim() || "Mumbai, MH",
+      ordersCount: 0,
+      amountSpent: 0,
+      subscription: "Subscribed",
+      tier: newCustomerData.tier,
+      lastOrderDate: "New Patron",
+    };
+
+    setCustomers((prev) => [newPatron, ...prev]);
+
+    try {
+      await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newCustomerData.name.trim(),
+          email: newCustomerData.email.trim(),
+          password: "TempPatronPassword123!",
+          city: newCustomerData.location.trim(),
+          tier: newCustomerData.tier,
+        }),
+      });
+      const res = await fetch("/api/admin/customers");
+      const data = await res.json();
+      if (data.customers) setCustomers(data.customers);
+    } catch (err) {
+      console.warn("Could not register patron on server, stored locally", err);
+    }
+
+    setIsAddCustomerOpen(false);
+    setNewCustomerData({
+      name: "",
+      email: "",
+      location: "Mumbai, MH",
+      tier: "Patron",
+    });
+    triggerNotification(`Patron "${newPatron.name}" enrolled.`);
   };
 
   // Format INR Currency
@@ -1165,8 +1586,8 @@ export default function AdminDashboardPage() {
     reader.readAsDataURL(file);
   };
 
-  // Save edited customise box
-  const handleSaveCustomBox = (e: React.FormEvent) => {
+  // Save edited customise box (Synced to Neon DB)
+  const handleSaveCustomBox = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCustomBox) return;
 
@@ -1176,13 +1597,20 @@ export default function AdminDashboardPage() {
       localStorage.setItem("kurma_custom_boxes", JSON.stringify(updated));
       window.dispatchEvent(new Event("storage"));
       window.dispatchEvent(new CustomEvent("kurma_custom_boxes_updated"));
-    } catch {}
+      await fetch("/api/admin/custom-boxes", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingCustomBox),
+      });
+    } catch (err) {
+      console.warn("Failed to persist custom box to Neon DB", err);
+    }
     setEditingCustomBox(null);
     triggerNotification(`Saved changes to "${editingCustomBox.title}"! Changes are live on /elements.`);
   };
 
-  // Add new customise box
-  const handleAddCustomBox = (e: React.FormEvent) => {
+  // Add new customise box (Synced to Neon DB)
+  const handleAddCustomBox = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCustomBox.title) return;
 
@@ -1203,7 +1631,19 @@ export default function AdminDashboardPage() {
       localStorage.setItem("kurma_custom_boxes", JSON.stringify(updated));
       window.dispatchEvent(new Event("storage"));
       window.dispatchEvent(new CustomEvent("kurma_custom_boxes_updated"));
-    } catch {}
+      const res = await fetch("/api/admin/custom-boxes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(created),
+      });
+      const data = await res.json();
+      if (data.customBox) {
+        setCustomBoxes((prev) => prev.map((b) => (b.id === created.id ? data.customBox : b)));
+      }
+    } catch (err) {
+      console.warn("Failed to create custom box in Neon DB", err);
+    }
+
     setIsAddCustomBoxOpen(false);
     setNewCustomBox({
       title: "",
@@ -1217,16 +1657,41 @@ export default function AdminDashboardPage() {
     triggerNotification(`Created new bespoke box "${created.title}"!`);
   };
 
-  // Toggle Custom Box Visibility
-  const handleToggleCustomBoxActive = (boxId: string) => {
-    const updated = customBoxes.map((b) => (b.id === boxId ? { ...b, active: !b.active } : b));
+  // Toggle Custom Box Visibility (Synced to Neon DB)
+  const handleToggleCustomBoxActive = async (boxId: string) => {
+    const box = customBoxes.find((b) => b.id === boxId);
+    const nextActive = box ? !box.active : false;
+    const updated = customBoxes.map((b) => (b.id === boxId ? { ...b, active: nextActive } : b));
     setCustomBoxes(updated);
     try {
       localStorage.setItem("kurma_custom_boxes", JSON.stringify(updated));
       window.dispatchEvent(new Event("storage"));
       window.dispatchEvent(new CustomEvent("kurma_custom_boxes_updated"));
-    } catch {}
+      await fetch("/api/admin/custom-boxes", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: boxId, active: nextActive }),
+      });
+    } catch (err) {
+      console.warn("Failed to update box active state in Neon DB", err);
+    }
     triggerNotification("Box visibility updated on storefront customizer!");
+  };
+
+  // Delete Custom Box
+  const handleDeleteCustomBox = async (boxId: string, title: string) => {
+    if (!confirm(`Are you sure you want to remove bespoke box "${title}"?`)) return;
+    const updated = customBoxes.filter((b) => b.id !== boxId);
+    setCustomBoxes(updated);
+    try {
+      localStorage.setItem("kurma_custom_boxes", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new CustomEvent("kurma_custom_boxes_updated"));
+      await fetch(`/api/admin/custom-boxes?id=${encodeURIComponent(boxId)}`, { method: "DELETE" });
+    } catch (err) {
+      console.warn("Failed to delete custom box in Neon DB", err);
+    }
+    triggerNotification(`Bespoke box "${title}" removed.`);
   };
 
   return (
@@ -1621,6 +2086,24 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="flex items-center gap-2.5">
+              {/* Neon DB Live status badge */}
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-white shadow-2xs border-emerald-600/20 text-emerald-800">
+                <span className={`size-2 rounded-full ${isDbConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+                <span>{isDbConnected ? "Neon Live" : "Offline Cache"}</span>
+              </div>
+
+              {/* Sync Button */}
+              <button
+                type="button"
+                onClick={() => fetchAdminData(true)}
+                disabled={isSyncing}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 bg-white text-xs font-medium text-black/80 hover:bg-black/5 transition-colors disabled:opacity-50"
+                title="Refresh and sync data from Neon DB"
+              >
+                <RefreshCw className={`size-3 text-[#072515] ${isSyncing ? "animate-spin" : ""}`} />
+                <span className="hidden md:inline">Sync Neon DB</span>
+              </button>
+
               <Link
                 href="/"
                 target="_blank"
@@ -1744,10 +2227,29 @@ export default function AdminDashboardPage() {
                 {/* 4 Metric Cards */}
                 <div className="grid grid-cols-2 gap-2 pr-8 sm:grid-cols-4">
                   {[
-                    { label: "Sessions", value: "1,842", change: "↗ 14.8%" },
-                    { label: "Total sales", value: "₹3,84,650", change: "↗ 22.4%" },
-                    { label: "Orders", value: "48", change: "↗ 8.1%" },
-                    { label: "Conversion rate", value: "4.12%", change: "↗ 1.05%" },
+                    {
+                      label: "Sessions",
+                      value: overviewData?.metrics.sessions ? overviewData.metrics.sessions.toLocaleString("en-IN") : "1,842",
+                      change: "↗ 14.8%",
+                    },
+                    {
+                      label: "Total sales",
+                      value: formatINR(
+                        overviewData?.metrics.totalSales ??
+                          orders.filter((o) => o.paymentStatus === "Paid").reduce((acc, o) => acc + o.totalAmount, 0)
+                      ),
+                      change: "↗ 22.4%",
+                    },
+                    {
+                      label: "Orders",
+                      value: overviewData?.metrics.ordersCount !== undefined ? overviewData.metrics.ordersCount.toString() : orders.length.toString(),
+                      change: "↗ 8.1%",
+                    },
+                    {
+                      label: "Conversion rate",
+                      value: `${overviewData?.metrics.conversionRate || "4.12"}%`,
+                      change: "↗ 1.05%",
+                    },
                   ].map((m) => {
                     const isSelected = selectedMetric === m.label;
                     return (
@@ -1858,7 +2360,10 @@ export default function AdminDashboardPage() {
 
                       {/* X-Axis dates */}
                       <div className="flex justify-between text-[11px] text-black/50 pt-2 px-1">
-                        {SALES_CHART_DATA.map((pt) => (
+                        {(overviewData?.salesChartData && overviewData.salesChartData.length > 0
+                          ? overviewData.salesChartData
+                          : SALES_CHART_DATA
+                        ).map((pt) => (
                           <span key={pt.date}>{pt.date}</span>
                         ))}
                       </div>
@@ -1879,7 +2384,11 @@ export default function AdminDashboardPage() {
                 >
                   <span className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-amber-500" />
-                    <span>4 orders to fulfil</span>
+                    <span>
+                      {overviewData?.tasks?.ordersToFulfill ??
+                        orders.filter((o) => o.fulfillmentStatus === "Processing").length}{" "}
+                      orders to fulfil
+                    </span>
                   </span>
                   <span className="text-black/40 text-[11px]">View queue →</span>
                 </button>
@@ -1894,7 +2403,11 @@ export default function AdminDashboardPage() {
                 >
                   <span className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-blue-500" />
-                    <span>1 payment to capture</span>
+                    <span>
+                      {overviewData?.tasks?.paymentsToCapture ??
+                        orders.filter((o) => o.paymentStatus === "Pending").length}{" "}
+                      payment to capture
+                    </span>
                   </span>
                   <span className="text-black/40 text-[11px]">Capture →</span>
                 </button>
@@ -1909,7 +2422,9 @@ export default function AdminDashboardPage() {
                 >
                   <span className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-[#c89e43]" />
-                    <span>3 monograms in laser chisel</span>
+                    <span>
+                      {overviewData?.tasks?.monogramsToChisel ?? 3} monograms in laser chisel
+                    </span>
                   </span>
                   <span className="text-black/40 text-[11px]">Inspect →</span>
                 </button>
@@ -1932,36 +2447,41 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <div className="mt-3 divide-y divide-black/5">
-                      {orders.slice(0, 3).map((ord) => (
-                        <div
-                          key={ord.id}
-                          className="flex items-center justify-between gap-3 py-2.5 text-xs hover:bg-black/[0.02] transition-colors rounded-lg px-1.5"
-                        >
-                          <div>
-                            <span className="font-semibold text-[#072515]">{ord.orderNumber}</span>
-                            <p className="text-[11px] text-black/50">{ord.customerName}</p>
-                          </div>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                              ord.fulfillmentStatus === "Delivered"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : "bg-amber-100 text-amber-800"
-                            }`}
+                      {(overviewData?.recentOrders && overviewData.recentOrders.length > 0
+                        ? overviewData.recentOrders
+                        : orders
+                      )
+                        .slice(0, 3)
+                        .map((ord) => (
+                          <div
+                            key={ord.id}
+                            className="flex items-center justify-between gap-3 py-2.5 text-xs hover:bg-black/[0.02] transition-colors rounded-lg px-1.5"
                           >
-                            {ord.fulfillmentStatus}
-                          </span>
-                          <div className="text-right">
-                            <span className="font-semibold text-[#072515]">{formatINR(ord.totalAmount)}</span>
-                            <button
-                              type="button"
-                              onClick={() => setInspectOrder(ord)}
-                              className="block text-[10px] text-black/50 hover:text-[#072515] underline"
+                            <div>
+                              <span className="font-semibold text-[#072515]">{ord.orderNumber}</span>
+                              <p className="text-[11px] text-black/50">{ord.customerName}</p>
+                            </div>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                ord.fulfillmentStatus === "Delivered"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : "bg-amber-100 text-amber-800"
+                              }`}
                             >
-                              Inspect
-                            </button>
+                              {ord.fulfillmentStatus}
+                            </span>
+                            <div className="text-right">
+                              <span className="font-semibold text-[#072515]">{formatINR(ord.totalAmount)}</span>
+                              <button
+                                type="button"
+                                onClick={() => setInspectOrder(ord)}
+                                className="block text-[10px] text-black/50 hover:text-[#072515] underline"
+                              >
+                                Inspect
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                 </section>
@@ -1971,11 +2491,18 @@ export default function AdminDashboardPage() {
                   <div>
                     <h2 className="text-sm font-semibold text-[#072515]">Top products</h2>
                     <div className="mt-3 space-y-3">
-                      {[
-                        { name: "Elements in Harmony Marble Box", sales: "28 sold", img: "/images/product/marble-box-clean.png" },
-                        { name: "Solid Brass Turtle Burner", sales: "24 sold", img: "/images/product/turtle-burner.png" },
-                        { name: "Royal Mysore Chandan Agarbatti", sales: "19 sold", img: "/images/product/image.png" },
-                      ].map((item) => (
+                      {(overviewData?.topProducts && overviewData.topProducts.length > 0
+                        ? overviewData.topProducts.map((p) => ({
+                            name: p.name,
+                            sales: `${p.soldCount} sold`,
+                            img: p.image || "/images/product/marble-box-clean.png",
+                          }))
+                        : [
+                            { name: "Elements in Harmony Marble Box", sales: "28 sold", img: "/images/product/marble-box-clean.png" },
+                            { name: "Solid Brass Turtle Burner", sales: "24 sold", img: "/images/product/turtle-burner.png" },
+                            { name: "Royal Mysore Chandan Agarbatti", sales: "19 sold", img: "/images/product/image.png" },
+                          ]
+                      ).map((item) => (
                         <div key={item.name} className="flex items-center justify-between gap-3 text-xs">
                           <div className="flex items-center gap-2.5 min-w-0">
                             <div className="relative size-8 rounded border border-black/10 overflow-hidden shrink-0 bg-[#FAF8F5]">
@@ -2346,6 +2873,13 @@ export default function AdminDashboardPage() {
                     >
                       Inventory
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setProductsSubView("categories")}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "categories" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                    >
+                      Categories
+                    </button>
                   </div>
                 </div>
 
@@ -2357,6 +2891,15 @@ export default function AdminDashboardPage() {
                       className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90"
                     >
                       <Plus className="size-3.5" /> Add product
+                    </button>
+                  )}
+                  {productsSubView === "categories" && (
+                    <button
+                      type="button"
+                      onClick={() => setIsAddCategoryOpen(true)}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90"
+                    >
+                      <Plus className="size-3.5" /> Add category
                     </button>
                   )}
                   {productsSubView === "customise" && (
@@ -2771,6 +3314,101 @@ export default function AdminDashboardPage() {
                   </div>
                 </section>
               )}
+
+              {/* VIEW 3E: CATEGORIES DIRECTORY */}
+              {productsSubView === "categories" && (
+                <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 px-4 py-3">
+                    <div className="flex flex-1 min-w-52 items-center gap-2 text-xs text-black/50">
+                      <Search className="size-3.5 text-black/40" />
+                      <input
+                        value={categorySearchQuery}
+                        onChange={(e) => setCategorySearchQuery(e.target.value)}
+                        placeholder="Search categories by title or slug..."
+                        className="w-full bg-transparent outline-none text-xs text-black placeholder:text-black/40"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddCategoryOpen(true)}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90 transition"
+                    >
+                      <Plus className="size-3.5" /> Add category
+                    </button>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[700px] border-collapse text-left text-xs">
+                      <thead className="bg-[#FAF8F5] text-black/70">
+                        <tr>
+                          <th className="border-b border-black/10 px-4 py-2.5 font-medium">Category</th>
+                          <th className="border-b border-black/10 px-3 py-2.5 font-medium">Slug</th>
+                          <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Creations</th>
+                          <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Target Revenue</th>
+                          <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Visibility</th>
+                          <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-black/5">
+                        {categories
+                          .filter((c) =>
+                            c.title.toLowerCase().includes(categorySearchQuery.toLowerCase()) ||
+                            c.slug.toLowerCase().includes(categorySearchQuery.toLowerCase())
+                          )
+                          .map((cat) => (
+                            <tr key={cat.id} className="hover:bg-black/[0.015]">
+                              <td className="px-4 py-3 font-semibold text-[#072515]">
+                                <div className="flex items-center gap-2">
+                                  <FolderTree className="size-4 text-[#c89e43]" />
+                                  <span>{cat.title}</span>
+                                </div>
+                              </td>
+                              <td className="px-3 py-3 font-mono text-black/60">{cat.slug}</td>
+                              <td className="px-3 py-3 text-center text-black/70">
+                                {productsList.filter((p) => p.category?.toLowerCase() === cat.title.toLowerCase() || p.category?.toLowerCase().includes(cat.slug.toLowerCase())).length || cat.productCount} creations
+                              </td>
+                              <td className="px-3 py-3 text-right font-bold text-[#072515]">
+                                {formatINR(cat.targetRevenue || 50000)}
+                              </td>
+                              <td className="px-3 py-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleCategoryVisibility(cat.id)}
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition ${
+                                    cat.visible !== false
+                                      ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                  }`}
+                                >
+                                  {cat.visible !== false ? "Visible" : "Hidden"}
+                                </button>
+                              </td>
+                              <td className="px-3 py-3 text-center">
+                                <div className="flex items-center justify-center gap-2">
+                                  <Link
+                                    href={`/admin/categories/edit?id=${cat.id}`}
+                                    className="p-1 rounded hover:bg-black/5 text-black/60 hover:text-black"
+                                    title="Edit Category"
+                                  >
+                                    <Pencil className="size-3.5" />
+                                  </Link>
+                                  <button
+                                    type="button"
+                                    onClick={() => deleteCategory(cat.id, cat.title)}
+                                    className="p-1 rounded hover:bg-red-50 text-red-500 hover:text-red-700"
+                                    title="Delete Category"
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </main>
           )}
 
@@ -2977,23 +3615,43 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="p-4 bg-[#FAF8F5] border-t border-black/10 flex items-center justify-between">
+            <div className="p-4 bg-[#FAF8F5] border-t border-black/10 flex flex-wrap items-center justify-between gap-3">
               <span className="font-bold text-sm text-[#072515]">Total: {formatINR(inspectOrder.totalAmount)}</span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {inspectOrder.paymentStatus === "Pending" && (
+                  <button
+                    type="button"
+                    onClick={() => updatePaymentStatus(inspectOrder.id, "Paid")}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-800 transition shadow-2xs"
+                  >
+                    Capture Payment
+                  </button>
+                )}
+                {inspectOrder.fulfillmentStatus !== "Shipped" && (
+                  <button
+                    type="button"
+                    onClick={() => updateOrderStatus(inspectOrder.id, "Shipped")}
+                    className="px-3 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-2xs"
+                  >
+                    Mark as Shipped
+                  </button>
+                )}
+                {inspectOrder.fulfillmentStatus !== "Delivered" && (
+                  <button
+                    type="button"
+                    onClick={() => updateOrderStatus(inspectOrder.id, "Delivered")}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-800 text-[#eed08e] text-xs font-semibold hover:bg-emerald-900 transition shadow-2xs"
+                  >
+                    Mark as Delivered
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => {
-                    setOrders((prev) =>
-                      prev.map((o) =>
-                        o.id === inspectOrder.id ? { ...o, fulfillmentStatus: "Shipped" } : o
-                      )
-                    );
-                    setInspectOrder(null);
-                    triggerNotification(`Order ${inspectOrder.orderNumber} marked as Shipped via ${inspectOrder.courier}`);
-                  }}
-                  className="px-3 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90"
+                  onClick={() => deleteOrder(inspectOrder.id)}
+                  className="px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-medium transition"
+                  title="Delete Order"
                 >
-                  Mark as Shipped
+                  <Trash2 className="size-3.5" />
                 </button>
               </div>
             </div>
@@ -3178,24 +3836,7 @@ export default function AdminDashboardPage() {
               </button>
             </div>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setCategories((prev) => [
-                  ...prev,
-                  {
-                    id: `cat-${Date.now()}`,
-                    title: newCategoryData.title,
-                    slug: newCategoryData.slug || newCategoryData.title.toLowerCase().replace(/\s+/g, "-"),
-                    parentId: null,
-                    productCount: 0,
-                    visible: true,
-                    targetRevenue: newCategoryData.targetRevenue,
-                    salesProgress: 0,
-                  },
-                ]);
-                setIsAddCategoryOpen(false);
-                triggerNotification(`Category "${newCategoryData.title}" created.`);
-              }}
+              onSubmit={handleAddCategory}
               className="p-5 space-y-3.5 text-xs"
             >
               <div>
@@ -3254,32 +3895,7 @@ export default function AdminDashboardPage() {
               </button>
             </div>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const initials = newCustomerData.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2);
-                setCustomers((prev) => [
-                  {
-                    id: `cust-${Date.now()}`,
-                    name: newCustomerData.name,
-                    email: newCustomerData.email,
-                    initials: initials || "KP",
-                    location: newCustomerData.location,
-                    ordersCount: 0,
-                    amountSpent: 0,
-                    subscription: "Subscribed",
-                    tier: newCustomerData.tier,
-                    lastOrderDate: "New Patron",
-                  },
-                  ...prev,
-                ]);
-                setIsAddCustomerOpen(false);
-                triggerNotification(`Patron "${newCustomerData.name}" enrolled.`);
-              }}
+              onSubmit={handleAddCustomer}
               className="p-5 space-y-3.5 text-xs"
             >
               <div>
@@ -3364,16 +3980,23 @@ export default function AdminDashboardPage() {
               </button>
             </div>
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setIsCreateOrderOpen(false);
-                triggerNotification("New order created and added to fulfillment queue.");
-              }}
+              onSubmit={handleCreateOrder}
               className="p-5 space-y-3.5 text-xs"
             >
               <div>
                 <label className="block font-semibold text-black/75 mb-1">Select Patron</label>
-                <select className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white">
+                <select
+                  value={createOrderForm.customerName}
+                  onChange={(e) => {
+                    const selected = customers.find((c) => c.name === e.target.value);
+                    setCreateOrderForm({
+                      ...createOrderForm,
+                      customerName: e.target.value,
+                      customerEmail: selected?.email || createOrderForm.customerEmail,
+                    });
+                  }}
+                  className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white"
+                >
                   {customers.map((c) => (
                     <option key={c.id} value={c.name}>
                       {c.name} ({c.email})
@@ -3384,7 +4007,20 @@ export default function AdminDashboardPage() {
 
               <div>
                 <label className="block font-semibold text-black/75 mb-1">Select Gift Suite</label>
-                <select className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white">
+                <select
+                  value={createOrderForm.boxTitle}
+                  onChange={(e) => {
+                    let price = 3499;
+                    if (e.target.value.includes("1,899")) price = 1899;
+                    if (e.target.value.includes("1,250")) price = 1250;
+                    setCreateOrderForm({
+                      ...createOrderForm,
+                      boxTitle: e.target.value,
+                      amount: price,
+                    });
+                  }}
+                  className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white"
+                >
                   <option>Elements in Harmony Marble Gift Box (₹3,499)</option>
                   <option>The Celebration Box (₹1,899)</option>
                   <option>Kurma MDF Keepsake Box (₹1,899)</option>
@@ -3396,6 +4032,8 @@ export default function AdminDashboardPage() {
                 <label className="block font-semibold text-black/75 mb-1">Custom Deckle-Edge Card Message</label>
                 <textarea
                   rows={2}
+                  value={createOrderForm.giftNote}
+                  onChange={(e) => setCreateOrderForm({ ...createOrderForm, giftNote: e.target.value })}
                   placeholder="May this festive light illuminate your home sanctuary..."
                   className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none resize-none"
                 />
@@ -3406,17 +4044,24 @@ export default function AdminDashboardPage() {
                   <label className="block font-semibold text-black/75 mb-1">Recipient Name</label>
                   <input
                     type="text"
+                    required
+                    value={createOrderForm.recipientName}
+                    onChange={(e) => setCreateOrderForm({ ...createOrderForm, recipientName: e.target.value })}
                     placeholder="Recipient"
                     className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-black/75 mb-1">Payment Method</label>
-                  <select className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white">
-                    <option>UPI</option>
-                    <option>Card</option>
-                    <option>Net Banking</option>
-                    <option>Cash on Delivery</option>
+                  <select
+                    value={createOrderForm.paymentMethod}
+                    onChange={(e) => setCreateOrderForm({ ...createOrderForm, paymentMethod: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white"
+                  >
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                    <option value="Net Banking">Net Banking</option>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
                   </select>
                 </div>
               </div>

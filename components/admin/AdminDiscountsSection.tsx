@@ -239,21 +239,39 @@ export default function AdminDiscountsSection({
     status: "Active",
   });
 
-  // Hydrate discounts from localStorage or set master list
+  // Hydrate discounts from backend API or localStorage fallback
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("kurma_admin_discounts");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setDiscounts(parsed);
+    let isMounted = true;
+    async function loadDiscounts() {
+      try {
+        const res = await fetch("/api/admin/discounts");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.discounts) && data.discounts.length > 0 && isMounted) {
+          setDiscounts(data.discounts);
+          localStorage.setItem("kurma_admin_discounts", JSON.stringify(data.discounts));
           return;
         }
+      } catch (err) {
+        console.warn("Could not fetch discounts from API, falling back to localStorage", err);
       }
-      // If nothing stored or empty, initialize with curated master list
-      localStorage.setItem("kurma_admin_discounts", JSON.stringify(CURATED_MASTER_DISCOUNTS));
-      setDiscounts(CURATED_MASTER_DISCOUNTS);
-    } catch {}
+
+      try {
+        const stored = localStorage.getItem("kurma_admin_discounts");
+        if (stored && isMounted) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setDiscounts(parsed);
+            return;
+          }
+        }
+        localStorage.setItem("kurma_admin_discounts", JSON.stringify(CURATED_MASTER_DISCOUNTS));
+        if (isMounted) setDiscounts(CURATED_MASTER_DISCOUNTS);
+      } catch {}
+    }
+    loadDiscounts();
+    return () => {
+      isMounted = false;
+    };
   }, [setDiscounts]);
 
   // Sync to localStorage whenever discounts changes
@@ -279,23 +297,42 @@ export default function AdminDiscountsSection({
   };
 
   // Toggle Active / Paused Status
-  const handleToggleStatus = (id: string) => {
+  const handleToggleStatus = async (id: string) => {
+    const target = discounts.find((d) => d.id === id);
+    const nextStatus = target?.status === "Active" ? "Expired" : "Active";
     const updated = discounts.map((d) => {
       if (d.id === id) {
-        const nextStatus = d.status === "Active" ? "Expired" : "Active";
         return { ...d, status: nextStatus as any };
       }
       return d;
     });
     persistDiscounts(updated);
+
+    try {
+      await fetch("/api/admin/discounts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: nextStatus }),
+      });
+    } catch (err) {
+      console.warn("Failed to persist discount status to backend", err);
+    }
+
     triggerNotification("Voucher status updated!");
   };
 
   // Delete Discount
-  const handleDeleteDiscount = (id: string, title: string) => {
+  const handleDeleteDiscount = async (id: string, title: string) => {
     if (confirm(`Remove voucher code "${title}" from Kurma Sanctuary catalog?`)) {
       const updated = discounts.filter((d) => d.id !== id);
       persistDiscounts(updated);
+
+      try {
+        await fetch(`/api/admin/discounts?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      } catch (err) {
+        console.warn("Failed to delete discount in backend", err);
+      }
+
       triggerNotification(`Voucher "${title}" removed.`);
     }
   };
@@ -364,7 +401,7 @@ export default function AdminDiscountsSection({
   };
 
   // Handle Form Submit (Create or Edit)
-  const handleSubmitForm = (e: React.FormEvent) => {
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.code.trim()) return;
 
@@ -390,6 +427,20 @@ export default function AdminDiscountsSection({
         return d;
       });
       persistDiscounts(updated);
+
+      try {
+        await fetch("/api/admin/discounts", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: editingDiscountId,
+            status: formData.status,
+          }),
+        });
+      } catch (err) {
+        console.warn("Failed to update discount on server", err);
+      }
+
       triggerNotification(`Updated voucher "${cleanCode}"!`);
     } else {
       // Create new
@@ -408,6 +459,34 @@ export default function AdminDiscountsSection({
       };
       const updated = [newDisc, ...discounts];
       persistDiscounts(updated);
+
+      try {
+        const res = await fetch("/api/admin/discounts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: cleanCode,
+            subtitle: formData.subtitle || `${formData.discountValue} concession on sacred gifting ensembles`,
+            method: formData.method,
+            eligibility: formData.eligibility,
+            type: formData.type,
+            discountValue: formData.discountValue,
+            minSpend: formData.minSpend,
+            expiryDate: formData.expiryDate,
+          }),
+        });
+        const resData = await res.json();
+        if (resData.success && resData.discount) {
+          // Sync with server assigned id if needed
+          const serverUpdated = updated.map((d) =>
+            d.id === newDisc.id ? { ...d, id: resData.discount.id } : d
+          );
+          persistDiscounts(serverUpdated);
+        }
+      } catch (err) {
+        console.warn("Failed to create discount on server", err);
+      }
+
       triggerNotification(`Created new voucher "${cleanCode}"!`);
     }
 

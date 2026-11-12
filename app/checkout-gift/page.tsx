@@ -225,6 +225,42 @@ function CheckoutGiftContent() {
     const newOrderId = `KRM-GIFT-${Math.floor(100000 + Math.random() * 900000)}`;
     setOrderId(newOrderId);
     setOrderPlaced(true);
+
+    // Persist order asynchronously to Neon DB
+    if (hamper) {
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guestName: shippingDetails.recipientName,
+          guestPhone: shippingDetails.recipientPhone,
+          guestEmail: null,
+          totalAmount: finalTotal,
+          shippingAddress: shippingDetails,
+          notes: hamper.personalization?.giftNote || null,
+          items: [
+            {
+              productId: hamper.box.id,
+              name: hamper.box.title,
+              price: hamper.box.price,
+              quantity: 1,
+              image: hamper.box.image,
+              customizations: hamper.personalization,
+            },
+            ...(hamper.goodies || []).map((g) => ({
+              productId: g.id,
+              name: g.name,
+              price: g.price,
+              quantity: g.quantity || 1,
+              image: g.image,
+            })),
+          ],
+        }),
+      }).catch(() => {
+        // Fallback silently if offline
+      });
+    }
+
     try {
       localStorage.removeItem("kurma_custom_hamper");
     } catch {

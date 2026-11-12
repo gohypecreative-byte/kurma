@@ -235,17 +235,34 @@ function BoxEditorInner() {
     }).format(val);
   };
 
-  // Load from localStorage or initialize
+  // Load from backend API or localStorage fallback
   useEffect(() => {
-    try {
+    let isMounted = true;
+    async function loadBoxes() {
       let catalog: AdminCustomBox[] = INITIAL_CUSTOM_BOXES;
-      const stored = localStorage.getItem("kurma_custom_boxes");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          catalog = parsed;
+      try {
+        const res = await fetch("/api/admin/custom-boxes");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.customBoxes) && data.customBoxes.length > 0) {
+          catalog = data.customBoxes;
         }
+      } catch (err) {
+        console.warn("Could not load custom boxes from API", err);
       }
+
+      try {
+        if (catalog === INITIAL_CUSTOM_BOXES) {
+          const stored = localStorage.getItem("kurma_custom_boxes");
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              catalog = parsed;
+            }
+          }
+        }
+      } catch {}
+
+      if (!isMounted) return;
       setBoxes(catalog);
 
       if (boxId.toLowerCase() === "new") {
@@ -281,7 +298,12 @@ function BoxEditorInner() {
         ]);
         setAllowMonogram(target.allowMonogram ?? true);
       }
-    } catch {}
+    }
+
+    loadBoxes();
+    return () => {
+      isMounted = false;
+    };
   }, [boxId]);
 
   // Handle Image File Upload (converts to base64 data URL)
@@ -351,8 +373,8 @@ function BoxEditorInner() {
     }
   };
 
-  // Save changes to localStorage and notify /elements storefront
-  const handleSaveBox = (e: React.FormEvent) => {
+  // Save changes to backend API, localStorage and notify /elements storefront
+  const handleSaveBox = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
 
@@ -383,6 +405,25 @@ function BoxEditorInner() {
       window.dispatchEvent(new Event("storage"));
       window.dispatchEvent(new CustomEvent("kurma_custom_boxes_updated"));
     } catch {}
+
+    // Call backend API
+    try {
+      if (isNew) {
+        await fetch("/api/admin/custom-boxes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedBox),
+        });
+      } else {
+        await fetch("/api/admin/custom-boxes", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedBox),
+        });
+      }
+    } catch (apiErr) {
+      console.warn("Failed to persist custom box in Neon DB, saved locally", apiErr);
+    }
 
     setTimeout(() => {
       setIsSaving(false);

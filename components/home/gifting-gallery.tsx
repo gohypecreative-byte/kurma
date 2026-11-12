@@ -271,14 +271,15 @@ function HamperCardItem({
         className="group transition-all duration-300 flex flex-col justify-between cursor-pointer select-none relative hover:-translate-y-1 w-full h-full"
       >
       <div>
-        {/* Vertical Portrait Image Canvas (Aspect 3:4) - Full Bleed Edge-to-Edge */}
-        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#F7F4EE] border border-[#DDD3C2] shadow-xs">
+        {/* Vertical Portrait Image Canvas (Aspect 3:4) with Clean White Background */}
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-white border border-[#DDD3C2]/80 shadow-xs flex items-center justify-center">
+          {/* Full Product Image - 100% Uncropped & Visible on Pure White Canvas */}
           <Image
             src={currentDisplayImg}
             alt={hamper.name}
             fill
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-500 p-2 sm:p-3"
             sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 25vw"
           />
 
@@ -483,14 +484,14 @@ export function GiftingGallery() {
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Modal Image */}
-              <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto bg-stone-100">
+              {/* Modal Image with Pure White Background */}
+              <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto bg-white flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-[#E2D6C3]/60">
                 <Image
                   src={selectedHamper.image}
                   alt={selectedHamper.name}
                   fill
                   unoptimized
-                  className="object-cover"
+                  className="w-full h-full object-contain p-6 sm:p-8"
                 />
               </div>
 

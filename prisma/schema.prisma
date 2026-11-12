@@ -1,0 +1,257 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PATRON
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum InquiryType {
+  CORPORATE
+  BESPOKE
+  GENERAL
+}
+
+model User {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String
+  password    String?
+  phone       String?
+  role        Role      @default(PATRON)
+  memberSince String?
+  city        String?
+  tier        String    @default("Patron")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  orders      Order[]
+  addresses   Address[]
+  reviews     Review[]
+
+  @@map("users")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  fullName    String
+  phone       String
+  street      String
+  city        String
+  state       String
+  postalCode  String
+  country     String   @default("India")
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Product {
+  id                  String   @id
+  name                String
+  subtitle            String
+  category            String
+  price               Int
+  originalPrice       Int?
+  stock               Int      @default(25)
+  image               String
+  gallery             String[]
+  badge               String?
+  description         String
+  details             String[]
+  elements            String[]
+  inStock             Boolean  @default(true)
+  featured            Boolean  @default(false)
+  rating              Float    @default(5.0)
+  reviewCount         Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  reviews             Review[]
+
+  @@map("products")
+}
+
+model Category {
+  id            String   @id
+  title         String
+  slug          String   @unique
+  parentId      String?
+  productCount  Int      @default(0)
+  visible       Boolean  @default(true)
+  targetRevenue Int      @default(0)
+  salesProgress Int      @default(0)
+  description   String?
+  image         String?
+  badge         String?
+  channels      String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("categories")
+}
+
+model Collection {
+  id          String   @id
+  title       String
+  slug        String   @unique
+  itemsCount  Int      @default(0)
+  description String
+  status      String   @default("Active")
+  image       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("collections")
+}
+
+model CustomBox {
+  id          String   @id
+  title       String
+  size        String
+  capacity    Int
+  price       Int
+  image       String
+  description String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("custom_boxes")
+}
+
+model Discount {
+  id            String   @id
+  title         String
+  subtitle      String
+  status        String   @default("Active")
+  method        String   @default("Code")
+  eligibility   String   @default("All customers")
+  type          String   @default("Amount off order")
+  used          Int      @default(0)
+  discountValue String
+  minSpend      Int?
+  expiryDate    String?
+  maxUses       Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("discounts")
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique
+  userId            String?
+  customerName      String?
+  customerEmail     String?
+  customerPhone     String?
+  city              String?
+  dateFormatted     String?
+  boxTitle          String?
+  boxImage          String?
+  status            OrderStatus @default(CONFIRMED)
+  totalAmount       Int
+  shippingFee       Int         @default(0)
+  currency          String      @default("INR")
+  paymentMethod     String      @default("UPI")
+  paymentStatus     String      @default("Paid")
+  fulfillmentStatus String      @default("Processing")
+  channel           String      @default("Kurma Sanctuary")
+  carrier           String?     @default("BlueDart Express")
+  trackingNumber    String?
+  estimatedDate     String?
+  shippingAddress   Json?
+  billingAddress    Json?
+  personalization   Json?
+  notes             String?
+  isDraft           Boolean     @default(false)
+  isAbandoned       Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user              User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items             OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  productId      String
+  sku            String?
+  name           String
+  price          Int
+  quantity       Int      @default(1)
+  image          String?
+  customizations Json?
+  createdAt      DateTime @default(now())
+
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  userId      String?
+  authorName  String
+  rating      Int      @default(5)
+  title       String?
+  comment     String
+  verified    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("reviews")
+}
+
+model Inquiry {
+  id        String      @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  type      InquiryType @default(BESPOKE)
+  message   String
+  status    String      @default("NEW")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("inquiries")
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  active       Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+
+  @@map("newsletter_subscribers")
+}

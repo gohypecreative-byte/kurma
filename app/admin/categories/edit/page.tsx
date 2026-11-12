@@ -429,8 +429,8 @@ function CategoryEditorInner() {
     return sum + p.price * stock;
   }, 0);
 
-  // Save changes
-  const handleSaveCategory = (e?: React.FormEvent) => {
+  // Save changes to backend API and localStorage
+  const handleSaveCategory = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
     if (!title.trim()) {
@@ -465,6 +465,16 @@ function CategoryEditorInner() {
           channels,
         };
         updatedCategories = [...allCategories, newCat];
+
+        try {
+          await fetch("/api/admin/categories", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newCat),
+          });
+        } catch (apiErr) {
+          console.warn("Could not save category to Neon DB, stored locally", apiErr);
+        }
       } else {
         updatedCategories = allCategories.map((c) => {
           if (c.id === categoryId) {
@@ -485,6 +495,22 @@ function CategoryEditorInner() {
           }
           return c;
         });
+
+        try {
+          await fetch("/api/admin/categories", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: categoryId,
+              title: title.trim(),
+              description: description.trim(),
+              targetRevenue: Number(targetRevenue),
+              visible,
+            }),
+          });
+        } catch (apiErr) {
+          console.warn("Could not update category in Neon DB, stored locally", apiErr);
+        }
       }
 
       setAllCategories(updatedCategories);
@@ -511,11 +537,20 @@ function CategoryEditorInner() {
   };
 
   // Delete category
-  const handleDeleteCategory = () => {
+  const handleDeleteCategory = async () => {
     try {
       const updated = allCategories.filter((c) => c.id !== categoryId);
       setAllCategories(updated);
       localStorage.setItem("kurma_admin_categories", JSON.stringify(updated));
+
+      try {
+        await fetch(`/api/admin/categories?id=${encodeURIComponent(categoryId)}`, {
+          method: "DELETE",
+        });
+      } catch (apiErr) {
+        console.warn("Could not delete category in Neon DB", apiErr);
+      }
+
       triggerToast(`Category "${title}" deleted.`);
       setTimeout(() => {
         router.push("/admin?route=products&sub=categories");
