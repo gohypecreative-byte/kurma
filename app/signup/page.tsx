@@ -171,14 +171,14 @@ export default function SignUpPage() {
               <div className="mb-6 p-4 rounded-none bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
                 <div>
                   <p className="font-bold text-black uppercase tracking-wider">
-                    {currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com"
+                    {currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com" || currentUser.email === "vishal1@gmail.com" || currentUser.email === "vishalsingh123764@gmail.com"
                       ? "Admin"
                       : currentUser.name}
                   </p>
                   <p className="text-stone-500 font-mono text-[11px]">{currentUser.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {(currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com") ? (
+                  {(currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com" || currentUser.email === "vishal1@gmail.com" || currentUser.email === "vishalsingh123764@gmail.com") ? (
                     <button
                       type="button"
                       onClick={() => router.push("/admin")}

@@ -83,6 +83,8 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
         const isAdminEmail =
           parsed?.email === "admin@kurmaluxury.com" ||
           parsed?.email === "admin@kurma.com" ||
+          parsed?.email === "vishal1@gmail.com" ||
+          parsed?.email === "vishalsingh123764@gmail.com" ||
           parsed?.role === "ADMIN";
 
         if (isAdminEmail && parsed?.email) {

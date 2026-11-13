@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import {
   createAdminToken,
   attachAdminSessionCookie,
+  isDesignatedAdminEmail,
 } from "@/lib/admin-auth";
 
 export async function POST(req: Request) {
@@ -71,8 +72,7 @@ export async function POST(req: Request) {
       // Check if user is an ADMIN
       const isAdmin =
         existingUser.role === "ADMIN" ||
-        cleanEmail === "admin@kurmaluxury.com" ||
-        cleanEmail === "admin@kurma.com";
+        isDesignatedAdminEmail(cleanEmail);
 
       const displayName = isAdmin ? "Admin" : existingUser.name;
       const userRole = isAdmin ? "ADMIN" : existingUser.role;

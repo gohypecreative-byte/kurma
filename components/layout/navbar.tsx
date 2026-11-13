@@ -132,7 +132,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   const isAdmin =
     user?.role === "ADMIN" ||
     user?.email === "admin@kurmaluxury.com" ||
-    user?.email === "admin@kurma.com";
+    user?.email === "admin@kurma.com" ||
+    user?.email === "vishal1@gmail.com" ||
+    user?.email === "vishalsingh123764@gmail.com";
   const userDisplayName = isAdmin ? "Admin" : (user?.name || "Patron");
 
   // Anti-bounce click timestamp and modal open timestamp refs

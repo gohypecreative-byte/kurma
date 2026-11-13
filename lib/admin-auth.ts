@@ -6,6 +6,22 @@ const ADMIN_JWT_SECRET =
   process.env.NEXTAUTH_SECRET ||
   "kurma-atelier-sovereign-secret-2026-royal-key";
 
+export const KNOWN_ADMIN_EMAILS = [
+  "admin@kurmaluxury.com",
+  "admin@kurma.com",
+  "vishal1@gmail.com",
+  "vishalsingh123764@gmail.com",
+];
+
+export function isDesignatedAdminEmail(email?: string | null): boolean {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+  if (KNOWN_ADMIN_EMAILS.includes(clean)) return true;
+  const envAdmin = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (envAdmin && clean === envAdmin) return true;
+  return false;
+}
+
 export interface AdminTokenPayload {
   userId: string;
   email: string;

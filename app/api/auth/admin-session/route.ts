@@ -5,6 +5,7 @@ import {
   createAdminToken,
   attachAdminSessionCookie,
   removeAdminSessionCookie,
+  isDesignatedAdminEmail,
 } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
@@ -46,8 +47,9 @@ export async function POST(req: Request) {
     // Action 1: Auto-verify and sync active admin session from client
     if (body?.action === "sync" && body?.email) {
       const cleanEmail = String(body.email).trim().toLowerCase();
+      const isDesignated = isDesignatedAdminEmail(cleanEmail);
 
-      const user = await prisma.user.findUnique({
+      let user = await prisma.user.findUnique({
         where: { email: cleanEmail },
         select: {
           id: true,
@@ -58,10 +60,25 @@ export async function POST(req: Request) {
         },
       });
 
-      const isAdmin =
-        user?.role === "ADMIN" ||
-        cleanEmail === "admin@kurmaluxury.com" ||
-        cleanEmail === "admin@kurma.com";
+      if (!user && isDesignated) {
+        user = await prisma.user.create({
+          data: {
+            name: cleanEmail.includes("vishal") ? "Vishal Singh" : "Kurma Atelier Sovereign Administrator",
+            email: cleanEmail,
+            role: "ADMIN",
+            memberSince: "January 2026",
+          },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            memberSince: true,
+          },
+        });
+      }
+
+      const isAdmin = user?.role === "ADMIN" || isDesignated;
 
       if (!user || !isAdmin) {
         return NextResponse.json(
@@ -79,6 +96,7 @@ export async function POST(req: Request) {
           where: { id: user.id },
           data: { role: "ADMIN" },
         });
+        user.role = "ADMIN";
       }
 
       const token = await createAdminToken({
