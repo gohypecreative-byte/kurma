@@ -6,7 +6,6 @@ import {
   Tag,
   Gift,
   Award,
-  Flame,
   Copy,
   Check,
   Plus,
@@ -559,7 +558,6 @@ export default function AdminDiscountsSection({
   const totalActive = discounts.filter((d) => d.status === "Active").length;
   const totalUses = discounts.reduce((sum, d) => sum + (d.used || 0), 0);
   const estimatedSavings = totalUses * 442; // Avg ~₹442 saved per voucher
-  const topDiscount = [...discounts].sort((a, b) => (b.used || 0) - (a.used || 0))[0];
 
   return (
     <main className="flex-1 p-4 sm:p-6 bg-[#FAF8F5] space-y-6">
@@ -573,13 +571,7 @@ export default function AdminDiscountsSection({
               <BadgePercent className="size-6 text-[#c89e43]" />
               <span>Discounts &amp; Festive Vouchers</span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#eed08e]/30 text-[#072515] border border-[#eed08e]/50">
-              {discounts.length} Coupons Managed
-            </span>
           </div>
-          <p className="text-xs text-black/60 mt-1 max-w-2xl">
-            Manage promotional coupon codes, automated checkout concessions, VIP patron privileges, and festive celebration benefits.
-          </p>
         </div>
 
         {/* Global Action Buttons */}
@@ -616,9 +608,9 @@ export default function AdminDiscountsSection({
       </div>
 
       {/* ==================================================================== */}
-      {/* 2. FOUR EXECUTIVE KPI METRIC CARDS                                    */}
+      {/* 2. EXECUTIVE KPI METRIC CARDS                                         */}
       {/* ==================================================================== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* CARD 1: ACTIVE VOUCHERS */}
         <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
@@ -689,32 +681,6 @@ export default function AdminDiscountsSection({
             <span>Avg Concession:</span>
             <span className="font-bold text-emerald-700">~14.8% per basket</span>
           </div>
-        </div>
-
-        {/* CARD 4: TOP PERFORMING VOUCHER */}
-        <div className="p-4 rounded-2xl bg-[#072515] text-[#FAF8F5] border border-black/10 shadow-md relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-[#eed08e] tracking-wider flex items-center gap-1">
-              <Flame className="size-3.5 text-[#eed08e]" />
-              Top Gifting Coupon
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#eed08e]/20 text-[#eed08e]">
-              #1 Used
-            </span>
-          </div>
-          <div className="mt-2">
-            <span className="font-mono font-bold text-lg text-white block tracking-wider">
-              {topDiscount?.title || "ROYALSHIP"}
-            </span>
-            <span className="text-xs text-[#eed08e] font-semibold mt-0.5 block truncate">
-              {topDiscount?.subtitle || "Free Pan-India Express Air Shipping"}
-            </span>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-white/10 text-[11px] text-white/70 flex justify-between">
-            <span>Total Redemptions:</span>
-            <span className="font-bold text-[#eed08e]">{topDiscount?.used || 112} orders</span>
-          </div>
-          <div className="absolute -right-6 -bottom-6 size-20 rounded-full bg-[#eed08e]/10 pointer-events-none" />
         </div>
       </div>
 

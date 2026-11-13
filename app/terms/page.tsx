@@ -24,13 +24,12 @@ function TermsPageContent() {
       title="Terms of Service &"
       titleHighlight="Sanctuary Policies"
       subtitle="Transparent, fair, and crafted with the same uncompromising integrity as our hand-cast brass and sacred charcoal-free agarbatti."
-      lastUpdated="October 2026"
+      hideBadge
+      hideLastUpdated
+      hideBreadcrumb
     >
       <article className="space-y-6 text-stone-700 font-sans text-xs sm:text-sm leading-relaxed">
         <div className="border-b border-stone-100 pb-4">
-          <span className="text-[10px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block mb-1">
-            Section 1 • General Use
-          </span>
           <h2 className="font-serif text-2xl sm:text-3xl font-medium text-stone-900">
             Terms &amp; Conditions of Service
           </h2>
@@ -51,9 +50,6 @@ function TermsPageContent() {
           </h3>
           <p>
             All Kurma brass holders, turtle burners, and medallions are individually cast in virgin brass by master metalsmiths in Moradabad, India. Minor variations in antique patina, repoussé detailing, weight (+/- 5%), and natural brass oxidation are organic hallmarks of traditional Indian metalcraft and shall not be classified as manufacturing defects.
-          </p>
-          <p>
-            Our sacred agarbatti sticks are 100% charcoal-free, rolled using botanical wood powders, organic flower resins, and essential oils. Burn times average 55–65 minutes per stick depending on ambient room draft.
           </p>
         </div>
 

@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 import {
   ProductCardItem,
   getCleanTitle,
@@ -29,10 +30,12 @@ export default function GiftTrunksPage() {
     router.push(`/products/${product.id}`);
   };
 
-  // Gift Trunks & Suites
+  const { products } = useProducts();
+
+  // Gift Trunks & Suites synchronized with Neon database
   const trunkProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => p.category === "Gift Boxes");
-  }, []);
+    return products.filter((p) => p.category === "Gift Boxes");
+  }, [products]);
 
   const bespokeFeatures = [
     {

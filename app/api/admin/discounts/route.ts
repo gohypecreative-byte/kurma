@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const discounts = await prisma.discount.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -21,6 +25,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const body = await req.json();
     const { title, subtitle, method, eligibility, type, discountValue, minSpend, expiryDate, maxUses } = body;
 
@@ -59,6 +66,9 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const body = await req.json();
     const { id, status, used } = body;
 
@@ -87,6 +97,9 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

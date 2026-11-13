@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const [orders, products, users] = await Promise.all([
       prisma.order.findMany({
         where: { isDraft: false, isAbandoned: false },

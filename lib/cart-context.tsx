@@ -32,10 +32,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       priceDisplay: "₹4,999",
       image: "/images/product/image9.png",
       quantity: 1,
-      customizations: {
-        "Brass Plaque Engraving": "Om Shanti • Blessings & Harmony",
-        "Wax Seal & Ribbon": "Imperial Gold Wax Seal",
-      },
     },
   ]);
 

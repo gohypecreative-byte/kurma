@@ -8,36 +8,15 @@ export default function RefundPolicyPage() {
       title="Cancellation & Refund"
       titleHighlight="Policy"
       subtitle="Peace of mind with every heirloom. Our 7-Day Transit Shield and straightforward, transparent resolution policy."
-      lastUpdated="October 2026"
+      hideBadge
+      hideLastUpdated
+      hideBreadcrumb
     >
       <article className="space-y-6 text-stone-700 font-sans text-xs sm:text-sm leading-relaxed">
         <div className="border-b border-stone-100 pb-4">
-          <span className="text-[10px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block mb-1">
-            Section 4 • Customer Shield &amp; Guarantees
-          </span>
           <h2 className="font-serif text-2xl sm:text-3xl font-medium text-stone-900">
             Cancellation &amp; Refund Policy
           </h2>
-        </div>
-
-        {/* Highlight Feature Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-[#fbf6ea] border border-[#eed08e]/40 space-y-1">
-            <span className="text-[11px] font-bold text-[#8b5f10] uppercase tracking-wider block">
-              7-Day Transit Shield
-            </span>
-            <p className="text-xs text-stone-700 font-medium">
-              Free 24h replacement for any rare transit breakage with zero return courier costs.
-            </p>
-          </div>
-          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1">
-            <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">
-              Pre-Dispatch Cancellation
-            </span>
-            <p className="text-xs text-stone-700 font-medium">
-              100% full refund before warehouse hand-off with zero cancellation penalty.
-            </p>
-          </div>
         </div>
 
         <div className="space-y-3">

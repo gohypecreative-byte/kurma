@@ -916,7 +916,8 @@ export const PRODUCTS: ProductSKU[] = [
 ];
 
 export function getProductById(id: string): ProductSKU | undefined {
-  return PRODUCTS.find((p) => p.id === id);
+  const normalizedId = id.replace(/^fragance-/, "fragrance-");
+  return PRODUCTS.find((p) => p.id === normalizedId || p.id === id);
 }
 
 export function getProductsByCategory(category: ProductSKU["category"]): ProductSKU[] {

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 import { AnimatedWords } from "@/components/ui/animated-text";
 import { CartItem } from "@/components/cart/cart-drawer";
 
@@ -343,48 +344,44 @@ export function ProductShowcase({
 }: ProductShowcaseProps) {
   const [activeMode, setActiveMode] = useState<PurchasingMode>("direct");
   const [addedId, setAddedId] = useState<string | null>(null);
+  const { products, getProduct } = useProducts();
 
-  // 1. The Four Initial Flagship Products (Gift Boxes & Complete Suites) with Full-Bleed 3:4 Portrait Imagery
-  const initialGiftBoxes = [
-    {
-      ...PRODUCTS.find((p) => p.id === "marble-gift-box")!,
-      image: "/images/product/marble-portrait.jpg",
-      gallery: [
-        "/images/product/marble-portrait.jpg",
-        "/images/product/image9.png",
-      ],
-    },
-    {
-      ...PRODUCTS.find((p) => p.id === "mdf-gift-box")!,
-      image: "/images/product/trunk-portrait.jpg",
-      gallery: [
-        "/images/product/trunk-portrait.jpg",
-        "/images/product/image.png",
-      ],
-    },
-    {
-      ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
-      image: "/images/product/suite-portrait.jpg",
-      gallery: [
-        "/images/product/suite-portrait.jpg",
-        "/images/product/image7.png",
-      ],
-    },
-    {
-      ...PRODUCTS.find((p) => p.id === "empty-marble-box")!,
-      image: "/images/product/marble-portrait.jpg",
-      gallery: [
-        "/images/product/marble-portrait.jpg",
-        "/images/product/image9.png",
-      ],
-    },
-  ];
+  // 1. The Four Initial Flagship Products (Gift Boxes & Complete Suites) with Live DB Sync
+  const initialGiftBoxes = useMemo(() => {
+    const defaultIds = [
+      { id: "marble-gift-box", img: "/images/product/marble-portrait.jpg", gal: ["/images/product/marble-portrait.jpg", "/images/product/image9.png"] },
+      { id: "mdf-gift-box", img: "/images/product/trunk-portrait.jpg", gal: ["/images/product/trunk-portrait.jpg", "/images/product/image.png"] },
+      { id: "5-elements-suite", img: "/images/product/suite-portrait.jpg", gal: ["/images/product/suite-portrait.jpg", "/images/product/image7.png"] },
+      { id: "empty-marble-box", img: "/images/product/marble-portrait.jpg", gal: ["/images/product/marble-portrait.jpg", "/images/product/image9.png"] },
+    ];
 
-  // 2. 5 Individual Fragrance Boxes (Single Products)
-  const singleFragrances = PRODUCTS.filter((p) => p.category === "Fragrances");
+    const list: ProductSKU[] = [];
+    for (const item of defaultIds) {
+      const live = getProduct(item.id) || PRODUCTS.find((p) => p.id === item.id);
+      if (live) {
+        list.push({
+          ...live,
+          image: live.image || item.img,
+          gallery: live.gallery && live.gallery.length > 0 ? live.gallery : item.gal,
+        });
+      }
+    }
+    // Any additional newly created Gift Boxes
+    const extraBoxes = products.filter(
+      (p) => p.category === "Gift Boxes" && !defaultIds.some((d) => d.id === p.id)
+    );
+    return [...list, ...extraBoxes];
+  }, [products, getProduct]);
 
-  // 3. 4 Sacred Accessories (Single Products)
-  const singleAccessories = PRODUCTS.filter((p) => p.category === "Sacred Accessories");
+  // 2. Individual Fragrance Boxes (Single Products from live DB)
+  const singleFragrances = useMemo(() => {
+    return products.filter((p) => p.category === "Fragrances");
+  }, [products]);
+
+  // 3. Sacred Accessories (Single Products from live DB)
+  const singleAccessories = useMemo(() => {
+    return products.filter((p) => p.category === "Sacred Accessories");
+  }, [products]);
 
   const handleQuickAdd = (product: ProductSKU) => {
     onAddToCart({

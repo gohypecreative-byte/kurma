@@ -514,17 +514,9 @@ export default function AdminAnalyticsDashboard({
       {/* ==================================================================== */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-black/10">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#072515] tracking-tight">
-              Analytics &amp; Atelier Intelligence
-            </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#eed08e]/30 text-[#072515] border border-[#eed08e]/50">
-              Live Atelier Telemetry
-            </span>
-          </div>
-          <p className="text-xs text-black/60 mt-1 max-w-2xl">
-            Real-time sales velocity, website visitor footfall, best-selling sacred creations, customer retention, and inventory health.
-          </p>
+          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#072515] tracking-tight">
+            Analytics &amp; Atelier Intelligence
+          </h1>
         </div>
 
         {/* Global Controls: Timeframe Selector & Export */}
@@ -631,9 +623,9 @@ export default function AdminAnalyticsDashboard({
       </div>
 
       {/* ==================================================================== */}
-      {/* 3. FOUR HERO KPI METRIC CARDS                                        */}
+      {/* 3. THREE HERO KPI METRIC CARDS                                        */}
       {/* ==================================================================== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* CARD 1: TOTAL REVENUE */}
         <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
@@ -713,46 +705,6 @@ export default function AdminAnalyticsDashboard({
             <span className="font-bold text-[#072515]">38.6%</span>
           </div>
           <div className="absolute -right-6 -bottom-6 size-24 rounded-full bg-[#eed08e]/10 pointer-events-none" />
-        </div>
-
-        {/* CARD 4: BEST-SELLING PRODUCT SPOTLIGHT */}
-        <div className="p-4 rounded-2xl bg-[#072515] text-[#FAF8F5] border border-black/10 shadow-md relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-[#eed08e] tracking-wider flex items-center gap-1">
-              <Flame className="size-3.5 text-[#eed08e]" />
-              #1 Best-Selling Creation
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#eed08e]/20 text-[#eed08e]">
-              Top Revenue
-            </span>
-          </div>
-
-          <div className="mt-2.5 flex items-center gap-3">
-            <div className="relative size-12 rounded-xl overflow-hidden bg-white/10 border border-[#eed08e]/30 shrink-0">
-              <Image
-                src={BEST_SELLER_PRODUCTS[0].image}
-                alt={BEST_SELLER_PRODUCTS[0].name}
-                fill
-                className="object-contain p-1"
-                unoptimized
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h4 className="font-serif font-bold text-sm text-white truncate">
-                {BEST_SELLER_PRODUCTS[0].name}
-              </h4>
-              <p className="text-[11px] text-[#eed08e] font-semibold mt-0.5">
-                {formatINR(BEST_SELLER_PRODUCTS[0].revenue)} • {BEST_SELLER_PRODUCTS[0].unitsSold} sold
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-3 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-white/70">
-            <span>Storefront Conversion:</span>
-            <span className="font-bold text-[#eed08e]">6.8% (High Demand)</span>
-          </div>
-
-          <div className="absolute -right-6 -bottom-6 size-20 rounded-full bg-[#eed08e]/10 pointer-events-none" />
         </div>
       </div>
 
@@ -1390,11 +1342,6 @@ export default function AdminAnalyticsDashboard({
               </div>
             </div>
           </div>
-
-          <div className="pt-3 border-t border-black/5 text-[11px] text-black/60 space-y-1">
-            <p>• Average Patron Lifetime Value (LTV): <strong>₹14,250</strong></p>
-            <p>• VIP Patron Repeat Frequency: <strong>2.8 orders / year</strong></p>
-          </div>
         </section>
 
         {/* Top Cities by Sacred Gifting Orders */}
@@ -1421,10 +1368,6 @@ export default function AdminAnalyticsDashboard({
               </div>
             ))}
           </div>
-
-          <div className="pt-2 text-[11px] text-emerald-800 font-semibold">
-            ✓ Express Air fulfillment active across all top 5 metros
-          </div>
         </section>
 
         {/* Inventory Intelligence & Stock Health */}
@@ -1447,12 +1390,6 @@ export default function AdminAnalyticsDashboard({
               <span className="font-semibold text-red-900">Urgent Reorder (&lt;6 units)</span>
               <span className="font-bold text-red-800">2 SKUs</span>
             </div>
-          </div>
-
-          <div className="pt-2 border-t border-black/5 text-[11px] text-black/60">
-            <p className="font-medium text-amber-900">
-              ⚠ Attention: Solid Brass Turtle Stand and Earth Sandalwood running low (6 units left each).
-            </p>
           </div>
         </section>
       </div>

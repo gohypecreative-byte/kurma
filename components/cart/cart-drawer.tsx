@@ -11,7 +11,6 @@ import {
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
-  Tag,
 } from "lucide-react";
 
 export interface CartItem {
@@ -235,18 +234,6 @@ export function CartDrawer({
                           </button>
                         </div>
 
-                        {/* Customization Badges */}
-                        {item.customizations && Object.keys(item.customizations).length > 0 && (
-                          <div className="mt-1.5 space-y-0.5 bg-[#fbf6ea] p-1.5 rounded-md border border-[#eed08e]/40">
-                            {Object.entries(item.customizations).map(([label, val]) => (
-                              <div key={label} className="text-[10px] text-stone-700 leading-tight">
-                                <span className="font-semibold text-[#8b5f10]">{label}:</span>{" "}
-                                <span className="text-stone-800">{val}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
                         <div className="text-xs font-bold text-[#c0881b] mt-1.5">
                           ₹{item.price}
                         </div>
@@ -286,57 +273,6 @@ export function CartDrawer({
               {/* Footer Summary & Checkout */}
               {items.length > 0 && (
                 <div className="border-t border-stone-200 p-4 sm:p-6 bg-stone-50/70 space-y-3 sm:space-y-4">
-                  {/* Coupon Code Input */}
-                  <form onSubmit={handleApplyCoupon} className="space-y-1">
-                    <div className="flex gap-2">
-                      <div className="relative flex-1 min-w-0">
-                        <input
-                          type="text"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
-                          placeholder="Promo code (e.g. SACRED10)"
-                          className="w-full text-xs px-3 py-2 pr-8 border border-stone-200 rounded-lg uppercase tracking-wider focus:outline-hidden focus:border-[#c0881b] bg-white placeholder:normal-case placeholder:tracking-normal"
-                        />
-                        <Tag className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-2.5 pointer-events-none" />
-                      </div>
-                      <button
-                        type="submit"
-                        className="shrink-0 px-3.5 sm:px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                    {appliedCoupon && (
-                      <div className="flex items-center justify-between text-[11px] text-[#7A5A28] font-medium bg-[#F5EFEB] px-2.5 py-1 rounded-md border border-[#E5DDD0]">
-                        <span>
-                          Code &apos;{appliedCoupon}&apos; Applied (
-                          {appliedCoupon === "DIWALI2026"
-                            ? "-15%"
-                            : appliedCoupon === "SOVEREIGN20"
-                            ? "-20%"
-                            : appliedCoupon === "KURMAWELCOME"
-                            ? "-₹300"
-                            : appliedCoupon === "WEDDINGBLESSINGS"
-                            ? "-₹1,000"
-                            : appliedCoupon === "ROYALSHIP"
-                            ? "Free Express Air"
-                            : "-10%"}
-                          )
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setAppliedCoupon(null)}
-                          className="text-stone-400 hover:text-stone-700 cursor-pointer ml-2"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    )}
-                    {couponError && (
-                      <p className="text-[11px] text-rose-600">{couponError}</p>
-                    )}
-                  </form>
-
                   {/* Calculations */}
                   <div className="space-y-1.5 text-xs text-stone-600 pt-0.5">
                     <div className="flex justify-between">
@@ -374,7 +310,6 @@ export function CartDrawer({
                     className="w-full py-3 px-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                   >
                     <span>Proceed to Checkout</span>
-                    <ArrowRight className="w-4 h-4" />
                   </button>
 
                   <div className="flex items-center justify-center gap-3 sm:gap-4 text-[10.5px] text-stone-500 pt-0.5">

@@ -18,6 +18,7 @@ import {
 interface PatronUser {
   name: string;
   email: string;
+  role?: string;
   phone?: string;
   memberSince?: string;
 }
@@ -40,6 +41,7 @@ export default function SignUpPage() {
   // Feedback states
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<PatronUser | null>(null);
 
   // Load existing session from localStorage
@@ -61,6 +63,7 @@ export default function SignUpPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage("");
 
     const profile: PatronUser = {
       name: name.trim() || "Patron of Kurma",
@@ -70,8 +73,8 @@ export default function SignUpPage() {
     };
 
     try {
-      // Persist user account directly to Neon DB
-      await fetch("/api/auth/register", {
+      // Persist user account directly to Neon DB with hashed password
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,6 +84,21 @@ export default function SignUpPage() {
           password: password,
         }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        setErrorMessage(errorData.error || "Failed to create account");
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      if (data.user) {
+        profile.name = data.user.name;
+        profile.email = data.user.email;
+        if (data.user.phone) profile.phone = data.user.phone;
+        if (data.user.memberSince) profile.memberSince = data.user.memberSince;
+      }
     } catch {
       // Continue gracefully even if network is offline
     }
@@ -153,18 +171,30 @@ export default function SignUpPage() {
               <div className="mb-6 p-4 rounded-none bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
                 <div>
                   <p className="font-bold text-black uppercase tracking-wider">
-                    {currentUser.name}
+                    {currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com"
+                      ? "Admin"
+                      : currentUser.name}
                   </p>
                   <p className="text-stone-500 font-mono text-[11px]">{currentUser.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/shop")}
-                    className="px-2.5 py-1 bg-black text-white font-bold uppercase tracking-wider text-[10px] cursor-pointer"
-                  >
-                    Shop
-                  </button>
+                  {(currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com") ? (
+                    <button
+                      type="button"
+                      onClick={() => router.push("/admin")}
+                      className="px-2.5 py-1 bg-[#072515] text-[#eed08e] font-bold uppercase tracking-wider text-[10px] cursor-pointer"
+                    >
+                      Admin Dashboard
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => router.push("/shop")}
+                      className="px-2.5 py-1 bg-black text-white font-bold uppercase tracking-wider text-[10px] cursor-pointer"
+                    >
+                      Shop
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={handleSignOut}
@@ -181,6 +211,13 @@ export default function SignUpPage() {
               <div className="mb-6 p-3.5 bg-stone-100 border-l-2 border-black text-black flex items-center gap-2.5 text-xs animate-in fade-in">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span className="font-semibold">{successMessage}</span>
+              </div>
+            )}
+
+            {/* Error Notification Alert */}
+            {errorMessage && (
+              <div className="mb-6 p-3.5 bg-red-50 border-l-2 border-red-600 text-red-900 flex items-center gap-2.5 text-xs animate-in fade-in">
+                <span className="font-semibold">{errorMessage}</span>
               </div>
             )}
 

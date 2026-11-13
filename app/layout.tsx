@@ -4,6 +4,7 @@ import "./globals.css";
 import "lenis/dist/lenis.css";
 import { cn } from "@/lib/utils";
 import { CartProvider } from "@/lib/cart-context";
+import { ProductsProvider } from "@/lib/products-context";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 
 const geistSans = Geist({
@@ -64,7 +65,9 @@ export default function RootLayout({
     >
       <body className="min-h-screen w-full max-w-full relative flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
         <SmoothScrollProvider>
-          <CartProvider>{children}</CartProvider>
+          <ProductsProvider>
+            <CartProvider>{children}</CartProvider>
+          </ProductsProvider>
         </SmoothScrollProvider>
       </body>
     </html>

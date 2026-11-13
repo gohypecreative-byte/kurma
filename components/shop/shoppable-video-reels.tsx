@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "motion/react";
@@ -18,6 +18,7 @@ import {
   Plus,
 } from "lucide-react";
 import { PRODUCTS, ProductSKU, getProductById, formatPrice } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 import { useCart } from "@/lib/cart-context";
 
 export interface ShoppableReelItem {
@@ -211,9 +212,12 @@ const CATEGORY_TAG_MAP: Record<string, string> = {
   "empty-marble-box": "HEIRLOOM KEEPSAKE",
 };
 
-function buildReelItems(): ShoppableReelItem[] {
+function buildReelItems(getLiveProduct?: (id: string) => ProductSKU | undefined): ShoppableReelItem[] {
   return ORDERED_PRODUCT_IDS.map((productId) => {
-    const product = getProductById(productId) || PRODUCTS.find((p) => p.id === productId);
+    const product =
+      (getLiveProduct ? getLiveProduct(productId) : undefined) ||
+      getProductById(productId) ||
+      PRODUCTS.find((p) => p.id === productId);
     if (!product) {
       throw new Error(`Product ${productId} not found`);
     }
@@ -255,11 +259,11 @@ function buildReelItems(): ShoppableReelItem[] {
   });
 }
 
-const REEL_ITEMS = buildReelItems();
-
 export function ShoppableVideoReels() {
   const router = useRouter();
   const { quickAddToCart } = useCart();
+  const { getProduct } = useProducts();
+  const REEL_ITEMS = useMemo(() => buildReelItems(getProduct), [getProduct]);
   const targetRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -329,7 +333,7 @@ export function ShoppableVideoReels() {
 
   const handleAddToCart = (reel: ShoppableReelItem, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    const product = getProductById(reel.productId);
+    const product = getProduct(reel.productId) || getProductById(reel.productId);
     if (product) {
       quickAddToCart(product);
       setAddedItemIds((prev) => ({ ...prev, [reel.productId]: true }));
@@ -374,7 +378,7 @@ export function ShoppableVideoReels() {
   // Modal navigation between reels
   const handleNextModalReel = () => {
     if (!activeModalReel) return;
-    const currentIndex = REEL_ITEMS.findIndex((r) => r.id === activeModalReel.id);
+    const currentIndex = REEL_ITEMS.findIndex((r: ShoppableReelItem) => r.id === activeModalReel.id);
     const nextIndex = (currentIndex + 1) % REEL_ITEMS.length;
     setActiveModalReel(REEL_ITEMS[nextIndex]);
     setModalSlideIndex(0);
@@ -383,7 +387,7 @@ export function ShoppableVideoReels() {
 
   const handlePrevModalReel = () => {
     if (!activeModalReel) return;
-    const currentIndex = REEL_ITEMS.findIndex((r) => r.id === activeModalReel.id);
+    const currentIndex = REEL_ITEMS.findIndex((r: ShoppableReelItem) => r.id === activeModalReel.id);
     const prevIndex = (currentIndex - 1 + REEL_ITEMS.length) % REEL_ITEMS.length;
     setActiveModalReel(REEL_ITEMS[prevIndex]);
     setModalSlideIndex(0);
@@ -456,7 +460,7 @@ export function ShoppableVideoReels() {
             style={{ x }}
             className="flex items-center gap-6 sm:gap-8 px-6 sm:px-12 md:px-16"
           >
-            {REEL_ITEMS.map((reel) => {
+            {REEL_ITEMS.map((reel: ShoppableReelItem) => {
               const isAdded = addedItemIds[reel.productId];
               const isHovered = hoveredCardId === reel.id;
               const displayImage =

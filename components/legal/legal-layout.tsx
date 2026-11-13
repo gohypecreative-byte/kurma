@@ -12,7 +12,6 @@ import {
   Phone,
   ShieldCheck,
   CheckCircle2,
-  ChevronRight,
 } from "lucide-react";
 
 interface LegalLayoutProps {
@@ -21,6 +20,10 @@ interface LegalLayoutProps {
   titleHighlight?: string;
   subtitle: string;
   lastUpdated?: string;
+  hideBadge?: boolean;
+  hideLastUpdated?: boolean;
+  hideBreadcrumb?: boolean;
+  hideTrustBadges?: boolean;
   children: React.ReactNode;
 }
 
@@ -30,6 +33,10 @@ export function LegalLayout({
   titleHighlight,
   subtitle,
   lastUpdated = "October 2026",
+  hideBadge = false,
+  hideLastUpdated = false,
+  hideBreadcrumb = false,
+  hideTrustBadges = false,
   children,
 }: LegalLayoutProps) {
   const { cartCount, setIsCartOpen } = useCart();
@@ -44,10 +51,12 @@ export function LegalLayout({
         <div className="absolute inset-0 bg-[radial-gradient(#eed08e_0.75px,transparent_0.75px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 space-y-3.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8b5f10]/10 border border-[#8b5f10]/25 text-[#8b5f10] text-[11px] font-serif uppercase tracking-widest">
-            <Scale className="w-3.5 h-3.5" />
-            <span>{badge}</span>
-          </div>
+          {!hideBadge && (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8b5f10]/10 border border-[#8b5f10]/25 text-[#8b5f10] text-[11px] font-serif uppercase tracking-widest">
+              <Scale className="w-3.5 h-3.5" />
+              <span>{badge}</span>
+            </div>
+          )}
 
           <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-[#1C1B18] tracking-tight leading-tight">
             {title}{" "}
@@ -62,26 +71,30 @@ export function LegalLayout({
             {subtitle}
           </p>
 
-          <div className="pt-1 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[10.5px] sm:text-[11px] text-stone-500 font-sans tracking-wide">
-            <span>Last Updated: {lastUpdated}</span>
-            <span className="hidden sm:inline">•</span>
-            <span>Compliant with Indian E-Commerce Rules</span>
-          </div>
+          {!hideLastUpdated && (
+            <div className="pt-1 flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-[10.5px] sm:text-[11px] text-stone-500 font-sans tracking-wide">
+              <span>Last Updated: {lastUpdated}</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Compliant with Indian E-Commerce Rules</span>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-6xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-8 sm:py-14">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-stone-500 mb-5 font-sans">
-          <Link href="/" className="hover:text-stone-900 transition-colors">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="text-stone-800 font-medium truncate max-w-[220px] sm:max-w-none">
-            {title} {titleHighlight}
-          </span>
-        </div>
+        {!hideBreadcrumb && (
+          <div className="flex items-center gap-2 text-xs text-stone-500 mb-5 font-sans">
+            <Link href="/" className="hover:text-stone-900 transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="text-stone-800 font-medium truncate max-w-[220px] sm:max-w-none">
+              {title} {titleHighlight}
+            </span>
+          </div>
+        )}
 
         {/* 2-Column Grid: Policy Document + Contact & Trust Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
@@ -133,39 +146,40 @@ export function LegalLayout({
                   className="w-full py-2.5 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-sans font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-98"
                 >
                   <span>Open Inquiry Ticket</span>
-                  <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
 
             {/* Certification Trust Badges */}
-            <div className="bg-white rounded-3xl border border-stone-200/90 p-6 space-y-4 shadow-xs">
-              <h4 className="font-serif text-sm font-bold text-stone-900 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#8b5f10]" />
-                <span>Kurma Quality Assurance</span>
-              </h4>
+            {!hideTrustBadges && (
+              <div className="bg-white rounded-3xl border border-stone-200/90 p-6 space-y-4 shadow-xs">
+                <h4 className="font-serif text-sm font-bold text-stone-900 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#8b5f10]" />
+                  <span>Kurma Quality Assurance</span>
+                </h4>
 
-              <div className="space-y-3 text-xs text-stone-600 font-sans">
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>100% Charcoal-Free:</strong> Zero toxic benzene or chemical binders; certified indoor safe.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Virgin Brass:</strong> Cast by Moradabad hereditary guild metalsmiths with anti-tarnish coating.
-                  </span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Transit Insurance:</strong> Free 24h replacements for any verified courier damages.
-                  </span>
+                <div className="space-y-3 text-xs text-stone-600 font-sans">
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                    <span>
+                      <strong>100% Charcoal-Free:</strong> Zero toxic benzene or chemical binders; certified indoor safe.
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Virgin Brass:</strong> Cast by Moradabad hereditary guild metalsmiths with anti-tarnish coating.
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Transit Insurance:</strong> Free 24h replacements for any verified courier damages.
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </aside>
         </div>
       </main>

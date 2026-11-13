@@ -20,6 +20,7 @@ import {
 interface PatronUser {
   name: string;
   email: string;
+  role?: string;
   phone?: string;
   memberSince?: string;
 }
@@ -62,6 +63,7 @@ export default function LoginPage() {
   // Interactive feedback states
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<PatronUser | null>(null);
 
   // Load existing session from localStorage
@@ -93,6 +95,7 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage("");
 
     const displayName = email.split("@")[0] || "Valued Patron";
     let profile: PatronUser = {
@@ -102,25 +105,45 @@ export default function LoginPage() {
     };
 
     try {
-      // Connect to Neon DB backend to fetch or record user
+      // Connect to Neon DB backend to verify credentials with bcrypt
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: profile.email }),
+        body: JSON.stringify({ email: profile.email, password }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.user) {
-          profile = {
-            name: data.user.name,
-            email: data.user.email,
-            phone: data.user.phone,
-            memberSince: data.user.memberSince || profile.memberSince,
-          };
-        }
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        setErrorMessage(errorData.error || "Invalid email or password");
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      if (data.user) {
+        const isAdmin =
+          data.user.role === "ADMIN" ||
+          data.user.email === "admin@kurmaluxury.com" ||
+          data.user.email === "admin@kurma.com";
+        profile = {
+          name: isAdmin ? "Admin" : data.user.name,
+          email: data.user.email,
+          phone: data.user.phone,
+          role: data.user.role,
+          memberSince: data.user.memberSince || profile.memberSince,
+        };
       }
     } catch {
-      // Continue gracefully even if offline
+      // Offline fallback
+    }
+
+    const isAdmin =
+      profile.role === "ADMIN" ||
+      profile.email === "admin@kurmaluxury.com" ||
+      profile.email === "admin@kurma.com";
+
+    if (isAdmin) {
+      profile.name = "Admin";
     }
 
     localStorage.setItem("kurma_user", JSON.stringify(profile));
@@ -128,7 +151,21 @@ export default function LoginPage() {
     setIsLoading(false);
     setSuccessMessage(`Welcome back, ${profile.name}`);
     setTimeout(() => {
-      router.push("/shop");
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
+        if (redirect) {
+          if (isAdmin || !redirect.startsWith("/admin")) {
+            router.push(redirect);
+            return;
+          }
+        }
+      }
+      if (isAdmin) {
+        router.push("/admin");
+      } else {
+        router.push("/shop");
+      }
     }, 1100);
   };
 
@@ -155,6 +192,9 @@ export default function LoginPage() {
 
   // Handle Sign Out
   const handleSignOut = () => {
+    try {
+      fetch("/api/auth/admin-session", { method: "POST" });
+    } catch {}
     localStorage.removeItem("kurma_user");
     setCurrentUser(null);
     setSuccessMessage("");
@@ -236,18 +276,30 @@ export default function LoginPage() {
               <div className="mb-6 p-4 rounded-none bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
                 <div>
                   <p className="font-bold text-black uppercase tracking-wider">
-                    {currentUser.name}
+                    {currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com"
+                      ? "Admin"
+                      : currentUser.name}
                   </p>
                   <p className="text-stone-500 font-mono text-[11px]">{currentUser.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/shop")}
-                    className="px-2.5 py-1 bg-black text-white font-bold uppercase tracking-wider text-[10px]"
-                  >
-                    Shop
-                  </button>
+                  {(currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com") ? (
+                    <button
+                      type="button"
+                      onClick={() => router.push("/admin")}
+                      className="px-2.5 py-1 bg-[#072515] text-[#eed08e] font-bold uppercase tracking-wider text-[10px]"
+                    >
+                      Admin Dashboard
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => router.push("/shop")}
+                      className="px-2.5 py-1 bg-black text-white font-bold uppercase tracking-wider text-[10px]"
+                    >
+                      Shop
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={handleSignOut}
@@ -264,6 +316,13 @@ export default function LoginPage() {
               <div className="mb-6 p-3.5 bg-stone-100 border-l-2 border-black text-black flex items-center gap-2.5 text-xs animate-in fade-in">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span className="font-semibold">{successMessage}</span>
+              </div>
+            )}
+
+            {/* Error Notification Alert */}
+            {errorMessage && (
+              <div className="mb-6 p-3.5 bg-red-50 border-l-2 border-red-600 text-red-900 flex items-center gap-2.5 text-xs animate-in fade-in">
+                <span className="font-semibold">{errorMessage}</span>
               </div>
             )}
 

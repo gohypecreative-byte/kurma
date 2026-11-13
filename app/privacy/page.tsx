@@ -8,13 +8,13 @@ export default function PrivacyPage() {
       title="Privacy Policy &"
       titleHighlight="Data Protection"
       subtitle="Safeguarding your sanctuary. How Kurma collects, protects, and handles your personal information with absolute discretion."
-      lastUpdated="October 2026"
+      hideBadge
+      hideLastUpdated
+      hideBreadcrumb
+      hideTrustBadges
     >
       <article className="space-y-6 text-stone-700 font-sans text-xs sm:text-sm leading-relaxed">
         <div className="border-b border-stone-100 pb-4">
-          <span className="text-[10px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block mb-1">
-            Section 2 • Customer Data &amp; Trust
-          </span>
           <h2 className="font-serif text-2xl sm:text-3xl font-medium text-stone-900">
             Privacy Policy &amp; Data Protection
           </h2>

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 import {
   ProductCardItem,
   getCleanTitle,
@@ -32,18 +33,20 @@ export default function ShopPage() {
     router.push(`/products/${product.id}`);
   };
 
-  // Grouped products
+  const { products } = useProducts();
+
+  // Grouped products synchronized with Neon database
   const giftBoxes = useMemo(
-    () => PRODUCTS.filter((p) => p.category === "Gift Boxes"),
-    []
+    () => products.filter((p) => p.category === "Gift Boxes"),
+    [products]
   );
   const fragrances = useMemo(
-    () => PRODUCTS.filter((p) => p.category === "Fragrances"),
-    []
+    () => products.filter((p) => p.category === "Fragrances"),
+    [products]
   );
   const accessories = useMemo(
-    () => PRODUCTS.filter((p) => p.category === "Sacred Accessories"),
-    []
+    () => products.filter((p) => p.category === "Sacred Accessories"),
+    [products]
   );
 
   const getGiftBoxCardBg = (id: string) => {

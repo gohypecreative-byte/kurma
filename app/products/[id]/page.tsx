@@ -11,6 +11,7 @@ import {
   createCartItemId,
   PRODUCTS,
 } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
@@ -149,13 +150,26 @@ export default function ProductDetailPage() {
 
   const { cartCount, setIsCartOpen, addToCart } = useCart();
 
-  // Load product definition
+  const { getProduct } = useProducts();
+
+  // Load product definition with live DB synchronization
   const product: ProductSKU = useMemo(() => {
-    return getProductById(productId) || getProductById("5-elements-suite") || PRODUCTS[0];
-  }, [productId]);
+    return (
+      getProduct(productId) ||
+      getProductById(productId) ||
+      getProduct("5-elements-suite") ||
+      getProductById("5-elements-suite") ||
+      PRODUCTS[0]
+    );
+  }, [getProduct, productId]);
 
   const isSuite = product.id === "5-elements-suite" || product.id === "marble-gift-box" || product.id === "mdf-gift-box";
   const isFragrance = product.category === "Fragrances";
+  const isTurtleHolder =
+    product.id === "turtle-incense-holder" ||
+    productId === "turtle-incense-holder";
+  // Clean presentation across all product pages
+  const hidePromotionalElements = true;
 
   // Curate high-res gallery perspectives with authentic 3D & studio assets
   const galleryImages = useMemo(() => {
@@ -476,19 +490,21 @@ export default function ProductDetailPage() {
 
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8 pb-20 sm:pb-8">
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-2 text-xs font-sans text-stone-400">
-          <Link href="/" className="hover:text-stone-800 transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3 h-3 text-stone-300" />
-          <Link href="/elements" className="hover:text-stone-800 transition-colors">
-            5 Elements
-          </Link>
-          <ChevronRight className="w-3 h-3 text-stone-300" />
-          <span className="text-stone-800 font-medium truncate max-w-[200px] sm:max-w-none">
-            {product.name}
-          </span>
-        </nav>
+        {!hidePromotionalElements && (
+          <nav className="flex items-center gap-2 text-xs font-sans text-stone-400">
+            <Link href="/" className="hover:text-stone-800 transition-colors">
+              Home
+            </Link>
+            <ChevronRight className="w-3 h-3 text-stone-300" />
+            <Link href="/elements" className="hover:text-stone-800 transition-colors">
+              5 Elements
+            </Link>
+            <ChevronRight className="w-3 h-3 text-stone-300" />
+            <span className="text-stone-800 font-medium truncate max-w-[200px] sm:max-w-none">
+              {product.name}
+            </span>
+          </nav>
+        )}
 
         {/* ORDER SUCCESS SCREEN */}
         {orderConfirmation ? (
@@ -573,19 +589,23 @@ export default function ProductDetailPage() {
               {/* Main Hero Showcase Canvas */}
               <div className="relative w-full aspect-square sm:aspect-[4/4.2] lg:aspect-[4/4.5] max-h-[440px] sm:max-h-[560px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#FAF8F5] border border-stone-200/90 shadow-xs flex items-center justify-center p-3 sm:p-8 group select-none">
                 {/* Visual Perspective Badge (Top-Left) */}
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/95 backdrop-blur-xs border border-stone-200/70 shadow-2xs text-[9.5px] sm:text-[10px] font-cinzel font-semibold tracking-wider uppercase text-stone-700">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#c0881b]" />
-                    {galleryImages[activeIndex]?.badge || "Studio Perspective"}
-                  </span>
-                </div>
+                {!hidePromotionalElements && (
+                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-white/95 backdrop-blur-xs border border-stone-200/70 shadow-2xs text-[9.5px] sm:text-[10px] font-cinzel font-semibold tracking-wider uppercase text-stone-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#c0881b]" />
+                      {galleryImages[activeIndex]?.badge || "Studio Perspective"}
+                    </span>
+                  </div>
+                )}
 
                 {/* Image Counter (Top-Right) */}
-                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
-                  <span className="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/95 backdrop-blur-xs border border-stone-200/70 shadow-2xs text-[10px] sm:text-[11px] font-mono font-medium text-stone-500">
-                    {activeIndex + 1} / {galleryImages.length}
-                  </span>
-                </div>
+                {!hidePromotionalElements && (
+                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
+                    <span className="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-white/95 backdrop-blur-xs border border-stone-200/70 shadow-2xs text-[10px] sm:text-[11px] font-mono font-medium text-stone-500">
+                      {activeIndex + 1} / {galleryImages.length}
+                    </span>
+                  </div>
+                )}
 
                 {/* Main Centered Product Image */}
                 <div className="relative w-full h-full flex items-center justify-center">
@@ -714,11 +734,13 @@ export default function ProductDetailPage() {
             <div className="lg:col-span-6 xl:col-span-6 min-w-0 bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 shadow-sm p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-5">
               {/* Product Title & Badge */}
               <div className="space-y-1.5">
-                <div>
-                  <span className="inline-block text-[10px] sm:text-[11px] font-sans font-bold tracking-wider uppercase text-white bg-[#072515] px-2.5 py-0.5 rounded-md shadow-2xs">
-                    {product.badge || (isFragrance ? "New Arrivals" : "Flagship Suite")}
-                  </span>
-                </div>
+                {!hidePromotionalElements && (
+                  <div>
+                    <span className="inline-block text-[10px] sm:text-[11px] font-sans font-bold tracking-wider uppercase text-white bg-[#072515] px-2.5 py-0.5 rounded-md shadow-2xs">
+                      {product.badge || (isFragrance ? "New Arrivals" : "Flagship Suite")}
+                    </span>
+                  </div>
+                )}
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-stone-900 tracking-tight leading-tight">
                   {product.name}
                 </h1>
@@ -797,9 +819,11 @@ export default function ProductDetailPage() {
                     <span className="text-xs font-bold text-stone-900">
                       Included in Suite (5 Boxes)
                     </span>
-                    <span className="text-[11px] text-emerald-700 font-semibold">
-                      ₹1,995 MRP Value Included
-                    </span>
+                    {!hidePromotionalElements && (
+                      <span className="text-[11px] text-emerald-700 font-semibold">
+                        ₹1,995 MRP Value Included
+                      </span>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {ELEMENT_FRAGRANCES.map((element, idx) => {
@@ -839,9 +863,11 @@ export default function ProductDetailPage() {
                   <span className="text-xs font-bold text-stone-900">
                     Sacred Keepsakes &amp; Burners
                   </span>
-                  <span className="text-[10px] text-stone-400 uppercase tracking-wider font-cinzel">
-                    Optional Add-ons
-                  </span>
+                  {!hidePromotionalElements && (
+                    <span className="text-[10px] text-stone-400 uppercase tracking-wider font-cinzel">
+                      Optional Add-ons
+                    </span>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {ACCESSORY_ADDONS.slice(0, 2).map((addon) => {
@@ -906,37 +932,41 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Delivery Estimate matching reference */}
-              <div className="flex items-start gap-2.5 text-xs text-stone-700 bg-stone-50/80 p-3 rounded-xl border border-stone-200/70">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span className="leading-snug">
-                  Delivery within 2–3 business days. Next-day delivery is available in Delhi NCR.
-                </span>
-              </div>
+              {!hidePromotionalElements && (
+                <div className="flex items-start gap-2.5 text-xs text-stone-700 bg-stone-50/80 p-3 rounded-xl border border-stone-200/70">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="leading-snug">
+                    Delivery within 2–3 business days. Next-day delivery is available in Delhi NCR.
+                  </span>
+                </div>
+              )}
 
               {/* Services and benefits 2x2 grid matching reference */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-stone-900">Services and benefits</h4>
-                <div className="rounded-2xl border border-stone-200/90 bg-stone-50/60 p-4">
-                  <div className="grid grid-cols-2 gap-y-3.5 gap-x-4 text-xs text-stone-700">
-                    <div className="flex items-center gap-2.5">
-                      <Truck className="w-4 h-4 text-stone-900 shrink-0" />
-                      <span className="font-medium text-stone-800">Fast, Free Shipping</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <ShieldCheck className="w-4 h-4 text-stone-900 shrink-0" />
-                      <span className="font-medium text-stone-800">100% Charcoal-Free</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <CreditCard className="w-4 h-4 text-stone-900 shrink-0" />
-                      <span className="font-medium text-stone-800">Lowest Price Guarantee</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <ShieldCheck className="w-4 h-4 text-stone-900 shrink-0" />
-                      <span className="font-medium text-stone-800">Mysore Artisan Crafted</span>
+              {!isTurtleHolder && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold text-stone-900">Services and benefits</h4>
+                  <div className="rounded-2xl border border-stone-200/90 bg-stone-50/60 p-4">
+                    <div className="grid grid-cols-2 gap-y-3.5 gap-x-4 text-xs text-stone-700">
+                      <div className="flex items-center gap-2.5">
+                        <Truck className="w-4 h-4 text-stone-900 shrink-0" />
+                        <span className="font-medium text-stone-800">Fast, Free Shipping</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <ShieldCheck className="w-4 h-4 text-stone-900 shrink-0" />
+                        <span className="font-medium text-stone-800">100% Charcoal-Free</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <CreditCard className="w-4 h-4 text-stone-900 shrink-0" />
+                        <span className="font-medium text-stone-800">Lowest Price Guarantee</span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <ShieldCheck className="w-4 h-4 text-stone-900 shrink-0" />
+                        <span className="font-medium text-stone-800">Mysore Artisan Crafted</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
                             {/* Dual Action CTAs matching reference layout */}
               <div className="space-y-2 pt-1">
@@ -964,11 +994,13 @@ export default function ProductDetailPage() {
                   </button>
 
                   <div className="relative w-full">
-                    <div className="absolute -top-2.5 right-2 sm:right-4 z-10 pointer-events-none">
-                      <span className="bg-emerald-600 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs whitespace-nowrap">
-                        EASY UPI
-                      </span>
-                    </div>
+                    {!hidePromotionalElements && (
+                      <div className="absolute -top-2.5 right-2 sm:right-4 z-10 pointer-events-none">
+                        <span className="bg-emerald-600 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs whitespace-nowrap">
+                          EASY UPI
+                        </span>
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => {

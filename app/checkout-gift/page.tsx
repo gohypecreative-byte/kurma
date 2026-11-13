@@ -11,9 +11,6 @@ import { formatPrice } from "@/lib/products";
 import {
   ShieldCheck,
   CheckCircle2,
-  ArrowRight,
-  Lock,
-  Gift,
   Truck,
   Tag,
   ChevronRight,
@@ -363,10 +360,6 @@ function CheckoutGiftContent() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Page Title */}
         <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-[0.22em] text-[#8b5f10] uppercase">
-            <Gift className="w-4 h-4 text-[#8b5f10]" />
-            <span>SACRED GIFT CHECKOUT</span>
-          </div>
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1C1B18] font-normal tracking-tight">
             Complete Your Gift Hamper
           </h1>
@@ -490,14 +483,6 @@ function CheckoutGiftContent() {
                         className="w-full px-3.5 py-2.5 bg-[#FAF8F5] border border-stone-200 rounded-xl text-xs sm:text-sm focus:border-[#8b5f10] focus:outline-hidden font-sans"
                       />
                     </div>
-                  </div>
-
-                  {/* Delivery Instruction Badge */}
-                  <div className="p-3 rounded-xl bg-[#FAF5E9] border border-stone-200/70 flex items-start gap-2.5">
-                    <Gift className="w-4 h-4 text-[#8b5f10] shrink-0 mt-0.5" />
-                    <p className="text-xs text-stone-600 leading-relaxed font-sans">
-                      <strong className="text-stone-900">Discrete Gift Packaging:</strong> All prices and invoices are omitted from the recipient package and emailed strictly to the sender.
-                    </p>
                   </div>
                 </div>
               </div>
@@ -650,11 +635,6 @@ function CheckoutGiftContent() {
                     </div>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2 pt-2 text-[11px] text-stone-500">
-                  <Lock className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>256-Bit Encrypted Sacred Checkout • Certified Secure Gateway</span>
-                </div>
               </div>
             </form>
           </div>
@@ -679,9 +659,6 @@ function CheckoutGiftContent() {
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[9.5px] uppercase tracking-wider font-bold text-[#8b5f10] bg-[#eed08e]/30 px-2 py-0.5 rounded-full inline-block mb-0.5">
-                      Selected Box
-                    </span>
                     <h4 className="font-serif text-sm font-bold text-stone-900 truncate">
                       {hamper.box.title}
                     </h4>
@@ -855,7 +832,6 @@ function CheckoutGiftContent() {
                 className="w-full py-3.5 sm:py-4 px-6 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs sm:text-sm font-bold uppercase tracking-[0.15em] shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99] whitespace-nowrap"
               >
                 <span>Place Order</span>
-                <ArrowRight className="w-4 h-4 text-[#eed08e]" />
               </button>
 
               <div className="flex items-center justify-center gap-3 text-[10.5px] text-stone-500 pt-1">

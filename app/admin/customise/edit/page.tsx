@@ -19,7 +19,6 @@ import {
   Save,
   AlertCircle,
   Eye,
-  SlidersHorizontal,
   Search,
   RotateCcw,
 } from "lucide-react";
@@ -463,16 +462,6 @@ function BoxEditorInner() {
                 <span className="font-serif font-bold text-base sm:text-lg text-[#072515]">
                   Edit Customise Box
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#072515] text-[#eed08e]">
-                  Admin Only
-                </span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                    active ? "bg-emerald-100 text-emerald-800" : "bg-stone-200 text-stone-600"
-                  }`}
-                >
-                  {active ? "Live on Storefront" : "Hidden from Patrons"}
-                </span>
               </div>
               <p className="text-[11px] text-black/55 font-mono">
                 Box ID: {boxId} • Step 1 Customer Packaging
@@ -626,14 +615,8 @@ function BoxEditorInner() {
 
             {/* CARD 2: CAPACITY & PRICING RULES */}
             <div className="rounded-2xl border border-black/10 bg-white p-5 sm:p-6 shadow-xs space-y-4">
-              <div className="flex items-center gap-2 border-b border-black/10 pb-3">
-                <div className="size-7 rounded-lg bg-[#072515]/5 border border-black/10 flex items-center justify-center text-[#072515]">
-                  <SlidersHorizontal className="size-4" />
-                </div>
-                <div>
-                  <h2 className="font-serif font-bold text-sm text-[#072515]">Capacity, Dimensions &amp; Pricing</h2>
-                  <p className="text-[11px] text-black/50">Configure hamper volume limits and base packaging charges</p>
-                </div>
+              <div className="border-b border-black/10 pb-3">
+                <h2 className="font-serif font-bold text-sm text-[#072515]">Capacity, Dimensions &amp; Pricing</h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -943,14 +926,8 @@ function BoxEditorInner() {
             </div>
 
             {/* CARD 7: SAVE ACTIONS */}
-            <div className="rounded-2xl border border-black/10 bg-[#072515] p-5 text-[#FAF8F5] shadow-md space-y-3">
-              <span className="text-[10px] uppercase font-bold text-[#eed08e] tracking-wider block">
-                Save &amp; Publish
-              </span>
-              <p className="text-xs text-white/75 leading-relaxed">
-                Saving updates the catalog stored in atelier memory. Changes are live on `/elements` customizer immediately.
-              </p>
-              <div className="pt-2 flex flex-col gap-2">
+            <div className="rounded-2xl border border-black/10 bg-[#072515] p-5 text-[#FAF8F5] shadow-md">
+              <div className="flex flex-col gap-2">
                 <button
                   type="submit"
                   disabled={isSaving}

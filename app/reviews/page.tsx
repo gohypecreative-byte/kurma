@@ -102,7 +102,6 @@ const INITIAL_REVIEWS: Review[] = [
 
 export default function ReviewsPage() {
   const { cartCount, setIsCartOpen } = useCart();
-  const [activeCategory, setActiveCategory] = useState<string>("all");
   const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -115,34 +114,7 @@ export default function ReviewsPage() {
   const [formContent, setFormContent] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const filteredReviews = useMemo(() => {
-    if (activeCategory === "all") return reviews;
-    return reviews.filter((r) => r.category === activeCategory);
-  }, [reviews, activeCategory]);
-
-  const categories = [
-    { id: "all", label: "All Reviews", count: reviews.length },
-    {
-      id: "trunks",
-      label: "Heirloom Trunks",
-      count: reviews.filter((r) => r.category === "trunks").length,
-    },
-    {
-      id: "elements",
-      label: "The 5 Elements",
-      count: reviews.filter((r) => r.category === "elements").length,
-    },
-    {
-      id: "brass",
-      label: "Brass Craftsmanship",
-      count: reviews.filter((r) => r.category === "brass").length,
-    },
-    {
-      id: "gifting",
-      label: "Bespoke Gifting",
-      count: reviews.filter((r) => r.category === "gifting").length,
-    },
-  ];
+  const filteredReviews = reviews;
 
   const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,9 +152,6 @@ export default function ReviewsPage() {
       <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 space-y-12 sm:space-y-16">
         {/* Header & Overall Ratings Hero */}
         <section className="text-center space-y-5 max-w-3xl mx-auto pt-2">
-          <span className="text-xs font-cinzel font-semibold tracking-[0.24em] text-stone-400 uppercase">
-            Collector Testimonials
-          </span>
           <h1 className="text-3xl sm:text-5xl font-serif text-stone-900 font-normal tracking-tight">
             Loved by Connoisseurs
           </h1>
@@ -225,26 +194,6 @@ export default function ReviewsPage() {
           </div>
         </section>
 
-        {/* Filter Underline Tabs */}
-        <div className="flex items-center overflow-x-auto no-scrollbar justify-start sm:justify-center gap-3 sm:gap-6 md:gap-8 py-2 text-xs font-cinzel tracking-wider border-b border-stone-200/60 px-2">
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`pb-1.5 transition-all whitespace-nowrap cursor-pointer uppercase shrink-0 ${
-                  isActive
-                    ? "text-stone-900 border-b-2 border-stone-900 font-semibold"
-                    : "text-stone-400 hover:text-stone-800 font-normal"
-                }`}
-              >
-                {cat.label} ({cat.count})
-              </button>
-            );
-          })}
-        </div>
-
         {/* Review Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
           {filteredReviews.map((rev) => (
@@ -253,19 +202,11 @@ export default function ReviewsPage() {
               className="bg-white rounded-2xl border border-stone-200/80 p-6 flex flex-col justify-between space-y-4 shadow-2xs hover:shadow-md transition-shadow"
             >
               <div className="space-y-3">
-                {/* Rating & Verified Badge */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    ))}
-                  </div>
-                  {rev.verified && (
-                    <span className="inline-flex items-center gap-1 text-[10.5px] font-sans text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">
-                      <CheckCircle className="w-3 h-3" />
-                      Verified Patron
-                    </span>
-                  )}
+                {/* Rating */}
+                <div className="flex items-center gap-1 text-amber-500">
+                  {[...Array(rev.rating)].map((_, i) => (
+                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
 
                 {/* Review Title */}
@@ -279,18 +220,12 @@ export default function ReviewsPage() {
                 </p>
               </div>
 
-              {/* Author & Product Meta */}
-              <div className="pt-3 border-t border-stone-100 flex items-end justify-between text-xs">
-                <div>
-                  <p className="font-medium text-stone-900">
-                    {rev.author}
-                    <span className="text-stone-400 font-normal">, {rev.location}</span>
-                  </p>
-                  <p className="text-[11px] text-[#9B783E] font-cinzel mt-0.5 truncate max-w-[200px]">
-                    {rev.productName}
-                  </p>
-                </div>
-                <span className="text-[11px] text-stone-400 font-sans">{rev.date}</span>
+              {/* Author Meta */}
+              <div className="pt-3 border-t border-stone-100 text-xs">
+                <p className="font-medium text-stone-900">
+                  {rev.author}
+                  <span className="text-stone-400 font-normal">, {rev.location}</span>
+                </p>
               </div>
             </div>
           ))}

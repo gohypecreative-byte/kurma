@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, phone, password } = body;
+    const { name, email, phone, password, city, tier } = body;
 
     if (!email || !name) {
       return NextResponse.json(
@@ -27,19 +28,28 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create user in Neon DB
+    // Hash the password securely using bcryptjs (salt rounds: 10) before saving
+    let hashedPassword: string | null = null;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    // Create user record in database with only the hashed password
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
         email: cleanEmail,
         phone: phone?.trim() || null,
-        password: password || null,
+        password: hashedPassword,
+        city: city?.trim() || null,
+        tier: tier || "Patron",
         role: "PATRON",
         memberSince: new Date().toLocaleDateString("en-US", {
           month: "long",
           year: "numeric",
         }),
       },
+      // Never return the password or hashed password in API response
       select: {
         id: true,
         name: true,

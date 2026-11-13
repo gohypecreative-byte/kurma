@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
+import { notifyProductUpdated } from "@/lib/products-context";
 import {
   ArrowLeft,
   Upload,
@@ -191,8 +192,8 @@ function ProductEditorInner() {
     };
   }, [productId]);
 
-  // Handle Image File Upload (Reads as Data URL for immediate preview and saving)
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle Image File Upload (Stored in public/uploads with data URL fallback)
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -202,19 +203,33 @@ function ProductEditorInner() {
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        setImage(reader.result);
-        triggerToast("Image uploaded successfully!");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.success && data.url) {
+        setImage(data.url);
+        triggerToast("Image uploaded and stored successfully!");
+      } else {
+        throw new Error(data.error || "Upload failed");
       }
+    } catch {
+      // Fallback to client data URL
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setImage(reader.result);
+          triggerToast("Image loaded preview!");
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
       setIsUploading(false);
-    };
-    reader.onerror = () => {
-      triggerToast("Error reading image file.");
-      setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   // Drag and drop reordering handlers for atelier presets
@@ -292,7 +307,7 @@ function ProductEditorInner() {
   };
 
   // Drag and drop onto main product thumbnail
-  const handleThumbnailDrop = (e: React.DragEvent) => {
+  const handleThumbnailDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsThumbnailDragOver(false);
 
@@ -300,14 +315,33 @@ function ProductEditorInner() {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (typeof reader.result === "string") {
-            setImage(reader.result);
-            triggerToast("Thumbnail updated from dropped image file!");
+        setIsUploading(true);
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const res = await fetch("/api/admin/upload", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok && data.success && data.url) {
+            setImage(data.url);
+            triggerToast("Thumbnail uploaded and saved to uploads!");
+          } else {
+            throw new Error(data.error || "Upload failed");
           }
-        };
-        reader.readAsDataURL(file);
+        } catch {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === "string") {
+              setImage(reader.result);
+              triggerToast("Thumbnail updated from dropped image file!");
+            }
+          };
+          reader.readAsDataURL(file);
+        } finally {
+          setIsUploading(false);
+        }
       }
       return;
     }
@@ -334,7 +368,7 @@ function ProductEditorInner() {
     setDetails(details.filter((_, i) => i !== index));
   };
 
-  // Save changes to backend API and localStorage
+  // Save changes to backend API and database
   const handleSaveProduct = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!name.trim()) {
@@ -371,9 +405,10 @@ function ProductEditorInner() {
       localStorage.setItem("kurma_admin_products", JSON.stringify(updatedCatalog));
       localStorage.setItem("kurma_inventory_stock", JSON.stringify(updatedStockMap));
 
-      // Call backend API
+      // Call backend API to persist in Neon DB
+      let savedToDb = false;
       try {
-        await fetch("/api/admin/products", {
+        const res = await fetch("/api/admin/products", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -386,13 +421,25 @@ function ProductEditorInner() {
             stock: Number(stock),
             image,
             description: description.trim(),
+            details: details.length > 0 ? details : undefined,
           }),
         });
+        const resData = await res.json();
+        if (res.ok && resData.success) {
+          savedToDb = true;
+        } else {
+          console.warn("Backend API warning:", resData.error);
+        }
       } catch (apiErr) {
         console.warn("Failed to update product in Neon DB, saved locally", apiErr);
       }
 
-      triggerToast(`Saved "${name}" successfully!`);
+      notifyProductUpdated();
+      triggerToast(
+        savedToDb
+          ? `Saved "${name}" successfully to database & synced!`
+          : `Saved "${name}" successfully!`
+      );
       setTimeout(() => {
         setIsSaving(false);
         router.push("/admin?route=products");

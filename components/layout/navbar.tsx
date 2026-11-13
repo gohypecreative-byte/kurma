@@ -17,8 +17,10 @@ import {
   Package,
   ChevronRight,
   PhoneCall,
+  ShieldCheck,
 } from "lucide-react";
 import { PRODUCTS, formatPrice, ProductSKU } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 
 interface NavbarProps {
   cartCount: number;
@@ -29,6 +31,7 @@ interface NavbarProps {
 interface UserProfile {
   name: string;
   email: string;
+  role?: string;
 }
 
 export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
@@ -78,43 +81,31 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
     },
   ];
 
+  const { products, getProduct } = useProducts();
+
   const recommendedProducts = useMemo(() => {
-    const list: Array<ProductSKU & { displayImage?: string }> = [
-      {
-        ...PRODUCTS.find((p) => p.id === "turtle-incense-holder")!,
-        displayImage: "/images/product/turtle-holder-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
-        displayImage: "/images/product/suite-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "marble-gift-box")!,
-        displayImage: "/images/product/marble-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "fragrance-earth")!,
-        displayImage: "/images/product/earth-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "fragrance-water")!,
-        displayImage: "/images/product/water-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "fragrance-fire")!,
-        displayImage: "/images/product/fire-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "fragrance-air")!,
-        displayImage: "/images/product/air-portrait.jpg",
-      },
-      {
-        ...PRODUCTS.find((p) => p.id === "fragrance-space")!,
-        displayImage: "/images/product/space-portrait.jpg",
-      },
+    const defaultIds = [
+      { id: "turtle-incense-holder", img: "/images/product/turtle-holder-portrait.jpg" },
+      { id: "5-elements-suite", img: "/images/product/suite-portrait.jpg" },
+      { id: "marble-gift-box", img: "/images/product/marble-portrait.jpg" },
+      { id: "fragrance-earth", img: "/images/product/earth-portrait.jpg" },
+      { id: "fragrance-water", img: "/images/product/water-portrait.jpg" },
+      { id: "fragrance-fire", img: "/images/product/fire-portrait.jpg" },
+      { id: "fragrance-air", img: "/images/product/air-portrait.jpg" },
+      { id: "fragrance-space", img: "/images/product/space-portrait.jpg" },
     ];
-    return list.filter((p) => Boolean(p && p.id));
-  }, []);
+    const list: Array<ProductSKU & { displayImage?: string }> = [];
+    for (const item of defaultIds) {
+      const p = getProduct(item.id) || PRODUCTS.find((prod) => prod.id === item.id);
+      if (p) {
+        list.push({
+          ...p,
+          displayImage: p.image || item.img,
+        });
+      }
+    }
+    return list;
+  }, [getProduct]);
 
   useEffect(() => {
     if (searchOpen) {
@@ -137,6 +128,12 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
 
   // Auth User State
   const [user, setUser] = useState<UserProfile | null>(null);
+
+  const isAdmin =
+    user?.role === "ADMIN" ||
+    user?.email === "admin@kurmaluxury.com" ||
+    user?.email === "admin@kurma.com";
+  const userDisplayName = isAdmin ? "Admin" : (user?.name || "Patron");
 
   // Anti-bounce click timestamp and modal open timestamp refs
   // Guarantees zero double-firing from mobile touch/click synthesis
@@ -300,7 +297,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       return (
         p.name.toLowerCase().includes(q) ||
         p.subtitle.toLowerCase().includes(q) ||
@@ -310,7 +307,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
         p.elements?.some((el) => el.toLowerCase().includes(q))
       );
     }).slice(0, 6);
-  }, [searchQuery]);
+  }, [searchQuery, products]);
 
   // Quick search keywords
   const popularKeywords = [
@@ -347,6 +344,11 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   };
 
   const handleSignOut = () => {
+    if (isAdmin) {
+      try {
+        fetch("/api/auth/admin-session", { method: "POST" });
+      } catch {}
+    }
     localStorage.removeItem("kurma_user");
     setUser(null);
     setAccountMenuOpen(false);
@@ -455,14 +457,14 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                   <button
                     type="button"
                     onClick={handleToggleAccountMenu}
-                    aria-label={`Account menu for ${user.name}`}
+                    aria-label={`Account menu for ${userDisplayName}`}
                     className="h-10 sm:h-11 px-2.5 sm:px-3.5 shrink-0 rounded-full border border-[#1E1E1C] bg-[#1E1E1C] text-white hover:bg-[#33312D] active:bg-black flex items-center gap-1.5 sm:gap-2 transition-colors shadow-xs cursor-pointer touch-manipulation"
                   >
                     <div className="w-5 h-5 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center text-[10px] font-bold pointer-events-none">
-                      {user.name.charAt(0).toUpperCase()}
+                      {userDisplayName.charAt(0).toUpperCase()}
                     </div>
                     <span className="hidden md:inline text-xs font-semibold tracking-wide max-w-[90px] truncate pointer-events-none">
-                      {user.name.split(" ")[0]}
+                      {userDisplayName}
                     </span>
                   </button>
 
@@ -476,13 +478,26 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                       <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/90 py-2.5 z-40 animate-in fade-in zoom-in-95 duration-150 text-stone-900">
                         <div className="px-4 py-2 border-b border-stone-100">
                           <p className="text-xs font-bold truncate text-stone-900">
-                            {user.name}
+                            {userDisplayName}
                           </p>
                           <p className="text-[11px] text-stone-500 truncate">
                             {user.email}
                           </p>
                         </div>
                         <div className="py-1">
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAccountMenuOpen(false);
+                                router.push("/admin");
+                              }}
+                              className="w-full px-4 py-2 text-left text-xs font-semibold text-[#072515] hover:bg-[#FAF8F5] flex items-center gap-2 cursor-pointer transition-colors border-b border-stone-100"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5 text-[#c5a059] pointer-events-none" />
+                              <span>Admin Dashboard</span>
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => {
@@ -689,11 +704,11 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center text-xs font-bold">
-                              {user.name.charAt(0).toUpperCase()}
+                              {userDisplayName.charAt(0).toUpperCase()}
                             </div>
                             <div>
                               <p className="text-xs font-bold text-stone-900 truncate max-w-[160px]">
-                                {user.name}
+                                {userDisplayName}
                               </p>
                               <p className="text-[10px] text-stone-500 truncate max-w-[160px]">
                                 {user.email}
@@ -708,6 +723,20 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                             Sign Out
                           </button>
                         </div>
+
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              router.push("/admin");
+                            }}
+                            className="w-full py-2 px-3 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xs touch-manipulation"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#eed08e]" />
+                            <span>Open Admin Dashboard</span>
+                          </button>
+                        )}
 
                         <div className="grid grid-cols-2 gap-2 pt-0.5">
                           <button

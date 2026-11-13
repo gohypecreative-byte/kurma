@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const { searchParams } = new URL(req.url);
     const subview = searchParams.get("subview"); // "all" | "drafts" | "abandoned"
     const search = searchParams.get("search")?.toLowerCase();
@@ -83,6 +87,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const body = await req.json();
     const {
       customerName,
@@ -150,6 +157,9 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const body = await req.json();
     const { id, fulfillmentStatus, paymentStatus, courier, awb } = body;
 
@@ -185,6 +195,9 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const auth = await verifyAdminRequest(req);
+    if (!auth.authorized) return auth.response;
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 

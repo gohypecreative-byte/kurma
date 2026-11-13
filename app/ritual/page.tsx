@@ -83,9 +83,6 @@ export default function RitualPage() {
       <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 space-y-16 sm:space-y-20">
         {/* Editorial Hero */}
         <section className="text-center space-y-4 max-w-3xl mx-auto pt-2">
-          <span className="text-xs font-cinzel font-semibold tracking-[0.24em] text-stone-400 uppercase">
-            The Sacred Living Philosophy
-          </span>
           <h1 className="text-3xl sm:text-5xl font-serif text-stone-900 font-normal tracking-tight">
             The Art of the Sacred Ritual
           </h1>
@@ -100,9 +97,6 @@ export default function RitualPage() {
             <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
               The Four Stages of Lighting
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 font-sans max-w-md mx-auto">
-              Follow this mindful sequence to cultivate serenity and clarity in your home.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -130,9 +124,6 @@ export default function RitualPage() {
         {/* Botanical Purity Standards */}
         <section className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-8 md:p-12 lg:p-16 space-y-10">
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-            <span className="text-xs font-cinzel font-semibold tracking-widest text-[#9B783E] uppercase">
-              Uncompromising Quality
-            </span>
             <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
               Our Botanical Purity Oath
             </h2>

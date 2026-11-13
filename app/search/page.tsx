@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
 import { PRODUCTS, formatPrice } from "@/lib/products";
+import { useProducts } from "@/lib/products-context";
 import { Search, X, ChevronRight, Filter, ShoppingBag } from "lucide-react";
 
 function SearchContent() {
@@ -34,9 +35,11 @@ function SearchContent() {
     "Temple Flora",
   ];
 
+  const { products } = useProducts();
+
   const filteredProducts = useMemo(() => {
     const q = query.toLowerCase().trim();
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       const matchesCategory =
         selectedCategory === "all" || p.category === selectedCategory;
       if (!matchesCategory) return false;

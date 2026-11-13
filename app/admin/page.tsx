@@ -46,10 +46,13 @@ import {
   Percent,
   RefreshCw,
   Loader2,
+  LogOut,
 } from "lucide-react";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
+import { notifyProductUpdated } from "@/lib/products-context";
 import AdminAnalyticsDashboard from "@/components/admin/AdminAnalyticsDashboard";
 import AdminDiscountsSection, { CURATED_MASTER_DISCOUNTS } from "@/components/admin/AdminDiscountsSection";
+import { useAdminAuth } from "@/components/admin/AdminAuthGuard";
 
 // ============================================================================
 // DATA STRUCTURES & INTERFACES
@@ -758,6 +761,8 @@ const SALES_CHART_DATA = [
 // ============================================================================
 
 export default function AdminDashboardPage() {
+  const { adminUser, logout } = useAdminAuth();
+
   // Navigation State mirroring reference routes.ts:
   // "home" (overview) | "orders" | "products" | "customers" | "discounts" | "analytics"
   const [activeRoute, setActiveRoute] = useState<
@@ -1151,6 +1156,8 @@ export default function AdminDashboardPage() {
       console.warn("Failed to persist product to Neon DB", err);
     }
 
+    notifyProductUpdated();
+
     setCategories((prev) =>
       prev.map((cat) =>
         cat.title.toLowerCase().includes(newProductData.category.toLowerCase()) ||
@@ -1187,6 +1194,7 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.warn("Failed to delete product in Neon DB", err);
     }
+    notifyProductUpdated();
     triggerNotification(`Product "${name}" removed from catalog.`);
   };
 
@@ -1419,6 +1427,7 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.warn("Failed to update stock in Neon DB", err);
     }
+    notifyProductUpdated();
     triggerNotification(`Inventory updated for SKU ${sku} (${next} units)`);
   };
 
@@ -2049,13 +2058,20 @@ export default function AdminDashboardPage() {
           <div className="p-3 border-t border-black/10 bg-white">
             <div className="flex items-center gap-3 p-2 rounded-xl bg-black/[0.03] border border-black/5 hover:bg-black/[0.05] transition-colors">
               <div className="size-8 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                KA
+                A
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-black truncate">Kurma Admin</p>
-                <p className="text-[10px] text-black/50 truncate">admin@kurmaluxury.com</p>
+                <p className="text-xs font-semibold text-black truncate">Admin</p>
+                <p className="text-[10px] text-black/50 truncate">{adminUser?.email || "admin@kurmaluxury.com"}</p>
               </div>
-              <span className="size-2 rounded-full bg-emerald-500 ring-2 ring-white shrink-0" title="Online Sanctuary Sync" />
+              <button
+                type="button"
+                onClick={logout}
+                title="Sign Out of Atelier Administration"
+                className="p-1.5 rounded-lg text-black/45 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+              >
+                <LogOut className="size-3.5" />
+              </button>
             </div>
           </div>
         </aside>
@@ -2134,7 +2150,7 @@ export default function AdminDashboardPage() {
               <div className="relative flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h1 className="text-xl font-serif font-bold text-[#072515] tracking-tight">
-                    {greetingText}, Admin
+                    {greetingText}, {adminUser?.name ? adminUser.name.split(" ")[0] : "Admin"}
                   </h1>
                   <p className="mt-0.5 text-xs text-black/60">
                     Here&apos;s what&apos;s happening with your luxury Kurma sanctuary today.
@@ -3055,12 +3071,6 @@ export default function AdminDashboardPage() {
                   {/* Hero Banner linking to full dedicated page */}
                   <div className="overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-xs sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#072515] text-[#eed08e]">
-                          Bespoke Studio
-                        </span>
-                        <span className="text-xs text-black/50 font-medium">Powering /elements frontend</span>
-                      </div>
                       <h2 className="text-base font-bold text-[#072515] font-serif">
                         Customise Gift Studio &amp; Keepsake Packaging
                       </h2>
@@ -3107,9 +3117,6 @@ export default function AdminDashboardPage() {
                       <span className="text-lg font-serif font-bold text-[#072515] mt-1 block">
                         {customBoxes.length} Trunks ({customBoxes.filter((b) => b.active !== false).length} Active)
                       </span>
-                      <span className="text-[11px] text-emerald-700 font-semibold mt-0.5 block">
-                        Editable Exclusively by Admin
-                      </span>
                     </div>
 
                     <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
@@ -3117,7 +3124,6 @@ export default function AdminDashboardPage() {
                         Curated Goodies Library
                       </span>
                       <span className="text-lg font-serif font-bold text-[#072515] mt-1 block">14 Items</span>
-                      <span className="text-[11px] text-black/55 mt-0.5 block">Candles, Flora, Brass &amp; Silk</span>
                     </div>
 
                     <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
@@ -3125,7 +3131,6 @@ export default function AdminDashboardPage() {
                         Brass Plaque Monogram
                       </span>
                       <span className="text-lg font-serif font-bold text-[#072515] mt-1 block">Active (+₹350)</span>
-                      <span className="text-[11px] text-[#c89e43] font-semibold mt-0.5 block">Max 24 Characters</span>
                     </div>
 
                     <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
@@ -3133,7 +3138,6 @@ export default function AdminDashboardPage() {
                         Storefront Status
                       </span>
                       <span className="text-lg font-serif font-bold text-emerald-800 mt-1 block">Live on /elements</span>
-                      <span className="text-[11px] text-black/55 mt-0.5 block">Synchronized with Admin Edits</span>
                     </div>
                   </div>
 
@@ -3141,14 +3145,9 @@ export default function AdminDashboardPage() {
                   <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-xs">
                     <div className="p-4 border-b border-black/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-xs font-bold uppercase tracking-wider text-[#072515]">
-                            Customise Gift Trunks &amp; Packaging ({filteredCustomBoxes.length})
-                          </h3>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#eed08e]/20 text-[#072515]">
-                            Admin Editable
-                          </span>
-                        </div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-[#072515]">
+                          Customise Gift Trunks &amp; Packaging ({filteredCustomBoxes.length})
+                        </h3>
                         <p className="text-[11px] text-black/55 mt-0.5">
                           Click &quot;Edit Box&quot; to change prices, slot capacities, title, dimensions, or upload images.
                         </p>
@@ -3782,13 +3781,48 @@ export default function AdminDashboardPage() {
                     </button>
                   ))}
                 </div>
-                <input
-                  type="text"
-                  placeholder="Or enter custom image path (e.g. /images/product/custom.png)"
-                  value={newProductData.image}
-                  onChange={(e) => setNewProductData({ ...newProductData, image: e.target.value })}
-                  className="w-full px-3 py-1.5 rounded-lg border border-black/20 outline-none focus:border-[#072515] text-xs"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter image URL/path or click Upload..."
+                    value={newProductData.image}
+                    onChange={(e) => setNewProductData({ ...newProductData, image: e.target.value })}
+                    className="flex-1 px-3 py-1.5 rounded-lg border border-black/20 outline-none focus:border-[#072515] text-xs"
+                  />
+                  <label className="cursor-pointer inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-black/20 hover:border-black/40 text-xs font-semibold text-stone-700 bg-stone-50 hover:bg-stone-100 transition shrink-0">
+                    <Upload className="size-3.5" /> Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const formData = new FormData();
+                          formData.append("file", file);
+                          const res = await fetch("/api/admin/upload", {
+                            method: "POST",
+                            body: formData,
+                          });
+                          const data = await res.json();
+                          if (res.ok && data.success && data.url) {
+                            setNewProductData((prev) => ({ ...prev, image: data.url }));
+                            triggerNotification("Image uploaded and stored successfully!");
+                          }
+                        } catch {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            if (typeof reader.result === "string") {
+                              setNewProductData((prev) => ({ ...prev, image: reader.result as string }));
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div>

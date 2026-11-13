@@ -8,36 +8,15 @@ export default function ShippingPolicyPage() {
       title="Shipping & Delivery"
       titleHighlight="Policy"
       subtitle="White-glove handling, shock-proof heirloom packaging, and express nationwide transit from our atelier to your sanctuary."
-      lastUpdated="October 2026"
+      hideBadge
+      hideLastUpdated
+      hideBreadcrumb
     >
       <article className="space-y-6 text-stone-700 font-sans text-xs sm:text-sm leading-relaxed">
         <div className="border-b border-stone-100 pb-4">
-          <span className="text-[10px] font-sans uppercase tracking-widest text-[#8b5f10] font-bold block mb-1">
-            Section 3 • Dispatch &amp; Transit Logistics
-          </span>
           <h2 className="font-serif text-2xl sm:text-3xl font-medium text-stone-900">
             Shipping &amp; Delivery Policy
           </h2>
-        </div>
-
-        {/* Highlight Feature Badges */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-2xl bg-[#fbf6ea] border border-[#eed08e]/40 space-y-1">
-            <span className="text-[11px] font-bold text-[#8b5f10] uppercase tracking-wider block">
-              Free Express Shipping
-            </span>
-            <p className="text-xs text-stone-700 font-medium">
-              Complimentary air courier on all retail orders above ₹1,999 across India.
-            </p>
-          </div>
-          <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-1">
-            <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">
-              Pan-India Coverage
-            </span>
-            <p className="text-xs text-stone-700 font-medium">
-              Servicing 18,000+ pincodes via BlueDart Air, Delhivery &amp; DTDC.
-            </p>
-          </div>
         </div>
 
         <div className="space-y-3">
