@@ -179,6 +179,7 @@ const OCCASIONS_ITEMS = [
     title: "Wedding & Festive Gifting",
     description: "Return gifts & luxury festive suites.",
     tags: ["Return Gifts", "Bulk Orders", "Wedding Suites"],
+    productId: "fragrance-earth",
     image: "/images/product/earth-portrait.jpg",
     images: [
       "/images/product/earth-portrait.jpg",
@@ -193,6 +194,7 @@ const OCCASIONS_ITEMS = [
     title: "Corporate & Executive Suites",
     description: "Executive hampers & client appreciation.",
     tags: ["Diwali Hampers", "Branded Trunks", "Bulk Gifting"],
+    productId: "fragrance-fire",
     image: "/images/product/fire-portrait.jpg",
     images: [
       "/images/product/fire-portrait.jpg",
@@ -207,6 +209,7 @@ const OCCASIONS_ITEMS = [
     title: "Custom & Bespoke Rituals",
     description: "Bespoke curation & custom brass seals.",
     tags: ["Build Yours", "Brass Engraving", "Custom Blends"],
+    productId: "fragrance-water",
     image: "/images/product/water-portrait.jpg",
     images: [
       "/images/product/water-portrait.jpg",
@@ -221,6 +224,7 @@ const OCCASIONS_ITEMS = [
     title: "Sacred Celebrations",
     description: "Sacred puja rituals & celebrations.",
     tags: ["Griha Pravesh", "Puja Rituals", "Anniversary"],
+    productId: "fragrance-space",
     image: "/images/product/space-portrait.jpg",
     images: [
       "/images/product/space-portrait.jpg",
@@ -235,6 +239,7 @@ const OCCASIONS_ITEMS = [
     title: "Griha Pravesh & Sanctum Blessing",
     description: "Auspicious purification for new homes.",
     tags: ["New Home", "Vastu Shanti", "Auspicious"],
+    productId: "fragrance-air",
     image: "/images/product/air-portrait.jpg",
     images: [
       "/images/product/air-portrait.jpg",
@@ -249,6 +254,7 @@ const OCCASIONS_ITEMS = [
     title: "Deepawali & Grand Festivities",
     description: "Heirloom suites for grand festivities.",
     tags: ["Diwali Suites", "Royal Packaging", "Bulk Festive"],
+    productId: "marble-gift-box",
     image: "/images/product/marble-portrait.jpg",
     images: [
       "/images/product/marble-portrait.jpg",
@@ -263,6 +269,7 @@ const OCCASIONS_ITEMS = [
     title: "Anniversary & Heirloom Keepsakes",
     description: "Milestone keepsakes & engraved brassware.",
     tags: ["Heirloom Brass", "Engraved Keepsake", "Timeless"],
+    productId: "mdf-gift-box",
     image: "/images/product/trunk-portrait.jpg",
     images: [
       "/images/product/trunk-portrait.jpg",
@@ -277,6 +284,7 @@ const OCCASIONS_ITEMS = [
     title: "Wellness & Dhyana Rituals",
     description: "Calming scents for mindfulness & dhyana.",
     tags: ["Yoga Sanctuaries", "Meditation", "Ayurvedic"],
+    productId: "turtle-incense-holder",
     image: "/images/product/turtle-holder-portrait.jpg",
     images: [
       "/images/product/turtle-holder-portrait.jpg",
@@ -474,6 +482,23 @@ function BestsellerCard({
   );
 }
 
+function getOccasionTargetProductId(defaultProductId: string, currentImg?: string): string {
+  if (currentImg) {
+    const lower = currentImg.toLowerCase();
+    if (lower.includes("earth")) return "fragrance-earth";
+    if (lower.includes("fire")) return "fragrance-fire";
+    if (lower.includes("water")) return "fragrance-water";
+    if (lower.includes("space")) return "fragrance-space";
+    if (lower.includes("air")) return "fragrance-air";
+    if (lower.includes("turtle")) return "turtle-incense-holder";
+    if (lower.includes("marble") || lower.includes("image9")) return "marble-gift-box";
+    if (lower.includes("trunk") || lower.includes("mdf")) return "mdf-gift-box";
+    if (lower.includes("suite") || lower.includes("five-boxes") || lower.includes("image7")) return "5-elements-suite";
+    if (lower.includes("medallion")) return "brass-medallion";
+  }
+  return defaultProductId;
+}
+
 function OccasionCard({
   item,
   isLiked,
@@ -487,10 +512,11 @@ function OccasionCard({
   const [activeIdx, setActiveIdx] = useState(0);
   const images = item.images && item.images.length > 0 ? item.images : [item.image];
   const currentImg = images[activeIdx] || item.image;
+  const targetProductId = getOccasionTargetProductId(item.productId, currentImg);
 
   return (
     <div
-      onClick={() => router.push(`/contact?inquiry=${encodeURIComponent(item.title)}`)}
+      onClick={() => router.push(`/products/${targetProductId}`)}
       className="flex-shrink-0 w-[84%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(25%-0.9375rem)] snap-start transition-all duration-300 flex flex-col justify-between group cursor-pointer select-none"
     >
       <div>

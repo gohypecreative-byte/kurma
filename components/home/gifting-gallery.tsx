@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { Eye, ShoppingBag, Check, X, ArrowRight, Gift, Bookmark, SlidersHorizontal, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, ShoppingBag, Check, X, ArrowRight, Bookmark, SlidersHorizontal, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
 export interface HamperItem {
@@ -415,6 +416,30 @@ export function GiftingGallery() {
   const [selectedHamper, setSelectedHamper] = useState<HamperItem | null>(null);
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const [likedIds, setLikedIds] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and close on Escape key when modal is open
+  useEffect(() => {
+    if (!selectedHamper) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedHamper(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedHamper]);
 
   const toggleWishlist = (id: string) => {
     setLikedIds((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -436,6 +461,110 @@ export function GiftingGallery() {
       setAddedIds((prev) => ({ ...prev, [hamper.id]: false }));
     }, 2000);
   };
+
+  const modalContent = (
+    <AnimatePresence>
+      {selectedHamper && (
+        <div
+          onClick={() => setSelectedHamper(null)}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 md:p-6 lg:p-8 bg-stone-950/65 backdrop-blur-sm overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-label={selectedHamper.name}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 16 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl sm:rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#E2D6C3] relative flex flex-col md:flex-row max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-3.5rem)] md:max-h-[min(84vh,680px)] min-h-0 my-auto -translate-y-2 sm:-translate-y-4 md:-translate-y-6 lg:-translate-y-8"
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setSelectedHamper(null)}
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-black flex items-center justify-center shadow-md transition-all cursor-pointer border border-stone-200"
+              aria-label="Close details popup"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+
+            {/* Modal Image with Pure White Background */}
+            <div className="relative w-full md:w-[45%] lg:w-1/2 h-44 sm:h-56 md:h-auto min-h-0 shrink-0 bg-white flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-[#E2D6C3]/60">
+              <Image
+                src={selectedHamper.image}
+                alt={selectedHamper.name}
+                fill
+                unoptimized
+                className="w-full h-full object-contain p-4 sm:p-6 md:p-8"
+                sizes="(max-width: 768px) 100vw, 400px"
+              />
+            </div>
+
+            {/* Modal Details */}
+            <div className="p-5 sm:p-6 md:p-7 lg:p-8 w-full md:w-[55%] lg:w-1/2 flex flex-col justify-between overflow-y-auto min-h-0 scrollbar-thin">
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-serif text-xl sm:text-2xl text-[#1C1B18] font-medium leading-tight">
+                  {selectedHamper.name}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                  {selectedHamper.description}
+                </p>
+              </div>
+
+              {/* Pricing & Cart Action */}
+              <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-stone-100 flex items-center justify-between gap-3 shrink-0">
+                <div>
+                  <span className="text-[10px] sm:text-xs text-stone-400 block font-medium">Total Suite Price</span>
+                  <div className="flex items-baseline gap-1.5 sm:gap-2">
+                    <span className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18]">
+                      {selectedHamper.priceDisplay}
+                    </span>
+                    {selectedHamper.originalPrice && (
+                      <span className="text-xs text-stone-400 line-through">
+                        {selectedHamper.originalPrice}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetId = selectedHamper.skuId || selectedHamper.id;
+                      setSelectedHamper(null);
+                      router.push(`/elements?box=${targetId}`);
+                    }}
+                    className="bg-stone-100 hover:bg-stone-200 text-stone-800 py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl sm:rounded-2xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    title="Customise this hamper"
+                  >
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#c0881b]" />
+                    <span>Customise</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleAddToCart(selectedHamper);
+                      setSelectedHamper(null);
+                    }}
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#1E1E1C] text-white hover:bg-[#33312D] active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer shrink-0"
+                    title="Add to Bag"
+                    aria-label="Add to Bag"
+                  >
+                    <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <section id="gifting-gallery" className="bg-[#ECE4D8] py-16 sm:py-20 px-4 sm:px-6 md:px-8 lg:py-24 border-t border-b border-[#DDD3C2] text-[#1C1B18] w-full mobile-defer-render">
@@ -462,114 +591,12 @@ export function GiftingGallery() {
             />
           ))}
         </div>
-
-
       </div>
 
-      {/* Quick View Modal */}
-      <AnimatePresence>
-        {selectedHamper && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-stone-900/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#E2D6C3] relative flex flex-col md:flex-row max-h-[90vh]"
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedHamper(null)}
-                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/80 hover:bg-white text-stone-700 flex items-center justify-center shadow transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              {/* Modal Image with Pure White Background */}
-              <div className="relative w-full md:w-1/2 aspect-square md:aspect-auto bg-white flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-[#E2D6C3]/60">
-                <Image
-                  src={selectedHamper.image}
-                  alt={selectedHamper.name}
-                  fill
-                  unoptimized
-                  className="w-full h-full object-contain p-6 sm:p-8"
-                />
-              </div>
-
-              {/* Modal Details */}
-              <div className="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-between overflow-y-auto">
-                <div>
-                  <h3 className="font-serif text-2xl text-[#1C1B18] font-medium leading-tight">
-                    {selectedHamper.name}
-                  </h3>
-
-                  <p className="mt-2 text-sm text-stone-600 leading-relaxed">
-                    {selectedHamper.description}
-                  </p>
-
-                  {/* Included Items Checklist */}
-                  <div className="mt-6">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8C6215] mb-3 flex items-center gap-1.5">
-                      <Gift className="w-3.5 h-3.5" />
-                      <span>Handcrafted Box Inclusions</span>
-                    </h4>
-                    <ul className="space-y-2">
-                      {selectedHamper.inclusions.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-xs text-stone-700">
-                          <Check className="w-4 h-4 text-[#7A5A28] shrink-0 mt-0.5" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Pricing & Cart Action */}
-                <div className="mt-8 pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
-                  <div>
-                    <span className="text-xs text-stone-400 block">Total Suite Price</span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-serif text-2xl font-bold text-[#1C1B18]">
-                        {selectedHamper.priceDisplay}
-                      </span>
-                      {selectedHamper.originalPrice && (
-                        <span className="text-xs text-stone-400 line-through">
-                          {selectedHamper.originalPrice}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        const targetId = selectedHamper.skuId || selectedHamper.id;
-                        setSelectedHamper(null);
-                        router.push(`/elements?box=${targetId}`);
-                      }}
-                      className="bg-stone-100 hover:bg-stone-200 text-stone-800 py-3 px-4 rounded-2xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                      title="Customise this hamper"
-                    >
-                      <SlidersHorizontal className="w-3.5 h-3.5 text-[#c0881b]" />
-                      <span>Customise</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        handleAddToCart(selectedHamper);
-                        setSelectedHamper(null);
-                      }}
-                      className="bg-[#1E1E1C] text-white hover:bg-[#33312D] py-3 px-5 rounded-2xl text-xs font-semibold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-                    >
-                      <ShoppingBag className="w-4 h-4" />
-                      <span>Add to Bag</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Quick View Modal rendered via Portal to escape any containing blocks */}
+      {mounted && typeof document !== "undefined"
+        ? createPortal(modalContent, document.body)
+        : modalContent}
     </section>
   );
 }

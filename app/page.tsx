@@ -61,7 +61,7 @@ export default function Home() {
           {/* Overlapping Content Stack - Smoothly slides up and completely covers hero, then normal scroll continues */}
           <div
             id="home-content-stack"
-            className="relative z-10 bg-[#FAF7F2] shadow-[0_-20px_50px_rgba(28,27,24,0.12)] border-t border-[#EAE3D8] transform-gpu [transform:translate3d(0,0,0)] will-change-transform"
+            className="relative z-10 bg-[#FAF7F2] shadow-[0_-20px_50px_rgba(28,27,24,0.12)] border-t border-[#EAE3D8]"
           >
             {/* Promo Banner Slider Section */}
             <PromoBanner
