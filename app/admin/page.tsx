@@ -29,6 +29,7 @@ import {
   Truck,
   CreditCard,
   ExternalLink,
+  Copy,
   Tag,
   FolderTree,
   Boxes,
@@ -79,12 +80,22 @@ export interface AdminOrder {
   itemsCount: number;
   items: OrderItem[];
   totalAmount: number;
-  paymentMethod: "UPI" | "Card" | "Net Banking" | "Cash on Delivery";
-  paymentStatus: "Paid" | "Pending";
-  fulfillmentStatus: "Unfulfilled" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
-  channel: "Kurma Sanctuary" | "Direct Atelier" | "Corporate Concierge";
+  paymentMethod: "UPI" | "Card" | "Net Banking" | "Cash on Delivery" | string;
+  paymentStatus: "Paid" | "Pending" | "Refunded" | string;
+  fulfillmentStatus:
+    | "Unfulfilled"
+    | "Confirmed"
+    | "Processing"
+    | "Shipped"
+    | "Out for Delivery"
+    | "Delivered"
+    | "Cancelled"
+    | string;
+  channel: "Kurma Sanctuary" | "Direct Atelier" | "Corporate Concierge" | string;
   courier: string;
   awb: string;
+  estimatedDate?: string;
+  notes?: string;
   personalization: {
     recipientName: string;
     senderName: string;
@@ -770,7 +781,7 @@ export default function AdminDashboardPage() {
   >("home");
 
   // Sub-routes mirroring routes.ts
-  const [ordersSubView, setOrdersSubView] = useState<"all" | "drafts" | "abandoned">("all");
+  const [ordersSubView, setOrdersSubView] = useState<"all" | "tracking" | "drafts" | "abandoned">("all");
   const [productsSubView, setProductsSubView] = useState<"all" | "customise" | "inventory" | "categories">("all");
   const [analyticsSubView, setAnalyticsSubView] = useState<"overview" | "reports">("overview");
 
@@ -1054,7 +1065,7 @@ export default function AdminDashboardPage() {
           }
         } else if (r && ["home", "orders", "customers", "discounts", "analytics"].includes(r)) {
           setActiveRoute(r as any);
-          if (r === "orders" && sub && ["all", "drafts", "abandoned"].includes(sub)) {
+          if (r === "orders" && sub && ["all", "tracking", "drafts", "abandoned"].includes(sub)) {
             setOrdersSubView(sub as any);
           }
         }
@@ -1075,8 +1086,39 @@ export default function AdminDashboardPage() {
   const [customerSearchQuery, setCustomerSearchQuery] = useState("");
   const [discountSearchQuery, setDiscountSearchQuery] = useState("");
 
-  // Modals
+  // Modals & Consignment Tracking State
   const [inspectOrder, setInspectOrder] = useState<AdminOrder | null>(null);
+  const [trackingForm, setTrackingForm] = useState({
+    fulfillmentStatus: "Processing",
+    paymentStatus: "Paid",
+    courier: "BlueDart Express",
+    awb: "",
+    estimatedDate: "",
+    notes: "",
+  });
+  const [copiedAwb, setCopiedAwb] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, id: string) => {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedAwb(id);
+      setTimeout(() => setCopiedAwb(null), 2000);
+      triggerNotification(`Copied AWB "${text}" to clipboard`);
+    }
+  };
+
+  const openInspectOrder = (ord: AdminOrder) => {
+    setInspectOrder(ord);
+    setTrackingForm({
+      fulfillmentStatus: ord.fulfillmentStatus || "Processing",
+      paymentStatus: ord.paymentStatus || "Paid",
+      courier: ord.courier || "BlueDart Express",
+      awb: ord.awb || "",
+      estimatedDate: ord.estimatedDate || "Within 2-3 business days",
+      notes: ord.notes || "",
+    });
+  };
+
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
@@ -1238,6 +1280,7 @@ export default function AdminDashboardPage() {
       // Sub-view filtering
       if (ordersSubView === "drafts" && !ord.isDraft) return false;
       if (ordersSubView === "abandoned" && !ord.isAbandoned) return false;
+      if (ordersSubView === "tracking" && (ord.isDraft || ord.isAbandoned)) return false;
       if (ordersSubView === "all" && (ord.isDraft || ord.isAbandoned)) return false;
 
       // Status filtering
@@ -1245,6 +1288,7 @@ export default function AdminDashboardPage() {
         if (orderStatusFilter === "Paid" && ord.paymentStatus !== "Paid") return false;
         if (orderStatusFilter === "Pending" && ord.paymentStatus !== "Pending") return false;
         if (orderStatusFilter === "Processing" && ord.fulfillmentStatus !== "Processing") return false;
+        if (orderStatusFilter === "Shipped" && ord.fulfillmentStatus !== "Shipped") return false;
         if (orderStatusFilter === "Delivered" && ord.fulfillmentStatus !== "Delivered") return false;
       }
 
@@ -1254,12 +1298,69 @@ export default function AdminDashboardPage() {
         const matchesNumber = ord.orderNumber.toLowerCase().includes(q);
         const matchesCustomer = ord.customerName.toLowerCase().includes(q);
         const matchesCity = ord.city.toLowerCase().includes(q);
-        return matchesNumber || matchesCustomer || matchesCity;
+        const matchesCourier = ord.courier?.toLowerCase().includes(q) ?? false;
+        const matchesAwb = ord.awb?.toLowerCase().includes(q) ?? false;
+        return matchesNumber || matchesCustomer || matchesCity || matchesCourier || matchesAwb;
       }
 
       return true;
     });
   }, [orders, ordersSubView, orderStatusFilter, orderSearchQuery]);
+
+  // Update Consignment Tracking (Status, Carrier, AWB, ETA, Transit Notes)
+  const updateOrderTracking = async (
+    orderId: string,
+    updates: {
+      fulfillmentStatus?: string;
+      paymentStatus?: string;
+      courier?: string;
+      carrier?: string;
+      awb?: string;
+      trackingNumber?: string;
+      estimatedDate?: string;
+      notes?: string;
+    }
+  ) => {
+    const courierVal = updates.courier || updates.carrier;
+    const awbVal = updates.awb || updates.trackingNumber;
+    const mergedUpdates: Partial<AdminOrder> = {
+      ...(updates.fulfillmentStatus ? { fulfillmentStatus: updates.fulfillmentStatus as any } : {}),
+      ...(updates.paymentStatus ? { paymentStatus: updates.paymentStatus as any } : {}),
+      ...(courierVal ? { courier: courierVal } : {}),
+      ...(awbVal ? { awb: awbVal } : {}),
+      ...(updates.estimatedDate !== undefined ? { estimatedDate: updates.estimatedDate } : {}),
+      ...(updates.notes !== undefined ? { notes: updates.notes } : {}),
+    };
+
+    setOrders((prev) => {
+      const updated = prev.map((o) => (o.id === orderId ? { ...o, ...mergedUpdates } : o));
+      try {
+        localStorage.setItem("kurma_admin_orders", JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
+    if (inspectOrder?.id === orderId) {
+      setInspectOrder((prev) => (prev ? { ...prev, ...mergedUpdates } : null));
+    }
+
+    try {
+      await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: orderId, ...updates }),
+      });
+      fetch("/api/admin/overview")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.metrics) setOverviewData(d);
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.warn("Failed to sync tracking updates with server", err);
+    }
+    triggerNotification("Consignment tracking updated and live across storefront!");
+  };
 
   // Update Order Status (Fulfillment)
   const updateOrderStatus = async (orderId: string, nextStatus: string) => {
@@ -1736,9 +1837,16 @@ export default function AdminDashboardPage() {
         >
           {/* Brand Header */}
           <div className="h-16 px-5 border-b border-black/10 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="size-9 rounded-xl bg-[#072515] text-[#eed08e] flex items-center justify-center transition-transform group-hover:scale-105 shadow-sm">
-                <span className="text-[#eed08e] text-base font-serif font-bold">K</span>
+            <Link href="/" className="flex items-center gap-3 group" aria-label="Kurma Atelier Admin">
+              <div className="relative size-9 rounded-xl overflow-hidden shadow-xs border border-[#eed08e]/40 bg-[#072515] flex items-center justify-center shrink-0">
+                <Image
+                  src="/images/logo.jpeg"
+                  alt="Kurma Logo"
+                  width={36}
+                  height={36}
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  priority
+                />
               </div>
               <div className="flex flex-col text-left">
                 <span className="font-serif font-bold text-sm tracking-wider text-[#072515]">KURMA</span>
@@ -1808,20 +1916,44 @@ export default function AdminDashboardPage() {
                     aria-hidden="true"
                     className="pointer-events-none absolute left-0 top-0 overflow-visible text-black/25"
                     width="16"
-                    height="68"
-                    viewBox="0 0 16 68"
+                    height="94"
+                    viewBox="0 0 16 94"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.25"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M1 0 V48" />
+                    <path d="M1 0 V74" />
                     <path d="M1 18 Q1 22 5 22 H12" />
                     <path d="M10 19 L13 22 L10 25" />
                     <path d="M1 44 Q1 48 5 48 H12" />
                     <path d="M10 45 L13 48 L10 51" />
+                    <path d="M1 70 Q1 74 5 74 H12" />
+                    <path d="M10 71 L13 74 L10 77" />
                   </svg>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveRoute("orders");
+                      setOrdersSubView("tracking");
+                      setMobileSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
+                      activeRoute === "orders" && ordersSubView === "tracking"
+                        ? "text-black font-semibold bg-black/5"
+                        : "text-black/65 hover:text-black hover:bg-black/5"
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <Truck className="size-3 text-[#c89e43]" />
+                      Order Tracking
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider">
+                      Live
+                    </span>
+                  </button>
 
                   <button
                     type="button"
@@ -2490,7 +2622,7 @@ export default function AdminDashboardPage() {
                               <span className="font-semibold text-[#072515]">{formatINR(ord.totalAmount)}</span>
                               <button
                                 type="button"
-                                onClick={() => setInspectOrder(ord)}
+                                onClick={() => openInspectOrder(ord)}
                                 className="block text-[10px] text-black/50 hover:text-[#072515] underline"
                               >
                                 Inspect
@@ -2660,10 +2792,16 @@ export default function AdminDashboardPage() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <h1 className="flex items-center gap-2 text-lg font-semibold text-[#072515]">
-                    <Inbox className="size-4 text-[#c89e43]" />
+                    {ordersSubView === "tracking" ? (
+                      <Truck className="size-4 text-[#c89e43]" />
+                    ) : (
+                      <Inbox className="size-4 text-[#c89e43]" />
+                    )}
                     <span>
                       {ordersSubView === "all"
                         ? "Orders"
+                        : ordersSubView === "tracking"
+                        ? "Order Tracking & Consignments"
                         : ordersSubView === "drafts"
                         ? "Draft Orders"
                         : "Abandoned Checkouts"}
@@ -2676,6 +2814,14 @@ export default function AdminDashboardPage() {
                       className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "all" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
                     >
                       All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOrdersSubView("tracking")}
+                      className={`px-2.5 py-1 rounded-md transition flex items-center gap-1.5 ${ordersSubView === "tracking" ? "bg-white text-[#072515] shadow-xs font-semibold" : "text-black/60"}`}
+                    >
+                      <Truck className="size-3 text-[#c89e43]" />
+                      Tracking
                     </button>
                     <button
                       type="button"
@@ -2695,6 +2841,14 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <Link
+                    href="/track-order"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-800 text-white px-3 text-xs font-medium hover:bg-emerald-900 shadow-2xs"
+                  >
+                    <ExternalLink className="size-3.5" /> Customer Tracking Page
+                  </Link>
                   <button
                     type="button"
                     onClick={() => triggerNotification("Exported orders CSV successfully.")}
@@ -2712,137 +2866,372 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* Summary Strip (from admin-panel/screens/orders/page.tsx) */}
-              <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
-                <div className="grid grid-cols-2 divide-x divide-y divide-black/10 sm:grid-cols-3 lg:grid-cols-7 lg:divide-y-0">
-                  <div className="flex items-center gap-2 px-4 py-3.5 text-xs font-semibold text-[#072515]">
-                    <CalendarDays className="size-4 text-[#c89e43]" /> Today
-                  </div>
-                  {[
-                    ["Orders", "6"],
-                    ["Items ordered", "18"],
-                    ["Returns", "₹0"],
-                    ["Orders fulfilled", "4"],
-                    ["Orders delivered", "2"],
-                    ["Fulfillment time", "1.4 days"],
-                  ].map(([label, val]) => (
-                    <div key={label} className="px-4 py-3">
-                      <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">{label}</p>
-                      <p className="mt-1 text-sm font-bold text-[#072515]">{val}</p>
-                      <div className="mt-2 h-0.5 w-10 bg-[#c89e43]" />
+              {/* DEDICATED TRACKING SUBVIEW */}
+              {ordersSubView === "tracking" ? (
+                <div className="space-y-4">
+                  {/* Tracking KPI Metric Cards */}
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+                      <div className="flex items-center justify-between text-black/55 text-xs font-medium">
+                        <span>Total In Flight</span>
+                        <Truck className="size-4 text-[#c89e43]" />
+                      </div>
+                      <p className="mt-2 text-2xl font-bold font-serif text-[#072515]">
+                        {orders.filter((o) => !o.isDraft && !o.isAbandoned && o.fulfillmentStatus !== "Cancelled").length}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-black/50">Active sacred consignments</p>
                     </div>
-                  ))}
-                </div>
-              </section>
 
-              {/* Filter & Search Bar */}
-              <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
-                <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-black/75">
-                    <span>Status:</span>
-                    <select
-                      value={orderStatusFilter}
-                      onChange={(e) => setOrderStatusFilter(e.target.value)}
-                      className="bg-transparent border border-black/15 rounded-md px-2 py-1 text-xs outline-none"
+                    <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4 shadow-sm">
+                      <div className="flex items-center justify-between text-blue-900 text-xs font-medium">
+                        <span>In Transit / Dispatched</span>
+                        <Clock className="size-4 text-blue-600" />
+                      </div>
+                      <p className="mt-2 text-2xl font-bold font-serif text-blue-950">
+                        {orders.filter((o) => o.fulfillmentStatus === "Shipped" || o.fulfillmentStatus === "In Transit").length}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-blue-800/70">Air & Surface logistics</p>
+                    </div>
+
+                    <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 shadow-sm">
+                      <div className="flex items-center justify-between text-purple-900 text-xs font-medium">
+                        <span>Out for Delivery</span>
+                        <Truck className="size-4 text-purple-600" />
+                      </div>
+                      <p className="mt-2 text-2xl font-bold font-serif text-purple-950">
+                        {orders.filter((o) => o.fulfillmentStatus === "Out for Delivery").length}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-purple-800/70">With courier riders</p>
+                    </div>
+
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
+                      <div className="flex items-center justify-between text-emerald-900 text-xs font-medium">
+                        <span>Delivered & Sealed</span>
+                        <CheckCircle2 className="size-4 text-emerald-600" />
+                      </div>
+                      <p className="mt-2 text-2xl font-bold font-serif text-emerald-950">
+                        {orders.filter((o) => o.fulfillmentStatus === "Delivered").length}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-emerald-800/70">Received by patrons</p>
+                    </div>
+                  </div>
+
+                  {/* Real-Time Storefront Notice Banner */}
+                  <div className="rounded-xl border border-[#c89e43]/30 bg-[#FAF8F5] p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="font-semibold text-[#072515]">Real-Time Storefront Tracking Connected:</span>
+                      <span className="text-black/60 hidden md:inline">
+                        Any status, carrier or AWB changes saved in admin immediately update live customer tracking at <code className="bg-black/5 px-1 py-0.5 rounded font-mono text-[11px]">/track-order</code>.
+                      </span>
+                    </div>
+                    <Link
+                      href="/track-order"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#072515] hover:text-[#c89e43] underline"
                     >
-                      <option value="All">All statuses</option>
-                      <option value="Paid">Paid</option>
-                      <option value="Pending">Payment pending</option>
-                      <option value="Processing">Processing</option>
-                      <option value="Delivered">Delivered</option>
-                    </select>
+                      Launch Customer Tracking View <ExternalLink className="size-3" />
+                    </Link>
                   </div>
 
-                  <div className="flex min-w-52 flex-1 items-center gap-2 text-xs text-black/50">
-                    <Search className="size-3.5 text-black/40" />
-                    <input
-                      value={orderSearchQuery}
-                      onChange={(e) => setOrderSearchQuery(e.target.value)}
-                      placeholder="Search order #, patron name, or city..."
-                      className="w-full bg-transparent outline-none placeholder:text-black/40 text-black text-xs"
-                    />
-                  </div>
-                </div>
+                  {/* Tracking Search & Filter Controls */}
+                  <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
+                    <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-black/75">
+                        <span>Tracking Status:</span>
+                        <select
+                          value={orderStatusFilter}
+                          onChange={(e) => setOrderStatusFilter(e.target.value)}
+                          className="bg-transparent border border-black/15 rounded-md px-2 py-1 text-xs outline-none"
+                        >
+                          <option value="All">All statuses</option>
+                          <option value="Processing">Processing / Atelier</option>
+                          <option value="Shipped">Shipped / In Transit</option>
+                          <option value="Out for Delivery">Out for Delivery</option>
+                          <option value="Delivered">Delivered</option>
+                        </select>
+                      </div>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[980px] border-collapse text-left text-xs">
-                    <thead className="bg-[#FAF8F5] text-black/70">
-                      <tr>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Order</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Date</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Customer</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Channel</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Total</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Payment status</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Fulfillment</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Items</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Courier</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-black/5">
-                      {filteredOrders.length === 0 ? (
-                        <tr>
-                          <td colSpan={10} className="px-4 py-12 text-center text-black/50">
-                            No orders found matching the criteria.
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredOrders.map((ord) => (
-                          <tr key={ord.id} className="hover:bg-black/[0.015] transition-colors">
-                            <td className="px-3 py-2.5 font-bold text-[#072515]">{ord.orderNumber}</td>
-                            <td className="px-3 py-2.5 text-black/60">{ord.date}</td>
-                            <td className="px-3 py-2.5 font-medium">
-                              <div>{ord.customerName}</div>
-                              <div className="text-[10px] text-black/45">{ord.city}</div>
-                            </td>
-                            <td className="px-3 py-2.5 text-black/65">{ord.channel}</td>
-                            <td className="px-3 py-2.5 text-right font-bold text-[#072515]">{formatINR(ord.totalAmount)}</td>
-                            <td className="px-3 py-2.5">
-                              <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                                  ord.paymentStatus === "Paid"
-                                    ? "bg-emerald-100 text-emerald-800"
-                                    : "bg-amber-100 text-amber-800"
-                                }`}
-                              >
-                                {ord.paymentStatus}
-                              </span>
-                            </td>
-                            <td className="px-3 py-2.5">
-                              <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                                  ord.fulfillmentStatus === "Delivered"
-                                    ? "bg-emerald-100 text-emerald-800"
-                                    : ord.fulfillmentStatus === "Shipped"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : ord.fulfillmentStatus === "Processing"
-                                    ? "bg-purple-100 text-purple-800"
-                                    : "bg-gray-100 text-gray-800"
-                                }`}
-                              >
-                                {ord.fulfillmentStatus}
-                              </span>
-                            </td>
-                            <td className="px-3 py-2.5 text-black/65">{ord.itemsCount} items</td>
-                            <td className="px-3 py-2.5 text-black/65">{ord.courier}</td>
-                            <td className="px-3 py-2.5 text-center">
-                              <button
-                                type="button"
-                                onClick={() => setInspectOrder(ord)}
-                                className="px-2.5 py-1 rounded bg-[#072515]/5 hover:bg-[#072515] hover:text-[#eed08e] text-[#072515] font-semibold text-[11px] transition"
-                              >
-                                Inspect Hamper
-                              </button>
-                            </td>
+                      <div className="flex min-w-52 flex-1 items-center gap-2 text-xs text-black/50">
+                        <Search className="size-3.5 text-black/40" />
+                        <input
+                          value={orderSearchQuery}
+                          onChange={(e) => setOrderSearchQuery(e.target.value)}
+                          placeholder="Search order #, patron name, destination city, carrier, or AWB tracking #..."
+                          className="w-full bg-transparent outline-none placeholder:text-black/40 text-black text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Consignment Tracking Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[1060px] border-collapse text-left text-xs">
+                        <thead className="bg-[#FAF8F5] text-black/70">
+                          <tr>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Order & Date</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Patron & Destination</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Carrier & Waybill (AWB)</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Live Fulfillment Status</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Estimated Delivery</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Latest Transit Update</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Tracking Actions</th>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody className="divide-y divide-black/5">
+                          {filteredOrders.length === 0 ? (
+                            <tr>
+                              <td colSpan={7} className="px-4 py-12 text-center text-black/50">
+                                No consignments found matching your tracking search criteria.
+                              </td>
+                            </tr>
+                          ) : (
+                            filteredOrders.map((ord) => (
+                              <tr key={ord.id} className="hover:bg-black/[0.015] transition-colors">
+                                <td className="px-3 py-2.5">
+                                  <div className="font-bold text-[#072515] font-mono">{ord.orderNumber}</div>
+                                  <div className="text-[10px] text-black/50">{ord.date}</div>
+                                </td>
+                                <td className="px-3 py-2.5 font-medium">
+                                  <div className="text-[#072515] font-semibold">{ord.customerName}</div>
+                                  <div className="text-[10px] text-black/50">{ord.city}</div>
+                                </td>
+                                <td className="px-3 py-2.5">
+                                  <div className="font-semibold text-black/80">{ord.courier || "BlueDart Express"}</div>
+                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                    <span className="font-mono text-[11px] text-black/60 bg-black/5 px-1.5 py-0.5 rounded">
+                                      {ord.awb || "Pending AWB"}
+                                    </span>
+                                    {ord.awb && (
+                                      <button
+                                        type="button"
+                                        onClick={() => copyToClipboard(ord.awb, ord.id)}
+                                        className="text-black/40 hover:text-black p-0.5"
+                                        title="Copy AWB Number"
+                                      >
+                                        {copiedAwb === ord.id ? (
+                                          <Check className="size-3 text-emerald-600" />
+                                        ) : (
+                                          <Copy className="size-3" />
+                                        )}
+                                      </button>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-3 py-2.5">
+                                  <select
+                                    value={ord.fulfillmentStatus}
+                                    onChange={(e) =>
+                                      updateOrderTracking(ord.id, { fulfillmentStatus: e.target.value })
+                                    }
+                                    className={`px-2 py-1 rounded-md text-xs font-semibold border outline-none transition cursor-pointer ${
+                                      ord.fulfillmentStatus === "Delivered"
+                                        ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                                        : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
+                                        ? "bg-blue-50 border-blue-300 text-blue-800"
+                                        : ord.fulfillmentStatus === "Out for Delivery"
+                                        ? "bg-purple-50 border-purple-300 text-purple-800"
+                                        : ord.fulfillmentStatus === "Processing"
+                                        ? "bg-amber-50 border-amber-300 text-amber-800"
+                                        : "bg-gray-50 border-gray-300 text-gray-800"
+                                    }`}
+                                  >
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Processing">Processing / Atelier</option>
+                                    <option value="Shipped">Shipped / In Transit</option>
+                                    <option value="Out for Delivery">Out for Delivery</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                  </select>
+                                </td>
+                                <td className="px-3 py-2.5 text-black/70">
+                                  <div className="font-medium text-[11px]">{ord.estimatedDate || "Within 2-3 business days"}</div>
+                                </td>
+                                <td className="px-3 py-2.5 text-black/60 max-w-xs truncate text-[11px]">
+                                  {ord.notes || (
+                                    ord.fulfillmentStatus === "Delivered"
+                                      ? "Handed over to recipient."
+                                      : ord.fulfillmentStatus === "Shipped"
+                                      ? "In transit via courier hub."
+                                      : "Order confirmed, preparing in atelier."
+                                  )}
+                                </td>
+                                <td className="px-3 py-2.5 text-center">
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => openInspectOrder(ord)}
+                                      className="px-2.5 py-1 rounded bg-[#072515] text-[#eed08e] hover:bg-[#072515]/90 font-medium text-[11px] transition shadow-2xs"
+                                    >
+                                      Manage
+                                    </button>
+                                    <Link
+                                      href={`/track-order?orderNumber=${encodeURIComponent(ord.orderNumber)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-1 rounded bg-black/5 hover:bg-black/10 text-black/70 hover:text-black transition"
+                                      title="Open Customer Tracking Page"
+                                    >
+                                      <ExternalLink className="size-3.5" />
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
                 </div>
-              </section>
+              ) : (
+                /* STANDARD ORDERS SUBVIEW */
+                <div className="space-y-4">
+                  {/* Summary Strip (from admin-panel/screens/orders/page.tsx) */}
+                  <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
+                    <div className="grid grid-cols-2 divide-x divide-y divide-black/10 sm:grid-cols-3 lg:grid-cols-7 lg:divide-y-0">
+                      <div className="flex items-center gap-2 px-4 py-3.5 text-xs font-semibold text-[#072515]">
+                        <CalendarDays className="size-4 text-[#c89e43]" /> Today
+                      </div>
+                      {[
+                        ["Orders", String(orders.length)],
+                        ["Items ordered", String(orders.reduce((acc, o) => acc + o.itemsCount, 0))],
+                        ["Returns", "₹0"],
+                        ["Orders fulfilled", String(orders.filter((o) => o.fulfillmentStatus === "Shipped" || o.fulfillmentStatus === "Delivered").length)],
+                        ["Orders delivered", String(orders.filter((o) => o.fulfillmentStatus === "Delivered").length)],
+                        ["Fulfillment time", "1.4 days"],
+                      ].map(([label, val]) => (
+                        <div key={label} className="px-4 py-3">
+                          <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">{label}</p>
+                          <p className="mt-1 text-sm font-bold text-[#072515]">{val}</p>
+                          <div className="mt-2 h-0.5 w-10 bg-[#c89e43]" />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Filter & Search Bar */}
+                  <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
+                    <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-black/75">
+                        <span>Status:</span>
+                        <select
+                          value={orderStatusFilter}
+                          onChange={(e) => setOrderStatusFilter(e.target.value)}
+                          className="bg-transparent border border-black/15 rounded-md px-2 py-1 text-xs outline-none"
+                        >
+                          <option value="All">All statuses</option>
+                          <option value="Paid">Paid</option>
+                          <option value="Pending">Payment pending</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                        </select>
+                      </div>
+
+                      <div className="flex min-w-52 flex-1 items-center gap-2 text-xs text-black/50">
+                        <Search className="size-3.5 text-black/40" />
+                        <input
+                          value={orderSearchQuery}
+                          onChange={(e) => setOrderSearchQuery(e.target.value)}
+                          placeholder="Search order #, patron name, or city..."
+                          className="w-full bg-transparent outline-none placeholder:text-black/40 text-black text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[980px] border-collapse text-left text-xs">
+                        <thead className="bg-[#FAF8F5] text-black/70">
+                          <tr>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Order</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Date</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Customer</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Channel</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Total</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Payment status</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Fulfillment</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Items</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Courier</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-black/5">
+                          {filteredOrders.length === 0 ? (
+                            <tr>
+                              <td colSpan={10} className="px-4 py-12 text-center text-black/50">
+                                No orders found matching the criteria.
+                              </td>
+                            </tr>
+                          ) : (
+                            filteredOrders.map((ord) => (
+                              <tr key={ord.id} className="hover:bg-black/[0.015] transition-colors">
+                                <td className="px-3 py-2.5 font-bold text-[#072515]">{ord.orderNumber}</td>
+                                <td className="px-3 py-2.5 text-black/60">{ord.date}</td>
+                                <td className="px-3 py-2.5 font-medium">
+                                  <div>{ord.customerName}</div>
+                                  <div className="text-[10px] text-black/45">{ord.city}</div>
+                                </td>
+                                <td className="px-3 py-2.5 text-black/65">{ord.channel}</td>
+                                <td className="px-3 py-2.5 text-right font-bold text-[#072515]">{formatINR(ord.totalAmount)}</td>
+                                <td className="px-3 py-2.5">
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                      ord.paymentStatus === "Paid"
+                                        ? "bg-emerald-100 text-emerald-800"
+                                        : "bg-amber-100 text-amber-800"
+                                    }`}
+                                  >
+                                    {ord.paymentStatus}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2.5">
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                      ord.fulfillmentStatus === "Delivered"
+                                        ? "bg-emerald-100 text-emerald-800"
+                                        : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
+                                        ? "bg-blue-100 text-blue-800"
+                                        : ord.fulfillmentStatus === "Processing"
+                                        ? "bg-purple-100 text-purple-800"
+                                        : "bg-gray-100 text-gray-800"
+                                    }`}
+                                  >
+                                    {ord.fulfillmentStatus}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2.5 text-black/65">{ord.itemsCount} items</td>
+                                <td className="px-3 py-2.5 text-black/65">{ord.courier}</td>
+                                <td className="px-3 py-2.5 text-center">
+                                  <div className="flex items-center justify-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => openInspectOrder(ord)}
+                                      className="px-2.5 py-1 rounded bg-[#072515]/5 hover:bg-[#072515] hover:text-[#eed08e] text-[#072515] font-semibold text-[11px] transition"
+                                    >
+                                      Inspect Hamper
+                                    </button>
+                                    <Link
+                                      href={`/track-order?orderNumber=${encodeURIComponent(ord.orderNumber)}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-1 rounded hover:bg-black/5 text-black/50 hover:text-black transition"
+                                      title="Track on Storefront"
+                                    >
+                                      <ExternalLink className="size-3.5" />
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                </div>
+              )}
             </main>
           )}
 
@@ -3539,26 +3928,266 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* ==================================================================== */}
-      {/* MODAL 1: INSPECT HAMPER PERSONALIZATION DETAILS                       */}
+      {/* MODAL 1: INSPECT ORDER & CONSIGNMENT TRACKING MANAGEMENT             */}
       {/* ==================================================================== */}
       {inspectOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#eed08e]/30 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 animate-fade-in">
+          <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#eed08e]/40 flex flex-col max-h-[92vh]">
+            {/* Header */}
             <div className="p-4 bg-[#072515] text-[#FAF8F5] flex items-center justify-between">
               <div>
-                <span className="text-xs font-mono text-[#eed08e]">{inspectOrder.orderNumber}</span>
-                <h3 className="font-serif font-bold text-base text-white">{inspectOrder.boxTitle}</h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono font-bold text-[#eed08e] bg-[#eed08e]/10 px-2 py-0.5 rounded border border-[#eed08e]/30">
+                    {inspectOrder.orderNumber}
+                  </span>
+                  <span className="text-[11px] text-white/60">
+                    {inspectOrder.customerName} • {inspectOrder.city}
+                  </span>
+                </div>
+                <h3 className="font-serif font-bold text-base text-white mt-1">{inspectOrder.boxTitle}</h3>
               </div>
-              <button
-                type="button"
-                onClick={() => setInspectOrder(null)}
-                className="p-1 rounded-md text-white/70 hover:text-white"
-              >
-                <X className="size-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/track-order?orderNumber=${encodeURIComponent(inspectOrder.orderNumber)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#eed08e] text-[#072515] hover:bg-white text-xs font-semibold transition shadow-xs"
+                >
+                  <ExternalLink className="size-3.5" /> View Customer Tracking
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setInspectOrder(null)}
+                  className="p-1 rounded-md text-white/70 hover:text-white"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
             </div>
 
             <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              {/* Visual 5-Stage Tracking Stepper */}
+              <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#c89e43]/30">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[11px] font-bold text-[#072515] uppercase tracking-wider flex items-center gap-1.5">
+                    <Truck className="size-3.5 text-[#c89e43]" />
+                    Live Milestone Progress
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      inspectOrder.fulfillmentStatus === "Delivered"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : inspectOrder.fulfillmentStatus === "Shipped" || inspectOrder.fulfillmentStatus === "In Transit"
+                        ? "bg-blue-100 text-blue-800"
+                        : inspectOrder.fulfillmentStatus === "Out for Delivery"
+                        ? "bg-purple-100 text-purple-800"
+                        : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
+                    Current: {inspectOrder.fulfillmentStatus}
+                  </span>
+                </div>
+
+                {/* Stepper Dots & Connector Line */}
+                <div className="grid grid-cols-5 gap-1 relative text-center">
+                  {[
+                    { key: "Confirmed", label: "Confirmed" },
+                    { key: "Processing", label: "Atelier Craft" },
+                    { key: "Shipped", label: "In Transit" },
+                    { key: "Out for Delivery", label: "Out for Delivery" },
+                    { key: "Delivered", label: "Delivered" },
+                  ].map((step, idx) => {
+                    const statusOrder = ["Confirmed", "Processing", "Shipped", "Out for Delivery", "Delivered"];
+                    const currentIdx = Math.max(0, statusOrder.indexOf(inspectOrder.fulfillmentStatus));
+                    const isDone = idx < currentIdx;
+                    const isCurrent = idx === currentIdx;
+
+                    return (
+                      <div key={step.key} className="flex flex-col items-center">
+                        <div
+                          className={`size-7 rounded-full flex items-center justify-center font-bold text-[10px] transition-all shadow-xs ${
+                            isDone
+                              ? "bg-emerald-700 text-white"
+                              : isCurrent
+                              ? "bg-[#072515] text-[#eed08e] ring-2 ring-[#c89e43] ring-offset-2 ring-offset-[#FAF8F5]"
+                              : "bg-black/10 text-black/40"
+                          }`}
+                        >
+                          {isDone ? <Check className="size-3.5" /> : idx + 1}
+                        </div>
+                        <span
+                          className={`mt-1.5 text-[10px] font-medium leading-tight ${
+                            isCurrent ? "font-bold text-[#072515]" : isDone ? "text-emerald-800" : "text-black/40"
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Order Tracking & Logistics Console Form */}
+              <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-black/10">
+                  <span className="font-semibold text-xs text-[#072515] flex items-center gap-1.5">
+                    <SlidersHorizontal className="size-3.5 text-[#c89e43]" />
+                    Consignment Tracking Controls (Real-Time Backend Sync)
+                  </span>
+                  <span className="text-[10px] text-black/50">Changes reflect on customer track page</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {/* Fulfillment Status */}
+                  <div>
+                    <label className="text-[10px] font-semibold text-black/70 block mb-1">
+                      Tracking / Fulfillment Status
+                    </label>
+                    <select
+                      value={trackingForm.fulfillmentStatus}
+                      onChange={(e) => setTrackingForm({ ...trackingForm, fulfillmentStatus: e.target.value })}
+                      className="w-full bg-[#FAF8F5] border border-black/15 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#072515] outline-none"
+                    >
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Processing">Processing / Crafting in Atelier</option>
+                      <option value="Shipped">Shipped / In Transit</option>
+                      <option value="Out for Delivery">Out for Delivery</option>
+                      <option value="Delivered">Delivered & Sealed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+
+                  {/* Payment Status */}
+                  <div>
+                    <label className="text-[10px] font-semibold text-black/70 block mb-1">Payment Status</label>
+                    <select
+                      value={trackingForm.paymentStatus}
+                      onChange={(e) => setTrackingForm({ ...trackingForm, paymentStatus: e.target.value })}
+                      className="w-full bg-[#FAF8F5] border border-black/15 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#072515] outline-none"
+                    >
+                      <option value="Paid">Paid (Confirmed)</option>
+                      <option value="Pending">Payment Pending</option>
+                      <option value="Refunded">Refunded</option>
+                    </select>
+                  </div>
+
+                  {/* Logistics Carrier */}
+                  <div>
+                    <label className="text-[10px] font-semibold text-black/70 block mb-1">Logistics Courier</label>
+                    <select
+                      value={trackingForm.courier}
+                      onChange={(e) => setTrackingForm({ ...trackingForm, courier: e.target.value })}
+                      className="w-full bg-[#FAF8F5] border border-black/15 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[#072515] outline-none"
+                    >
+                      <option value="BlueDart Express">BlueDart Express (Air Priority)</option>
+                      <option value="Delhivery Air">Delhivery Air (Express 24-48h)</option>
+                      <option value="DTDC Priority">DTDC Priority (Pan-India)</option>
+                      <option value="FedEx Luxury">FedEx Luxury Logistics</option>
+                      <option value="India Post Speed">India Post Speed Post</option>
+                    </select>
+                  </div>
+
+                  {/* Waybill (AWB) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[10px] font-semibold text-black/70">AWB / Waybill Number</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const prefix = trackingForm.courier.startsWith("Delhivery")
+                            ? "DEL"
+                            : trackingForm.courier.startsWith("DTDC")
+                            ? "DTD"
+                            : "BLU";
+                          const rand = Math.floor(1000 + Math.random() * 9000);
+                          const cityCode = inspectOrder.city.slice(0, 3).toUpperCase() || "IND";
+                          setTrackingForm({ ...trackingForm, awb: `${prefix}-${rand}-${cityCode}` });
+                        }}
+                        className="text-[9px] text-[#c89e43] font-bold hover:underline"
+                      >
+                        Auto-Generate
+                      </button>
+                    </div>
+                    <div className="relative flex items-center">
+                      <input
+                        type="text"
+                        value={trackingForm.awb}
+                        onChange={(e) => setTrackingForm({ ...trackingForm, awb: e.target.value })}
+                        placeholder="e.g. BLU-8842-MUM"
+                        className="w-full bg-[#FAF8F5] border border-black/15 rounded-lg pl-2.5 pr-8 py-1.5 text-xs font-mono font-medium text-[#072515] outline-none"
+                      />
+                      {trackingForm.awb && (
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(trackingForm.awb, "modal")}
+                          className="absolute right-2 text-black/40 hover:text-black"
+                          title="Copy AWB"
+                        >
+                          {copiedAwb === "modal" ? (
+                            <Check className="size-3 text-emerald-600" />
+                          ) : (
+                            <Copy className="size-3" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Estimated Delivery Date */}
+                  <div className="sm:col-span-2">
+                    <label className="text-[10px] font-semibold text-black/70 block mb-1">
+                      Estimated Delivery Date
+                    </label>
+                    <input
+                      type="text"
+                      value={trackingForm.estimatedDate}
+                      onChange={(e) => setTrackingForm({ ...trackingForm, estimatedDate: e.target.value })}
+                      placeholder="e.g. Aug 08, 2026 or Tomorrow by 5:00 PM"
+                      className="w-full bg-[#FAF8F5] border border-black/15 rounded-lg px-2.5 py-1.5 text-xs text-[#072515] outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Transit Notes */}
+                <div>
+                  <label className="text-[10px] font-semibold text-black/70 block mb-1">
+                    Transit Milestone Notes (Visible to Customer on /track-order)
+                  </label>
+                  <input
+                    type="text"
+                    value={trackingForm.notes}
+                    onChange={(e) => setTrackingForm({ ...trackingForm, notes: e.target.value })}
+                    placeholder="e.g. Consignment cleared Mumbai hub; dispatched via BlueDart Flight BD-402."
+                    className="w-full bg-[#FAF8F5] border border-black/15 rounded-lg px-2.5 py-1.5 text-xs text-[#072515] outline-none"
+                  />
+                </div>
+
+                {/* Save Tracking Action Button */}
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-black/5">
+                  <div className="flex items-center gap-1.5 text-[11px] text-black/50">
+                    <Clock className="size-3 text-[#c89e43]" />
+                    <span>Order Placed: {inspectOrder.date}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      updateOrderTracking(inspectOrder.id, {
+                        fulfillmentStatus: trackingForm.fulfillmentStatus,
+                        paymentStatus: trackingForm.paymentStatus,
+                        courier: trackingForm.courier,
+                        awb: trackingForm.awb,
+                        estimatedDate: trackingForm.estimatedDate,
+                        notes: trackingForm.notes,
+                      })
+                    }
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-2xs"
+                  >
+                    <Check className="size-3.5" /> Save Tracking Updates
+                  </button>
+                </div>
+              </div>
+
               {/* Personalization Card Styling */}
               <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#c89e43]/30">
                 <span className="text-[10px] font-bold text-[#c89e43] uppercase tracking-wider block mb-1">
@@ -3599,21 +4228,24 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* Shipping Logistics */}
+              {/* Patron & Destination Info */}
               <div className="grid grid-cols-2 gap-3 p-3 bg-black/[0.02] rounded-xl border border-black/10">
                 <div>
-                  <span className="text-[10px] text-black/50 block">Courier Tracking:</span>
-                  <span className="font-semibold text-[#072515]">{inspectOrder.courier}</span>
-                  <span className="block font-mono text-[11px] text-black/60">{inspectOrder.awb}</span>
+                  <span className="text-[10px] text-black/50 block">Customer / Consignee:</span>
+                  <span className="font-semibold text-[#072515]">{inspectOrder.customerName}</span>
+                  <span className="block text-[11px] text-black/60">{inspectOrder.customerEmail}</span>
+                  <span className="block text-[11px] text-black/60">{inspectOrder.customerPhone}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-black/50 block">Payment Method:</span>
+                  <span className="text-[10px] text-black/50 block">Payment Details:</span>
                   <span className="font-semibold text-[#072515]">{inspectOrder.paymentMethod}</span>
                   <span className="block text-[11px] text-emerald-700 font-bold">{inspectOrder.paymentStatus}</span>
+                  <span className="block text-[11px] text-black/50">Channel: {inspectOrder.channel}</span>
                 </div>
               </div>
             </div>
 
+            {/* Modal Bottom Bar */}
             <div className="p-4 bg-[#FAF8F5] border-t border-black/10 flex flex-wrap items-center justify-between gap-3">
               <span className="font-bold text-sm text-[#072515]">Total: {formatINR(inspectOrder.totalAmount)}</span>
               <div className="flex flex-wrap items-center gap-2">
@@ -3626,7 +4258,7 @@ export default function AdminDashboardPage() {
                     Capture Payment
                   </button>
                 )}
-                {inspectOrder.fulfillmentStatus !== "Shipped" && (
+                {inspectOrder.fulfillmentStatus !== "Shipped" && inspectOrder.fulfillmentStatus !== "In Transit" && (
                   <button
                     type="button"
                     onClick={() => updateOrderStatus(inspectOrder.id, "Shipped")}

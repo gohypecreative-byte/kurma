@@ -639,7 +639,7 @@ function CustomiseContent() {
               <AnimatedText delay={0.1} yOffset={26}>
                 <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white leading-[1.14] tracking-tight">
                   Born from a love of,<br />
-                  <span className="italic font-serif font-normal text-[#EED08E]">beautiful gifting</span>
+                  <span className="font-serif font-normal text-[#EED08E]">beautiful gifting</span>
                 </h1>
               </AnimatedText>
 

@@ -61,7 +61,7 @@ export function LegalLayout({
           <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl font-light text-[#1C1B18] tracking-tight leading-tight">
             {title}{" "}
             {titleHighlight && (
-              <span className="italic font-serif font-normal text-[#8b5f10]">
+              <span className="font-serif font-normal text-[#8b5f10]">
                 {titleHighlight}
               </span>
             )}

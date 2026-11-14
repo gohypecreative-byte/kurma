@@ -23,8 +23,8 @@ interface BannerSlide {
 const bannerSlides: BannerSlide[] = [
   {
     id: 0,
-    bgGradient: "bg-gradient-to-r from-[#0b3320] via-[#0f432a] to-[#155938]",
-    accentColor: "text-[#eed08e]",
+    bgGradient: "bg-gradient-to-r from-[#092B20] via-[#123D2D] to-[#28513B]",
+    accentColor: "text-[#C5A45B]",
     tagline: "Flagship Luxury Keepsake",
     title: "Elements in Harmony Marble Box",
     subtitle: "Complete 5 elements suite with solid brass burner.",
@@ -33,8 +33,8 @@ const bannerSlides: BannerSlide[] = [
   },
   {
     id: 1,
-    bgGradient: "bg-gradient-to-r from-[#072818] via-[#0d3f27] to-[#125032]",
-    accentColor: "text-[#eed08e]",
+    bgGradient: "bg-gradient-to-r from-[#092B20] via-[#123D2D] to-[#28513B]",
+    accentColor: "text-[#C5A45B]",
     tagline: "Pure Fragrance",
     title: "The 5 Sacred Elements Collection",
     subtitle: "100% charcoal-free handcrafted luxury incense.",
@@ -43,8 +43,8 @@ const bannerSlides: BannerSlide[] = [
   },
   {
     id: 2,
-    bgGradient: "bg-gradient-to-r from-[#051f13] via-[#0a351f] to-[#10472c]",
-    accentColor: "text-[#eed08e]",
+    bgGradient: "bg-gradient-to-r from-[#092B20] via-[#123D2D] to-[#28513B]",
+    accentColor: "text-[#C5A45B]",
     tagline: "Artisanal Craft",
     title: "Kurma MDF Keepsake Trunk",
     subtitle: "Rigid keepsake trunk with custom engraving.",
@@ -114,8 +114,8 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
           <ChevronRight className="w-5 h-5 stroke-[2.2]" />
         </button>
 
-        {/* Carousel Track */}
-        <div className="relative flex items-center justify-center h-[210px] sm:h-[260px] md:h-[300px] lg:h-[320px]">
+        {/* Carousel Track with Increased Height and Perfect Aspect Ratio */}
+        <div className="relative flex items-center justify-center h-[250px] xs:h-[300px] sm:h-[360px] md:h-[430px] lg:h-[500px] xl:h-[570px]">
           {bannerSlides.map((slide, idx) => {
             let position = idx - currentIndex;
             if (position < -1) position += bannerSlides.length;
@@ -142,20 +142,21 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
                     ? "translateX(calc(-100% - 22px))"
                     : "translateX(calc(100% + 22px))",
                 }}
-                className={`absolute top-0 w-[90vw] sm:w-[80vw] md:w-[76vw] max-w-[1020px] h-full rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out cursor-pointer ${
+                className={`absolute top-0 w-[92vw] sm:w-[82vw] md:w-[78vw] lg:w-[74vw] max-w-[1020px] h-full rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out cursor-pointer ${
                   isActive
                     ? "z-20 shadow-[0_8px_30px_rgba(0,0,0,0.22)] opacity-100 ring-1 ring-[#1E1E1C]/15"
                     : "z-10 shadow-xs opacity-80 hover:opacity-100"
                 }`}
               >
                 <div className="relative w-full h-full overflow-hidden group">
-                  {/* Full Card Image Background - Clearly visible, bright and covering 100% with zero gaps */}
+                  {/* Full Card Image Background - Contain without cropping */}
                   <Image
                     src={slide.productImage}
                     alt={slide.title}
                     fill
                     priority={idx === 0}
-                    className="object-cover object-center sm:object-right filter brightness-[1.04] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="object-contain object-center filter brightness-[1.04] contrast-[1.02] transition-transform duration-700 ease-out"
+                    style={{ objectFit: "contain", objectPosition: "center" }}
                     sizes="(max-width: 1024px) 90vw, 1020px"
                   />
 

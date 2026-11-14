@@ -189,13 +189,13 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   return (
     <section
       id="reviews"
-      className="w-full max-w-full overflow-hidden bg-[#FAF7F2] py-14 sm:py-20 lg:py-24 border-t border-[#EAE3D8] text-[#1C1917] relative select-none mobile-defer-render"
+      className="w-full max-w-full overflow-hidden bg-[#092B20] py-14 sm:py-20 lg:py-24 border-t border-[#28513B]/40 text-[#E8D9AE] relative select-none mobile-defer-render"
     >
       <div className="max-w-[1500px] w-full mx-auto overflow-hidden">
         {/* Header Title Matching User Image */}
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4 sm:px-6">
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-normal text-[#1C1B18] leading-tight">
-            What our customers <span className="italic font-serif">say</span>
+          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-light tracking-normal text-[#E8D9AE] leading-tight">
+            What our customers say
           </h2>
         </div>
 
@@ -217,21 +217,21 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
           {REVIEWS.map((review) => (
             <div
               key={review.id}
-              className="flex-shrink-0 w-[86vw] max-w-[420px] sm:w-[480px] sm:max-w-none lg:w-[540px] snap-center flex flex-col justify-between bg-white rounded-3xl border border-stone-200/90 p-6 sm:p-8 lg:p-10 shadow-lg shadow-stone-900/5 transition-all duration-300"
+              className="flex-shrink-0 w-[86vw] max-w-[420px] sm:w-[480px] sm:max-w-none lg:w-[540px] snap-center flex flex-col justify-between bg-[#123D2D] rounded-3xl border border-[#28513B]/50 p-6 sm:p-8 lg:p-10 shadow-lg shadow-black/20 transition-all duration-300 text-[#E8D9AE]"
             >
               <div>
                 {/* Top Row: Stars */}
                 <div className="flex items-center mb-4 sm:mb-5">
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-[#C5A45B] text-[#C5A45B]" />
                     ))}
                   </div>
                 </div>
 
                 {/* Main Quote Text */}
                 <div className="mb-5 sm:mb-7">
-                  <p className="text-stone-800 text-sm sm:text-base lg:text-lg italic font-normal leading-relaxed">
+                  <p className="text-[#E8D9AE]/95 text-sm sm:text-base lg:text-lg italic font-normal leading-relaxed">
                     &ldquo;
                     {expanded[review.id] ? review.fullReview : review.quote}
                     &rdquo;
@@ -240,7 +240,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                     <button
                       type="button"
                       onClick={(e) => toggleExpand(review.id, e)}
-                      className="mt-2 text-xs font-semibold text-[#7A5A28] hover:text-[#1C1B18] underline underline-offset-4 cursor-pointer"
+                      className="mt-2 text-xs font-semibold text-[#C5A45B] hover:text-white underline underline-offset-4 cursor-pointer"
                     >
                       {expanded[review.id] ? "Show Less" : "Read More"}
                     </button>
@@ -249,8 +249,8 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
               </div>
 
               {/* Bottom Profile Bar */}
-              <div className="flex items-center gap-2.5 sm:gap-3 pt-4 sm:pt-5 border-t border-stone-100 mt-2">
-                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-stone-200 shadow-xs bg-stone-100">
+              <div className="flex items-center gap-2.5 sm:gap-3 pt-4 sm:pt-5 border-t border-[#28513B]/40 mt-2">
+                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-[#28513B] shadow-xs bg-[#092B20]">
                   <Image
                     src={review.avatar}
                     alt={review.name}
@@ -261,7 +261,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                   />
                 </div>
                 <div>
-                  <span className="font-serif text-sm sm:text-base font-bold text-stone-900 leading-tight block">
+                  <span className="font-serif text-sm sm:text-base font-bold text-white leading-tight block">
                     {review.name}
                   </span>
                 </div>
@@ -276,7 +276,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             type="button"
             onClick={prevSlide}
             aria-label="Previous review"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-stone-300 bg-white shadow-xs hover:bg-stone-50 flex items-center justify-center text-stone-700 hover:text-black transition-all cursor-pointer active:scale-95"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#28513B] bg-[#092B20] hover:bg-[#123D2D] shadow-xs flex items-center justify-center text-[#E8D9AE] hover:text-[#C5A45B] transition-all cursor-pointer active:scale-95"
           >
             <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
           </button>
@@ -291,8 +291,8 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 aria-label={`Go to review ${idx + 1}`}
                 className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === activeIdx
-                    ? "w-6 bg-[#1E1E1C]"
-                    : "w-2 bg-stone-300 hover:bg-stone-400"
+                    ? "w-6 bg-[#C5A45B]"
+                    : "w-2 bg-[#28513B] hover:bg-[#28513B]/80"
                 }`}
               />
             ))}
@@ -302,7 +302,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             type="button"
             onClick={nextSlide}
             aria-label="Next review"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-stone-300 bg-white shadow-xs hover:bg-stone-50 flex items-center justify-center text-stone-700 hover:text-black transition-all cursor-pointer active:scale-95"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#28513B] bg-[#092B20] hover:bg-[#123D2D] shadow-xs flex items-center justify-center text-[#E8D9AE] hover:text-[#C5A45B] transition-all cursor-pointer active:scale-95"
           >
             <ChevronRight className="w-4 h-4 stroke-[2.2]" />
           </button>

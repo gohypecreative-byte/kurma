@@ -379,7 +379,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
       {/* ========================================================================= */}
       {/* 1. TOP STICKY HEADER (z-[60] to remain securely above standard content) */}
       {/* ========================================================================= */}
-      <header className="sticky top-0 z-[60] w-full bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#EAE3D8] text-[#1C1B18] shadow-2xs">
+      <header className="sticky top-0 z-[60] w-full bg-[#092B20]/95 backdrop-blur-md border-b border-[#28513B]/40 text-[#E8D9AE] shadow-2xs">
         <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <Link
@@ -389,22 +389,19 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               setSearchOpen(false);
               setAccountMenuOpen(false);
             }}
-            className="flex items-center gap-2 sm:gap-3 group shrink-0"
+            className="flex items-center group shrink-0"
             aria-label="Kurma Home"
           >
-            <div className="relative w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
+            <div className="relative w-14 h-14 sm:w-[68px] sm:h-[68px] lg:w-[74px] lg:h-[74px] flex items-center justify-center shrink-0">
               <Image
-                src="/images/brand/kurma-turtle-transparent.png"
+                src="/images/logo-transparent.png"
                 alt="Kurma Logo"
-                width={48}
-                height={48}
+                width={80}
+                height={80}
                 className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
                 priority
               />
             </div>
-            <span className="font-serif tracking-[0.16em] sm:tracking-[0.2em] text-lg sm:text-[22px] font-bold text-stone-900 leading-none">
-              KURMA
-            </span>
           </Link>
 
           {/* Desktop Navigation Links (>= 1024px) */}
@@ -421,14 +418,11 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                   href={link.href}
                   className={`relative py-2 transition-colors cursor-pointer ${
                     isActive
-                      ? "text-[#8b5f10] font-semibold"
-                      : "text-stone-700 hover:text-[#8b5f10]"
+                      ? "text-[#C5A45B] font-semibold"
+                      : "text-[#E8D9AE]/85 hover:text-[#C5A45B]"
                   }`}
                 >
                   <span>{link.name}</span>
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1C1B18] rounded-full animate-in fade-in zoom-in-95 duration-200" />
-                  )}
                 </Link>
               );
             })}
@@ -444,8 +438,8 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               title="Search (Ctrl+K)"
               className={`w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border flex items-center justify-center transition-colors cursor-pointer touch-manipulation shadow-2xs hover:shadow-xs ${
                 searchOpen
-                  ? "bg-[#1E1E1C] text-white border-[#1E1E1C]"
-                  : "bg-[#faf9f6] hover:bg-[#fbf6ea] active:bg-stone-200 text-stone-700 hover:text-[#8b5f10] border-stone-200 hover:border-[#c0881b]"
+                  ? "bg-[#123D2D] text-[#C5A45B] border-[#28513B]/60"
+                  : "bg-transparent hover:bg-[#123D2D]/60 active:bg-[#123D2D] text-[#E8D9AE]/90 hover:text-[#C5A45B] border-transparent hover:border-[#28513B]/40"
               }`}
             >
               <Search className="w-4.5 h-4.5 stroke-[1.8] pointer-events-none" />
@@ -460,12 +454,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     type="button"
                     onClick={handleToggleAccountMenu}
                     aria-label={`Account menu for ${userDisplayName}`}
-                    className="h-10 sm:h-11 px-2.5 sm:px-3.5 shrink-0 rounded-full border border-[#1E1E1C] bg-[#1E1E1C] text-white hover:bg-[#33312D] active:bg-black flex items-center gap-1.5 sm:gap-2 transition-colors shadow-xs cursor-pointer touch-manipulation"
+                    className="h-10 sm:h-11 px-3.5 sm:px-4 shrink-0 rounded-full border border-[#28513B]/60 hover:border-[#C5A45B]/60 bg-[#123D2D]/60 hover:bg-[#123D2D] active:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
                   >
-                    <div className="w-5 h-5 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center text-[10px] font-bold pointer-events-none">
-                      {userDisplayName.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="hidden md:inline text-xs font-semibold tracking-wide max-w-[90px] truncate pointer-events-none">
+                    <span className="text-xs sm:text-[13px] font-semibold tracking-wide max-w-[100px] truncate pointer-events-none">
                       {userDisplayName}
                     </span>
                   </button>
@@ -477,12 +468,12 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         className="fixed inset-0 z-30"
                         onClick={() => setAccountMenuOpen(false)}
                       />
-                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200/90 py-2.5 z-40 animate-in fade-in zoom-in-95 duration-150 text-stone-900">
-                        <div className="px-4 py-2 border-b border-stone-100">
-                          <p className="text-xs font-bold truncate text-stone-900">
+                      <div className="absolute right-0 mt-2 w-56 bg-[#123D2D] rounded-2xl shadow-xl border border-[#28513B] py-2.5 z-40 animate-in fade-in zoom-in-95 duration-150 text-[#E8D9AE]">
+                        <div className="px-4 py-2 border-b border-[#28513B]/40">
+                          <p className="text-xs font-bold truncate text-white">
                             {userDisplayName}
                           </p>
-                          <p className="text-[11px] text-stone-500 truncate">
+                          <p className="text-[11px] text-[#E8D9AE]/70 truncate">
                             {user.email}
                           </p>
                         </div>
@@ -494,9 +485,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                                 setAccountMenuOpen(false);
                                 router.push("/admin");
                               }}
-                              className="w-full px-4 py-2 text-left text-xs font-semibold text-[#072515] hover:bg-[#FAF8F5] flex items-center gap-2 cursor-pointer transition-colors border-b border-stone-100"
+                              className="w-full px-4 py-2 text-left text-xs font-semibold text-[#C5A45B] hover:bg-[#092B20] flex items-center gap-2 cursor-pointer transition-colors border-b border-[#28513B]/40"
                             >
-                              <ShieldCheck className="w-3.5 h-3.5 text-[#c5a059] pointer-events-none" />
+                              <ShieldCheck className="w-3.5 h-3.5 text-[#C5A45B] pointer-events-none" />
                               <span>Admin Dashboard</span>
                             </button>
                           )}
@@ -504,12 +495,12 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                             type="button"
                             onClick={() => {
                               setAccountMenuOpen(false);
-                              router.push("/shop");
+                              router.push("/track-order");
                             }}
-                            className="w-full px-4 py-2 text-left text-xs text-stone-700 hover:bg-stone-50 hover:text-[#8b5f10] flex items-center gap-2 cursor-pointer transition-colors"
+                            className="w-full px-4 py-2 text-left text-xs text-[#E8D9AE] hover:bg-[#092B20] hover:text-[#C5A45B] flex items-center gap-2 cursor-pointer transition-colors"
                           >
-                            <Package className="w-3.5 h-3.5 text-stone-500 pointer-events-none" />
-                            <span>My Orders &amp; Rituals</span>
+                            <Package className="w-3.5 h-3.5 text-[#E8D9AE]/60 pointer-events-none" />
+                            <span>Track Orders &amp; Consignments</span>
                           </button>
                           <button
                             type="button"
@@ -517,17 +508,17 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                               setAccountMenuOpen(false);
                               router.push("/elements");
                             }}
-                            className="w-full px-4 py-2 text-left text-xs text-stone-700 hover:bg-stone-50 hover:text-[#8b5f10] flex items-center gap-2 cursor-pointer transition-colors"
+                            className="w-full px-4 py-2 text-left text-xs text-[#E8D9AE] hover:bg-[#092B20] hover:text-[#C5A45B] flex items-center gap-2 cursor-pointer transition-colors"
                           >
-                            <Gift className="w-3.5 h-3.5 text-stone-500 pointer-events-none" />
+                            <Gift className="w-3.5 h-3.5 text-[#E8D9AE]/60 pointer-events-none" />
                             <span>Custom Keepsake Hamper</span>
                           </button>
                         </div>
-                        <div className="pt-1 border-t border-stone-100">
+                        <div className="pt-1 border-t border-[#28513B]/40">
                           <button
                             type="button"
                             onClick={handleSignOut}
-                            className="w-full px-4 py-2 text-left text-xs text-red-700 hover:bg-red-50 flex items-center gap-2 cursor-pointer transition-colors"
+                            className="w-full px-4 py-2 text-left text-xs text-red-400 hover:bg-[#092B20] flex items-center gap-2 cursor-pointer transition-colors"
                           >
                             <LogOut className="w-3.5 h-3.5 pointer-events-none" />
                             <span>Sign Out</span>
@@ -548,7 +539,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     setSearchOpen(false);
                     setAccountMenuOpen(false);
                   }}
-                  className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] active:bg-stone-200 text-[#1C1B18] hover:text-black flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
+                  className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-transparent hover:border-[#28513B]/40 bg-transparent hover:bg-[#123D2D]/60 active:bg-[#123D2D] text-[#E8D9AE]/90 hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
                 >
                   <User className="w-4.5 h-4.5 stroke-[1.8] pointer-events-none" />
                 </Link>
@@ -560,11 +551,11 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               type="button"
               onClick={handleOpenCartDrawer}
               aria-label={`View shopping cart with ${cartCount} items`}
-              className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] active:bg-stone-200 text-[#1C1B18] hover:text-black flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
+              className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-transparent hover:border-[#28513B]/40 bg-transparent hover:bg-[#123D2D]/60 active:bg-[#123D2D] text-[#E8D9AE]/90 hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
             >
-              <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-stone-700 pointer-events-none" />
+              <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-[#E8D9AE]/90 pointer-events-none" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#1E1E1C] text-white border border-[#DDD6CB] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs pointer-events-none">
+                <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#C5A45B] text-[#092B20] border border-[#092B20] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs pointer-events-none">
                   {cartCount}
                 </span>
               )}
@@ -579,8 +570,8 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               aria-controls="mobile-navigation"
               className={`w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border flex items-center justify-center transition-colors cursor-pointer touch-manipulation shadow-2xs hover:shadow-xs lg:hidden ${
                 mobileMenuOpen
-                  ? "bg-[#1E1E1C] text-white border-[#1E1E1C]"
-                  : "bg-[#faf9f6] hover:bg-[#fbf6ea] active:bg-stone-200 text-stone-700 hover:text-[#8b5f10] border-stone-200 hover:border-[#c0881b]"
+                  ? "bg-[#123D2D] text-[#C5A45B] border-[#28513B]/60"
+                  : "bg-transparent hover:bg-[#123D2D]/60 active:bg-[#123D2D] text-[#E8D9AE]/90 hover:text-[#C5A45B] border-transparent hover:border-[#28513B]/40"
               }`}
             >
               {mobileMenuOpen ? (
@@ -619,26 +610,26 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                 {/* Slide-Down Drawer Container */}
                 <div
                   id="mobile-navigation"
-                  className="relative z-10 w-full bg-white border-b border-stone-200 shadow-2xl flex flex-col max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain text-stone-900 transition-all duration-200 p-4 sm:p-5 space-y-4"
+                  className="relative z-10 w-full bg-[#092B20] border-b border-[#28513B]/40 shadow-2xl flex flex-col max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain text-[#E8D9AE] transition-all duration-200 p-4 sm:p-5 space-y-4"
                 >
                   {/* 1. In-Drawer Live Search Form */}
                   <form
                     onSubmit={handleDrawerSearchSubmit}
-                    className="relative flex items-center bg-[#FAF8F5] border border-stone-200/90 rounded-xl px-3 py-2.5 shadow-2xs focus-within:border-[#8b5f10] focus-within:bg-white transition-all"
+                    className="relative flex items-center bg-[#123D2D] border border-[#28513B]/60 rounded-xl px-3 py-2.5 shadow-2xs focus-within:border-[#C5A45B] focus-within:bg-[#123D2D] transition-all"
                   >
-                    <Search className="w-4 h-4 text-[#8b5f10] mr-2 shrink-0 pointer-events-none" />
+                    <Search className="w-4 h-4 text-[#C5A45B] mr-2 shrink-0 pointer-events-none" />
                     <input
                       type="text"
                       value={drawerSearchQuery}
                       onChange={(e) => setDrawerSearchQuery(e.target.value)}
                       placeholder="Search creations, brass burners, scents..."
-                      className="w-full bg-transparent border-none outline-none text-xs sm:text-sm text-stone-900 placeholder:text-stone-400 font-sans"
+                      className="w-full bg-transparent border-none outline-none text-xs sm:text-sm text-[#E8D9AE] placeholder:text-[#E8D9AE]/50 font-sans"
                     />
                     {drawerSearchQuery ? (
                       <button
                         type="button"
                         onClick={() => setDrawerSearchQuery("")}
-                        className="p-1 text-stone-400 hover:text-stone-700 cursor-pointer touch-manipulation"
+                        className="p-1 text-[#E8D9AE]/60 hover:text-[#E8D9AE] cursor-pointer touch-manipulation"
                         aria-label="Clear search input"
                       >
                         <X className="w-4 h-4 pointer-events-none" />
@@ -646,7 +637,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     ) : (
                       <button
                         type="submit"
-                        className="text-[11px] font-bold text-[#8b5f10] uppercase tracking-wider shrink-0 cursor-pointer touch-manipulation px-1"
+                        className="text-[11px] font-bold text-[#C5A45B] uppercase tracking-wider shrink-0 cursor-pointer touch-manipulation px-1"
                       >
                         Search
                       </button>
@@ -669,8 +660,8 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           onClick={() => setMobileMenuOpen(false)}
                           className={`flex items-center justify-between px-3.5 py-3 rounded-xl transition-all cursor-pointer touch-manipulation ${
                             isActive
-                              ? "bg-[#1E1E1C] text-white font-bold shadow-xs"
-                              : "bg-[#FAF8F5] hover:bg-stone-100 text-stone-800 border border-stone-200/70"
+                              ? "bg-[#123D2D] text-[#C5A45B] font-bold border border-[#28513B]/60 shadow-xs"
+                              : "bg-[#092B20]/80 hover:bg-[#123D2D] text-[#E8D9AE] border border-[#28513B]/30"
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
@@ -682,15 +673,15 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                             <span
                               className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
                                 isActive
-                                  ? "bg-[#eed08e]/20 text-[#eed08e]"
-                                  : "bg-white text-stone-500 border border-stone-200/60"
+                                  ? "bg-[#C5A45B]/20 text-[#C5A45B]"
+                                  : "bg-[#123D2D] text-[#E8D9AE]/70 border border-[#28513B]/40"
                               }`}
                             >
                               {link.badge}
                             </span>
                             <ChevronRight
                               className={`w-4 h-4 ${
-                                isActive ? "text-[#eed08e]" : "text-stone-400"
+                                isActive ? "text-[#C5A45B]" : "text-[#28513B]"
                               }`}
                             />
                           </div>
@@ -700,19 +691,19 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                   </nav>
 
                   {/* 3. Account / Login Drawer Area */}
-                  <div className="pt-2 border-t border-stone-200/80">
+                  <div className="pt-2 border-t border-[#28513B]/40">
                     {user ? (
-                      <div className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-stone-200 space-y-3">
+                      <div className="p-3.5 rounded-2xl bg-[#123D2D] border border-[#28513B]/60 space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-[#1E1E1C] text-white flex items-center justify-center text-xs font-bold">
+                            <div className="w-8 h-8 rounded-full bg-[#092B20] text-[#C5A45B] border border-[#28513B] flex items-center justify-center text-xs font-bold">
                               {userDisplayName.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <p className="text-xs font-bold text-stone-900 truncate max-w-[160px]">
+                              <p className="text-xs font-bold text-white truncate max-w-[160px]">
                                 {userDisplayName}
                               </p>
-                              <p className="text-[10px] text-stone-500 truncate max-w-[160px]">
+                              <p className="text-[10px] text-[#E8D9AE]/70 truncate max-w-[160px]">
                                 {user.email}
                               </p>
                             </div>
@@ -720,7 +711,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           <button
                             type="button"
                             onClick={handleSignOut}
-                            className="text-xs font-semibold text-red-700 hover:underline cursor-pointer touch-manipulation"
+                            className="text-xs font-semibold text-red-400 hover:underline cursor-pointer touch-manipulation"
                           >
                             Sign Out
                           </button>
@@ -733,9 +724,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                               setMobileMenuOpen(false);
                               router.push("/admin");
                             }}
-                            className="w-full py-2 px-3 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xs touch-manipulation"
+                            className="w-full py-2 px-3 rounded-xl bg-[#092B20] text-[#C5A45B] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xs touch-manipulation border border-[#28513B]"
                           >
-                            <ShieldCheck className="w-3.5 h-3.5 text-[#eed08e]" />
+                            <ShieldCheck className="w-3.5 h-3.5 text-[#C5A45B]" />
                             <span>Open Admin Dashboard</span>
                           </button>
                         )}
@@ -747,7 +738,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                               setMobileMenuOpen(false);
                               router.push("/shop");
                             }}
-                            className="py-2.5 px-3 rounded-xl bg-white border border-stone-200 text-stone-700 text-xs font-semibold text-center hover:bg-stone-50 active:bg-stone-100 cursor-pointer shadow-2xs touch-manipulation"
+                            className="py-2.5 px-3 rounded-xl bg-[#092B20] border border-[#28513B] text-[#E8D9AE] text-xs font-semibold text-center hover:bg-[#123D2D] active:bg-[#123D2D] cursor-pointer shadow-2xs touch-manipulation"
                           >
                             My Orders
                           </button>
@@ -757,7 +748,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                               setMobileMenuOpen(false);
                               router.push("/elements");
                             }}
-                            className="py-2.5 px-3 rounded-xl bg-[#1E1E1C] text-white text-xs font-semibold text-center active:bg-[#33312D] cursor-pointer shadow-xs touch-manipulation"
+                            className="py-2.5 px-3 rounded-xl bg-[#C5A45B] text-[#092B20] text-xs font-semibold text-center hover:bg-[#E8D9AE] active:bg-[#E8D9AE] cursor-pointer shadow-xs touch-manipulation"
                           >
                             Custom Hamper
                           </button>
@@ -769,7 +760,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           href="/login"
                           prefetch={true}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="w-full py-3 px-3 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] active:bg-black text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
+                          className="w-full py-3 px-3 rounded-xl bg-[#C5A45B] hover:bg-[#E8D9AE] text-[#092B20] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
                         >
                           <User className="w-3.5 h-3.5 pointer-events-none" />
                           <span>Sign In</span>
@@ -778,7 +769,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           href="/signup"
                           prefetch={true}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="w-full py-3 px-3 rounded-xl bg-[#F3EFE8] hover:bg-[#EBE5DC] border border-[#DDD6CB] active:bg-stone-200 text-[#1C1B18] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
+                          className="w-full py-3 px-3 rounded-xl bg-[#123D2D] hover:bg-[#28513B]/40 border border-[#28513B] text-[#E8D9AE] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
                         >
                           <span>Sign Up</span>
                         </Link>
@@ -787,14 +778,14 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                   </div>
 
                   {/* 4. Mobile Concierge Hotline Snippet */}
-                  <div className="pt-2 flex items-center justify-between text-[11px] text-stone-500 font-sans border-t border-stone-100">
+                  <div className="pt-2 flex items-center justify-between text-[11px] text-[#E8D9AE]/70 font-sans border-t border-[#28513B]/40">
                     <span className="flex items-center gap-1.5">
-                      <PhoneCall className="w-3 h-3 text-[#8b5f10]" />
+                      <PhoneCall className="w-3 h-3 text-[#C5A45B]" />
                       Concierge Assistance
                     </span>
                     <a
                       href="tel:+918005876200"
-                      className="font-semibold text-stone-800 hover:text-[#8b5f10]"
+                      className="font-semibold text-[#E8D9AE] hover:text-[#C5A45B]"
                     >
                       +91 800-KURMA-01
                     </a>
@@ -836,30 +827,27 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                       stiffness: 300,
                       mass: 0.8,
                     }}
-                    className="fixed top-0 inset-x-0 z-[110] bg-[#FAF8F5] border-b border-[#DDD3C2] rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain text-stone-900"
+                    className="fixed top-0 inset-x-0 z-[110] bg-[#092B20] border-b border-[#28513B]/40 rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain text-[#E8D9AE]"
                   >
                     {/* Top Row: Navigation Links, Kurma Brand Logo & Icons (matching reference header) */}
-                    <div className="w-full border-b border-[#EAE3D8] bg-[#FAF8F5] shrink-0">
+                    <div className="w-full border-b border-[#28513B]/40 bg-[#092B20] shrink-0">
                       <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
                         {/* Brand Logo */}
                         <Link
                           href="/"
                           onClick={() => setSearchOpen(false)}
-                          className="flex items-center gap-2 sm:gap-3 group shrink-0"
+                          className="flex items-center group shrink-0"
                           aria-label="Kurma Home"
                         >
-                          <div className="relative w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
+                          <div className="relative w-14 h-14 sm:w-[68px] sm:h-[68px] lg:w-[74px] lg:h-[74px] flex items-center justify-center shrink-0">
                             <Image
-                              src="/images/brand/kurma-turtle-transparent.png"
+                              src="/images/logo-transparent.png"
                               alt="Kurma Logo"
-                              width={48}
-                              height={48}
+                              width={80}
+                              height={80}
                               className="w-full h-full object-contain pointer-events-none"
                             />
                           </div>
-                          <span className="font-serif tracking-[0.16em] sm:tracking-[0.2em] text-lg sm:text-[22px] font-bold text-stone-900 leading-none">
-                            KURMA
-                          </span>
                         </Link>
 
                         {/* Desktop Navigation Links */}
@@ -877,8 +865,8 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                                 onClick={() => setSearchOpen(false)}
                                 className={`relative py-2 transition-colors cursor-pointer ${
                                   isActive
-                                    ? "text-[#8b5f10] font-semibold"
-                                    : "text-stone-700 hover:text-[#8b5f10]"
+                                    ? "text-[#C5A45B] font-semibold"
+                                    : "text-[#E8D9AE]/85 hover:text-[#C5A45B]"
                                 }`}
                               >
                                 <span>{link.name}</span>
@@ -890,7 +878,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         {/* Right Action Icons */}
                         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                           {/* Active Search indicator button */}
-                          <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border bg-[#1E1E1C] text-white border-[#1E1E1C] flex items-center justify-center shadow-2xs">
+                          <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border bg-[#123D2D] text-[#C5A45B] border-[#28513B] flex items-center justify-center shadow-2xs">
                             <Search className="w-4.5 h-4.5 stroke-[1.8]" />
                           </div>
 
@@ -899,7 +887,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                             href="/login"
                             onClick={() => setSearchOpen(false)}
                             aria-label="Patron Sign In"
-                            className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] text-[#1C1B18] flex items-center justify-center transition-colors shadow-2xs"
+                            className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#28513B] bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs"
                           >
                             <User className="w-4.5 h-4.5 stroke-[1.8]" />
                           </Link>
@@ -911,11 +899,11 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                               setSearchOpen(false);
                               handleOpenCartDrawer();
                             }}
-                            className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#DDD6CB] hover:border-[#B5ADA1] bg-[#F3EFE8] hover:bg-[#EBE5DC] text-[#1C1B18] flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
+                            className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#28513B] bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
                           >
-                            <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-stone-700" />
+                            <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-[#E8D9AE]" />
                             {cartCount > 0 && (
-                              <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#1E1E1C] text-white border border-[#DDD6CB] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs">
+                              <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#C5A45B] text-[#092B20] border border-[#092B20] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs">
                                 {cartCount}
                               </span>
                             )}
@@ -930,7 +918,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     <div className="flex items-center gap-3 sm:gap-4 w-full">
                       <form
                         onSubmit={handleSearchSubmit}
-                        className="flex-1 relative flex items-center bg-[#F1ECE4] hover:bg-[#EBE4DA] focus-within:bg-white rounded-xl border border-[#DDD3C2] focus-within:border-[#8b5f10] focus-within:ring-2 focus-within:ring-[#eed08e]/50 transition-all p-1.5 pl-4 sm:pl-6 pr-3 shadow-inner"
+                        className="flex-1 relative flex items-center bg-[#123D2D] focus-within:bg-[#123D2D] rounded-xl border border-[#28513B] focus-within:border-[#C5A45B] transition-all p-1.5 pl-4 sm:pl-6 pr-3 shadow-inner"
                       >
                         <input
                           ref={searchInputRef}
@@ -938,14 +926,14 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Search here...."
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm md:text-base text-stone-900 placeholder:text-stone-400 font-sans py-1 sm:py-1.5 focus:outline-none focus:ring-0"
+                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm md:text-base text-[#E8D9AE] placeholder:text-[#E8D9AE]/50 font-sans py-1 sm:py-1.5 focus:outline-none focus:ring-0"
                           style={{ outline: "none", boxShadow: "none", border: "none" }}
                         />
                         {searchQuery && (
                           <button
                             type="button"
                             onClick={() => setSearchQuery("")}
-                            className="p-1 rounded-full text-stone-400 hover:text-stone-700 transition-colors mr-1 cursor-pointer"
+                            className="p-1 rounded-full text-[#E8D9AE]/60 hover:text-[#E8D9AE] transition-colors mr-1 cursor-pointer"
                             aria-label="Clear search input"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -954,7 +942,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         <button
                           type="submit"
                           aria-label="Submit search"
-                          className="p-1 text-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
+                          className="p-1 text-[#C5A45B] hover:text-[#E8D9AE] transition-colors cursor-pointer"
                         >
                           <Search className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.8]" />
                         </button>
@@ -965,7 +953,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         type="button"
                         onClick={() => setSearchOpen(false)}
                         aria-label="Close search overlay"
-                        className="p-2 sm:p-2.5 rounded-full hover:bg-stone-200/70 text-stone-600 hover:text-stone-950 transition-colors cursor-pointer shrink-0 touch-manipulation"
+                        className="p-2 sm:p-2.5 rounded-full bg-[#123D2D] hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] transition-colors cursor-pointer shrink-0 touch-manipulation border border-[#28513B]"
                       >
                         <X className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.9]" />
                       </button>
@@ -977,20 +965,20 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         {/* LEFT COLUMN: Collections List (exact layout from screenshot) */}
                         <div className="md:col-span-5 lg:col-span-5 space-y-3.5">
                           <div className="flex items-center justify-between pb-1">
-                            <h3 className="text-sm sm:text-base font-bold text-stone-900 font-serif tracking-tight">
+                            <h3 className="text-sm sm:text-base font-bold text-[#E8D9AE] font-serif tracking-tight">
                               Collections
                             </h3>
                           </div>
 
-                          <div className="divide-y divide-[#E6DDD0]">
+                          <div className="divide-y divide-[#28513B]/40">
                             {searchCollections.map((col) => (
                               <Link
                                 key={col.title}
                                 href={col.href}
                                 onClick={() => setSearchOpen(false)}
-                                className="flex items-center gap-3.5 py-3 group cursor-pointer hover:bg-[#F3EFEA]/80 px-2 rounded-lg transition-all"
+                                className="flex items-center gap-3.5 py-3 group cursor-pointer hover:bg-[#123D2D]/60 px-2 rounded-lg transition-all"
                               >
-                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden bg-white border border-[#DDD3C2] shrink-0 p-1 shadow-2xs group-hover:scale-103 transition-transform">
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden bg-[#092B20] border border-[#28513B] shrink-0 p-1 shadow-2xs group-hover:scale-103 transition-transform">
                                   <Image
                                     src={col.image}
                                     alt={col.title}
@@ -999,7 +987,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                                   />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <span className="text-xs sm:text-[13.5px] font-semibold text-stone-900 group-hover:text-[#8b5f10] transition-colors block font-serif truncate">
+                                  <span className="text-xs sm:text-[13.5px] font-semibold text-[#E8D9AE] group-hover:text-[#C5A45B] transition-colors block font-serif truncate">
                                     {col.title}
                                   </span>
                                   <span className="text-[10.5px] text-stone-500 font-sans block mt-0.5">

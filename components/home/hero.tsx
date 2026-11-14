@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { RealisticSmoke } from "@/components/home/realistic-smoke";
 
@@ -29,7 +28,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
     <section
       ref={heroRef}
       id="home"
-      className="sticky top-16 sm:top-20 z-0 w-full h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] min-h-[580px] sm:min-h-[620px] bg-[#EDE1D1] border-b border-[#CBB8A1] overflow-hidden flex items-center text-[#1C1B18] transform-gpu [transform:translate3d(0,0,0)]"
+      className="sticky top-16 sm:top-20 z-0 w-full h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] min-h-[580px] sm:min-h-[620px] bg-[#EDE1D1] border-b border-[#28513B]/40 overflow-hidden flex items-center text-[#092B20] transform-gpu [transform:translate3d(0,0,0)]"
     >
       <div className="w-full h-full flex items-center relative">
         {/* Full-Bleed Editorial Background Banner */}
@@ -42,8 +41,6 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
             className="object-cover object-right md:object-[center_35%]"
             sizes="100vw"
           />
-          {/* Soft Left Ambient Gradient for Supreme Text Contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#EDE1D1]/90 via-[#EDE1D1]/55 to-transparent sm:via-[#EDE1D1]/40 lg:from-[#EDE1D1]/70 lg:via-transparent" />
 
           {/* Realistic Flowing Sandalwood Smoke Animation */}
           <RealisticSmoke />
@@ -54,9 +51,9 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
           <div className="max-w-xl lg:max-w-[560px] xl:max-w-[640px] space-y-4 sm:space-y-6">
             {/* Framer Motion Animated Headline */}
             {shouldReduceMotion ? (
-              <h1 className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-normal text-[#1C1B18] leading-[1.14] tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-light text-[#092B20] leading-[1.14] tracking-normal">
                 <span className="block">Elements in Harmony.</span>
-                <span className="block italic font-normal text-[#7A5A28] sm:whitespace-nowrap">
+                <span className="block font-light text-[#092B20] sm:whitespace-nowrap">
                   Higher Consciousness.
                 </span>
               </h1>
@@ -71,7 +68,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                     transition: { staggerChildren: 0.14, delayChildren: 0.1 },
                   },
                 }}
-                className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-normal text-[#1C1B18] leading-[1.14] tracking-tight"
+                className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-light text-[#092B20] leading-[1.14] tracking-normal"
               >
                 <motion.span
                   variants={{
@@ -95,7 +92,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                       transition: { duration: 0.9, ease: LUXURY_EASE },
                     },
                   }}
-                  className="block italic font-normal text-[#7A5A28] sm:whitespace-nowrap"
+                  className="block font-light text-[#092B20] sm:whitespace-nowrap"
                 >
                   Higher Consciousness.
                 </motion.span>
@@ -124,16 +121,15 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] group cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#E8D9AE] text-[#092B20] text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer"
                 >
-                  <span>Explore Collection</span>
-                  <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 group-hover:translate-x-1" />
+                  Explore Collection
                 </button>
 
                 <button
                   type="button"
                   onClick={onExploreBestsellers || onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#FAF7F2]/90 hover:bg-white text-[#1E1B18] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl border border-[#CBB8A1] hover:border-[#1E1E1C] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#123D2D]/80 hover:bg-[#123D2D] text-[#E8D9AE] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
                 >
                   View Marble Trunk
                 </button>
@@ -148,16 +144,15 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 sm:px-8 sm:py-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] group cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#E8D9AE] text-[#092B20] text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer"
                 >
-                  <span>Explore Collection</span>
-                  <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 group-hover:translate-x-1" />
+                  Explore Collection
                 </button>
 
                 <button
                   type="button"
                   onClick={onExploreBestsellers || onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#FAF7F2]/90 hover:bg-white text-[#1E1B18] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full sm:rounded-xl border border-[#CBB8A1] hover:border-[#1E1E1C] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#123D2D]/80 hover:bg-[#123D2D] text-[#E8D9AE] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
                 >
                   View Marble Trunk
                 </button>

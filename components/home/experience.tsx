@@ -7,13 +7,14 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring, useTra
 import { Plus, Heart, Check, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
+import { PromoBanner } from "@/components/home/promo-banner";
 
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   return (
     <motion.div
       aria-hidden="true"
-      className="hidden sm:block fixed left-0 top-0 z-[60] h-[3px] w-full origin-left bg-[#c0881b] pointer-events-none"
+      className="hidden sm:block fixed left-0 top-0 z-[60] h-[3px] w-full origin-left bg-[#C5A45B] pointer-events-none"
       style={{ scaleX: scrollYProgress }}
     />
   );
@@ -172,128 +173,7 @@ const BESTSELLER_ITEMS = [
   },
 ];
 
-const OCCASIONS_ITEMS = [
-  {
-    id: "occasion-wedding",
-    badge: "WEDDING",
-    title: "Wedding & Festive Gifting",
-    description: "Return gifts & luxury festive suites.",
-    tags: ["Return Gifts", "Bulk Orders", "Wedding Suites"],
-    productId: "fragrance-earth",
-    image: "/images/product/earth-portrait.jpg",
-    images: [
-      "/images/product/earth-portrait.jpg",
-      "/images/product/suite-portrait.jpg",
-      "/images/product/earth-front.png",
-      "/images/product/suite-clean.png",
-    ],
-  },
-  {
-    id: "occasion-corporate",
-    badge: "CORPORATE",
-    title: "Corporate & Executive Suites",
-    description: "Executive hampers & client appreciation.",
-    tags: ["Diwali Hampers", "Branded Trunks", "Bulk Gifting"],
-    productId: "fragrance-fire",
-    image: "/images/product/fire-portrait.jpg",
-    images: [
-      "/images/product/fire-portrait.jpg",
-      "/images/product/trunk-portrait.jpg",
-      "/images/product/fire-front.png",
-      "/images/product/mdf-box-clean.png",
-    ],
-  },
-  {
-    id: "occasion-custom",
-    badge: "BESPOKE",
-    title: "Custom & Bespoke Rituals",
-    description: "Bespoke curation & custom brass seals.",
-    tags: ["Build Yours", "Brass Engraving", "Custom Blends"],
-    productId: "fragrance-water",
-    image: "/images/product/water-portrait.jpg",
-    images: [
-      "/images/product/water-portrait.jpg",
-      "/images/product/water-front.png",
-      "/images/product/marble-portrait.jpg",
-      "/images/product/medallion-clean.png",
-    ],
-  },
-  {
-    id: "occasion-celebrations",
-    badge: "CELEBRATION",
-    title: "Sacred Celebrations",
-    description: "Sacred puja rituals & celebrations.",
-    tags: ["Griha Pravesh", "Puja Rituals", "Anniversary"],
-    productId: "fragrance-space",
-    image: "/images/product/space-portrait.jpg",
-    images: [
-      "/images/product/space-portrait.jpg",
-      "/images/product/space-front.png",
-      "/images/product/turtle-holder-portrait.jpg",
-      "/images/product/image9.png",
-    ],
-  },
-  {
-    id: "occasion-grihapravesh",
-    badge: "HOUSEWARMING",
-    title: "Griha Pravesh & Sanctum Blessing",
-    description: "Auspicious purification for new homes.",
-    tags: ["New Home", "Vastu Shanti", "Auspicious"],
-    productId: "fragrance-air",
-    image: "/images/product/air-portrait.jpg",
-    images: [
-      "/images/product/air-portrait.jpg",
-      "/images/product/air-front.png",
-      "/images/product/turtle-holder-portrait.jpg",
-      "/images/product/five-boxes-3d.png",
-    ],
-  },
-  {
-    id: "occasion-deepawali",
-    badge: "FESTIVAL OF LIGHTS",
-    title: "Deepawali & Grand Festivities",
-    description: "Heirloom suites for grand festivities.",
-    tags: ["Diwali Suites", "Royal Packaging", "Bulk Festive"],
-    productId: "marble-gift-box",
-    image: "/images/product/marble-portrait.jpg",
-    images: [
-      "/images/product/marble-portrait.jpg",
-      "/images/product/marble-box-clean.png",
-      "/images/product/suite-clean.png",
-      "/images/product/image9.png",
-    ],
-  },
-  {
-    id: "occasion-anniversary",
-    badge: "MILESTONE",
-    title: "Anniversary & Heirloom Keepsakes",
-    description: "Milestone keepsakes & engraved brassware.",
-    tags: ["Heirloom Brass", "Engraved Keepsake", "Timeless"],
-    productId: "mdf-gift-box",
-    image: "/images/product/trunk-portrait.jpg",
-    images: [
-      "/images/product/trunk-portrait.jpg",
-      "/images/product/mdf-box-clean.png",
-      "/images/product/medallion-clean.png",
-      "/images/product/image7.png",
-    ],
-  },
-  {
-    id: "occasion-wellness",
-    badge: "SANCTUARY",
-    title: "Wellness & Dhyana Rituals",
-    description: "Calming scents for mindfulness & dhyana.",
-    tags: ["Yoga Sanctuaries", "Meditation", "Ayurvedic"],
-    productId: "turtle-incense-holder",
-    image: "/images/product/turtle-holder-portrait.jpg",
-    images: [
-      "/images/product/turtle-holder-portrait.jpg",
-      "/images/product/suite-clean.png",
-      "/images/product/water-front.png",
-      "/images/product/earth-front.png",
-    ],
-  },
-];
+
 
 const questions = [
   [
@@ -482,146 +362,20 @@ function BestsellerCard({
   );
 }
 
-function getOccasionTargetProductId(defaultProductId: string, currentImg?: string): string {
-  if (currentImg) {
-    const lower = currentImg.toLowerCase();
-    if (lower.includes("earth")) return "fragrance-earth";
-    if (lower.includes("fire")) return "fragrance-fire";
-    if (lower.includes("water")) return "fragrance-water";
-    if (lower.includes("space")) return "fragrance-space";
-    if (lower.includes("air")) return "fragrance-air";
-    if (lower.includes("turtle")) return "turtle-incense-holder";
-    if (lower.includes("marble") || lower.includes("image9")) return "marble-gift-box";
-    if (lower.includes("trunk") || lower.includes("mdf")) return "mdf-gift-box";
-    if (lower.includes("suite") || lower.includes("five-boxes") || lower.includes("image7")) return "5-elements-suite";
-    if (lower.includes("medallion")) return "brass-medallion";
-  }
-  return defaultProductId;
-}
-
-function OccasionCard({
-  item,
-  isLiked,
-  onToggleWishlist,
-}: {
-  item: (typeof OCCASIONS_ITEMS)[0];
-  isLiked: boolean;
-  onToggleWishlist: (id: string) => void;
-}) {
-  const router = useRouter();
-  const [activeIdx, setActiveIdx] = useState(0);
-  const images = item.images && item.images.length > 0 ? item.images : [item.image];
-  const currentImg = images[activeIdx] || item.image;
-  const targetProductId = getOccasionTargetProductId(item.productId, currentImg);
-
-  return (
-    <div
-      onClick={() => router.push(`/products/${targetProductId}`)}
-      className="flex-shrink-0 w-[84%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(25%-0.9375rem)] snap-start transition-all duration-300 flex flex-col justify-between group cursor-pointer select-none"
-    >
-      <div>
-        {/* Aspect 3/5 Vertical Portrait Image Canvas with in-card scrolling/carousel */}
-        <div className="relative aspect-[3/5] w-full overflow-hidden bg-transparent rounded-2xl flex flex-col justify-between p-4 transition-colors">
-          {/* Top Right Bookmark Icon */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleWishlist(item.id);
-            }}
-            className="absolute top-3.5 right-3.5 z-20 text-stone-700 hover:text-black transition-transform active:scale-95 cursor-pointer"
-            title="Bookmark item"
-          >
-            <Bookmark className={`w-4 h-4 stroke-[1.5] ${isLiked ? "fill-stone-900 text-stone-900" : ""}`} />
-          </button>
-
-          {/* Centered vertical box image */}
-          <div className="relative w-full h-full flex items-center justify-center my-auto py-2">
-            <Image
-              src={currentImg}
-              alt={item.title}
-              fill
-              loading="lazy"
-              className={`drop-shadow-md group-hover:scale-[1.03] transition-all duration-500 ${
-                currentImg.includes("portrait") ? "object-cover rounded-xl" : "object-contain"
-              } object-center`}
-              sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
-            />
-          </div>
-
-          {/* Left & Right Hover Navigation Buttons */}
-          {images.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveIdx((prev) => (prev - 1 + images.length) % images.length);
-                }}
-                title="Previous image"
-                aria-label="Previous image"
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-xs z-20 cursor-pointer shadow-md"
-              >
-                <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveIdx((prev) => (prev + 1) % images.length);
-                }}
-                title="Next image"
-                aria-label="Next image"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-xs z-20 cursor-pointer shadow-md"
-              >
-                <ChevronRight className="w-4 h-4 stroke-[2.2]" />
-              </button>
-            </>
-          )}
-
-          {/* Bottom Pagination Dots with interactive click & active state */}
-          {images.length > 1 && (
-            <div className="flex items-center justify-center gap-1.5 pt-2 z-20">
-              {images.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveIdx(idx);
-                  }}
-                  aria-label={`Go to image ${idx + 1}`}
-                  className={`transition-all duration-300 rounded-full cursor-pointer ${
-                    idx === activeIdx
-                      ? "w-2.5 h-1.5 bg-stone-900 shadow-xs"
-                      : "w-1.5 h-1.5 bg-stone-300 hover:bg-stone-500"
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Content details */}
-        <div className="pt-3 px-1 pb-2">
-          <h3 className="font-serif text-base sm:text-lg font-medium text-[#1C1B18] group-hover:text-[#8C6215] transition-colors truncate">
-            {item.title}
-          </h3>
-        </div>
-      </div>
 
 
-    </div>
-  );
-}
-
-export function RitualAndQuestions() {
+export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => void } = {}) {
   const router = useRouter();
   const [open, setOpen] = useState<number | null>(0);
   const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const { addToCart } = useCart();
   const reduced = useReducedMotion();
+
+  const handleExploreGifts = onExploreGifts || (() => {
+    const el = document.getElementById("catalog");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  });
 
   // Bestsellers Carousel Scroll State (4 items per view, matching reels)
   const bestsellersScrollRef = useRef<HTMLDivElement>(null);
@@ -684,66 +438,7 @@ export function RitualAndQuestions() {
     }
   };
 
-  // Occasions Carousel Scroll State (4 items per view, matching reels)
-  const occasionsScrollRef = useRef<HTMLDivElement>(null);
-  const occasionsRafId = useRef<number | null>(null);
-  const [occasionsPage, setOccasionsPage] = useState(0);
-  const totalOccasionsPages = Math.ceil(OCCASIONS_ITEMS.length / 4);
-  const [canScrollOccasionsLeft, setCanScrollOccasionsLeft] = useState(false);
-  const [canScrollOccasionsRight, setCanScrollOccasionsRight] = useState(true);
 
-  const updateOccasionsScrollState = useCallback(() => {
-    if (occasionsRafId.current !== null) return;
-    occasionsRafId.current = requestAnimationFrame(() => {
-      occasionsRafId.current = null;
-      if (occasionsScrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = occasionsScrollRef.current;
-        const newLeft = scrollLeft > 20;
-        const newRight = scrollLeft < scrollWidth - clientWidth - 20;
-        setCanScrollOccasionsLeft((prev) => (prev !== newLeft ? newLeft : prev));
-        setCanScrollOccasionsRight((prev) => (prev !== newRight ? newRight : prev));
-
-        const pageIndex = Math.min(
-          totalOccasionsPages - 1,
-          Math.max(0, Math.round(scrollLeft / (clientWidth || 1)))
-        );
-        setOccasionsPage((prev) => (prev !== pageIndex ? pageIndex : prev));
-      }
-    });
-  }, [totalOccasionsPages]);
-
-  useEffect(() => {
-    updateOccasionsScrollState();
-    const current = occasionsScrollRef.current;
-    if (current) {
-      current.addEventListener("scroll", updateOccasionsScrollState, { passive: true });
-    }
-    return () => {
-      if (current) current.removeEventListener("scroll", updateOccasionsScrollState);
-      if (occasionsRafId.current !== null) cancelAnimationFrame(occasionsRafId.current);
-    };
-  }, [updateOccasionsScrollState]);
-
-  const handleOccasionsScroll = (direction: "left" | "right") => {
-    if (occasionsScrollRef.current) {
-      const containerWidth = occasionsScrollRef.current.clientWidth;
-      occasionsScrollRef.current.scrollBy({
-        left: direction === "left" ? -containerWidth : containerWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const goToOccasionsPage = (pageIdx: number) => {
-    if (occasionsScrollRef.current) {
-      const containerWidth = occasionsScrollRef.current.clientWidth;
-      occasionsScrollRef.current.scrollTo({
-        left: pageIdx * containerWidth,
-        behavior: "smooth",
-      });
-      setOccasionsPage(pageIdx);
-    }
-  };
 
   const toggleWishlist = (id: string) => {
     setLikedItems((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -774,7 +469,7 @@ export function RitualAndQuestions() {
           {/* Section Header */}
           <div className="text-center mb-8">
             <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
-              Our <span className="italic font-serif font-normal">Bestsellers</span>
+              Our Bestsellers
             </h2>
           </div>
 
@@ -822,58 +517,10 @@ export function RitualAndQuestions() {
       {/* Curated Gifting Galerie Section */}
       <GiftingGallery />
 
+      {/* Promo Banner Carousel Section */}
+      <PromoBanner onExploreGifts={handleExploreGifts} />
 
-
-      {/* SECTION: 'What brings you here today?' (THE KURMA'S OCCASION) */}
-      <section className="bg-[#FAF7F2] py-14 sm:py-24 px-4 sm:px-6 md:px-8 lg:px-12 border-t border-[#EAE3D5] w-full mobile-defer-render">
-        <div className="mx-auto max-w-[1700px] w-full">
-          {/* Header */}
-          <div className="text-center mb-8 sm:mb-10">
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
-              What brings you here <span className="italic font-serif font-normal">today</span>?
-            </h2>
-          </div>
-
-
-          {/* Occasion Cards Horizontal Carousel with Smooth Snapping */}
-          <div
-            ref={occasionsScrollRef}
-            className="flex gap-4 sm:gap-5 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
-          >
-            {OCCASIONS_ITEMS.map((item) => (
-              <OccasionCard
-                key={item.id}
-                item={item}
-                isLiked={!!likedItems[item.id]}
-                onToggleWishlist={toggleWishlist}
-              />
-            ))}
-          </div>
-
-          {/* Subtle Page Indicator Dots like third image */}
-          <div className="flex items-center justify-center gap-1.5 pt-4">
-            {Array.from({ length: totalOccasionsPages }).map((_, pageIdx) => (
-              <button
-                key={pageIdx}
-                onClick={() => goToOccasionsPage(pageIdx)}
-                aria-label={`Go to occasion page ${pageIdx + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  occasionsPage === pageIdx
-                    ? "w-7 bg-[#8b5f10]"
-                    : "w-2 bg-stone-300 hover:bg-stone-400"
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ SECTION (Positioned Directly Below 'THE KURMA'S OCCASION' Section) */}
+      {/* FAQ SECTION */}
       <KurmaFAQSection />
     </>
   );
@@ -941,7 +588,7 @@ function KurmaFAQSection() {
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
-            Everything You Need to Know <span className="italic font-serif font-normal text-[#8C6215]">About Kurma</span>
+            Everything You Need to Know <span className="font-serif font-normal text-[#8C6215]">About Kurma</span>
           </h2>
         </div>
 

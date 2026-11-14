@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -194,8 +195,15 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
     return (
       <div className="min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center p-6 text-[#1A1A18] selection:bg-[#eed08e]/30">
         <div className="flex flex-col items-center max-w-sm text-center space-y-4">
-          <div className="size-16 rounded-2xl bg-[#072515] text-[#eed08e] flex items-center justify-center shadow-lg border border-[#eed08e]/30 relative animate-pulse">
-            <span className="font-serif font-bold text-2xl tracking-widest text-[#eed08e]">K</span>
+          <div className="relative size-16 rounded-2xl overflow-hidden shadow-lg border border-[#eed08e]/40 bg-[#072515] flex items-center justify-center animate-pulse">
+            <Image
+              src="/images/logo.jpeg"
+              alt="Kurma Logo"
+              width={64}
+              height={64}
+              className="w-full h-full object-cover"
+              priority
+            />
           </div>
           <div className="space-y-1">
             <h2 className="font-serif text-lg font-semibold tracking-wide text-[#072515]">KURMA ATELIER</h2>
@@ -219,9 +227,15 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
 
         {/* Top Minimal Bar */}
         <header className="px-6 py-5 flex items-center justify-between border-b border-[#eed08e]/15 relative z-10">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="size-9 rounded-xl bg-[#FAF8F5] text-[#072515] flex items-center justify-center shadow-md font-serif font-bold text-base group-hover:scale-105 transition-transform">
-              K
+          <Link href="/" className="flex items-center gap-3 group" aria-label="Kurma Home">
+            <div className="relative size-9 rounded-xl overflow-hidden shadow-md border border-[#eed08e]/40 bg-[#072515] flex items-center justify-center shrink-0">
+              <Image
+                src="/images/logo.jpeg"
+                alt="Kurma Logo"
+                width={36}
+                height={36}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+              />
             </div>
             <div>
               <span className="font-serif text-sm tracking-widest font-bold text-[#eed08e] block">KURMA</span>
@@ -243,8 +257,17 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
           <div className="w-full max-w-md">
             {/* Card Frame */}
             <div className="bg-[#FAF8F5] text-[#1A1A18] rounded-2xl shadow-2xl border border-[#eed08e]/40 p-8 sm:p-10 relative">
-              {/* Title Section: ONLY "Admin Administration" */}
-              <div className="text-center mb-6">
+              {/* Title Section */}
+              <div className="text-center mb-6 flex flex-col items-center">
+                <div className="relative size-14 rounded-2xl overflow-hidden shadow-md border border-[#eed08e]/40 bg-[#072515] mb-3 flex items-center justify-center">
+                  <Image
+                    src="/images/logo.jpeg"
+                    alt="Kurma Logo"
+                    width={56}
+                    height={56}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <h1 className="font-serif text-2xl font-bold tracking-tight text-[#072515]">
                   Admin Administration
                 </h1>

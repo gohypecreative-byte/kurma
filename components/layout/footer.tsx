@@ -49,32 +49,39 @@ export function Footer() {
         {/* Main Footer Grid - Responsive 2-column on mobile, 4-column on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-12 gap-x-6 sm:gap-x-10 lg:gap-x-12 xl:gap-x-16 gap-y-7 sm:gap-y-10 lg:gap-y-12 w-full">
           {/* Column 1: Brand Info (full width col-span-2 on mobile, 4 cols on desktop) */}
-          <div className="col-span-2 lg:col-span-4 xl:col-span-4 space-y-3 sm:space-y-5 lg:space-y-6">
-            {/* Brand Logo & Name - Prominently Sized */}
-            <Link href="/" className="inline-flex items-center gap-3 sm:gap-4 group cursor-pointer" aria-label="Kurma Home">
-              <div className="relative w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
-                <Image
-                  src="/images/brand/kurma-turtle-transparent.png"
-                  alt="Kurma Logo"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
-                />
+          <div className="col-span-2 lg:col-span-4 xl:col-span-4">
+            <div className="w-full max-w-[440px] flex flex-col items-center space-y-4 sm:space-y-5 lg:space-y-6">
+              {/* Brand Logo - Centered horizontally directly above this specific content */}
+              <Link
+                href="/"
+                className="group cursor-pointer inline-flex items-center justify-center -translate-x-5 sm:-translate-x-7 lg:-translate-x-8"
+                aria-label="Kurma Home"
+              >
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-center justify-center shrink-0">
+                  <Image
+                    src="/images/logo-transparent.png"
+                    alt="Kurma Logo"
+                    width={112}
+                    height={112}
+                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
+                    priority
+                  />
+                </div>
+              </Link>
+
+              {/* Text Content */}
+              <div className="w-full space-y-3 sm:space-y-4">
+                {/* Headline */}
+                <h3 className="w-full text-left font-serif text-xl sm:text-3xl lg:text-[34px] font-medium text-[#1C1B18] tracking-tight leading-snug">
+                  Your sacred daily ritual
+                </h3>
+
+                {/* Description */}
+                <p className="w-full text-left text-xs sm:text-base lg:text-[17px] text-stone-600 leading-relaxed font-sans font-normal">
+                  Kurma brings 100% charcoal-free temple botanicals, pure Mysore sandalwood, and Moradabad brass heirlooms into quiet rituals for your home.
+                </p>
               </div>
-              <span className="font-serif text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-semibold tracking-tight text-[#1C1B18] leading-none">
-                Kurma
-              </span>
-            </Link>
-
-            {/* Headline */}
-            <h3 className="font-serif text-xl sm:text-3xl lg:text-[34px] font-medium text-[#1C1B18] tracking-tight leading-snug">
-              Your sacred daily ritual
-            </h3>
-
-            {/* Description */}
-            <p className="text-xs sm:text-base lg:text-[17px] text-stone-600 leading-relaxed font-sans max-w-md font-normal">
-              Kurma brings 100% charcoal-free temple botanicals, pure Mysore sandalwood, and Moradabad brass heirlooms into quiet rituals for your home.
-            </p>
+            </div>
           </div>
 
           {/* Column 2: "Menu" (1 col on mobile, 2 cols on desktop) */}
@@ -122,6 +129,11 @@ export function Footer() {
               Navigation
             </h4>
             <ul className="space-y-2.5 sm:space-y-3.5 text-xs sm:text-[15px] lg:text-base text-stone-600 font-normal">
+              <li>
+                <Link href="/track-order" className="hover:text-black font-semibold text-[#1C1B18] transition-colors block">
+                  Track Your Order
+                </Link>
+              </li>
               <li>
                 <Link href="/contact" className="hover:text-black transition-colors block">
                   Contact Concierge

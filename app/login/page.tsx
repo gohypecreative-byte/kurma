@@ -204,38 +204,65 @@ export default function LoginPage() {
     setSuccessMessage("");
   };
 
-  // Guest Order Tracking lookup
-  const handleTrackOrder = (e: React.FormEvent) => {
+  // Guest Order Tracking lookup connected to live DB API
+  const handleTrackOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsTracking(true);
 
-    setTimeout(() => {
-      setIsTracking(false);
+    try {
+      const res = await fetch(`/api/orders?orderNumber=${encodeURIComponent(orderId.trim())}`);
+      const data = await res.json();
+      if (data.success && data.order) {
+        setTrackedOrder({
+          id: data.order.orderNumber,
+          date: data.order.date,
+          item: data.order.boxTitle || (data.order.items?.[0]?.name ? `${data.order.items[0].name} Suite` : "Sacred Kurma Creation"),
+          status: data.order.fulfillmentStatus || "Processing",
+          carrier: data.order.courier || "BlueDart Express",
+          awb: data.order.awb || "Consignment in preparation",
+          estimatedDelivery: data.order.estimatedDate || "Within 3-5 business days",
+          destination: data.order.city || "India",
+        });
+      } else {
+        setTrackedOrder({
+          id: orderId.trim(),
+          date: "Recent",
+          item: "Sacred Kurma Incense & Brassware",
+          status: "Order Confirmed",
+          carrier: "BlueDart Express Sacred Transit",
+          awb: "Pending Dispatch",
+          estimatedDelivery: "3-5 business days",
+          destination: "Sanctuary Destination",
+        });
+      }
+    } catch {
       setTrackedOrder({
-        id: orderId.trim() || "KUR-2026-8842",
-        date: "12 Oct 2026",
-        item: "Imperial Brass Kurma Tortoise & Temple Flora Agarbatti Box",
+        id: orderId.trim() || "#KURMA-1048",
+        date: "Today",
+        item: "The Celebration Box",
         status: "Dispatched & In Transit",
-        carrier: "BlueDart Express Sacred Transit",
-        awb: "BD8892104-IN",
-        estimatedDelivery: "15 Oct 2026 (Before 4:00 PM)",
-        destination: "Bandra West, Mumbai, MH",
+        carrier: "BlueDart Express",
+        awb: "BLU-8842-MUM",
+        estimatedDelivery: "16 Nov 2026",
+        destination: "Mumbai, MH",
       });
-    }, 500);
+    } finally {
+      setIsTracking(false);
+    }
   };
 
   const handleLoadDemoOrder = () => {
-    setOrderId("KUR-2026-8842");
+    setOrderId("#KURMA-1048");
     setOrderContact("priyesh.sharma@kurmaluxury.com");
     setTrackedOrder({
-      id: "KUR-2026-8842",
-      date: "12 Oct 2026",
-      item: "Imperial Brass Kurma Tortoise & Temple Flora Agarbatti Box",
-      status: "Dispatched & In Transit",
-      carrier: "BlueDart Express Sacred Transit",
-      awb: "BD8892104-IN",
-      estimatedDelivery: "15 Oct 2026 (Before 4:00 PM)",
-      destination: "Bandra West, Mumbai, MH",
+      id: "#KURMA-1048",
+      date: "Aug 04 at 4:55 pm",
+      item: "The Celebration Box (4 Items)",
+      status: "Shipped",
+      carrier: "BlueDart Express",
+      awb: "BLU-8842-MUM",
+      estimatedDelivery: "16 Nov 2026 (Before 4:00 PM)",
+      destination: "Mumbai, MH",
     });
   };
 
@@ -641,7 +668,9 @@ export default function LoginPage() {
                 {trackedOrder && (
                   <div className="mt-6 p-4 bg-stone-50 border border-stone-200 text-xs space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                      <span className="font-bold text-black uppercase font-mono">#{trackedOrder.id}</span>
+                      <span className="font-bold text-black uppercase font-mono">
+                        {trackedOrder.id.startsWith("#") ? trackedOrder.id : `#${trackedOrder.id}`}
+                      </span>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold">
                         <Truck className="w-3 h-3" />
                         {trackedOrder.status}
@@ -651,7 +680,16 @@ export default function LoginPage() {
                       <p><span className="text-stone-400">Item:</span> {trackedOrder.item}</p>
                       <p><span className="text-stone-400">Carrier:</span> {trackedOrder.carrier} ({trackedOrder.awb})</p>
                       <p><span className="text-stone-400">Est. Delivery:</span> <span className="font-semibold text-emerald-800">{trackedOrder.estimatedDelivery}</span></p>
+                      <p><span className="text-stone-400">Destination:</span> {trackedOrder.destination}</p>
                     </div>
+
+                    <Link
+                      href={`/track-order?orderNumber=${encodeURIComponent(trackedOrder.id)}`}
+                      className="mt-2 w-full py-2 bg-[#072515] text-[#eed08e] text-xs font-semibold flex items-center justify-center gap-1.5 transition hover:bg-[#0b3820]"
+                    >
+                      <span>View Live Timeline &amp; Consignment Details</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
                   </div>
                 )}
 

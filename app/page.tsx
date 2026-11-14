@@ -6,7 +6,6 @@ import { MotionConfig } from "motion/react";
 import { RitualAndQuestions, ScrollProgress } from "@/components/home/experience";
 import { Navbar } from "@/components/layout/navbar";
 import { Hero } from "@/components/home/hero";
-import { PromoBanner } from "@/components/home/promo-banner";
 import { ProductShowcase } from "@/components/home/product-showcase";
 import { SolutionsAndTrust } from "@/components/home/solutions-and-trust";
 import { ComboPackBanner } from "@/components/home/combo-pack-banner";
@@ -40,7 +39,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-full flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
+    <div className="min-h-screen w-full max-w-full flex flex-col bg-[#092B20] text-[#E8D9AE] selection:bg-[#C5A45B] selection:text-[#092B20]">
       <ScrollProgress />
       {/* E-Commerce Header with Cart Drawer Trigger */}
       <Navbar
@@ -61,13 +60,8 @@ export default function Home() {
           {/* Overlapping Content Stack - Smoothly slides up and completely covers hero, then normal scroll continues */}
           <div
             id="home-content-stack"
-            className="relative z-10 bg-[#FAF7F2] shadow-[0_-20px_50px_rgba(28,27,24,0.12)] border-t border-[#EAE3D8]"
+            className="relative z-10 bg-[#092B20] border-t border-[#28513B]/40"
           >
-            {/* Promo Banner Slider Section */}
-            <PromoBanner
-              onExploreGifts={scrollToCatalog}
-            />
-
             {/* Master Catalog & 5 Elements Spotlight */}
             <div id="catalog">
               <ProductShowcase
@@ -76,7 +70,7 @@ export default function Home() {
               />
             </div>
 
-            <RitualAndQuestions />
+            <RitualAndQuestions onExploreGifts={scrollToCatalog} />
 
             {/* High-Quality Full Width Combo Pack Banner */}
             <ComboPackBanner />

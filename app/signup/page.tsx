@@ -372,7 +372,7 @@ export default function SignUpPage() {
                   <span>Instant Demo Login (Priyesh Sharma)</span>
                 </button>
                 <Link
-                  href="/login"
+                  href="/track-order"
                   className="hover:text-black underline font-medium flex items-center gap-1 cursor-pointer"
                 >
                   <Package className="w-3.5 h-3.5" />

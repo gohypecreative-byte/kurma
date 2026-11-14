@@ -45,41 +45,41 @@ export const getProductBadge = (id: string): { label: string; color: string } | 
   switch (id) {
     // 4 Flagship Initial Products
     case "marble-gift-box":
-      return { label: "Flagship Suite", color: "bg-[#7a1532]" };
+      return { label: "Flagship Suite", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "mdf-gift-box":
-      return { label: "Artisanal Wood", color: "bg-[#7a1532]" };
+      return { label: "Artisanal Wood", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "5-elements-suite":
-      return { label: "Complete Suite", color: "bg-[#5b2273]" };
+      return { label: "Complete Suite", color: "bg-[#C5A45B] text-[#092B20] font-bold" };
     case "empty-marble-box":
-      return { label: "Heirloom Keepsake", color: "bg-[#7a1532]" };
+      return { label: "Heirloom Keepsake", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
 
     // Fragrances
     case "fragrance-earth":
-      return { label: "Bestseller", color: "bg-[#7a1532]" };
+      return { label: "Bestseller", color: "bg-[#C5A45B] text-[#092B20] font-bold" };
     case "fragrance-water":
-      return { label: "100% Charcoal-Free", color: "bg-[#7a1532]" };
+      return { label: "100% Charcoal-Free", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "fragrance-fire":
-      return { label: "Pure Resins", color: "bg-[#7a1532]" };
+      return { label: "Pure Resins", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "fragrance-air":
-      return { label: "Handcrafted Devotion", color: "bg-[#7a1532]" };
+      return { label: "Handcrafted Devotion", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "fragrance-space":
-      return { label: "Rare Oudh", color: "bg-[#5b2273]" };
+      return { label: "Rare Oudh", color: "bg-[#C5A45B] text-[#092B20] font-bold" };
     case "fragrance-sandalwood":
-      return { label: "Royal Chandan", color: "bg-[#7a1532]" };
+      return { label: "Royal Chandan", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "fragrance-temple-flora":
-      return { label: "Temple Flora", color: "bg-[#7a1532]" };
+      return { label: "Temple Flora", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "fragrance-royal-oudh":
-      return { label: "Imperial Oudh", color: "bg-[#5b2273]" };
+      return { label: "Imperial Oudh", color: "bg-[#C5A45B] text-[#092B20] font-bold" };
 
     // Accessories
     case "turtle-incense-holder":
-      return { label: "Pure Solid Brass", color: "bg-[#7a1532]" };
+      return { label: "Pure Solid Brass", color: "bg-[#C5A45B] text-[#092B20] font-bold" };
     case "medallion":
-      return { label: "Keepsake Talisman", color: "bg-[#5b2273]" };
+      return { label: "Keepsake Talisman", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "pashmina-pocket-square":
-      return { label: "Pure Pashmina", color: "bg-[#7a1532]" };
+      return { label: "Pure Pashmina", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     case "bookmark":
-      return { label: "Silk Tassel", color: "bg-[#7a1532]" };
+      return { label: "Silk Tassel", color: "bg-[#28513B] text-[#E8D9AE] border border-[#C5A45B]/40" };
     default:
       return null;
   }
@@ -163,7 +163,7 @@ export function ProductCardItem({
       {/* Modern Image Canvas */}
       <div
         className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl ${
-          cardBg || (isDark ? "bg-[#1E1E1C] shadow-md" : "bg-[#FAF7F2] border border-[#DDD3C2] shadow-sm hover:shadow-md transition-shadow")
+          cardBg || (isDark ? "bg-[#092B20] border border-[#28513B]/50 shadow-md" : "bg-[#FAF7F2] border border-[#DDD3C2] shadow-sm hover:shadow-md transition-shadow")
         }`}
       >
         <Image
@@ -172,12 +172,16 @@ export function ProductCardItem({
           fill
           loading="lazy"
           className={`absolute inset-0 w-full h-full ${
-            objectFit || "object-cover object-center"
+            objectFit || "object-contain object-center"
           } transition-transform duration-500 ease-out ${
             imagePadding !== undefined ? imagePadding : "p-0"
           } ${
-            imageScale || "group-hover:scale-105"
+            imageScale || "group-hover:scale-100"
           }`}
+          style={{
+            objectFit: (objectFit?.includes("cover") ? "cover" : "contain") as any,
+            objectPosition: "center",
+          }}
           sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 25vw"
         />
 
@@ -192,7 +196,7 @@ export function ProductCardItem({
           className={`absolute top-3.5 right-3.5 z-10 p-1 ${
             isLightCard
               ? "text-stone-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]"
-              : "text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
+              : "text-[#E8D9AE] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
           } transition-transform active:scale-90 hover:scale-110 cursor-pointer`}
         >
           <Bookmark
@@ -200,10 +204,10 @@ export function ProductCardItem({
               isSaved
                 ? isLightCard
                   ? "fill-stone-800 text-stone-800 stroke-[2]"
-                  : "fill-white text-white stroke-[2]"
+                  : "fill-[#C5A45B] text-[#C5A45B] stroke-[2]"
                 : isLightCard
                 ? "fill-transparent text-stone-800 stroke-[2]"
-                : "fill-transparent text-white stroke-[2]"
+                : "fill-transparent text-[#E8D9AE] stroke-[2]"
             }`}
           />
         </button>
@@ -246,10 +250,10 @@ export function ProductCardItem({
                   idx === activeImgIdx
                     ? isLightCard
                       ? "bg-stone-800 scale-125 shadow-xs"
-                      : "bg-white scale-125 shadow-xs"
+                      : "bg-[#C5A45B] scale-125 shadow-xs"
                     : isLightCard
                     ? "bg-stone-400/50"
-                    : "bg-white/40"
+                    : "bg-[#28513B]"
                 }`}
               />
             ))}
@@ -263,7 +267,7 @@ export function ProductCardItem({
           <h3
             className={`text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate transition-colors ${
               isDark
-                ? "text-[#fdfcf9] group-hover:text-[#eed08e]"
+                ? "text-[#fdfcf9] group-hover:text-[#C5A45B]"
                 : "text-stone-900 group-hover:text-stone-600"
             }`}
           >
@@ -272,7 +276,7 @@ export function ProductCardItem({
           <div className="flex items-center gap-1.5">
             <span
               className={`text-xs sm:text-[12.5px] font-medium ${
-                isDark ? "text-[#eed08e]" : "text-stone-700"
+                isDark ? "text-[#C5A45B]" : "text-stone-700"
               }`}
             >
               RS. {product.price.toLocaleString("en-IN")}
@@ -280,7 +284,7 @@ export function ProductCardItem({
             {product.originalPrice && product.originalPrice > product.price && (
               <span
                 className={`text-[11px] line-through ${
-                  isDark ? "text-stone-400/80" : "text-stone-400"
+                  isDark ? "text-[#E8D9AE]/60" : "text-stone-400"
                 }`}
               >
                 RS. {product.originalPrice.toLocaleString("en-IN")}
@@ -301,7 +305,7 @@ export function ProductCardItem({
               aria-label={`Customise & Buy ${product.name}`}
               className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${
                 isDark
-                  ? "text-[#eed08e] hover:text-white hover:bg-white/10"
+                  ? "text-[#C5A45B] hover:text-[#E8D9AE] hover:bg-[#28513B]/30"
                   : "text-[#c0881b] hover:text-stone-900 hover:bg-stone-100"
               }`}
             >
@@ -318,14 +322,14 @@ export function ProductCardItem({
             aria-label={`Quick add ${product.name} to cart`}
             className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${
               isDark
-                ? "text-stone-300 hover:text-white hover:bg-white/10"
+                ? "text-[#E8D9AE] hover:text-[#C5A45B] hover:bg-[#28513B]/30"
                 : "text-stone-800 hover:text-black hover:bg-stone-100"
             }`}
           >
             {addedId === product.id ? (
               <Check
                 className={`w-3.5 h-3.5 stroke-[2.5] ${
-                  isDark ? "text-stone-200" : "text-[#7A5A28]"
+                  isDark ? "text-[#C5A45B]" : "text-[#7A5A28]"
                 }`}
               />
             ) : (
@@ -398,7 +402,7 @@ export function ProductShowcase({
   };
 
   return (
-    <div className="w-full bg-[#ECE4D8] py-12 sm:py-20 text-[#1C1B18] border-t border-b border-[#DDD3C2] mobile-defer-render">
+    <div className="w-full bg-[#123D2D] py-12 sm:py-20 text-[#E8D9AE] border-t border-b border-[#28513B]/40 mobile-defer-render">
       <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 space-y-12 lg:space-y-16">
         {/* SECTION 1: Our Four Initial Products */}
         <section className="space-y-7">
@@ -407,7 +411,7 @@ export function ProductShowcase({
             <AnimatedWords
               text="Our Four Initial Products"
               as="h2"
-              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#1C1B18] font-medium tracking-tight justify-center"
+              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#E8D9AE] font-light tracking-normal justify-center"
             />
           </div>
 
@@ -425,11 +429,11 @@ export function ProductShowcase({
                 discount={getDiscountPercent(product.price, product.originalPrice)}
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
-                theme="light"
+                theme="dark"
                 imagePadding="p-0"
-                imageScale="group-hover:scale-105"
+                imageScale="group-hover:scale-100"
                 containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-cover object-center"
+                objectFit="object-contain object-center"
               />
             ))}
           </div>
@@ -441,7 +445,7 @@ export function ProductShowcase({
             <AnimatedWords
               text="Sacred Agarbatti & Incense Rituals"
               as="h3"
-              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#1C1B18] font-medium tracking-tight text-center justify-center"
+              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#E8D9AE] font-light tracking-normal text-center justify-center"
             />
           </div>
 
@@ -492,11 +496,11 @@ export function ProductShowcase({
                 discount={getDiscountPercent(product.price, product.originalPrice)}
                 cleanTitle={getCleanTitle(product)}
                 variant="minimal"
-                theme="light"
+                theme="dark"
                 imagePadding="p-0"
-                imageScale="group-hover:scale-105"
+                imageScale="group-hover:scale-100"
                 containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-cover object-center"
+                objectFit="object-contain object-center"
               />
             ))}
           </div>

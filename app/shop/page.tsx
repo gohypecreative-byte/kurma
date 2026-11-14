@@ -102,7 +102,7 @@ export default function ShopPage() {
                 </h1>
               </AnimatedText>
               <AnimatedText delay={0.25} yOffset={18}>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-serif italic font-normal text-[#7A5A28]">
+                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-serif font-normal text-[#7A5A28]">
                   &amp; Solid Brass Heirloom Trunks
                 </p>
               </AnimatedText>
@@ -192,10 +192,10 @@ export default function ShopPage() {
           </div>
 
           {/* SECTION 2: THE 5 ELEMENTS FRAGRANCES */}
-          <section className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 bg-[#ECE4D8] border-t border-b border-[#DDD3C2] space-y-6">
-            <div className="relative text-left border-b border-[#DDD3C2] pb-4">
+          <section className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 bg-[#123D2D] border-t border-b border-[#28513B]/40 space-y-6">
+            <div className="relative text-left border-b border-[#28513B]/40 pb-4">
               <div className="flex justify-start">
-                <h3 className="text-2xl sm:text-3xl md:text-[34px] lg:text-4xl font-serif text-stone-900 font-normal tracking-tight text-left">
+                <h3 className="text-2xl sm:text-3xl md:text-[34px] lg:text-4xl font-serif text-[#E8D9AE] font-normal tracking-tight text-left">
                   The 5 Sacred Elements Incense
                 </h3>
               </div>
@@ -217,6 +217,7 @@ export default function ShopPage() {
                   )}
                   cleanTitle={getCleanTitle(product)}
                   variant="minimal"
+                  theme="dark"
                   objectFit="object-contain object-center"
                   imagePadding="p-2 sm:p-2.5"
                   cardBg={getFragranceCardBg()}

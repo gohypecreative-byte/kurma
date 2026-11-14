@@ -309,12 +309,12 @@ export default function AboutPage() {
         </section>
 
         {/* 4. THE 5 ELEMENTS (Pancha Mahabhuta) SANCTUARY SHOWCASE */}
-        <section className="bg-[#EDE1D1] rounded-2xl sm:rounded-3xl border border-[#DDD3C2] p-4 sm:p-8 lg:p-12 shadow-sm space-y-8 sm:space-y-10">
+        <section className="bg-[#123D2D] rounded-2xl sm:rounded-3xl border border-[#28513B]/40 p-4 sm:p-8 lg:p-12 shadow-sm space-y-8 sm:space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <AnimatedWords
               text="Harmonizing the Five Cosmic Elements"
               as="h2"
-              className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal justify-center"
+              className="text-2xl sm:text-4xl font-serif text-[#E8D9AE] font-normal justify-center"
             />
           </div>
 
@@ -358,10 +358,10 @@ export default function AboutPage() {
         </section>
 
         {/* 6. BESPOKE SANCTUARY & EXECUTIVE GIFT TRUNKS */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center bg-[#EDE1D1] rounded-2xl sm:rounded-3xl border border-[#DDD3C2] p-4 sm:p-8 lg:p-12 shadow-sm">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center bg-[#123D2D] rounded-2xl sm:rounded-3xl border border-[#28513B]/40 p-4 sm:p-8 lg:p-12 shadow-sm">
           {/* Trunk Image */}
           <div
-            className="lg:col-span-5 relative w-full aspect-[1280/853] rounded-2xl overflow-hidden bg-white border border-[#DDD3C2] shadow-sm group"
+            className="lg:col-span-5 relative w-full aspect-[1280/853] rounded-2xl overflow-hidden bg-white/5 border border-[#28513B]/60 shadow-sm group"
             style={{ aspectRatio: "1280 / 853" }}
           >
             <Image
@@ -379,23 +379,23 @@ export default function AboutPage() {
             <AnimatedWords
               text="Heirloom Trunks for Milestone Celebrations"
               as="h2"
-              className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight"
+              className="text-2xl sm:text-4xl font-serif text-[#E8D9AE] font-normal leading-tight"
             />
 
-            <p className="text-xs sm:text-sm text-stone-700 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-[#F5EFE6]/80 leading-relaxed font-sans">
               From landmark corporate gifting and wedding celebrations to intimate temple consecrations, Kurma creates bespoke keepsake trunks with personalized engraved brass plaques, hand-lettered blessing scrolls, and pure silk tassels.
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <Link
                 href="/contact"
-                className="px-7 py-3 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-md active:scale-98"
+                className="px-7 py-3 rounded-xl bg-[#E8D9AE] hover:bg-[#F3E8CE] text-[#0B261C] text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-md active:scale-98"
               >
                 Request Bespoke Consultation
               </Link>
               <Link
                 href="/shop"
-                className="px-7 py-3 rounded-xl border border-[#DDD3C2] hover:border-stone-400 bg-white text-stone-800 text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-xs"
+                className="px-7 py-3 rounded-xl border border-[#28513B] hover:border-[#C5A45B] bg-[#0E3326] text-[#E8D9AE] hover:text-[#C5A45B] text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-xs"
               >
                 Browse Ready Trunks
               </Link>
