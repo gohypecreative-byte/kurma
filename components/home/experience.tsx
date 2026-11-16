@@ -7,7 +7,6 @@ import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring, useTra
 import { ShoppingCart, Check, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
-import { PromoBanner } from "@/components/home/promo-banner";
 
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
@@ -429,9 +428,6 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
 
   return (
     <>
-      {/* Promo Banner Carousel Section */}
-      <PromoBanner onExploreGifts={handleExploreGifts} />
-
       {/* 'Our Bestsellers' Section */}
       <section id="bestsellers" className="bg-[#FAF7F2] py-14 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D8]">
         <div className="mx-auto max-w-[1520px] w-full">

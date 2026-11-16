@@ -737,10 +737,10 @@ export function GiftingGallery() {
                     <div className="relative rounded-2xl transition-all duration-300 flex flex-col w-full">
                       {/* Portrait Product Image Canvas (Aspect 3:4) */}
                       <div
-                        className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#092B20] border transition-all duration-300 flex items-center justify-center group/img ${
+                        className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-white border transition-all duration-300 flex items-center justify-center group/img ${
                           isCenter
-                            ? "border-[#C5A45B]/80"
-                            : "border-[#28513B]/60"
+                            ? "border-[#C5A45B]/90"
+                            : "border-white/20"
                         }`}
                       >
                         <Image
@@ -778,7 +778,7 @@ export function GiftingGallery() {
                                 className={`transition-all duration-300 rounded-full cursor-pointer shadow-xs ${
                                   i === activeImgIdx
                                     ? "w-2.5 h-1.5 bg-[#C5A45B] shadow-md"
-                                    : "w-1.5 h-1.5 bg-[#28513B] hover:bg-[#28513B]/80"
+                                    : "w-1.5 h-1.5 bg-stone-300 hover:bg-stone-400"
                                 }`}
                               />
                             ))}

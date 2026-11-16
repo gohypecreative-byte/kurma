@@ -6,6 +6,7 @@ import { MotionConfig } from "motion/react";
 import { RitualAndQuestions, ScrollProgress, KurmaFAQSection } from "@/components/home/experience";
 import { Navbar } from "@/components/layout/navbar";
 import { Hero } from "@/components/home/hero";
+import { PromoBanner } from "@/components/home/promo-banner";
 import { ProductShowcase } from "@/components/home/product-showcase";
 import { UnboxingExperience } from "@/components/home/unboxing-experience";
 import { TrustStats } from "@/components/home/trust-stats";
@@ -61,6 +62,9 @@ export default function Home() {
             id="home-content-stack"
             className="relative z-10 bg-[#092B20] border-t border-[#28513B]/40"
           >
+            {/* Promo Banner Carousel Section */}
+            <PromoBanner onExploreGifts={scrollToCatalog} />
+
             {/* Master Catalog & 5 Elements Spotlight */}
             <div id="catalog">
               <ProductShowcase

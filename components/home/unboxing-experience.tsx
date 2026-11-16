@@ -246,19 +246,19 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       }
 
       // State A: Compact 3D fan-out floating above box
-      const fanBaseY = isMobile ? 48 : isTablet ? 65 : 82;
-      const fanStep = isMobile ? Math.min(width * 0.17, 72) : isTablet ? 116 : 158;
+      const fanBaseY = isMobile ? 36 : isTablet ? 65 : 82;
+      const fanStep = isMobile ? Math.min(width * 0.165, 62) : isTablet ? 116 : 158;
       const fanOffsets = [
-        { x: -2 * fanStep, y: fanBaseY + (isMobile ? 18 : 22), z: 20, rotateZ: -5, scale: isMobile ? 0.88 : 0.84 },
-        { x: -1 * fanStep, y: fanBaseY + (isMobile ? 6 : 8), z: 45, rotateZ: -2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 0,             y: fanBaseY + (isMobile ? -6 : -8), z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
-        { x: 1 * fanStep,   y: fanBaseY + (isMobile ? 6 : 8), z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 2 * fanStep,   y: fanBaseY + (isMobile ? 18 : 22), z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
+        { x: -2 * fanStep, y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: -5, scale: isMobile ? 0.88 : 0.84 },
+        { x: -1 * fanStep, y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: -2.5, scale: isMobile ? 0.92 : 0.88 },
+        { x: 0,             y: fanBaseY + (isMobile ? -4 : -8), z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
+        { x: 1 * fanStep,   y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
+        { x: 2 * fanStep,   y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
       ];
 
       // State B: Dedicated Product Section Row
-      const sectionStep = isMobile ? Math.min(width * 0.195, 88) : isTablet ? Math.min(width * 0.195, 172) : Math.min(width * 0.195, 252);
-      const cardYOffset = isMobile ? 42 : isTablet ? 58 : 72;
+      const sectionStep = isMobile ? Math.min(width * 0.182, 74) : isTablet ? Math.min(width * 0.195, 172) : Math.min(width * 0.195, 252);
+      const cardYOffset = isMobile ? 32 : isTablet ? 58 : 72;
       const sectionOffsets = [
         { x: -2 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
         { x: -1 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
@@ -531,7 +531,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
     <section
       ref={sectionRef}
       id="unboxing-ritual"
-      className="relative z-30 w-full h-screen bg-[#FAF7F2] text-[#1C1B18] select-none flex flex-col justify-between border-t border-[#EAE3D8] overflow-hidden"
+      className="relative z-30 w-full h-[100dvh] min-h-[560px] bg-[#FAF7F2] text-[#1C1B18] select-none flex flex-col justify-between border-t border-[#EAE3D8] overflow-hidden"
     >
       {/* Ambient Luxury Lighting Backdrop (Clean Warm Studio Vignette) */}
       <div
@@ -553,9 +553,9 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       {/* SECTION HEADER */}
       <div
         ref={titleRef}
-        className="absolute top-0 inset-x-0 z-40 pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 max-w-4xl mx-auto text-center pointer-events-none"
+        className="absolute top-0 inset-x-0 z-40 pt-16 min-[380px]:pt-18 sm:pt-24 lg:pt-28 px-3 sm:px-6 max-w-4xl mx-auto text-center pointer-events-none"
       >
-        <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#1C1B18]">
+        <h2 className="font-serif text-xl min-[380px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#1C1B18]">
           The 5 Elements Collection
         </h2>
       </div>
@@ -563,7 +563,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       {/* 3D BOX STAGE & PRODUCT CARDS CONTAINER */}
       <div
         ref={containerRef}
-        className="relative z-20 flex-1 w-full max-w-full flex items-center justify-center px-2 sm:px-4 lg:px-6 pt-16 sm:pt-20 pb-4 sm:pb-6 overflow-hidden"
+        className="relative z-20 flex-1 w-full max-w-full flex items-center justify-center px-1 sm:px-4 lg:px-6 pt-14 sm:pt-20 pb-3 sm:pb-6 overflow-hidden"
         style={{
           perspective: "1200px",
         }}
@@ -571,7 +571,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
         {/* THE 3D GREEN MARBLE BOX (Opens, products emerge, then moves upward & vanishes) */}
         <div
           ref={boxStageRef}
-          className="relative w-[280px] sm:w-[340px] md:w-[390px] lg:w-[420px] aspect-[417/370] rounded-2xl shadow-2xl transition-shadow"
+          className="relative w-[250px] min-[380px]:w-[280px] sm:w-[340px] md:w-[390px] lg:w-[420px] aspect-[417/370] rounded-2xl shadow-2xl transition-shadow"
           style={{
             transformStyle: "preserve-3d",
             willChange: "transform, opacity",
@@ -728,7 +728,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
                 ref={(el) => {
                   emergingItemRefs.current[index] = el;
                 }}
-                className="absolute w-[86px] sm:w-[122px] md:w-[164px] lg:w-[214px] xl:w-[242px] rounded-2xl border border-stone-200/90 bg-white flex flex-col justify-between p-2 sm:p-2.5 md:p-3 lg:p-3.5 transition-shadow shadow-xl shadow-stone-900/10 hover:border-[#C5A45B]"
+                className="absolute w-[66px] min-[380px]:w-[74px] min-[420px]:w-[80px] sm:w-[122px] md:w-[164px] lg:w-[214px] xl:w-[242px] rounded-xl sm:rounded-2xl border border-stone-200/90 bg-white flex flex-col justify-between p-1 min-[380px]:p-1.5 sm:p-2.5 md:p-3 lg:p-3.5 transition-shadow shadow-xl shadow-stone-900/10 hover:border-[#C5A45B]"
                 style={{
                   transformStyle: "preserve-3d",
                   willChange: "transform, opacity",
@@ -736,7 +736,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
                 }}
               >
                 {/* Product Image Visual Container */}
-                <div className="relative w-full aspect-[445/660] my-0.5 sm:my-1 rounded-xl overflow-hidden bg-stone-50/50 border border-stone-200/60 flex items-center justify-center shadow-xs">
+                <div className="relative w-full aspect-[445/640] my-0.5 sm:my-1 rounded-lg sm:rounded-xl overflow-hidden bg-white border border-stone-200/60 flex items-center justify-center shadow-xs">
                   <Image
                     src={prod.image}
                     alt={prod.name}
@@ -749,21 +749,21 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
 
                 {/* Product Name & Subtitle */}
                 <div className="space-y-0.5 pt-0.5">
-                  <h4 className="font-sans text-[10.5px] sm:text-xs md:text-sm lg:text-[15px] font-semibold text-[#1C1B18] truncate">
+                  <h4 className="font-sans text-[8.5px] min-[380px]:text-[9.5px] sm:text-xs md:text-sm lg:text-[15px] font-semibold text-[#1C1B18] truncate">
                     {prod.name}
                   </h4>
-                  <p className="card-extra-detail text-[8.5px] sm:text-[10px] md:text-xs text-stone-500 font-sans line-clamp-1 opacity-0">
+                  <p className="card-extra-detail text-[7.5px] min-[380px]:text-[8.5px] sm:text-[10px] md:text-xs text-stone-500 font-sans line-clamp-1 opacity-0">
                     {prod.subtitle}
                   </p>
                 </div>
 
                 {/* Price and Action Button (Reveals during transformation to product section) */}
-                <div className="card-extra-detail pt-1.5 mt-1 border-t border-stone-200/80 flex items-center justify-between gap-1 opacity-0">
-                  <div className="flex flex-col">
-                    <span className="font-sans text-[11px] sm:text-xs md:text-sm lg:text-base font-bold text-[#8C6215]">
+                <div className="card-extra-detail pt-1 sm:pt-1.5 mt-0.5 sm:mt-1 border-t border-stone-200/80 flex items-center justify-between gap-0.5 sm:gap-1 opacity-0">
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-sans text-[9px] min-[380px]:text-[10.5px] sm:text-xs md:text-sm lg:text-base font-bold text-[#8C6215] leading-tight">
                       {prod.priceDisplay}
                     </span>
-                    <span className="font-sans text-[8.5px] sm:text-[9.5px] md:text-[11px] text-stone-400 line-through">
+                    <span className="font-sans text-[7px] min-[380px]:text-[8px] sm:text-[9.5px] md:text-[11px] text-stone-400 line-through leading-tight">
                       {prod.originalPriceDisplay}
                     </span>
                   </div>
@@ -773,16 +773,16 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
                     onClick={() => handleQuickAdd(prod)}
                     title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
                     aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                    className={`w-7 h-7 sm:w-8 sm:h-8 lg:w-8.5 lg:h-8.5 rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 ${
+                    className={`w-5.5 h-5.5 min-[380px]:w-6.5 min-[380px]:h-6.5 sm:w-8 sm:h-8 lg:w-8.5 lg:h-8.5 rounded-md sm:rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 ${
                       isAdded
                         ? "bg-emerald-600 text-white"
                         : "bg-[#1C1B18] hover:bg-[#8C6215] text-[#FAF7F2]"
                     }`}
                   >
                     {isAdded ? (
-                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 stroke-[2.5]" />
                     ) : (
-                      <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
+                      <ShoppingCart className="w-2.5 h-2.5 min-[380px]:w-3.5 min-[380px]:h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
                     )}
                   </button>
                 </div>

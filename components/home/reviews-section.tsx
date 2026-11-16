@@ -183,7 +183,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   return (
     <section
       id="reviews"
-      className="w-full max-w-full overflow-hidden bg-[#28513B] py-14 sm:py-20 lg:py-24 border-t border-[#3C6E52]/40 text-[#E8D9AE] relative select-none mobile-defer-render"
+      className="w-full max-w-full overflow-hidden bg-[#28513B] py-14 sm:py-20 lg:py-24 border-t border-[#3C6E52]/40 text-[#E8D9AE] relative select-none"
     >
       <div className="w-full max-w-[1520px] mx-auto px-3 sm:px-6 md:px-10 lg:px-14">
         {/* Header Title Matching Website Theme */}
