@@ -94,7 +94,7 @@ export default function RitualPage() {
         {/* The 4 Stages of the Ritual */}
         <section className="space-y-10">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-stone-900">
               The Four Stages of Lighting
             </h2>
           </div>
@@ -124,10 +124,10 @@ export default function RitualPage() {
         {/* Botanical Purity Standards */}
         <section className="bg-white rounded-3xl border border-stone-200/80 p-5 sm:p-8 md:p-12 lg:p-16 space-y-10">
           <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-stone-900">
               Our Botanical Purity Oath
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 font-sans leading-relaxed">
+            <p className="text-xs sm:text-sm lg:text-base text-stone-500 font-sans font-normal tracking-wide leading-relaxed">
               Every stick is hand-rolled by master generational artisans using ethical wild-harvested herbs, rare botanical resins, and zero chemical accelerators.
             </p>
           </div>
@@ -140,10 +140,10 @@ export default function RitualPage() {
                   <div className="w-10 h-10 rounded-xl bg-[#1E1E1C] text-white flex items-center justify-center">
                     <Icon className="w-5 h-5 stroke-[1.75]" />
                   </div>
-                  <h3 className="font-serif text-base font-semibold text-stone-900">
+                  <h3 className="font-serif text-base sm:text-lg font-medium text-stone-900 tracking-tight leading-snug">
                     {std.title}
                   </h3>
-                  <p className="text-xs text-stone-600 font-sans leading-relaxed">
+                  <p className="text-xs sm:text-sm text-stone-600 font-sans font-normal leading-relaxed">
                     {std.desc}
                   </p>
                 </div>
@@ -155,10 +155,10 @@ export default function RitualPage() {
         {/* Frequently Asked Questions Accordion */}
         <section className="max-w-3xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-serif text-stone-900 font-normal">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-stone-900">
               Ritual Wisdom &amp; Guidance
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 font-sans">
+            <p className="text-xs sm:text-sm lg:text-base text-stone-500 font-sans font-normal tracking-wide">
               Frequently asked questions regarding mindful burning, materials, and care.
             </p>
           </div>

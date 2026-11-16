@@ -176,7 +176,7 @@ export function VideoStories({
         {/* Section Heading */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-stone-900 tracking-tight font-normal">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif text-stone-900 tracking-tight font-medium">
               Kurma Sacred Agarbatti Collection
             </h2>
             <div className="h-0.5 w-28 bg-[#c0881b] mt-2.5" />

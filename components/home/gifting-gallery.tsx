@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { ShoppingBag, Check, X, Bookmark, SlidersHorizontal, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShoppingBag, ShoppingCart, Check, X, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 
 export interface HamperItem {
@@ -235,14 +235,16 @@ export function GiftingGallery() {
   const [isDragging, setIsDragging] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(1200);
 
+  const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef(0);
   const touchStartY = useRef(0);
   const dragStartTime = useRef(0);
   const hasMovedRef = useRef(false);
   const isSwipingHorizontal = useRef<boolean | null>(null);
-  const lastWheelTime = useRef<number>(0);
+  const lastWheelStepTimeRef = useRef<number>(0);
   const wheelDeltaAccumulator = useRef<number>(0);
+  const lastWheelDirectionRef = useRef<number>(0);
 
   // Responsive dimensions
   useEffect(() => {
@@ -282,37 +284,68 @@ export function GiftingGallery() {
   }, [selectedHamper, goToNext, goToPrev]);
 
   // Mouse wheel horizontal scrolling
+  // 1. Normal vertical page scrolling does NOT change or switch the active card.
+  // 2. Cards change only on horizontal scroll gestures (|deltaX| > |deltaY| or Shift + wheel).
+  // 3. One horizontal scroll gesture moves exactly one card at a time with smooth lock.
   useEffect(() => {
-    const el = stageRef.current;
+    const el = sectionRef.current || stageRef.current;
     if (!el) return;
 
     const onWheel = (e: WheelEvent) => {
-      const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      const delta = isHorizontal ? e.deltaX : e.deltaY;
-      if (Math.abs(delta) < 3) return;
+      // Check if this is an explicit horizontal gesture:
+      // (a) Touchpad two-finger horizontal scroll has |deltaX| > |deltaY|
+      // (b) Mouse horizontal tilt wheel has |deltaX| > |deltaY|
+      // (c) Standard mouse wheel horizontal scrolling uses Shift key (e.shiftKey)
+      const isShift = e.shiftKey;
+      const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) || isShift;
 
-      // Prevent page vertical scroll so horizontal carousel scrolls smoothly
+      // 1. Normal vertical page scrolling must NOT change or switch the active card.
+      if (!isHorizontal) {
+        return;
+      }
+
+      // 2. Cards change only when the user scrolls horizontally.
+      // Prevent horizontal browser bounce / history swipe back-forward navigation
       e.preventDefault();
 
+      const delta = isShift && Math.abs(e.deltaX) <= Math.abs(e.deltaY) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) < 3) return;
+
       const now = Date.now();
+      const currentDirection = Math.sign(delta);
+
+      // Reset accumulator if user reverses scroll direction
+      if (lastWheelDirectionRef.current !== 0 && currentDirection !== lastWheelDirectionRef.current) {
+        wheelDeltaAccumulator.current = 0;
+      }
+      lastWheelDirectionRef.current = currentDirection;
+
+      // Cooldown between card steps to ensure EXACTLY one card moves per scroll action
+      // 420ms matches the smooth 0.6s card transition ease curve
+      const timeSinceLastStep = now - lastWheelStepTimeRef.current;
+      if (timeSinceLastStep < 420) {
+        return;
+      }
+
       wheelDeltaAccumulator.current += delta;
+      const THRESHOLD = 18;
 
-      // Cooldown between card switches so one wheel notch advances 1 card
-      if (now - lastWheelTime.current < 200) return;
-
-      if (Math.abs(wheelDeltaAccumulator.current) > 20) {
+      if (Math.abs(wheelDeltaAccumulator.current) >= THRESHOLD) {
         if (wheelDeltaAccumulator.current > 0) {
           goToNext();
         } else {
           goToPrev();
         }
-        lastWheelTime.current = now;
+        // Lock timestamp until this step gesture finishes
+        lastWheelStepTimeRef.current = now;
         wheelDeltaAccumulator.current = 0;
       }
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+    };
   }, [goToNext, goToPrev]);
 
   // Mouse click-and-drag with window listeners
@@ -329,10 +362,11 @@ export function GiftingGallery() {
 
     const onMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - dragStartX.current;
-      if (Math.abs(deltaX) > 5) {
+      if (Math.abs(deltaX) > 6) {
         hasMovedRef.current = true;
       }
-      setDragOffset(deltaX);
+      const clampedDeltaX = Math.max(-spacing * 0.95, Math.min(spacing * 0.95, deltaX));
+      setDragOffset(clampedDeltaX);
     };
 
     const onMouseUp = (e: MouseEvent) => {
@@ -343,10 +377,11 @@ export function GiftingGallery() {
       setIsDragging(false);
       setDragOffset(0);
 
-      const threshold = spacing * 0.18;
-      if (deltaX < -threshold || (deltaX < -20 && velocity > 0.35)) {
+      const threshold = spacing * 0.16;
+      // One gesture moves exactly one card at a time
+      if (deltaX < -threshold || (deltaX < -25 && velocity > 0.25)) {
         goToNext();
-      } else if (deltaX > threshold || (deltaX > 20 && velocity > 0.35)) {
+      } else if (deltaX > threshold || (deltaX > 25 && velocity > 0.25)) {
         goToPrev();
       }
     };
@@ -377,34 +412,48 @@ export function GiftingGallery() {
     const deltaX = touch.clientX - dragStartX.current;
     const deltaY = touch.clientY - touchStartY.current;
 
+    // Detect direction within first 8px of movement
     if (isSwipingHorizontal.current === null) {
-      if (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6) {
+      if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
         isSwipingHorizontal.current = Math.abs(deltaX) > Math.abs(deltaY);
       }
     }
 
-    if (isSwipingHorizontal.current) {
+    // 1. Normal vertical page scrolling should NOT change or switch the active card
+    if (isSwipingHorizontal.current === false) {
+      // Vertical scroll: do not call preventDefault, let native page scroll happen
+      return;
+    }
+
+    // 2. Cards should change only when the user scrolls horizontally
+    if (isSwipingHorizontal.current === true) {
       if (e.cancelable) e.preventDefault();
       hasMovedRef.current = true;
-      setDragOffset(deltaX);
+      const clampedDeltaX = Math.max(-spacing * 0.95, Math.min(spacing * 0.95, deltaX));
+      setDragOffset(clampedDeltaX);
     }
   };
 
   const handleTouchEnd = () => {
     if (!isDragging) return;
-    const deltaX = dragOffset;
-    const elapsed = Math.max(1, Date.now() - dragStartTime.current);
-    const velocity = Math.abs(deltaX) / elapsed;
-
     setIsDragging(false);
-    setDragOffset(0);
 
-    const threshold = spacing * 0.18;
-    if (isSwipingHorizontal.current && (deltaX < -threshold || (deltaX < -20 && velocity > 0.35))) {
-      goToNext();
-    } else if (isSwipingHorizontal.current && (deltaX > threshold || (deltaX > 20 && velocity > 0.35))) {
-      goToPrev();
+    // Only switch card if it was an intentional horizontal swipe
+    if (isSwipingHorizontal.current === true) {
+      const deltaX = dragOffset;
+      const elapsed = Math.max(1, Date.now() - dragStartTime.current);
+      const velocity = Math.abs(deltaX) / elapsed;
+      const threshold = spacing * 0.16;
+
+      // 4. One horizontal scroll gesture should move exactly one card at a time.
+      if (deltaX < -threshold || (deltaX < -25 && velocity > 0.3)) {
+        goToNext();
+      } else if (deltaX > threshold || (deltaX > 25 && velocity > 0.3)) {
+        goToPrev();
+      }
     }
+
+    setDragOffset(0);
     isSwipingHorizontal.current = null;
   };
 
@@ -536,7 +585,6 @@ export function GiftingGallery() {
                     className="bg-[#123D2D] hover:bg-[#28513B] text-[#E8D9AE] py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl sm:rounded-2xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-[#28513B]"
                     title="Customise this hamper"
                   >
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#C5A45B]" />
                     <span>Customise</span>
                   </button>
 
@@ -562,16 +610,13 @@ export function GiftingGallery() {
   );
 
   return (
-    <section id="gifting-gallery" className="bg-[#123D2D] py-14 sm:py-20 px-2 sm:px-6 md:px-8 lg:py-24 border-t border-b border-[#28513B]/40 text-[#E8D9AE] w-full overflow-hidden mobile-defer-render">
+    <section ref={sectionRef} id="gifting-gallery" className="bg-[#123D2D] py-14 sm:py-20 px-2 sm:px-6 md:px-8 lg:py-24 border-t border-b border-[#28513B]/40 text-[#E8D9AE] w-full overflow-hidden">
       <div className="mx-auto max-w-[1700px] w-full">
         {/* Section Header */}
         <div className="text-center max-w-5xl mx-auto mb-6 sm:mb-10 px-4">
-          <h2 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-[44px] lg:text-5xl font-light tracking-tight text-[#E8D9AE] leading-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#E8D9AE]">
             Artisanal Luxury Hampers &amp; Gift Suites
           </h2>
-          <p className="mt-2 text-xs sm:text-sm text-[#E8D9AE]/70 font-sans tracking-wide">
-            Swipe or drag to explore our handcrafted ceremonial gift suites
-          </p>
         </div>
 
         {/* 3D Coverflow Carousel Stage */}
@@ -581,7 +626,7 @@ export function GiftingGallery() {
             type="button"
             onClick={goToPrev}
             aria-label="Previous hamper"
-            className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] shadow-[0_8px_24px_rgba(0,0,0,0.6)] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95"
+            className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95"
           >
             <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
           </button>
@@ -591,7 +636,7 @@ export function GiftingGallery() {
             type="button"
             onClick={goToNext}
             aria-label="Next hamper"
-            className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] shadow-[0_8px_24px_rgba(0,0,0,0.6)] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95"
+            className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95"
           >
             <ChevronRight className="w-5 h-5 stroke-[2.2]" />
           </button>
@@ -604,6 +649,7 @@ export function GiftingGallery() {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
             style={{
               perspective: isMobile ? "900px" : "1250px",
               perspectiveOrigin: "center 48%",
@@ -616,8 +662,6 @@ export function GiftingGallery() {
               className="relative w-full h-[470px] xs:h-[495px] sm:h-[530px] md:h-[560px] lg:h-[580px] flex items-center justify-center"
               style={{ transformStyle: "preserve-3d" }}
             >
-              {/* Floor Ambient Glow for Active Card */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[480px] sm:w-[650px] max-w-full h-24 bg-gradient-to-t from-black/50 via-[#C5A45B]/10 to-transparent blur-2xl pointer-events-none -z-10" />
 
               {HAMPER_ITEMS.map((hamper, idx) => {
                 const N = HAMPER_ITEMS.length;
@@ -690,18 +734,12 @@ export function GiftingGallery() {
                     }`}
                   >
                     {/* Card Container */}
-                    <div
-                      className={`relative rounded-2xl transition-all duration-300 flex flex-col w-full ${
-                        isCenter
-                          ? "drop-shadow-[0_20px_45px_rgba(0,0,0,0.7)]"
-                          : "drop-shadow-[0_8px_20px_rgba(0,0,0,0.45)]"
-                      }`}
-                    >
+                    <div className="relative rounded-2xl transition-all duration-300 flex flex-col w-full">
                       {/* Portrait Product Image Canvas (Aspect 3:4) */}
                       <div
                         className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#092B20] border transition-all duration-300 flex items-center justify-center group/img ${
                           isCenter
-                            ? "border-[#C5A45B]/80 shadow-[0_0_28px_rgba(197,164,91,0.22)]"
+                            ? "border-[#C5A45B]/80"
                             : "border-[#28513B]/60"
                         }`}
                       >
@@ -715,24 +753,7 @@ export function GiftingGallery() {
                           sizes="(max-width: 640px) 270px, (max-width: 1024px) 305px, 335px"
                         />
 
-                        {/* Bookmark Wishlist Icon Top-Right inside image */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWishlist(hamper.id);
-                          }}
-                          aria-label="Save to Wishlist"
-                          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/45 hover:bg-black/70 text-[#E8D9AE] backdrop-blur-xs drop-shadow-sm transition-transform active:scale-90 hover:scale-110 cursor-pointer"
-                        >
-                          <Bookmark
-                            className={`w-4 h-4 transition-colors ${
-                              likedIds[hamper.id]
-                                ? "fill-[#C5A45B] text-[#C5A45B] stroke-[2]"
-                                : "fill-transparent text-[#E8D9AE] stroke-[2]"
-                            }`}
-                          />
-                        </button>
+
 
                         {/* Side Vignette Fade Overlay for non-center cards */}
                         {!isCenter && (
@@ -825,17 +846,6 @@ export function GiftingGallery() {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              router.push(`/elements?box=${hamper.skuId || hamper.id}`);
-                            }}
-                            className="p-1 text-[#C5A45B] hover:text-[#E8D9AE] transition-colors cursor-pointer"
-                            title="Customise this hamper"
-                          >
-                            <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
                               handleAddToCart(hamper);
                             }}
                             className="p-1 text-[#E8D9AE] hover:text-[#C5A45B] transition-colors cursor-pointer"
@@ -844,55 +854,20 @@ export function GiftingGallery() {
                             {addedIds[hamper.id] ? (
                               <Check className="w-3.5 h-3.5 text-[#C5A45B] stroke-[2.5]" />
                             ) : (
-                              <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
+                              <ShoppingCart className="w-3.5 h-3.5 stroke-[1.8]" />
                             )}
                           </button>
                         </div>
                       </div>
                     </div>
-
-                    {/* Floor Reflection / Ambient Shadow beneath card */}
-                    <div
-                      className="absolute -bottom-6 inset-x-4 h-6 bg-black/60 blur-md rounded-full pointer-events-none transition-opacity duration-300"
-                      style={{
-                        transform: "rotateX(75deg)",
-                        opacity: isCenter ? 0.75 : 0.35,
-                      }}
-                    />
-                    {isCenter && (
-                      <div
-                        className="absolute -bottom-9 inset-x-2 h-8 bg-[#C5A45B]/15 blur-xl rounded-full pointer-events-none"
-                        style={{ transform: "rotateX(80deg)" }}
-                      />
-                    )}
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Interactive Horizontal Scrollbar Track & Page Dots */}
-          <div className="flex flex-col items-center justify-center gap-2.5 pt-5 sm:pt-6 select-none">
-            {/* Horizontal Scrubber Scrollbar */}
-            <div
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                const newIndex = Math.min(HAMPER_ITEMS.length - 1, Math.floor(ratio * HAMPER_ITEMS.length));
-                setActiveIndex(newIndex);
-              }}
-              className="relative w-44 sm:w-60 h-1.5 bg-[#092B20] border border-[#28513B] rounded-full overflow-hidden cursor-pointer group/track shadow-inner"
-              title="Click to scroll through hampers"
-            >
-              <div
-                className="absolute top-0 bottom-0 rounded-full bg-gradient-to-r from-[#C5A45B] via-[#E8D9AE] to-[#C5A45B] shadow-[0_0_8px_rgba(197,164,91,0.5)] transition-all duration-300"
-                style={{
-                  left: `${(activeIndex / HAMPER_ITEMS.length) * 100}%`,
-                  width: `${(1 / HAMPER_ITEMS.length) * 100}%`,
-                }}
-              />
-            </div>
-
+          {/* Page Dots & Counter */}
+          <div className="flex flex-col items-center justify-center gap-2 pt-5 sm:pt-6 select-none">
             {/* Indicator Dots */}
             <div className="flex items-center justify-center gap-1.5">
               {HAMPER_ITEMS.map((_, dotIdx) => (

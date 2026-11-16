@@ -52,9 +52,9 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
             {/* Framer Motion Animated Headline */}
             {shouldReduceMotion ? (
               <h1 className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-light text-[#092B20] leading-[1.14] tracking-normal">
-                <span className="block">Elements in Harmony.</span>
+                <span className="block">Elements in Harmony</span>
                 <span className="block font-light text-[#092B20] sm:whitespace-nowrap">
-                  Higher Consciousness.
+                  Higher Consciousness
                 </span>
               </h1>
             ) : (
@@ -81,7 +81,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                   }}
                   className="block"
                 >
-                  Elements in Harmony.
+                  Elements in Harmony
                 </motion.span>
                 <motion.span
                   variants={{
@@ -94,7 +94,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                   }}
                   className="block font-light text-[#092B20] sm:whitespace-nowrap"
                 >
-                  Higher Consciousness.
+                  Higher Consciousness
                 </motion.span>
               </motion.h1>
             )}

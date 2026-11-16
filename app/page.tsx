@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MotionConfig } from "motion/react";
-import { RitualAndQuestions, ScrollProgress } from "@/components/home/experience";
+import { RitualAndQuestions, ScrollProgress, KurmaFAQSection } from "@/components/home/experience";
 import { Navbar } from "@/components/layout/navbar";
 import { Hero } from "@/components/home/hero";
 import { ProductShowcase } from "@/components/home/product-showcase";
-import { SolutionsAndTrust } from "@/components/home/solutions-and-trust";
-import { ComboPackBanner } from "@/components/home/combo-pack-banner";
+import { UnboxingExperience } from "@/components/home/unboxing-experience";
 import { TrustStats } from "@/components/home/trust-stats";
 import { ReviewsSection } from "@/components/home/reviews-section";
 import { Footer } from "@/components/layout/footer";
@@ -31,8 +30,8 @@ export default function Home() {
     }
   };
 
-  const scrollToSolutions = () => {
-    const el = document.getElementById("solutions");
+  const scrollToBestsellers = () => {
+    const el = document.getElementById("bestsellers");
     if (el) {
       el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
     }
@@ -54,7 +53,7 @@ export default function Home() {
           {/* Sticky Hero Section (Pinned under top navbar while content below slides up over it) */}
           <Hero
             onExploreGifts={scrollToCatalog}
-            onExploreBestsellers={scrollToSolutions}
+            onExploreBestsellers={scrollToBestsellers}
           />
 
           {/* Overlapping Content Stack - Smoothly slides up and completely covers hero, then normal scroll continues */}
@@ -70,16 +69,22 @@ export default function Home() {
               />
             </div>
 
-            <RitualAndQuestions onExploreGifts={scrollToCatalog} />
+            <div className="relative z-10 bg-[#FAF7F2] overflow-hidden">
+              <RitualAndQuestions onExploreGifts={scrollToCatalog} />
+            </div>
 
-            {/* High-Quality Full Width Combo Pack Banner */}
-            <ComboPackBanner />
+            {/* Premium Scroll-Triggered 3D Box Unboxing Experience */}
+            <div className="relative z-30">
+              <UnboxingExperience
+                onAddToCart={addToCart}
+                onCustomizeProduct={(productId) => router.push(`/elements?box=${productId}`)}
+              />
+            </div>
 
-            {/* Sticky Card Stack Reveal Section */}
-            <SolutionsAndTrust
-              onAddToCart={addToCart}
-              onCustomizeProduct={(product) => router.push(`/elements?box=${product.id}`)}
-            />
+            {/* Everything You Need to Know About Kurma FAQ Section */}
+            <div className="relative z-10 bg-[#FAF7F2]">
+              <KurmaFAQSection />
+            </div>
 
             {/* 3D Autoplay Carousel Review Section (Positioned directly above Footer) */}
             <ReviewsSection onExploreProducts={scrollToCatalog} />

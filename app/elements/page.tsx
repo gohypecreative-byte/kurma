@@ -813,10 +813,10 @@ function CustomiseContent() {
                     <AnimatedWords
                       text="Choose your box"
                       as="h2"
-                      className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                      className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
                     />
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl mx-auto">
+                  <p className="text-xs sm:text-sm lg:text-base text-stone-600 font-sans font-normal tracking-wide leading-relaxed max-w-xl mx-auto">
                     Pick the size that fits your gifting moment. Includes: Gift Packaging, Notecard and Hand Wrapping
                   </p>
                 </div>
@@ -960,10 +960,10 @@ function CustomiseContent() {
                     <AnimatedWords
                       text="Fill your box"
                       as="h2"
-                      className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                      className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
                     />
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl mx-auto">
+                  <p className="text-xs sm:text-sm lg:text-base text-stone-600 font-sans font-normal tracking-wide leading-relaxed max-w-xl mx-auto">
                     Pick up to {selectedBox ? selectedBox.capacity : 4} items that fit your hamper
                   </p>
                 </div>
@@ -1187,10 +1187,10 @@ function CustomiseContent() {
                     <AnimatedWords
                       text="Make it personal"
                       as="h2"
-                      className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                      className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
                     />
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl mx-auto">
+                  <p className="text-xs sm:text-sm lg:text-base text-stone-600 font-sans font-normal tracking-wide leading-relaxed max-w-xl mx-auto">
                     Free with every gift box — no upsell.
                   </p>
                 </div>
@@ -1407,10 +1407,10 @@ function CustomiseContent() {
                     <AnimatedWords
                       text="Review your hamper"
                       as="h2"
-                      className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
+                      className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-[#1C1B18] font-medium tracking-tight leading-tight justify-center"
                     />
                   </div>
-                  <p className="text-xs sm:text-sm text-stone-600 font-sans">
+                  <p className="text-xs sm:text-sm lg:text-base text-stone-600 font-sans font-normal tracking-wide leading-relaxed">
                     Looks lovely. Anything to tweak?
                   </p>
                 </div>

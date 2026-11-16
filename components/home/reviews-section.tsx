@@ -29,7 +29,7 @@ const REVIEWS: Review[] = [
     reviewsCount: "24 Reviews • Corporate Patron",
     avatar: "/images/community/simran.jpg",
     rating: 5,
-    productName: "Kurma 5 Elements Complete Suite",
+    productName: "5 Elements Luxury Suite",
     categoryTag: "SACRED FRAGRANCE SUITE",
     quote: "The 5 Elements Suite transformed our evening rituals completely. 100% charcoal-free with pure natural aromas that linger gently without any harsh smoke or eye irritation.",
     fullReview: "The 5 Elements Suite transformed our evening rituals completely. 100% charcoal-free with pure natural aromas that linger gently without any harsh smoke or eye irritation. The antiqued brass turtle burner is a true heirloom masterpiece.",
@@ -53,7 +53,7 @@ const REVIEWS: Review[] = [
     reviewsCount: "31 Reviews • Verified Patron",
     avatar: "/images/community/ananya.jpg",
     rating: 5,
-    productName: "Green Marble Keepsake Gift Box",
+    productName: "Green Marble Gift Chest",
     categoryTag: "MARBLE CRAFT SUITE",
     quote: "We ordered custom green marble hampers for our executive board. The debossed gold foil insignia and pure essential oil sticks impressed everyone instantly!",
     fullReview: "We ordered custom green marble hampers for our executive board. The debossed gold foil insignia and pure essential oil sticks impressed everyone instantly! World-class packaging and prompt pan-India delivery.",
@@ -77,7 +77,7 @@ const REVIEWS: Review[] = [
     reviewsCount: "15 Reviews • Verified Patron",
     avatar: "/images/community/tanvi.jpg",
     rating: 5,
-    productName: "Embroidered Pashmina Gift Box",
+    productName: "Embroidered Keepsake Box",
     categoryTag: "FESTIVE GIFT SUITE",
     quote: "The warm wood box craft, gold debossed Kurma turtle emblem, and rich zari Pashmina pocket square made this the most cherished festive gift our clients received.",
     fullReview: "The warm wood box craft, gold debossed Kurma turtle emblem, and rich zari Pashmina pocket square made this the most cherished festive gift our clients received. Delivered nationwide in pristine condition.",
@@ -102,19 +102,18 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  // Calculate card width and gap dynamically for smooth snapping
+  // Dynamic card metrics for clean scrolling
   const getCardMetrics = useCallback(() => {
     const el = scrollContainerRef.current;
-    if (!el) return { cardWidth: 320, gap: 16 };
+    if (!el) return { cardWidth: 300, gap: 20 };
     const firstCard = el.firstElementChild as HTMLElement;
-    const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 320;
-    const gap = 16;
+    const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 300;
+    const gap = 20;
     return { cardWidth, gap };
   }, []);
 
   const scrollRafId = useRef<number | null>(null);
 
-  // Update active dot in real-time as user side-scrolls (throttled with rAF)
   const handleScroll = useCallback(() => {
     if (scrollRafId.current !== null) return;
     scrollRafId.current = requestAnimationFrame(() => {
@@ -128,28 +127,29 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
     });
   }, [getCardMetrics]);
 
-  const scrollToReview = (index: number) => {
+  const handlePrev = () => {
     const el = scrollContainerRef.current;
     if (!el) return;
     const { cardWidth, gap } = getCardMetrics();
-    el.scrollTo({
-      left: index * (cardWidth + gap),
-      behavior: "smooth",
-    });
-    setActiveIdx(index);
+    if (el.scrollLeft <= 15) {
+      el.scrollTo({ left: el.scrollWidth, behavior: "smooth" });
+    } else {
+      el.scrollBy({ left: -(cardWidth + gap), behavior: "smooth" });
+    }
   };
 
-  const nextSlide = () => {
-    const next = (activeIdx + 1) % REVIEWS.length;
-    scrollToReview(next);
+  const handleNext = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { cardWidth, gap } = getCardMetrics();
+    if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 15) {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      el.scrollBy({ left: cardWidth + gap, behavior: "smooth" });
+    }
   };
 
-  const prevSlide = () => {
-    const prev = (activeIdx - 1 + REVIEWS.length) % REVIEWS.length;
-    scrollToReview(prev);
-  };
-
-  // Autoplay advances smoothly every 5 seconds only when section is in viewport
+  // Autoplay advances smoothly every 5 seconds when in view
   useEffect(() => {
     if (isInteracting) return;
     const el = scrollContainerRef.current;
@@ -166,20 +166,14 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
 
     const timer = setInterval(() => {
       if (!isVisible || document.hidden) return;
-      const { cardWidth, gap } = getCardMetrics();
-      const nextIdx = (activeIdx + 1) % REVIEWS.length;
-      el.scrollTo({
-        left: nextIdx * (cardWidth + gap),
-        behavior: "smooth",
-      });
-      setActiveIdx(nextIdx);
+      handleNext();
     }, 5000);
 
     return () => {
       clearInterval(timer);
       observer.disconnect();
     };
-  }, [isInteracting, activeIdx, getCardMetrics]);
+  }, [isInteracting, getCardMetrics]);
 
   const toggleExpand = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -189,123 +183,112 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   return (
     <section
       id="reviews"
-      className="w-full max-w-full overflow-hidden bg-[#092B20] py-14 sm:py-20 lg:py-24 border-t border-[#28513B]/40 text-[#E8D9AE] relative select-none mobile-defer-render"
+      className="w-full max-w-full overflow-hidden bg-[#28513B] py-14 sm:py-20 lg:py-24 border-t border-[#3C6E52]/40 text-[#E8D9AE] relative select-none mobile-defer-render"
     >
-      <div className="max-w-[1500px] w-full mx-auto overflow-hidden">
-        {/* Header Title Matching User Image */}
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4 sm:px-6">
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-light tracking-normal text-[#E8D9AE] leading-tight">
-            What our customers say
+      <div className="w-full max-w-[1520px] mx-auto px-3 sm:px-6 md:px-10 lg:px-14">
+        {/* Header Title Matching Website Theme */}
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 px-4">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-medium tracking-[0.16em] uppercase text-[#E8D9AE] leading-tight">
+            WHAT OUR CUSTOMERS SAY
           </h2>
         </div>
 
-        {/* NATIVE SMOOTH SIDE-SCROLLING HORIZONTAL TRACK */}
-        <div
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          onTouchStart={() => setIsInteracting(true)}
-          onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2500)}
-          onMouseEnter={() => setIsInteracting(true)}
-          onMouseLeave={() => setIsInteracting(false)}
-          className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 pt-2 px-5 sm:px-8 md:px-12 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
-          style={{
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {REVIEWS.map((review) => (
-            <div
-              key={review.id}
-              className="flex-shrink-0 w-[86vw] max-w-[420px] sm:w-[480px] sm:max-w-none lg:w-[540px] snap-center flex flex-col justify-between bg-[#123D2D] rounded-3xl border border-[#28513B]/50 p-6 sm:p-8 lg:p-10 shadow-lg shadow-black/20 transition-all duration-300 text-[#E8D9AE]"
-            >
-              <div>
-                {/* Top Row: Stars */}
-                <div className="flex items-center mb-4 sm:mb-5">
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 sm:w-5 h-4 sm:h-5 fill-[#C5A45B] text-[#C5A45B]" />
-                    ))}
-                  </div>
+        {/* Carousel Container with Centered Left & Right Arrow Buttons */}
+        <div className="relative w-full">
+          {/* Floating Left Arrow Button */}
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Previous review"
+            className="absolute -left-2 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#3C6E52]/60 active:scale-95 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200"
+          >
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+          </button>
+
+          {/* Floating Right Arrow Button */}
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Next review"
+            className="absolute -right-2 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#3C6E52]/60 active:scale-95 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200"
+          >
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+          </button>
+
+          {/* NATIVE SMOOTH SIDE-SCROLLING HORIZONTAL TRACK */}
+          <div
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            onTouchStart={() => setIsInteracting(true)}
+            onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2500)}
+            onMouseEnter={() => setIsInteracting(true)}
+            onMouseLeave={() => setIsInteracting(false)}
+            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-5 pt-2 px-3 sm:px-4 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {REVIEWS.map((review) => (
+              <div
+                key={review.id}
+                className="flex-shrink-0 w-[84vw] xs:w-[300px] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] snap-start flex flex-col items-center bg-white rounded-2xl border border-white/95 p-6 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.18)] text-stone-900 transition-all duration-300 min-h-[380px] sm:min-h-[400px]"
+              >
+                {/* Circular Profile Avatar Centered at Top */}
+                <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden shrink-0 border-2 border-stone-100 shadow-xs mb-3.5 bg-stone-100">
+                  <Image
+                    src={review.avatar}
+                    alt={review.name}
+                    fill
+                    loading="lazy"
+                    sizes="72px"
+                    className="object-cover"
+                  />
                 </div>
 
-                {/* Main Quote Text */}
-                <div className="mb-5 sm:mb-7">
-                  <p className="text-[#E8D9AE]/95 text-sm sm:text-base lg:text-lg italic font-normal leading-relaxed">
-                    &ldquo;
-                    {expanded[review.id] ? review.fullReview : review.quote}
-                    &rdquo;
+                {/* Customer Name */}
+                <h3 className="font-sans text-sm sm:text-base font-semibold text-[#1C1B18] leading-tight text-center">
+                  {review.name}
+                </h3>
+
+                {/* Subtitle / Product Purchased */}
+                <span className="text-[11.5px] sm:text-xs text-stone-500 font-sans mt-0.5 text-center block">
+                  for {review.productName}
+                </span>
+
+                {/* 5-Star Row Centered in Kurma Warm Gold */}
+                <div className="flex items-center justify-center gap-1 mt-2.5 mb-4">
+                  {[1, 2, 3, 4, 5].map((starNum) => (
+                    <Star
+                      key={starNum}
+                      className={`w-3.5 sm:w-4 h-3.5 sm:h-4 ${
+                        starNum <= review.rating
+                          ? "fill-[#C5A45B] text-[#C5A45B]"
+                          : "text-[#C5A45B] fill-transparent stroke-[1.5]"
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {/* Review Text Centered */}
+                <div className="flex-1 flex flex-col justify-between text-center w-full">
+                  <p className="text-stone-700 text-xs sm:text-[13px] lg:text-[13.5px] font-normal leading-relaxed font-sans">
+                    &ldquo; {expanded[review.id] ? review.fullReview : review.quote} &rdquo;
                   </p>
                   {review.fullReview !== review.quote && (
                     <button
                       type="button"
                       onClick={(e) => toggleExpand(review.id, e)}
-                      className="mt-2 text-xs font-semibold text-[#C5A45B] hover:text-white underline underline-offset-4 cursor-pointer"
+                      className="mt-2.5 text-[11px] font-medium text-[#8C6215] hover:text-[#1C1B18] hover:underline cursor-pointer mx-auto block"
                     >
                       {expanded[review.id] ? "Show Less" : "Read More"}
                     </button>
                   )}
                 </div>
               </div>
-
-              {/* Bottom Profile Bar */}
-              <div className="flex items-center gap-2.5 sm:gap-3 pt-4 sm:pt-5 border-t border-[#28513B]/40 mt-2">
-                <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 border border-[#28513B] shadow-xs bg-[#092B20]">
-                  <Image
-                    src={review.avatar}
-                    alt={review.name}
-                    fill
-                    loading="lazy"
-                    sizes="48px"
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <span className="font-serif text-sm sm:text-base font-bold text-white leading-tight block">
-                    {review.name}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation Controls: Touch/Click Arrows and Pagination Dots */}
-        <div className="flex items-center justify-center gap-3.5 mt-6 sm:mt-8 px-4">
-          <button
-            type="button"
-            onClick={prevSlide}
-            aria-label="Previous review"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#28513B] bg-[#092B20] hover:bg-[#123D2D] shadow-xs flex items-center justify-center text-[#E8D9AE] hover:text-[#C5A45B] transition-all cursor-pointer active:scale-95"
-          >
-            <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
-          </button>
-
-          {/* Indicator Dots */}
-          <div className="flex items-center gap-1.5 px-1 sm:px-2">
-            {REVIEWS.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => scrollToReview(idx)}
-                aria-label={`Go to review ${idx + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === activeIdx
-                    ? "w-6 bg-[#C5A45B]"
-                    : "w-2 bg-[#28513B] hover:bg-[#28513B]/80"
-                }`}
-              />
             ))}
           </div>
-
-          <button
-            type="button"
-            onClick={nextSlide}
-            aria-label="Next review"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#28513B] bg-[#092B20] hover:bg-[#123D2D] shadow-xs flex items-center justify-center text-[#E8D9AE] hover:text-[#C5A45B] transition-all cursor-pointer active:scale-95"
-          >
-            <ChevronRight className="w-4 h-4 stroke-[2.2]" />
-          </button>
         </div>
       </div>
     </section>

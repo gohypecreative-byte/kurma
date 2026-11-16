@@ -79,14 +79,14 @@ export function SolutionsAndTrust({
             {/* Text Overlay Content */}
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
               <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] text-white font-medium leading-[1.16] tracking-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
                   Sacred 5 elements{" "}
                   <span className="italic font-serif font-normal text-[#EED08E]">
                     luxury suite
                   </span>
                 </h2>
 
-                <p className="text-xs sm:text-sm md:text-[15px] text-stone-200/90 leading-relaxed font-light max-w-md">
+                <p className="text-xs sm:text-sm lg:text-base text-stone-200/90 leading-relaxed font-sans font-normal tracking-wide max-w-md">
                   All five elemental aromas handcrafted with 100% charcoal-free pure botanical extracts, solid cast brass turtle burner and keepsake medallion.
                 </p>
 
@@ -131,14 +131,14 @@ export function SolutionsAndTrust({
             {/* Text Overlay Content */}
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
               <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] text-white font-medium leading-[1.16] tracking-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
                   Sacred fragrance suites for timeless{" "}
                   <span className="italic font-serif font-normal text-[#EED08E]">
                     festive celebrations
                   </span>
                 </h2>
 
-                <p className="text-xs sm:text-sm md:text-[15px] text-stone-200/90 leading-relaxed font-light max-w-md">
+                <p className="text-xs sm:text-sm lg:text-base text-stone-200/90 leading-relaxed font-sans font-normal tracking-wide max-w-md">
                   Handcrafted 100% charcoal-free elemental incense suites and solid cast brass turtle holders, custom-curated for wedding return gifts, sacred rituals, and royal celebrations.
                 </p>
 
@@ -183,14 +183,14 @@ export function SolutionsAndTrust({
             {/* Text Overlay Content */}
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
               <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[38px] xl:text-[42px] text-white font-medium leading-[1.16] tracking-tight">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
                   Corporate{" "}
                   <span className="italic font-serif font-normal text-[#EED08E]">
                     gifting
                   </span>
                 </h2>
 
-                <p className="text-xs sm:text-sm md:text-[15px] text-stone-200/90 leading-relaxed font-light max-w-md">
+                <p className="text-xs sm:text-sm lg:text-base text-stone-200/90 leading-relaxed font-sans font-normal tracking-wide max-w-md">
                   Not another dry fruit box. Curated, branded, and delivered so your clients and team actually remember who sent it.
                 </p>
 

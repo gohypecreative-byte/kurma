@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Plus, Check, SlidersHorizontal, Bookmark, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, Plus, Check, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
 import { useProducts } from "@/lib/products-context";
 import { AnimatedWords } from "@/components/ui/animated-text";
@@ -185,32 +185,7 @@ export function ProductCardItem({
           sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 25vw"
         />
 
-        {/* Bookmark Ribbon Icon in Top-Right Corner */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsSaved(!isSaved);
-          }}
-          title={isSaved ? "Saved to Wishlist" : "Save to Wishlist"}
-          aria-label={isSaved ? "Saved to Wishlist" : "Save to Wishlist"}
-          className={`absolute top-3.5 right-3.5 z-10 p-1 ${
-            isLightCard
-              ? "text-stone-800 drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]"
-              : "text-[#E8D9AE] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-          } transition-transform active:scale-90 hover:scale-110 cursor-pointer`}
-        >
-          <Bookmark
-            className={`w-4 h-4 transition-colors ${
-              isSaved
-                ? isLightCard
-                  ? "fill-stone-800 text-stone-800 stroke-[2]"
-                  : "fill-[#C5A45B] text-[#C5A45B] stroke-[2]"
-                : isLightCard
-                ? "fill-transparent text-stone-800 stroke-[2]"
-                : "fill-transparent text-[#E8D9AE] stroke-[2]"
-            }`}
-          />
-        </button>
+
 
         {/* Previous & Next Carousel Navigation Arrows (visible on hover) */}
         {images.length > 1 && (
@@ -295,24 +270,6 @@ export function ProductCardItem({
 
         {/* Action Buttons on Far Right */}
         <div className="flex items-center gap-1 shrink-0">
-          {product.customizationFields && product.customizationFields.length > 0 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/products/${product.id}`);
-              }}
-              title={`Customise & Buy ${product.name}`}
-              aria-label={`Customise & Buy ${product.name}`}
-              className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${
-                isDark
-                  ? "text-[#C5A45B] hover:text-[#E8D9AE] hover:bg-[#28513B]/30"
-                  : "text-[#c0881b] hover:text-stone-900 hover:bg-stone-100"
-              }`}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
-            </button>
-          )}
-
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -333,7 +290,7 @@ export function ProductCardItem({
                 }`}
               />
             ) : (
-              <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
+              <ShoppingCart className="w-3.5 h-3.5 stroke-[1.8]" />
             )}
           </button>
         </div>
@@ -402,24 +359,27 @@ export function ProductShowcase({
   };
 
   return (
-    <div className="w-full bg-[#123D2D] py-12 sm:py-20 text-[#E8D9AE] border-t border-b border-[#28513B]/40 mobile-defer-render">
-      <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 space-y-12 lg:space-y-16">
-        {/* SECTION 1: Our Four Initial Products */}
-        <section className="space-y-7">
+    <div className="w-full">
+      {/* SECTION 1: Our Four Initial Products */}
+      <section
+        id="our-initial-products"
+        className="w-full bg-[#123D2D] py-8 sm:py-12 lg:py-16 text-[#E8D9AE] border-t border-b border-[#28513B]/40 flex flex-col justify-center overflow-hidden"
+      >
+        <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 space-y-4 sm:space-y-6">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto">
             <AnimatedWords
               text="Our Four Initial Products"
               as="h2"
-              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#E8D9AE] font-light tracking-normal justify-center"
+              className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#E8D9AE] justify-center"
             />
           </div>
 
-          {/* 4 Flagship Initial Products Grid (Full width, 4 columns on desktop) */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
+          {/* 4 Flagship Initial Products Grid (Independent 4-column layout) */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 w-full">
             {initialGiftBoxes.map((product) => (
               <ProductCardItem
-                key={product.id}
+                key={`initial-box-${product.id}`}
                 product={product}
                 activeMode={activeMode}
                 addedId={addedId}
@@ -432,80 +392,13 @@ export function ProductShowcase({
                 theme="dark"
                 imagePadding="p-0"
                 imageScale="group-hover:scale-100"
-                containerAspect="aspect-[3/4] sm:aspect-[3/4]"
+                containerAspect="aspect-[4/3] sm:aspect-[3/4]"
                 objectFit="object-contain object-center"
               />
             ))}
           </div>
-        </section>
-
-        {/* SECTION 2: Sacred Agarbatti & Incense Collection */}
-        <section className="space-y-6 pt-4">
-          <div className="text-center max-w-3xl mx-auto">
-            <AnimatedWords
-              text="Sacred Agarbatti & Incense Rituals"
-              as="h3"
-              className="text-2xl sm:text-3xl md:text-4xl font-serif text-[#E8D9AE] font-light tracking-normal text-center justify-center"
-            />
-          </div>
-
-          {/* 4 Distinct Agarbatti Products Grid (Full width, 4 columns) */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
-            {[
-              {
-                ...PRODUCTS.find((p) => p.id === "5-elements-suite")!,
-                image: "/images/product/suite-portrait.jpg",
-                gallery: [
-                  "/images/product/suite-portrait.jpg",
-                  "/images/product/image7.png",
-                ],
-              },
-              {
-                ...PRODUCTS.find((p) => p.id === "turtle-incense-holder")!,
-                image: "/images/product/turtle-holder-portrait.jpg",
-                gallery: [
-                  "/images/product/turtle-holder-portrait.jpg",
-                  "/images/product/image8.png",
-                ],
-              },
-              {
-                ...PRODUCTS.find((p) => p.id === "fragrance-earth")!,
-                image: "/images/product/earth-portrait.jpg",
-                gallery: [
-                  "/images/product/earth-portrait.jpg",
-                  "/images/product/earth-front.png",
-                ],
-              },
-              {
-                ...PRODUCTS.find((p) => p.id === "fragrance-fire")!,
-                image: "/images/product/fire-portrait.jpg",
-                gallery: [
-                  "/images/product/fire-portrait.jpg",
-                  "/images/product/fire-front.png",
-                ],
-              },
-            ].map((product) => (
-              <ProductCardItem
-                key={product.id}
-                product={product}
-                activeMode={activeMode}
-                addedId={addedId}
-                onQuickAdd={handleQuickAdd}
-                onCustomize={onCustomizeProduct}
-                badge={getProductBadge(product.id)}
-                discount={getDiscountPercent(product.price, product.originalPrice)}
-                cleanTitle={getCleanTitle(product)}
-                variant="minimal"
-                theme="dark"
-                imagePadding="p-0"
-                imageScale="group-hover:scale-100"
-                containerAspect="aspect-[3/4] sm:aspect-[3/4]"
-                objectFit="object-contain object-center"
-              />
-            ))}
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

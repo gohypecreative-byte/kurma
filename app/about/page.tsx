@@ -234,7 +234,7 @@ export default function AboutPage() {
               <AnimatedWords
                 text="Why Kurma? The Sacred Tortoise Avatar"
                 as="h2"
-                className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal leading-tight"
+                className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-stone-900"
               />
             </div>
 
@@ -260,7 +260,7 @@ export default function AboutPage() {
             <AnimatedWords
               text="Sacred Purity in Every Thread"
               as="h2"
-              className="text-2xl sm:text-4xl font-serif text-stone-900 font-normal justify-center"
+              className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-stone-900 justify-center"
             />
           </div>
 
@@ -314,7 +314,7 @@ export default function AboutPage() {
             <AnimatedWords
               text="Harmonizing the Five Cosmic Elements"
               as="h2"
-              className="text-2xl sm:text-4xl font-serif text-[#E8D9AE] font-normal justify-center"
+              className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#E8D9AE] justify-center"
             />
           </div>
 
@@ -379,10 +379,10 @@ export default function AboutPage() {
             <AnimatedWords
               text="Heirloom Trunks for Milestone Celebrations"
               as="h2"
-              className="text-2xl sm:text-4xl font-serif text-[#E8D9AE] font-normal leading-tight"
+              className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#E8D9AE]"
             />
 
-            <p className="text-xs sm:text-sm text-[#F5EFE6]/80 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm lg:text-base text-[#F5EFE6]/80 leading-relaxed font-sans font-normal tracking-wide">
               From landmark corporate gifting and wedding celebrations to intimate temple consecrations, Kurma creates bespoke keepsake trunks with personalized engraved brass plaques, hand-lettered blessing scrolls, and pure silk tassels.
             </p>
 

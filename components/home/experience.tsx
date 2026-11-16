@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
-import { Plus, Heart, Check, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
+import { ShoppingCart, Check, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
 import { PromoBanner } from "@/components/home/promo-banner";
@@ -230,24 +230,7 @@ function BestsellerCard({
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
         />
 
-        {/* Bookmark/Wishlist Icon Top-Right */}
-        <button
-          type="button"
-          aria-label="Add to wishlist"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleWishlist(item.id);
-          }}
-          className="absolute top-2.5 right-2.5 z-20 p-1 text-stone-700 hover:text-stone-900 drop-shadow-xs transition-transform active:scale-90 hover:scale-110 cursor-pointer"
-        >
-          <Heart
-            className={`w-4 h-4 transition-colors ${
-              isLiked
-                ? "fill-stone-800 text-stone-800 stroke-[2]"
-                : "fill-transparent text-stone-700 stroke-[2]"
-            }`}
-          />
-        </button>
+
 
         {/* Previous & Next Carousel Navigation Arrows (visible on hover) */}
         {images.length > 1 && (
@@ -303,15 +286,12 @@ function BestsellerCard({
       </div>
 
       {/* Minimalist Info Row Directly Beneath Image */}
-      <div className="mt-2.5 flex items-start justify-between gap-2 px-0.5">
+      <div className="mt-2.5 flex items-center justify-between gap-2 px-0.5">
         <div className="space-y-0.5 min-w-0 flex-1">
-          <span className="text-[10px] font-bold tracking-widest uppercase text-[#991B1B] block">
-            {item.categoryTag}
-          </span>
           <h3 className="text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate text-stone-900 group-hover:text-stone-600 transition-colors">
             {item.name}
           </h3>
-          <div className="flex items-center gap-1.5 pt-0.5">
+          <div className="flex items-center gap-1.5 pt-0.5 h-4">
             <span className="text-xs sm:text-[12.5px] font-medium text-stone-700">
               {item.priceDisplay}
             </span>
@@ -324,21 +304,7 @@ function BestsellerCard({
         </div>
 
         {/* Action Buttons on Far Right matching ProductCardItem */}
-        <div className="flex items-center gap-1 shrink-0 pt-3">
-          {/* Customize & Buy Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/elements?box=${item.skuId}`);
-            }}
-            title={`Customise & Buy ${item.name}`}
-            aria-label={`Customise & Buy ${item.name}`}
-            className="p-1 rounded-md text-[#c0881b] hover:text-stone-900 hover:bg-stone-100 transition-all duration-200 hover:scale-110 cursor-pointer"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 stroke-[1.8]" />
-          </button>
-
+        <div className="flex items-center gap-1 shrink-0">
           {/* Quick Add to Cart Button */}
           <button
             type="button"
@@ -351,9 +317,9 @@ function BestsellerCard({
             className="p-1 rounded-md text-stone-800 hover:text-black hover:bg-stone-100 transition-all duration-200 hover:scale-110 cursor-pointer"
           >
             {isAdded ? (
-              <Check className="w-3.5 h-3.5 stroke-[2.5] text-[#7A5A28]" />
+              <Check className="w-4 h-4 stroke-[2.5] text-[#7A5A28]" />
             ) : (
-              <Plus className="w-3.5 h-3.5 stroke-[1.8]" />
+              <ShoppingCart className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.9]" />
             )}
           </button>
         </div>
@@ -463,12 +429,15 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
 
   return (
     <>
+      {/* Promo Banner Carousel Section */}
+      <PromoBanner onExploreGifts={handleExploreGifts} />
+
       {/* 'Our Bestsellers' Section */}
       <section id="bestsellers" className="bg-[#FAF7F2] py-14 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D8]">
         <div className="mx-auto max-w-[1520px] w-full">
           {/* Section Header */}
           <div className="text-center mb-8">
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-[42px] lg:text-[52px] xl:text-[56px] font-medium tracking-tight leading-tight text-[#1C1B18]">
               Our Bestsellers
             </h2>
           </div>
@@ -516,12 +485,6 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
 
       {/* Curated Gifting Galerie Section */}
       <GiftingGallery />
-
-      {/* Promo Banner Carousel Section */}
-      <PromoBanner onExploreGifts={handleExploreGifts} />
-
-      {/* FAQ SECTION */}
-      <KurmaFAQSection />
     </>
   );
 }
@@ -559,7 +522,7 @@ const FAQ_ITEMS = [
   },
 ];
 
-function KurmaFAQSection() {
+export function KurmaFAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
 
@@ -587,8 +550,8 @@ function KurmaFAQSection() {
       <div className="mx-auto max-w-4xl">
         {/* Section Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1C1B18] font-medium tracking-tight">
-            Everything You Need to Know <span className="font-serif font-normal text-[#8C6215]">About Kurma</span>
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#1C1B18]">
+            FAQ
           </h2>
         </div>
 
@@ -608,7 +571,7 @@ function KurmaFAQSection() {
                   onClick={() => handleToggle(idx)}
                   className="w-full py-3.5 sm:py-4 px-4 sm:px-5 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
                 >
-                  <span className="font-serif text-base sm:text-lg font-medium text-[#1C1B18] pr-2">
+                  <span className="font-serif text-base sm:text-lg lg:text-xl font-medium text-[#1C1B18] tracking-tight leading-snug pr-2">
                     {faq.question}
                   </span>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "bg-[#1E1E1C] text-white rotate-180" : "bg-stone-100 text-stone-700"}`}>

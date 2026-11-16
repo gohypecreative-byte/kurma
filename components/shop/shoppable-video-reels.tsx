@@ -441,7 +441,7 @@ export function ShoppableVideoReels() {
             <span className="text-[10px] sm:text-[11px] font-bold tracking-[0.28em] uppercase text-[#eed08e] block">
               SACRED RITUALS &amp; HEIRLOOM EDITIONS
             </span>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-white tracking-tight font-normal sm:whitespace-nowrap mt-1">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-white tracking-tight font-medium sm:whitespace-nowrap mt-1">
               Sacred Rituals &amp; Heirloom Creations
             </h2>
           </div>
