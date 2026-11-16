@@ -156,9 +156,16 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
     if (!sectionEl || !stageEl || !lidEl) return;
 
     const ctx = gsap.context(() => {
+      // Calculate responsive spacing to prevent cut-off, overlap, and overflow
+      const width = typeof window !== "undefined" ? window.innerWidth : 1200;
+      const isMobile = width < 640;
+      const isTablet = width < 1024;
+
+      const boxInitY = isMobile ? 32 : isTablet ? 46 : 58;
+
       // 1. Initial 3D state of the box - Centered & visible immediately (No white blank space before!)
       gsap.set(stageEl, {
-        y: 0,
+        y: boxInitY,
         rotateX: 20,
         rotateY: 0,
         rotateZ: 0,
@@ -233,29 +240,25 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
         gsap.set(auraEl, { opacity: 0, scale: 0.8 });
       }
 
-      // Calculate responsive spacing to prevent cut-off, overlap, and overflow
-      const width = typeof window !== "undefined" ? window.innerWidth : 1200;
-      const isMobile = width < 640;
-      const isTablet = width < 1024;
-
       // Title stays fixed at top — no Y animation needed
       if (titleEl) {
         gsap.set(titleEl, { y: 0 });
       }
 
       // State A: Compact 3D fan-out floating above box
+      const fanBaseY = isMobile ? 48 : isTablet ? 65 : 82;
       const fanStep = isMobile ? Math.min(width * 0.17, 72) : isTablet ? 116 : 158;
       const fanOffsets = [
-        { x: -2 * fanStep, y: isMobile ? 8 : 10, z: 20, rotateZ: -5, scale: isMobile ? 0.88 : 0.84 },
-        { x: -1 * fanStep, y: isMobile ? -5 : -7, z: 45, rotateZ: -2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 0,             y: isMobile ? -16 : -22, z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
-        { x: 1 * fanStep,   y: isMobile ? -5 : -7, z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 2 * fanStep,   y: isMobile ? 8 : 10, z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
+        { x: -2 * fanStep, y: fanBaseY + (isMobile ? 18 : 22), z: 20, rotateZ: -5, scale: isMobile ? 0.88 : 0.84 },
+        { x: -1 * fanStep, y: fanBaseY + (isMobile ? 6 : 8), z: 45, rotateZ: -2.5, scale: isMobile ? 0.92 : 0.88 },
+        { x: 0,             y: fanBaseY + (isMobile ? -6 : -8), z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
+        { x: 1 * fanStep,   y: fanBaseY + (isMobile ? 6 : 8), z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
+        { x: 2 * fanStep,   y: fanBaseY + (isMobile ? 18 : 22), z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
       ];
 
       // State B: Dedicated Product Section Row
       const sectionStep = isMobile ? Math.min(width * 0.195, 88) : isTablet ? Math.min(width * 0.195, 172) : Math.min(width * 0.195, 252);
-      const cardYOffset = isMobile ? 18 : isTablet ? 28 : 36;
+      const cardYOffset = isMobile ? 42 : isTablet ? 58 : 72;
       const sectionOffsets = [
         { x: -2 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
         { x: -1 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
@@ -363,6 +366,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       masterTl.to(
         stageEl,
         {
+          y: boxInitY + 10,
           rotateX: 28,
           scale: 1.04,
           duration: 0.24,
@@ -441,11 +445,11 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       masterTl.to(
         stageEl,
         {
-          y: "-75vh",
+          y: "-40vh",
           autoAlpha: 0,
           scale: 0.65,
-          duration: 0.24,
-          ease: "power2.inOut",
+          duration: 0.20,
+          ease: "power2.in",
         },
         0.50
       );
