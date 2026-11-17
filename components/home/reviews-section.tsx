@@ -104,11 +104,14 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   // Dynamic card metrics for clean scrolling
   const getCardMetrics = useCallback(() => {
     const el = scrollContainerRef.current;
-    if (!el) return { cardWidth: 300, gap: 20 };
+    if (!el) return { cardWidth: 300, gap: 24 };
     const firstCard = el.firstElementChild as HTMLElement;
     const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 300;
-    const gap = 20;
-    return { cardWidth, gap };
+    const secondCard = el.children[1] as HTMLElement | undefined;
+    const gap = secondCard
+      ? Math.round(secondCard.getBoundingClientRect().left - firstCard.getBoundingClientRect().right)
+      : 24;
+    return { cardWidth, gap: gap > 0 ? gap : 24 };
   }, []);
 
   const scrollRafId = useRef<number | null>(null);
@@ -194,7 +197,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             type="button"
             onClick={handlePrev}
             aria-label="Previous review"
-            className="absolute -left-2 sm:-left-3 lg:-left-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#3C6E52]/60 active:scale-95 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200"
+            className="absolute -left-2 sm:-left-3 lg:-left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#3C6E52]/60 active:scale-95 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200"
           >
             <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
           </button>
@@ -204,7 +207,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             type="button"
             onClick={handleNext}
             aria-label="Next review"
-            className="absolute -right-2 sm:-right-3 lg:-right-5 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#3C6E52]/60 active:scale-95 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200"
+            className="absolute -right-2 sm:-right-3 lg:-right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#3C6E52]/60 active:scale-95 shadow-lg flex items-center justify-center cursor-pointer transition-all duration-200"
           >
             <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
           </button>
@@ -217,7 +220,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2500)}
             onMouseEnter={() => setIsInteracting(true)}
             onMouseLeave={() => setIsInteracting(false)}
-            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-5 pt-2 px-3 sm:px-4 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
+            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-6 pt-2 px-3 sm:px-4 lg:px-0 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -227,7 +230,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
             {REVIEWS.map((review) => (
               <div
                 key={review.id}
-                className="flex-shrink-0 w-[84vw] xs:w-[300px] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] snap-start flex flex-col items-center bg-white rounded-2xl border border-white/95 p-6 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.18)] text-stone-900 transition-all duration-300 min-h-[380px] sm:min-h-[400px]"
+                className="flex-shrink-0 w-[84vw] xs:w-[300px] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-14px)] lg:w-[calc((100%-72px)/4)] snap-start flex flex-col items-center bg-white rounded-2xl border border-white/95 p-6 sm:p-7 shadow-[0_8px_30px_rgba(0,0,0,0.18)] text-stone-900 transition-all duration-300 min-h-[280px] sm:min-h-[300px]"
               >
                 {/* Circular Profile Avatar Centered at Top */}
                 <div className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-full overflow-hidden shrink-0 border-2 border-stone-100 shadow-xs mb-3.5 bg-stone-100">
@@ -252,7 +255,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 </span>
 
                 {/* 5-Star Row Centered in Kurma Warm Gold */}
-                <div className="flex items-center justify-center gap-1 mt-2.5 mb-4">
+                <div className="flex items-center justify-center gap-1 mt-2 mb-2.5">
                   {[1, 2, 3, 4, 5].map((starNum) => (
                     <Star
                       key={starNum}
@@ -265,8 +268,8 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                   ))}
                 </div>
 
-                {/* Review Text Centered */}
-                <div className="flex-1 flex flex-col justify-center text-center w-full">
+                {/* Review Text - Positioned Directly Below Star Icons */}
+                <div className="w-full text-center mt-1">
                   <p className="text-stone-700 text-xs sm:text-[13px] lg:text-[13.5px] font-normal leading-relaxed font-sans">
                     &ldquo; {review.quote} &rdquo;
                   </p>

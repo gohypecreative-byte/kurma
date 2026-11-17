@@ -223,7 +223,7 @@ export default function SignUpPage() {
 
             {/* CREATE ACCOUNT FORM */}
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-black font-sans leading-tight">
+              <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight">
                 CREATE AN ACCOUNT
               </h1>
               <p className="text-xs sm:text-sm text-stone-500 mt-2.5 mb-8 font-sans leading-relaxed">

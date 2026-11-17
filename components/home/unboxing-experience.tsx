@@ -747,14 +747,11 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
                   />
                 </div>
 
-                {/* Product Name & Subtitle */}
-                <div className="space-y-0.5 pt-0.5">
+                {/* Product Name */}
+                <div className="pt-0.5">
                   <h4 className="font-sans text-[8.5px] min-[380px]:text-[9.5px] sm:text-xs md:text-sm lg:text-[15px] font-semibold text-[#1C1B18] truncate">
                     {prod.name}
                   </h4>
-                  <p className="card-extra-detail text-[7.5px] min-[380px]:text-[8.5px] sm:text-[10px] md:text-xs text-stone-500 font-sans line-clamp-1 opacity-0">
-                    {prod.subtitle}
-                  </p>
                 </div>
 
                 {/* Price and Action Button (Reveals during transformation to product section) */}

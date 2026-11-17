@@ -6,12 +6,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
-import { AnimatedText, AnimatedWords } from "@/components/ui/animated-text";
+import { AnimatedWords } from "@/components/ui/animated-text";
 import {
-  ArrowRight,
   Check,
   Plus,
   Minus,
+  ShoppingCart,
   Trash2,
   Gift,
   Heart,
@@ -268,38 +268,10 @@ const GOODIES_OPTIONS: GoodyOption[] = [
   },
 ];
 
-const CUSTOMISER_HERO_BANNERS = [
-  {
-    src: "/images/customizer/customise-5-elements.jpg",
-    alt: "Customise Kurma 5 Elements Presentation Suite",
-    title: "The 5 Elements Suite",
-  },
-  {
-    src: "/images/customizer/customise-wedding-trunk.jpg",
-    alt: "Customise Kurma Handcrafted Keepsake Trunk",
-    title: "Handcrafted Keepsake Trunk",
-  },
-  {
-    src: "/images/customizer/customise-corporate-marble.jpg",
-    alt: "Customise Kurma Italian Green Marble Box",
-    title: "Artisanal Green Marble Trunk",
-  },
-];
-
 function CustomiseContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { cartCount, setIsCartOpen, addToCart } = useCart();
-
-  // Hero banner auto-rotation
-  const [heroBannerIndex, setHeroBannerIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHeroBannerIndex((prev) => (prev + 1) % CUSTOMISER_HERO_BANNERS.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Customizer Step State: 1 | 2 | 3 | 4
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
@@ -333,7 +305,7 @@ function CustomiseContent() {
             }
           }
         }
-      } catch {}
+      } catch { }
     };
 
     loadAdminConfigurations();
@@ -605,86 +577,28 @@ function CustomiseContent() {
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 w-full">
-        {/* HERO BANNER SECTION (Full-Width Immersive Cinematic Visual with Text Overlay) */}
-        <section className="relative w-full min-h-[480px] sm:min-h-[520px] lg:h-[580px] bg-[#0B0907] border-b border-[#DDD3C2] overflow-hidden flex items-center text-white">
-          {/* Background Images with Silky Smooth Crossfade */}
-          <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-            {CUSTOMISER_HERO_BANNERS.map((banner, idx) => (
-              <div
-                key={banner.src}
-                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
-                  idx === heroBannerIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-                }`}
-              >
-                <Image
-                  src={banner.src}
-                  alt={banner.alt}
-                  fill
-                  priority={idx === 0}
-                  className="object-cover object-center filter brightness-[0.88] contrast-[1.03]"
-                  sizes="100vw"
-                />
-              </div>
-            ))}
-
-            {/* Directional Ambient Vignette Gradient: Supreme text readability on left, product brilliance on right */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/25 sm:bg-gradient-to-r sm:from-[#0B0907]/92 sm:via-[#0B0907]/60 sm:to-transparent z-15" />
-          </div>
-
-          {/* Text Overlay Content */}
-          <div className="relative z-20 w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16">
-            <div className="max-w-xl lg:max-w-2xl space-y-4 sm:space-y-6 text-left">
-
-              <AnimatedText delay={0.1} yOffset={26}>
-                <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white leading-[1.14] tracking-tight">
-                  Born from a love of,<br />
-                  <span className="font-serif font-normal text-[#EED08E]">beautiful gifting</span>
-                </h1>
-              </AnimatedText>
-
-              <p className="text-xs sm:text-sm md:text-base text-stone-200/90 leading-relaxed font-light max-w-lg">
-                Curate your own bespoke suite: choose your artisanal box, select signature elemental incense aromas, and personalise with solid brass turtle holders and custom medallions.
-              </p>
-
-              <div className="pt-2 sm:pt-3">
-                <button
-                  type="button"
-                  onClick={() => scrollToStepContent(currentStep)}
-                  className="bg-[#FAF7F2] hover:bg-white text-[#1C1B18] px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl text-xs sm:text-sm font-bold tracking-widest uppercase transition-all shadow-xl hover:shadow-2xl inline-flex items-center gap-2.5 cursor-pointer active:scale-95 group"
-                >
-                  <span>START BUILDING</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Elegant Slide Indicators (Bottom Right) */}
-          <div className="absolute bottom-5 right-5 sm:bottom-8 sm:right-10 lg:right-16 z-20 flex items-center gap-2 bg-black/45 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/15">
-            {CUSTOMISER_HERO_BANNERS.map((banner, idx) => (
-              <button
-                key={banner.src}
-                type="button"
-                onClick={() => setHeroBannerIndex(idx)}
-                aria-label={banner.title}
-                title={banner.title}
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === heroBannerIndex
-                    ? "w-6 bg-[#EED08E]"
-                    : "w-2 bg-white/40 hover:bg-white/80"
-                }`}
-              />
-            ))}
+        {/* HERO BANNER SECTION (Single Static Widescreen Banner - No Slide Animation, No Black Overlays) */}
+        <section className="relative w-full h-[40vh] sm:h-[48vh] lg:h-[54vh] max-h-[560px] min-h-[300px] sm:min-h-[380px] bg-[#FAF8F5] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
+          {/* Full-Bleed High-Fidelity Background Image */}
+          <div className="absolute inset-0 w-full h-full pointer-events-none">
+            <Image
+              src="/images/customizer/customise-wedding-trunk-widescreen.jpg"
+              alt="Customise Kurma Handcrafted Keepsake Trunk & Sacred Elements"
+              fill
+              priority
+              className="object-cover object-right md:object-center"
+              sizes="100vw"
+            />
           </div>
         </section>
 
-                {/* STEPPER PROGRESS HEADER & STEP CONTAINER (Matching User Screenshot 100%) */}
-        <section id="stepper-header" className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-6 sm:pt-12 pb-4 relative z-20 scroll-mt-20 sm:scroll-mt-24">
+        {/* STEPPER PROGRESS HEADER & STEP CONTAINER (Matching User Screenshot 100%) */}
+        <section id="stepper-header" className="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 pt-8 sm:pt-14 pb-4 relative z-20 scroll-mt-20 sm:scroll-mt-24">
           <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-8 md:p-12 shadow-xl">
             {/* 4-Step Stepper Progress Bar */}
-            <div className="relative mb-6 sm:mb-10 pb-6 sm:pb-8 border-b border-stone-200/80">
-              {/* Connecting Horizontal Line */}
-              <div className="absolute top-5 left-[12%] right-[12%] h-[1.5px] bg-stone-200 -z-0 hidden sm:block" />
+            <div className="relative pt-2 sm:pt-4 mb-5 sm:mb-7 pb-4 sm:pb-6 border-b border-stone-200/80">
+              {/* Connecting Horizontal Line centered with step circles */}
+              <div className="absolute top-[26px] sm:top-[36px] left-[12%] right-[12%] h-[1.5px] bg-stone-200 -z-0 hidden sm:block" />
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-4 relative z-10 text-center">
                 {/* STEP 1 */}
@@ -693,25 +607,20 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
-                      currentStep === 1
-                        ? "bg-[#121829] text-white shadow-md scale-110"
-                        : currentStep > 1
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${currentStep === 1
+                      ? "bg-[#121829] text-white shadow-md scale-110"
+                      : currentStep > 1
                         ? "bg-[#1E1E1C] text-white"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
-                    }`}
+                      }`}
                   >
                     {currentStep > 1 ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" /> : "1"}
                   </div>
                   <span
-                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 1 ? "text-[#1C1B18]" : "text-stone-700"
-                    }`}
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${currentStep === 1 ? "text-[#1C1B18]" : "text-stone-700"
+                      }`}
                   >
                     Choose your box
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-stone-500 mt-1 max-w-[170px] leading-relaxed hidden sm:block">
-                    Pick a tray or basket that feels right for your gift Start with a base that sets the tone
                   </span>
                 </button>
 
@@ -721,25 +630,20 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
-                      currentStep === 2
-                        ? "bg-[#121829] text-white shadow-md scale-110"
-                        : currentStep > 2
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${currentStep === 2
+                      ? "bg-[#121829] text-white shadow-md scale-110"
+                      : currentStep > 2
                         ? "bg-[#1E1E1C] text-white"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
-                    }`}
+                      }`}
                   >
                     {currentStep > 2 ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" /> : "2"}
                   </div>
                   <span
-                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 2 ? "text-[#1C1B18]" : "text-stone-700"
-                    }`}
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${currentStep === 2 ? "text-[#1C1B18]" : "text-stone-700"
+                      }`}
                   >
                     Select Goodies
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-stone-500 mt-1 max-w-[170px] leading-relaxed hidden sm:block">
-                    Add items you love and build it your way Create a hamper that feels thoughtful
                   </span>
                 </button>
 
@@ -749,25 +653,20 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
-                      currentStep === 3
-                        ? "bg-[#121829] text-white shadow-md scale-110"
-                        : currentStep > 3
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${currentStep === 3
+                      ? "bg-[#121829] text-white shadow-md scale-110"
+                      : currentStep > 3
                         ? "bg-[#1E1E1C] text-white"
                         : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
-                    }`}
+                      }`}
                   >
                     {currentStep > 3 ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" /> : "3"}
                   </div>
                   <span
-                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 3 ? "text-[#1C1B18]" : "text-stone-700"
-                    }`}
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${currentStep === 3 ? "text-[#1C1B18]" : "text-stone-700"
+                      }`}
                   >
                     Personalise It
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-stone-500 mt-1 max-w-[170px] leading-relaxed hidden sm:block">
-                    Add a note or special detail for your recipient Make your gift feel truly personal
                   </span>
                 </button>
 
@@ -777,23 +676,18 @@ function CustomiseContent() {
                   className="flex flex-col items-center cursor-pointer group"
                 >
                   <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${
-                      currentStep === 4
-                        ? "bg-[#121829] text-white shadow-md scale-110"
-                        : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
-                    }`}
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-serif text-xs sm:text-sm font-bold transition-all duration-300 ${currentStep === 4
+                      ? "bg-[#121829] text-white shadow-md scale-110"
+                      : "bg-white text-stone-400 border border-stone-300 group-hover:border-stone-400"
+                      }`}
                   >
                     4
                   </div>
                   <span
-                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${
-                      currentStep === 4 ? "text-[#1C1B18]" : "text-stone-700"
-                    }`}
+                    className={`font-serif text-xs sm:text-base lg:text-lg font-semibold mt-2 sm:mt-3 transition-colors ${currentStep === 4 ? "text-[#1C1B18]" : "text-stone-700"
+                      }`}
                   >
                     Review &amp; Place Order
-                  </span>
-                  <span className="text-[11px] sm:text-xs text-stone-500 mt-1 max-w-[170px] leading-relaxed hidden sm:block">
-                    Take a quick look at your hamper Place your order and leave the rest to us
                   </span>
                 </button>
               </div>
@@ -801,14 +695,10 @@ function CustomiseContent() {
 
             {/* STEP 1: CHOOSE YOUR BOX CONTENT */}
             {currentStep === 1 && (
-              <div id="step-1-choose-box" className="space-y-8 animate-in fade-in duration-300 scroll-mt-24">
+              <div id="step-1-choose-box" className="space-y-7 animate-in fade-in duration-300 scroll-mt-24">
                 {/* Header Title Matching Screenshot */}
-                <div className="text-center max-w-3xl mx-auto space-y-3 pt-4">
+                <div className="text-center max-w-3xl mx-auto space-y-2 pt-1 sm:pt-2">
                   <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
-                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
-                      <span>STEP 1</span>
-                    </div>
                     <AnimatedWords
                       text="Choose your box"
                       as="h2"
@@ -828,20 +718,19 @@ function CustomiseContent() {
                       <div
                         key={box.id}
                         onClick={() => handleSelectBox(box)}
-                        className={`rounded-2xl p-4 sm:p-5 flex items-center gap-4 cursor-pointer transition-all duration-200 select-none group ${
-                          isSelected
-                            ? "border-2 border-[#8C281F] bg-[#FAF5F5]/40 shadow-md scale-[1.01]"
-                            : "border border-stone-200/90 bg-white hover:border-[#8C281F]/60 hover:shadow-xs hover:scale-[1.005]"
-                        }`}
+                        className={`rounded-2xl p-4 sm:p-5 flex items-center gap-4 cursor-pointer transition-all duration-200 select-none group ${isSelected
+                          ? "border-2 border-[#8C281F] bg-[#FAF5F5]/40 shadow-md scale-[1.01]"
+                          : "border border-stone-200/90 bg-white hover:border-[#8C281F]/60 hover:shadow-xs hover:scale-[1.005]"
+                          }`}
                       >
-                        {/* Square Thumbnail Image */}
-                        <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[#f5f3ec] shrink-0 border border-stone-200/80 p-2 flex items-center justify-center">
+                        {/* Square Thumbnail Image - Full Fill Without Padding */}
+                        <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[#f5f3ec] shrink-0 border border-stone-200/80">
                           <Image
                             src={box.image}
                             alt={box.title}
                             fill
                             unoptimized
-                            className="object-contain p-1 hover:scale-105 transition-transform"
+                            className="object-cover hover:scale-105 transition-transform duration-300"
                           />
                         </div>
 
@@ -862,11 +751,10 @@ function CustomiseContent() {
                         {/* Radio Selection Indicator */}
                         <div className="shrink-0">
                           <div
-                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                              isSelected
-                                ? "border-[#8C281F] bg-[#8C281F] text-white"
-                                : "border-stone-300 bg-white"
-                            }`}
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected
+                              ? "border-[#8C281F] bg-[#8C281F] text-white"
+                              : "border-stone-300 bg-white"
+                              }`}
                           >
                             {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                           </div>
@@ -889,23 +777,23 @@ function CustomiseContent() {
                 {/* Dynamically Revealed Summary Card Inside Step 1 (Matching User Screenshot 100%) */}
                 {selectedBox ? (
                   <div className="pt-6 border-t border-stone-200/80 space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-300">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-5">
                       {/* Left: Thumbnail & Box Details */}
-                      <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0 p-1">
+                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full sm:w-auto">
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
                             fill
                             unoptimized
-                            className="object-contain"
+                            className="object-cover"
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#1C1B18] truncate">
+                          <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-xs sm:text-sm text-stone-500 font-sans mt-0.5">
+                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
                             ₹{selectedBox.price.toLocaleString("en-IN")}
                           </p>
                         </div>
@@ -913,12 +801,12 @@ function CustomiseContent() {
 
                       {/* Right: Vertical Separator & Total Price */}
                       <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100">
-                        <div className="hidden sm:block h-10 w-[1px] bg-stone-200" />
+                        <div className="hidden sm:block h-12 w-[1px] bg-stone-200" />
                         <div className="text-left sm:text-right">
-                          <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-sans font-medium">
+                          <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
-                          <span className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 leading-none">
+                          <span className="font-sans text-2xl sm:text-3xl lg:text-[34px] font-bold text-stone-900 tracking-tight leading-none">
                             ₹{grandTotal.toLocaleString("en-IN")}
                           </span>
                         </div>
@@ -948,14 +836,10 @@ function CustomiseContent() {
 
             {/* STEP 2: SELECT GOODIES (Matching User Screenshots 1, 2 & 3) */}
             {currentStep === 2 && (
-              <div id="step-2-fill-box" className="space-y-8 animate-in fade-in duration-300 scroll-mt-24">
+              <div id="step-2-fill-box" className="space-y-7 animate-in fade-in duration-300 scroll-mt-24">
                 {/* Header Title Matching Screenshot 1 */}
-                <div className="text-center max-w-3xl mx-auto space-y-3 pt-4">
+                <div className="text-center max-w-3xl mx-auto space-y-2 pt-1 sm:pt-2">
                   <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
-                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
-                      <span>STEP 2</span>
-                    </div>
                     <AnimatedWords
                       text="Fill your box"
                       as="h2"
@@ -975,9 +859,8 @@ function CustomiseContent() {
                       <div
                         key={item.id}
                         onClick={() => setSelectedProductModal(item)}
-                        className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col justify-between group shadow-2xs hover:shadow-md cursor-pointer ${
-                          qty > 0 ? "border-[#1C1B18] ring-1 ring-[#1C1B18]" : "border-stone-200/90 hover:border-stone-400"
-                        }`}
+                        className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col justify-between group shadow-2xs hover:shadow-md cursor-pointer ${qty > 0 ? "border-[#1C1B18] ring-1 ring-[#1C1B18]" : "border-stone-200/90 hover:border-stone-400"
+                          }`}
                       >
                         <div>
                           {/* Vertical Portrait Image Canvas matching home page (Aspect 3:4) */}
@@ -989,21 +872,12 @@ function CustomiseContent() {
                               unoptimized
                               className="object-contain object-center p-2 sm:p-3 group-hover:scale-105 transition-transform duration-500"
                             />
-                            {/* Subtle Quick View hover pill badge */}
-                            <div className="absolute inset-x-3 bottom-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex justify-center pointer-events-none">
-                              <span className="bg-[#1C1B18]/90 text-[#eed08e] text-[10px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-                                <span>View Details</span>
-                              </span>
-                            </div>
                           </div>
 
                           <div className="px-4">
                             <h4 className="font-serif text-sm font-semibold text-[#1C1B18] line-clamp-1 group-hover:text-[#8b5f10] transition-colors">
                               {item.name}
                             </h4>
-                            <p className="text-[11px] text-stone-500 line-clamp-1 mt-0.5 font-sans">
-                              {item.description}
-                            </p>
                           </div>
                         </div>
 
@@ -1025,7 +899,7 @@ function CustomiseContent() {
                               aria-label={`Add ${item.name}`}
                               className="w-8 h-8 rounded-full bg-[#121829] hover:bg-[#33312D] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
                             >
-                              <Plus className="w-4 h-4" />
+                              <ShoppingCart className="w-3.5 h-3.5 stroke-[2]" />
                             </button>
                           ) : (
                             <div className="flex items-center gap-1.5 bg-stone-100 rounded-full p-1 border border-stone-200">
@@ -1061,7 +935,7 @@ function CustomiseContent() {
                 {/* Load More Products Button Matching Screenshot 3 */}
                 <div className="text-center pt-2">
                   <button
-                    onClick={() => {}}
+                    onClick={() => { }}
                     className="border border-stone-300 hover:border-stone-400 text-stone-700 bg-white px-6 py-2 rounded-full text-xs font-medium transition-all shadow-2xs cursor-pointer"
                   >
                     Load more products
@@ -1070,24 +944,24 @@ function CustomiseContent() {
 
                 {/* Selected Box & Added Goodies Summary Card */}
                 {selectedBox && (
-                  <div className="pt-4">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="pt-5">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
                       {/* Left: Selected Box Info */}
-                      <div className="flex items-center gap-4 min-w-0 w-full md:w-auto shrink-0">
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0 p-1">
+                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full md:w-auto shrink-0">
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
                             fill
                             unoptimized
-                            className="object-contain"
+                            className="object-cover"
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base font-bold text-[#1C1B18] truncate">
+                          <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-xs text-stone-500 font-sans mt-0.5">
+                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
                             ₹{selectedBox.price.toLocaleString("en-IN")}
                           </p>
                         </div>
@@ -1095,38 +969,38 @@ function CustomiseContent() {
 
                       {/* Middle: Added Goodies Item List with Quantity Controls */}
                       <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3.5">
                           {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
                             const goody = getGoodyById(goodyId);
                             if (!goody || qty === 0) return null;
                             return (
                               <div
                                 key={goodyId}
-                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 flex items-center gap-3 shrink-0 min-w-[240px]"
+                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 shrink-0 min-w-[270px] sm:min-w-[290px]"
                               >
-                                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 p-0.5">
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
                                   <Image src={goody.image} alt={goody.name} fill className="object-contain" />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-xs font-semibold text-[#1C1B18] truncate">
+                                  <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
                                     {goody.name}
                                   </h5>
-                                  <p className="text-[10px] text-stone-500 font-sans">
+                                  <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
                                     ₹{goody.price.toLocaleString("en-IN")}
                                   </p>
 
-                                  <div className="flex items-center gap-1.5 mt-1">
+                                  <div className="flex items-center gap-2 mt-1.5">
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
                                     >
                                       -
                                     </button>
-                                    <span className="text-[11px] font-bold text-stone-900">{qty}</span>
+                                    <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
                                     >
                                       +
                                     </button>
@@ -1140,12 +1014,12 @@ function CustomiseContent() {
 
                       {/* Right: Vertical Separator & Total */}
                       <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
-                        <div className="hidden md:block h-10 w-[1px] bg-stone-200" />
+                        <div className="hidden md:block h-12 w-[1px] bg-stone-200" />
                         <div className="text-left md:text-right">
-                          <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-sans font-medium">
+                          <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
-                          <span className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 leading-none">
+                          <span className="font-sans text-2xl sm:text-3xl lg:text-[34px] font-bold text-stone-900 tracking-tight leading-none">
                             ₹{grandTotal.toLocaleString("en-IN")}
                           </span>
                         </div>
@@ -1175,14 +1049,10 @@ function CustomiseContent() {
 
             {/* STEP 3: MAKE IT PERSONAL (Matching User Screenshots 1, 2 & 3) */}
             {currentStep === 3 && (
-              <div id="make-it-personal-form" className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
+              <div id="make-it-personal-form" className="space-y-7 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
                 {/* Header Title Matching Screenshot 1 */}
-                <div id="make-it-personal-heading" className="text-center max-w-3xl mx-auto space-y-3 pt-4 scroll-mt-24">
+                <div id="make-it-personal-heading" className="text-center max-w-3xl mx-auto space-y-2 pt-1 sm:pt-2 scroll-mt-24">
                   <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
-                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
-                      <span>STEP 3</span>
-                    </div>
                     <AnimatedWords
                       text="Make it personal"
                       as="h2"
@@ -1236,78 +1106,28 @@ function CustomiseContent() {
                       className="w-full px-5 py-3.5 rounded-2xl bg-[#FAF5E9] border-none text-stone-900 placeholder:text-stone-400 font-sans focus:outline-none focus:ring-2 focus:ring-[#1C1B18]/20 text-sm sm:text-base resize-none shadow-2xs"
                     />
                   </div>
-
-                  {/* Complimentary Greeting Card Card Matching Personal Note Width */}
-                  <div>
-                    <label className="block font-serif text-sm font-semibold text-stone-800 mb-2">
-                      Greeting card
-                    </label>
-                    <div className="w-full rounded-2xl border border-stone-200/90 bg-white p-3.5 sm:p-4 shadow-2xs hover:shadow-md transition-all group flex flex-row items-center gap-4 sm:gap-5">
-                      {/* Vertical Aspect Image on the Left */}
-                      <div className="relative w-24 sm:w-36 md:w-40 aspect-[3/4] rounded-xl overflow-hidden bg-[#FAF5E9] shrink-0 border border-stone-100 shadow-2xs">
-                        <Image
-                          src="/images/product/image.png"
-                          alt="Kurma Classic Greeting Card"
-                          fill
-                          unoptimized
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-
-                      {/* Card Details & Pricing on the Right */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between self-stretch py-0.5">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#8b5f10] bg-[#FAF5E9] px-2.5 py-0.5 rounded-full border border-[#eed08e]/40">
-                              Complimentary
-                            </span>
-                          </div>
-                          <h4 className="font-serif text-base sm:text-lg font-bold text-[#1C1B18] mt-1.5 leading-snug">
-                            Kurma Classic Greeting Card
-                          </h4>
-                          <p className="text-xs sm:text-sm text-stone-500 font-sans mt-1 leading-relaxed line-clamp-2">
-                            Elegant cream note card framed by a botanical pattern. Included free with every bespoke gift box.
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-stone-100">
-                          <div className="flex items-center gap-2">
-                            <span className="line-through text-stone-400 text-xs font-sans">₹49</span>
-                            <span className="font-serif font-bold text-stone-900 text-base sm:text-lg">₹0</span>
-                            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                              Included
-                            </span>
-                          </div>
-
-                          <div className="w-7 h-7 rounded-full bg-[#15803D] text-white flex items-center justify-center font-bold shadow-xs shrink-0">
-                            <Check className="w-4 h-4 stroke-[3]" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Selected Box Summary & Items Slider Card Matching Screenshot 3 */}
                 {selectedBox && (
-                  <div className="pt-4">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="pt-5">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
                       {/* Left: Selected Box Info */}
-                      <div className="flex items-center gap-4 min-w-0 w-full md:w-auto">
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0 p-1">
+                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full md:w-auto shrink-0">
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
                             fill
                             unoptimized
-                            className="object-contain"
+                            className="object-cover"
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base font-bold text-[#1C1B18] truncate">
+                          <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-xs text-stone-500 font-sans mt-0.5">
+                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
                             ₹{selectedBox.price.toLocaleString("en-IN")}
                           </p>
                         </div>
@@ -1315,38 +1135,38 @@ function CustomiseContent() {
 
                       {/* Middle: Added Goodies Item List with Red Remove Badge & Quantity Controls */}
                       <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3.5">
                           {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
                             const goody = getGoodyById(goodyId);
                             if (!goody || qty === 0) return null;
                             return (
                               <div
                                 key={goodyId}
-                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 flex items-center gap-3 shrink-0 min-w-[240px]"
+                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 shrink-0 min-w-[270px] sm:min-w-[290px]"
                               >
-                                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 p-0.5">
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
                                   <Image src={goody.image} alt={goody.name} fill className="object-contain" />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-xs font-semibold text-[#1C1B18] truncate">
+                                  <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
                                     {goody.name}
                                   </h5>
-                                  <p className="text-[10px] text-stone-500 font-sans">
+                                  <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
                                     ₹{goody.price.toLocaleString("en-IN")}
                                   </p>
 
-                                  <div className="flex items-center gap-1.5 mt-1">
+                                  <div className="flex items-center gap-2 mt-1.5">
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
                                     >
                                       -
                                     </button>
-                                    <span className="text-[11px] font-bold text-stone-900">{qty}</span>
+                                    <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
                                     >
                                       +
                                     </button>
@@ -1359,13 +1179,13 @@ function CustomiseContent() {
                       </div>
 
                       {/* Right: Vertical Separator & Total */}
-                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100">
-                        <div className="hidden md:block h-10 w-[1px] bg-stone-200" />
+                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
+                        <div className="hidden md:block h-12 w-[1px] bg-stone-200" />
                         <div className="text-left md:text-right">
-                          <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-sans font-medium">
+                          <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
-                          <span className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 leading-none">
+                          <span className="font-sans text-2xl sm:text-3xl lg:text-[34px] font-bold text-stone-900 tracking-tight leading-none">
                             ₹{grandTotal.toLocaleString("en-IN")}
                           </span>
                         </div>
@@ -1395,14 +1215,10 @@ function CustomiseContent() {
 
             {/* STEP 4: REVIEW & PLACE ORDER */}
             {currentStep === 4 && (
-              <div id="step-4-review-hamper" className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
+              <div id="step-4-review-hamper" className="space-y-7 animate-in fade-in duration-300 max-w-4xl mx-auto scroll-mt-24">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto space-y-2">
+                <div className="text-center max-w-3xl mx-auto space-y-2 pt-1 sm:pt-2">
                   <div className="flex items-center justify-center flex-wrap gap-x-4 sm:gap-x-5 gap-y-2">
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold tracking-wider text-stone-500 uppercase shrink-0 leading-none">
-                      <Image src="/icon.png" alt="Kurma Emblem" width={16} height={16} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
-                      <span>STEP 4</span>
-                    </div>
                     <AnimatedWords
                       text="Review your hamper"
                       as="h2"
@@ -1459,7 +1275,7 @@ function CustomiseContent() {
                     {/* Row 5: Total */}
                     <div className="flex items-center justify-between pt-4 gap-4">
                       <span className="text-stone-500 font-sans text-xs sm:text-sm shrink-0 w-20">Total</span>
-                      <span className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 text-right">
+                      <span className="font-sans text-2xl sm:text-3xl font-bold text-stone-900 text-right">
                         ₹{grandTotal.toLocaleString("en-IN")}
                       </span>
                     </div>
@@ -1468,24 +1284,24 @@ function CustomiseContent() {
 
                 {/* Selected Box Summary & Items Slider Card Matching Screenshot 2 */}
                 {selectedBox && (
-                  <div className="pt-2">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-4 sm:p-6 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="pt-5">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
                       {/* Left: Selected Box Info */}
-                      <div className="flex items-center gap-4 min-w-0 w-full md:w-auto">
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0 p-1">
+                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full md:w-auto shrink-0">
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
                             fill
                             unoptimized
-                            className="object-contain"
+                            className="object-cover"
                           />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-serif text-base font-bold text-[#1C1B18] truncate">
+                          <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-xs text-stone-500 font-sans mt-0.5">
+                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
                             ₹{selectedBox.price.toLocaleString("en-IN")}
                           </p>
                         </div>
@@ -1493,38 +1309,38 @@ function CustomiseContent() {
 
                       {/* Middle: Added Goodies Item List with Red Remove Badge & Quantity Controls */}
                       <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3.5">
                           {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
                             const goody = getGoodyById(goodyId);
                             if (!goody || qty === 0) return null;
                             return (
                               <div
                                 key={goodyId}
-                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 flex items-center gap-3 shrink-0 min-w-[240px]"
+                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 shrink-0 min-w-[270px] sm:min-w-[290px]"
                               >
-                                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 shrink-0 p-0.5">
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
                                   <Image src={goody.image} alt={goody.name} fill className="object-contain" />
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-xs font-semibold text-[#1C1B18] truncate">
+                                  <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
                                     {goody.name}
                                   </h5>
-                                  <p className="text-[10px] text-stone-500 font-sans">
+                                  <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
                                     ₹{goody.price.toLocaleString("en-IN")}
                                   </p>
 
-                                  <div className="flex items-center gap-1.5 mt-1">
+                                  <div className="flex items-center gap-2 mt-1.5">
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
                                     >
                                       -
                                     </button>
-                                    <span className="text-[11px] font-bold text-stone-900">{qty}</span>
+                                    <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
                                     <button
                                       onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-4 h-4 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-[10px] font-bold hover:bg-stone-100 cursor-pointer"
+                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
                                     >
                                       +
                                     </button>
@@ -1537,13 +1353,13 @@ function CustomiseContent() {
                       </div>
 
                       {/* Right: Vertical Separator & Total */}
-                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100">
-                        <div className="hidden md:block h-10 w-[1px] bg-stone-200" />
+                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
+                        <div className="hidden md:block h-12 w-[1px] bg-stone-200" />
                         <div className="text-left md:text-right">
-                          <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-sans font-medium">
+                          <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
-                          <span className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 leading-none">
+                          <span className="font-sans text-2xl sm:text-3xl lg:text-[34px] font-bold text-stone-900 tracking-tight leading-none">
                             ₹{grandTotal.toLocaleString("en-IN")}
                           </span>
                         </div>
@@ -1651,7 +1467,7 @@ function CustomiseContent() {
                           onClick={() => handleUpdateGoodyQty(selectedProductModal.id, 1)}
                           className="w-full py-3.5 px-6 rounded-full bg-[#121829] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                         >
-                          <Plus className="w-4 h-4" />
+                          <ShoppingCart className="w-4 h-4 stroke-[2]" />
                           <span>Add to Hamper (+ ₹{selectedProductModal.price})</span>
                         </button>
                       );

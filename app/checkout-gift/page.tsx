@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Truck,
   Tag,
-  ChevronRight,
   CreditCard,
   Banknote,
   QrCode,
@@ -346,17 +345,6 @@ function CheckoutGiftContent() {
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#1C1B18]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      {/* Breadcrumb Header */}
-      <div className="bg-[#fbf6ea]/70 border-b border-[#eed08e]/30 py-3 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex items-center gap-2 text-xs text-stone-500 font-sans">
-          <Link href="/" className="hover:text-[#1C1B18] transition-colors">Home</Link>
-          <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
-          <Link href="/elements" className="hover:text-[#1C1B18] transition-colors">Customise Hamper</Link>
-          <ChevronRight className="w-3.5 h-3.5 text-stone-400" />
-          <span className="text-[#8b5f10] font-semibold">Checkout Gift</span>
-        </div>
-      </div>
-
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Page Title */}
         <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
@@ -382,9 +370,6 @@ function CheckoutGiftContent() {
                     <h2 className="font-serif text-base sm:text-lg font-semibold text-stone-900 leading-tight">
                       Recipient &amp; Delivery Address
                     </h2>
-                    <p className="text-xs text-stone-500 font-sans">
-                      Where should this auspicious gift hamper be delivered?
-                    </p>
                   </div>
                 </div>
 
@@ -497,9 +482,6 @@ function CheckoutGiftContent() {
                     <h2 className="font-serif text-base sm:text-lg font-semibold text-stone-900 leading-tight">
                       Sender Contact Information
                     </h2>
-                    <p className="text-xs text-stone-500 font-sans">
-                      For dispatch tracking notifications and tax invoice
-                    </p>
                   </div>
                 </div>
 
@@ -559,9 +541,6 @@ function CheckoutGiftContent() {
                     <h2 className="font-serif text-base sm:text-lg font-semibold text-stone-900 leading-tight">
                       Sacred Payment Method
                     </h2>
-                    <p className="text-xs text-stone-500 font-sans">
-                      Select your preferred secure payment channel
-                    </p>
                   </div>
                 </div>
 
@@ -804,18 +783,6 @@ function CheckoutGiftContent() {
                     <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
                   </div>
                 )}
-
-                <div className="flex justify-between">
-                  <span>Handcrafted Box Packaging &amp; Zari</span>
-                  <span className="text-emerald-700 font-semibold">FREE</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Sacred Temple Shipping</span>
-                  <span className="text-emerald-700 font-semibold">
-                    {isFreeShipping ? "FREE" : "₹49"}
-                  </span>
-                </div>
 
                 <div className="flex justify-between text-base font-bold text-stone-900 pt-3 border-t border-stone-200">
                   <span className="font-serif">Total Payable</span>

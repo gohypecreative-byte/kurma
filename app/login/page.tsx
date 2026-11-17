@@ -362,7 +362,7 @@ export default function LoginPage() {
             {/* =============================================================== */}
             {mode === "signin" && (
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-black font-sans leading-tight">
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight">
                   SIGN IN TO YOUR ACCOUNT
                 </h1>
                 <p className="text-xs sm:text-sm text-stone-500 mt-2.5 mb-8 font-sans leading-relaxed">
@@ -504,7 +504,7 @@ export default function LoginPage() {
             {/* =============================================================== */}
             {mode === "forgot" && (
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-black font-sans leading-tight">
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight">
                   RESET YOUR PASSWORD
                 </h1>
                 <p className="text-xs sm:text-sm text-stone-500 mt-2.5 mb-8 font-sans leading-relaxed">
@@ -592,7 +592,7 @@ export default function LoginPage() {
             {/* =============================================================== */}
             {mode === "track" && (
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-black font-sans leading-tight">
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight">
                   TRACK GUEST ORDER
                 </h1>
                 <p className="text-xs sm:text-sm text-stone-500 mt-2.5 mb-6 font-sans leading-relaxed">

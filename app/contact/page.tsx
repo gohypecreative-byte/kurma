@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
-import { RealisticSmoke } from "@/components/home/realistic-smoke";
 import {
   Mail,
   Phone,
@@ -92,34 +90,8 @@ export default function ContactPage() {
       {/* Navigation */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      {/* 1. LUXURY HERO BANNER */}
-      <section className="relative w-full aspect-[1376/768] max-h-[500px] sm:max-h-[560px] bg-[#EDE1D1] border-b border-[#DDD3C2] text-[#1C1B18] overflow-hidden flex items-center select-none">
-        {/* Full-bleed background image - Heirloom Gifting Box & Lit Incense */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none">
-          <Image
-            src="/images/contact/contact-banner-no-smoke.jpg"
-            alt="Kurma Heirloom Gifting Box, Mysore Incense and Burning Fragrant Stick"
-            fill
-            priority
-            className="w-full h-full object-cover object-center"
-            sizes="100vw"
-          />
-          {/* Realistic Flowing Sandalwood Smoke Animation */}
-          <RealisticSmoke preset="contact" />
-        </div>
-
-        {/* Content Container - Left-aligned heading */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="max-w-xl lg:max-w-[600px] text-left">
-            <h1 className="text-3xl sm:text-4xl lg:text-[46px] xl:text-5xl font-serif font-normal text-[#1C1B18] tracking-tight leading-[1.15]">
-              Connect With Our Fragrance Masters
-            </h1>
-          </div>
-        </div>
-      </section>
-
       {/* Main Contact Stage */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-10 sm:py-14 lg:py-20 flex items-center">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 lg:py-24 flex items-center">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-16 items-start">
           
           {/* ========================================================================= */}

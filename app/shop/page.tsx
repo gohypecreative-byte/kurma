@@ -115,8 +115,8 @@ export default function ShopPage() {
       {/* Navigation Bar */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Sleek Compact Banner */}
-      <section className="relative w-full h-[36vh] sm:h-[44vh] lg:h-[48vh] min-h-[290px] max-h-[460px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
+      {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Warm Beige Palette with Unobstructed Sandalwood Products */}
+      <section className="relative w-full h-[52vh] sm:h-[58vh] lg:h-[64vh] min-h-[440px] max-h-[600px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
         {/* Full-Bleed End-to-End Background Image */}
         <div className="absolute inset-0 w-full h-full pointer-events-none">
           <Image

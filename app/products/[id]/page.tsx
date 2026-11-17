@@ -168,6 +168,9 @@ export default function ProductDetailPage() {
   const isTurtleHolder =
     product.id === "turtle-incense-holder" ||
     productId === "turtle-incense-holder";
+  const isMarbleBox =
+    product.id === "marble-gift-box" ||
+    productId === "marble-gift-box";
   // Clean presentation across all product pages
   const hidePromotionalElements = true;
 
@@ -862,52 +865,54 @@ export default function ProductDetailPage() {
               )}
 
               {/* Optional Sacred Keepsake Addons */}
-              <div className="space-y-2 pt-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-stone-900">
-                    Sacred Keepsakes &amp; Burners
-                  </span>
-                  {!hidePromotionalElements && (
-                    <span className="text-[10px] text-stone-400 uppercase tracking-wider font-cinzel">
-                      Optional Add-ons
+              {!isMarbleBox && (
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-stone-900">
+                      Sacred Keepsakes &amp; Burners
                     </span>
-                  )}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {ACCESSORY_ADDONS.slice(0, 2).map((addon) => {
-                    const isSelected = !!selectedAddons[addon.id];
-                    return (
-                      <button
-                        type="button"
-                        key={addon.id}
-                        onClick={() => toggleAddon(addon.id)}
-                        className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
-                          isSelected
-                            ? "border-[#c0881b] bg-[#fbf6ea] shadow-xs"
-                            : "border-stone-200 bg-white hover:border-stone-300"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                          <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200">
-                            <Image src={addon.image} alt={addon.name} fill className="object-cover" />
+                    {!hidePromotionalElements && (
+                      <span className="text-[10px] text-stone-400 uppercase tracking-wider font-cinzel">
+                        Optional Add-ons
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {ACCESSORY_ADDONS.slice(0, 2).map((addon) => {
+                      const isSelected = !!selectedAddons[addon.id];
+                      return (
+                        <button
+                          type="button"
+                          key={addon.id}
+                          onClick={() => toggleAddon(addon.id)}
+                          className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                            isSelected
+                              ? "border-[#c0881b] bg-[#fbf6ea] shadow-xs"
+                              : "border-stone-200 bg-white hover:border-stone-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-stone-100 shrink-0 border border-stone-200">
+                              <Image src={addon.image} alt={addon.name} fill className="object-cover" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <span className="text-xs font-semibold text-stone-900 block">
+                                {addon.name}
+                              </span>
+                              <span className="text-[10px] text-stone-500 font-sans block">
+                                {addon.id === "turtle-incense-holder" ? "Solid cast brass stand" : "Heirloom brass token"}
+                              </span>
+                            </div>
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <span className="text-xs font-semibold text-stone-900 block">
-                              {addon.name}
-                            </span>
-                            <span className="text-[10px] text-stone-500 font-sans block">
-                              {addon.id === "turtle-incense-holder" ? "Solid cast brass stand" : "Heirloom brass token"}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="text-xs font-bold text-[#8b5f10] font-mono shrink-0">
-                          {isSelected ? "✓ Added" : `+${formatPrice(addon.price)}`}
-                        </span>
-                      </button>
-                    );
-                  })}
+                          <span className="text-xs font-bold text-[#8b5f10] font-mono shrink-0">
+                            {isSelected ? "✓ Added" : `+${formatPrice(addon.price)}`}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Quantity Stepper matching reference layout */}
               <div className="flex items-center justify-between pt-1">
@@ -946,7 +951,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* Services and benefits 2x2 grid matching reference */}
-              {!isTurtleHolder && (
+              {!isTurtleHolder && !isMarbleBox && (
                 <div className="space-y-2">
                   <h4 className="text-xs font-bold text-stone-900">Services and benefits</h4>
                   <div className="rounded-2xl border border-stone-200/90 bg-stone-50/60 p-4">
