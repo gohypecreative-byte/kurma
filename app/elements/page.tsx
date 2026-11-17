@@ -581,7 +581,7 @@ function CustomiseContent() {
           {/* Full-Bleed High-Fidelity Background Image */}
           <div className="absolute inset-0 w-full h-full pointer-events-none">
             <Image
-              src="/images/customizer/customise-wedding-trunk-widescreen.jpg"
+              src="/images/customizer/customise-wedding-trunk-banner-v2.jpg"
               alt="Customise Kurma Handcrafted Keepsake Trunk & Sacred Elements"
               fill
               priority
@@ -944,10 +944,10 @@ function CustomiseContent() {
                 {/* Selected Box & Added Goodies Summary Card */}
                 {selectedBox && (
                   <div className="pt-5">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
-                      {/* Left: Selected Box Info */}
-                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full md:w-auto shrink-0">
-                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col gap-5">
+                      {/* Top: Selected Box Info Header */}
+                      <div className="flex items-center gap-4 sm:gap-4.5 min-w-0 pb-4 border-b border-stone-100">
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
@@ -956,63 +956,80 @@ function CustomiseContent() {
                             className="object-cover"
                           />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block font-sans">
+                            Selected Gift Box
+                          </span>
                           <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
-                            ₹{selectedBox.price.toLocaleString("en-IN")}
-                          </p>
                         </div>
                       </div>
 
-                      {/* Middle: Added Goodies Item List with Quantity Controls (2-column layout) */}
-                      <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 py-1">
-                        {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                          const goody = getGoodyById(goodyId);
-                          if (!goody || qty === 0) return null;
-                          return (
-                            <div
-                              key={goodyId}
-                              className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
-                            >
-                              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
-                                <Image src={goody.image} alt={goody.name} fill className="object-contain" />
-                              </div>
+                      {/* Middle: Added Goodies Item List (Underneath Title) */}
+                      {totalItemsSelected > 0 && (
+                        <div className="w-full">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                            {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                              const goody = getGoodyById(goodyId);
+                              if (!goody || qty === 0) return null;
+                              return (
+                                <div
+                                  key={goodyId}
+                                  className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
+                                >
+                                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
+                                    <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                                  </div>
 
-                              <div className="min-w-0 flex-1">
-                                <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
-                                  {goody.name}
-                                </h5>
-                                <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
-                                  ₹{goody.price.toLocaleString("en-IN")}
-                                </p>
+                                  <div className="min-w-0 flex-1">
+                                    <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
+                                      {goody.name}
+                                    </h5>
+                                    <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
+                                      ₹{goody.price.toLocaleString("en-IN")}
+                                    </p>
 
-                                <div className="flex items-center gap-2 mt-1.5">
-                                  <button
-                                    onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                  >
-                                    -
-                                  </button>
-                                  <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
-                                  <button
-                                    onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                  >
-                                    +
-                                  </button>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <button
+                                        onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                        className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                      >
+                                        -
+                                      </button>
+                                      <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
+                                      <button
+                                        onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                        className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                      {/* Right: Vertical Separator & Total */}
-                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
-                        <div className="hidden md:block h-12 w-[1px] bg-stone-200" />
-                        <div className="text-left md:text-right">
+                      {/* Bottom: Price Section (Box price & TOTAL on the side) */}
+                      <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
+                        <div className="text-sm font-sans text-stone-600 flex items-center gap-3">
+                          <span>
+                            Box Price: <strong className="font-semibold text-stone-900">₹{selectedBox.price.toLocaleString("en-IN")}</strong>
+                          </span>
+                          {goodiesPriceTotal > 0 && (
+                            <>
+                              <span className="text-stone-300">•</span>
+                              <span>
+                                Goodies Total: <strong className="font-semibold text-stone-900">₹{goodiesPriceTotal.toLocaleString("en-IN")}</strong>
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        <div className="text-left sm:text-right w-full sm:w-auto shrink-0">
                           <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
@@ -1105,13 +1122,13 @@ function CustomiseContent() {
                   </div>
                 </div>
 
-                {/* Selected Box Summary & Items Slider Card Matching Screenshot 3 */}
+                {/* Selected Box Summary Card */}
                 {selectedBox && (
                   <div className="pt-5">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
-                      {/* Left: Selected Box Info */}
-                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full md:w-auto shrink-0">
-                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col gap-5">
+                      {/* Top: Selected Box Info Header */}
+                      <div className="flex items-center gap-4 sm:gap-4.5 min-w-0 pb-4 border-b border-stone-100">
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
@@ -1120,63 +1137,80 @@ function CustomiseContent() {
                             className="object-cover"
                           />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block font-sans">
+                            Selected Gift Box
+                          </span>
                           <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
-                            ₹{selectedBox.price.toLocaleString("en-IN")}
-                          </p>
                         </div>
                       </div>
 
-                      {/* Middle: Added Goodies Item List with Quantity Controls (2-column layout) */}
-                      <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 py-1">
-                        {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                          const goody = getGoodyById(goodyId);
-                          if (!goody || qty === 0) return null;
-                          return (
-                            <div
-                              key={goodyId}
-                              className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
-                            >
-                              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
-                                <Image src={goody.image} alt={goody.name} fill className="object-contain" />
-                              </div>
+                      {/* Middle: Added Goodies Item List (Underneath Title) */}
+                      {totalItemsSelected > 0 && (
+                        <div className="w-full">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                            {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                              const goody = getGoodyById(goodyId);
+                              if (!goody || qty === 0) return null;
+                              return (
+                                <div
+                                  key={goodyId}
+                                  className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
+                                >
+                                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
+                                    <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                                  </div>
 
-                              <div className="min-w-0 flex-1">
-                                <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
-                                  {goody.name}
-                                </h5>
-                                <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
-                                  ₹{goody.price.toLocaleString("en-IN")}
-                                </p>
+                                  <div className="min-w-0 flex-1">
+                                    <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
+                                      {goody.name}
+                                    </h5>
+                                    <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
+                                      ₹{goody.price.toLocaleString("en-IN")}
+                                    </p>
 
-                                <div className="flex items-center gap-2 mt-1.5">
-                                  <button
-                                    onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                  >
-                                    -
-                                  </button>
-                                  <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
-                                  <button
-                                    onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                  >
-                                    +
-                                  </button>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <button
+                                        onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                        className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                      >
+                                        -
+                                      </button>
+                                      <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
+                                      <button
+                                        onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                        className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                      {/* Right: Vertical Separator & Total */}
-                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
-                        <div className="hidden md:block h-12 w-[1px] bg-stone-200" />
-                        <div className="text-left md:text-right">
+                      {/* Bottom: Price Section (Box price & TOTAL on the side) */}
+                      <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
+                        <div className="text-sm font-sans text-stone-600 flex items-center gap-3">
+                          <span>
+                            Box Price: <strong className="font-semibold text-stone-900">₹{selectedBox.price.toLocaleString("en-IN")}</strong>
+                          </span>
+                          {goodiesPriceTotal > 0 && (
+                            <>
+                              <span className="text-stone-300">•</span>
+                              <span>
+                                Goodies Total: <strong className="font-semibold text-stone-900">₹{goodiesPriceTotal.toLocaleString("en-IN")}</strong>
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        <div className="text-left sm:text-right w-full sm:w-auto shrink-0">
                           <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
@@ -1277,13 +1311,13 @@ function CustomiseContent() {
                   </div>
                 </div>
 
-                {/* Selected Box Summary & Items Slider Card Matching Screenshot 2 */}
+                {/* Selected Box Summary Card */}
                 {selectedBox && (
                   <div className="pt-5">
-                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
-                      {/* Left: Selected Box Info */}
-                      <div className="flex items-center gap-4 sm:gap-5 min-w-0 w-full md:w-auto shrink-0">
-                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
+                    <div className="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-7 shadow-sm flex flex-col gap-5">
+                      {/* Top: Selected Box Info Header */}
+                      <div className="flex items-center gap-4 sm:gap-4.5 min-w-0 pb-4 border-b border-stone-100">
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-[#F5F3EC] border border-stone-200 shrink-0">
                           <Image
                             src={selectedBox.image}
                             alt={selectedBox.title}
@@ -1292,63 +1326,80 @@ function CustomiseContent() {
                             className="object-cover"
                           />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
+                          <span className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold block font-sans">
+                            Selected Gift Box
+                          </span>
                           <h4 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] truncate">
                             {selectedBox.title}
                           </h4>
-                          <p className="text-sm sm:text-base font-sans font-semibold text-stone-800 mt-1">
-                            ₹{selectedBox.price.toLocaleString("en-IN")}
-                          </p>
                         </div>
                       </div>
 
-                      {/* Middle: Added Goodies Item List with Quantity Controls (2-column layout) */}
-                      <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 py-1">
-                        {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                          const goody = getGoodyById(goodyId);
-                          if (!goody || qty === 0) return null;
-                          return (
-                            <div
-                              key={goodyId}
-                              className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
-                            >
-                              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
-                                <Image src={goody.image} alt={goody.name} fill className="object-contain" />
-                              </div>
+                      {/* Middle: Added Goodies Item List (Underneath Title) */}
+                      {totalItemsSelected > 0 && (
+                        <div className="w-full">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                            {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                              const goody = getGoodyById(goodyId);
+                              if (!goody || qty === 0) return null;
+                              return (
+                                <div
+                                  key={goodyId}
+                                  className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
+                                >
+                                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
+                                    <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                                  </div>
 
-                              <div className="min-w-0 flex-1">
-                                <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
-                                  {goody.name}
-                                </h5>
-                                <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
-                                  ₹{goody.price.toLocaleString("en-IN")}
-                                </p>
+                                  <div className="min-w-0 flex-1">
+                                    <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
+                                      {goody.name}
+                                    </h5>
+                                    <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
+                                      ₹{goody.price.toLocaleString("en-IN")}
+                                    </p>
 
-                                <div className="flex items-center gap-2 mt-1.5">
-                                  <button
-                                    onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                  >
-                                    -
-                                  </button>
-                                  <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
-                                  <button
-                                    onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                  >
-                                    +
-                                  </button>
+                                    <div className="flex items-center gap-2 mt-1.5">
+                                      <button
+                                        onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                        className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                      >
+                                        -
+                                      </button>
+                                      <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
+                                      <button
+                                        onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                        className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
-                      {/* Right: Vertical Separator & Total */}
-                      <div className="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
-                        <div className="hidden md:block h-12 w-[1px] bg-stone-200" />
-                        <div className="text-left md:text-right">
+                      {/* Bottom: Price Section (Box price & TOTAL on the side) */}
+                      <div className="pt-4 border-t border-stone-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
+                        <div className="text-sm font-sans text-stone-600 flex items-center gap-3">
+                          <span>
+                            Box Price: <strong className="font-semibold text-stone-900">₹{selectedBox.price.toLocaleString("en-IN")}</strong>
+                          </span>
+                          {goodiesPriceTotal > 0 && (
+                            <>
+                              <span className="text-stone-300">•</span>
+                              <span>
+                                Goodies Total: <strong className="font-semibold text-stone-900">₹{goodiesPriceTotal.toLocaleString("en-IN")}</strong>
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        <div className="text-left sm:text-right w-full sm:w-auto shrink-0">
                           <span className="text-xs text-stone-500 uppercase tracking-widest block font-sans font-semibold mb-1">
                             TOTAL
                           </span>
