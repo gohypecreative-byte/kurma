@@ -428,6 +428,9 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
 
   return (
     <>
+      {/* Curated Gifting Galerie Section */}
+      <GiftingGallery />
+
       {/* 'Our Bestsellers' Section */}
       <section id="bestsellers" className="bg-[#FAF7F2] py-14 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 border-t border-[#EAE3D8]">
         <div className="mx-auto max-w-[1520px] w-full">
@@ -478,9 +481,6 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
           </div>
         </div>
       </section>
-
-      {/* Curated Gifting Galerie Section */}
-      <GiftingGallery />
     </>
   );
 }

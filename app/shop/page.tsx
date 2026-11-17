@@ -16,7 +16,6 @@ import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
 import { AnimatedText } from "@/components/ui/animated-text";
 import { RealisticSmoke } from "@/components/home/realistic-smoke";
-import { BrassBurnerFeature } from "@/components/shop/brass-burner-feature";
 
 export default function ShopPage() {
   const router = useRouter();
@@ -36,14 +35,54 @@ export default function ShopPage() {
   const { products } = useProducts();
 
   // Grouped products synchronized with Neon database
-  const giftBoxes = useMemo(
-    () => products.filter((p) => p.category === "Gift Boxes"),
-    [products]
-  );
-  const fragrances = useMemo(
-    () => products.filter((p) => p.category === "Fragrances"),
-    [products]
-  );
+  const giftBoxes = useMemo(() => {
+    const list = products.filter((p) => p.category === "Gift Boxes");
+    const imageOverrides: Record<string, string> = {
+      "marble-gift-box": "/images/product/initial-box-marble.jpg",
+      "mdf-gift-box": "/images/product/initial-box-mdf.jpg",
+      "5-elements-suite": "/images/product/initial-box-suite.jpg",
+      "empty-marble-box": "/images/product/initial-box-empty-marble.jpg",
+    };
+    return list.map((p) => {
+      if (imageOverrides[p.id]) {
+        return {
+          ...p,
+          image: imageOverrides[p.id],
+          gallery: [
+            imageOverrides[p.id],
+            ...(p.gallery?.filter((g) => g !== imageOverrides[p.id]) || []),
+          ],
+        };
+      }
+      return p;
+    });
+  }, [products]);
+  const fragrances = useMemo(() => {
+    const list = products.filter((p) => p.category === "Fragrances");
+    const fragranceImageOverrides: Record<string, string> = {
+      "fragrance-earth": "/images/product/fragrance-earth.jpg",
+      "fragrance-water": "/images/product/fragrance-water.jpg",
+      "fragrance-fire": "/images/product/fragrance-fire.jpg",
+      "fragrance-air": "/images/product/fragrance-air.jpg",
+      "fragrance-space": "/images/product/fragrance-space.jpg",
+      "fragrance-sandalwood": "/images/product/fragrance-sandalwood.jpg",
+      "fragrance-temple-flora": "/images/product/fragrance-temple-flora.jpg",
+      "fragrance-royal-oudh": "/images/product/fragrance-royal-oudh.jpg",
+    };
+    return list.map((p) => {
+      if (fragranceImageOverrides[p.id]) {
+        return {
+          ...p,
+          image: fragranceImageOverrides[p.id],
+          gallery: [
+            fragranceImageOverrides[p.id],
+            ...(p.gallery?.filter((g) => g !== fragranceImageOverrides[p.id]) || []),
+          ],
+        };
+      }
+      return p;
+    });
+  }, [products]);
   const accessories = useMemo(
     () => products.filter((p) => p.category === "Sacred Accessories"),
     [products]
@@ -76,10 +115,10 @@ export default function ShopPage() {
       {/* Navigation Bar */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Warm Beige Palette with Unobstructed Sandalwood Products */}
-      <section className="relative w-full h-[52vh] sm:h-[58vh] lg:h-[64vh] min-h-[440px] max-h-[600px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center text-[#1C1B18]">
+      {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Sleek Compact Banner */}
+      <section className="relative w-full h-[36vh] sm:h-[44vh] lg:h-[48vh] min-h-[290px] max-h-[460px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
         {/* Full-Bleed End-to-End Background Image */}
-        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+        <div className="absolute inset-0 w-full h-full pointer-events-none">
           <Image
             src="/images/shop/shop-hero-banner-beige.jpg"
             alt="Kurma Heirloom Slatted Keepsake Trunk, 5 Elements Incense Suites, Solid Cast Brass Turtle Burner and Mysore Sandalwood"
@@ -91,43 +130,20 @@ export default function ShopPage() {
           {/* Realistic Flowing Sandalwood Smoke Animation */}
           <RealisticSmoke preset="shop" />
         </div>
-
-        {/* Content Container - Positioned to the side (left) so it doesn't overlap products */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-10 sm:py-14">
-          <div className="max-w-md sm:max-w-lg lg:max-w-[540px] xl:max-w-[580px] text-left space-y-3.5 sm:space-y-4">
-            <div className="space-y-1.5 sm:space-y-2">
-              <AnimatedText delay={0.1} yOffset={22}>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-serif font-normal text-[#1C1B18] tracking-tight leading-[1.14]">
-                  Handcrafted Incense Suites
-                </h1>
-              </AnimatedText>
-              <AnimatedText delay={0.25} yOffset={18}>
-                <p className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-serif font-normal text-[#7A5A28]">
-                  &amp; Solid Brass Heirloom Trunks
-                </p>
-              </AnimatedText>
-            </div>
-
-            <AnimatedText delay={0.38} yOffset={14}>
-              <p className="text-xs sm:text-sm md:text-base text-[#3E362D] font-light max-w-lg leading-relaxed">
-                100% charcoal-free sacred elemental aromas and heirloom presentation suites crafted for quiet living.
-              </p>
-            </AnimatedText>
-          </div>
-        </div>
       </section>
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-12 space-y-12 sm:space-y-16">
-        <div className="space-y-16 sm:space-y-20">
-          {/* SECTION 1: GIFT TRUNKS & SUITES */}
-          <section className="space-y-6">
-            <div className="relative text-left border-b border-stone-200/80 pb-4">
-              <div className="flex justify-start">
-                <h3 className="text-2xl sm:text-3xl md:text-[34px] lg:text-4xl font-serif text-stone-900 font-normal tracking-tight text-left">
-                  Gift Trunks &amp; Keepsake Suites
-                </h3>
-              </div>
+      {/* Spacer gap between Hero Banner and Shop Products Section (Prevents sticking) */}
+      <div className="w-full h-8 sm:h-12 lg:h-14 bg-[#FAF8F5]" />
+
+      {/* Main Content Area - Luxury Dark Green Section */}
+      <main className="flex-1 w-full bg-[#123D2D] border-t border-b border-[#28513B]/40 text-[#E8D9AE] py-10 sm:py-14 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+        <div className="w-full max-w-[1520px] mx-auto space-y-10 sm:space-y-12">
+          {/* UNIFIED SECTION: SHOP ALL PRODUCTS */}
+          <section className="space-y-8 sm:space-y-10">
+            <div className="relative text-center border-b border-[#28513B]/40 pb-5 max-w-2xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-serif text-[#E8D9AE] font-normal tracking-tight text-center">
+                Shop All Products
+              </h2>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
@@ -146,62 +162,15 @@ export default function ShopPage() {
                   )}
                   cleanTitle={getCleanTitle(product)}
                   variant="minimal"
-                  objectFit="object-contain object-center"
-                  imagePadding="p-2.5 sm:p-3.5"
-                  cardBg={getGiftBoxCardBg(product.id)}
+                  theme="dark"
+                  containerAspect="aspect-[3/4]"
+                  objectFit="object-cover object-center"
+                  imagePadding="p-0"
+                  imageScale="group-hover:scale-100"
+                  cardBg="bg-[#092B20] border border-[#28513B]/60 shadow-md"
                 />
               ))}
-            </div>
-          </section>
 
-          {/* BANNER 1: COMBO PACK LUXURY SUITE PROMOTIONAL BANNER */}
-          <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm border border-[#DDD3C2] min-h-[380px] sm:min-h-[480px] lg:min-h-[520px] flex items-center bg-[#EDE1D1]">
-            {/* Full-Banner Background Image */}
-            <div className="absolute inset-0 w-full h-full z-0">
-              <Image
-                src="/images/product/suite-5-elements-banner.jpg"
-                alt="Kurma 5 Elements Complete Suite"
-                fill
-                loading="lazy"
-                className="object-cover object-right md:object-[center_right] lg:object-[82%_center] transition-transform duration-700 hover:scale-103"
-                sizes="100vw"
-              />
-              {/* Luxury Ambient Contrast Gradient: Keeps text 100% readable while letting products shine */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#EDE1D1]/95 via-[#EDE1D1]/75 to-transparent sm:bg-gradient-to-r sm:from-[#EDE1D1]/95 sm:via-[#EDE1D1]/80 sm:to-transparent lg:via-[#EDE1D1]/65 pointer-events-none" />
-            </div>
-
-            {/* Content Container - Positioned on Top of the Image */}
-            <div className="relative z-10 w-full p-4 sm:p-10 md:p-12 lg:p-16">
-              <div className="max-w-md sm:max-w-lg lg:max-w-xl text-left space-y-4 sm:space-y-6 text-[#1C1B18]">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal text-[#1C1B18] leading-[1.18] tracking-tight">
-                  The Complete 5 Elements Luxury Fragrance Suite
-                </h3>
-                <p className="text-[#3E362D] text-xs sm:text-sm md:text-base font-sans max-w-lg leading-relaxed">
-                  Experience Earth, Water, Fire, Air, and Space in a single curated suite. Comes with our solid cast brass turtle burner and personalized keepsake card.
-                </p>
-                <div className="pt-2 sm:pt-3 flex items-center gap-4">
-                  <button
-                    onClick={() => router.push("/products/5-elements-suite")}
-                    className="w-full sm:w-auto text-center px-6 sm:px-8 py-3.5 sm:py-4 bg-[#eed08e] hover:bg-[#f7e8c4] text-[#1C1B18] text-xs font-bold tracking-widest uppercase rounded-xl transition-all shadow-md hover:shadow-lg border border-[#d6ba75] cursor-pointer active:scale-98"
-                  >
-                    Customise &amp; Shop Suite
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION 2: THE 5 ELEMENTS FRAGRANCES */}
-          <section className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 xl:-mx-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-14 bg-[#123D2D] border-t border-b border-[#28513B]/40 space-y-6">
-            <div className="relative text-left border-b border-[#28513B]/40 pb-4">
-              <div className="flex justify-start">
-                <h3 className="text-2xl sm:text-3xl md:text-[34px] lg:text-4xl font-serif text-[#E8D9AE] font-normal tracking-tight text-left">
-                  The 5 Sacred Elements Incense
-                </h3>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
               {fragrances.map((product) => (
                 <ProductCardItem
                   key={product.id}
@@ -218,52 +187,20 @@ export default function ShopPage() {
                   cleanTitle={getCleanTitle(product)}
                   variant="minimal"
                   theme="dark"
-                  objectFit="object-contain object-center"
-                  imagePadding="p-2 sm:p-2.5"
-                  cardBg={getFragranceCardBg()}
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* BANNER 2: SOLID BRASS HEIRLOOM CRAFTSMANSHIP PROMOTIONAL BANNER */}
-          <BrassBurnerFeature />
-
-          {/* SECTION 3: ARTISANAL ACCESSORIES & HEIRLOOMS */}
-          <section className="space-y-6">
-            <div className="relative text-left border-b border-stone-200/80 pb-4">
-              <div className="flex justify-start">
-                <h3 className="text-2xl sm:text-3xl md:text-[34px] lg:text-4xl font-serif text-stone-900 font-normal tracking-tight text-left">
-                  Artisanal Accessories &amp; Heirloom Burners
-                </h3>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-              {accessories.map((product) => (
-                <ProductCardItem
-                  key={product.id}
-                  product={product}
-                  activeMode="direct"
-                  addedId={addedId}
-                  onQuickAdd={handleQuickAdd}
-                  onCustomize={handleCustomize}
-                  badge={getProductBadge(product.id)}
-                  discount={getDiscountPercent(
-                    product.price,
-                    product.originalPrice
-                  )}
-                  cleanTitle={getCleanTitle(product)}
-                  variant="minimal"
-                  objectFit="object-contain object-center"
-                  imagePadding="p-3 sm:p-4"
-                  cardBg={getAccessoryCardBg()}
+                  containerAspect="aspect-[3/4]"
+                  objectFit="object-cover object-center"
+                  imagePadding="p-0"
+                  imageScale="group-hover:scale-100"
+                  cardBg="bg-[#092B20] border border-[#28513B]/60 shadow-md"
                 />
               ))}
             </div>
           </section>
         </div>
       </main>
+
+      {/* Spacer gap before Footer */}
+      <div className="w-full h-8 sm:h-12 lg:h-14 bg-[#FAF8F5]" />
 
       {/* Footer */}
       <Footer />

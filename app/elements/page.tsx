@@ -15,7 +15,6 @@ import {
   Trash2,
   Gift,
   Heart,
-  ShieldCheck,
   ChevronRight,
   SlidersHorizontal,
   X,
@@ -1607,20 +1606,12 @@ function CustomiseContent() {
                     unoptimized
                     className="object-contain p-2"
                   />
-                  {selectedProductModal.category && (
-                    <span className="absolute top-2.5 left-2.5 bg-[#1E1E1C] text-white text-[9.5px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
-                      {selectedProductModal.category}
-                    </span>
-                  )}
                 </div>
               </div>
 
               {/* Right Column: Details & Hamper Actions */}
               <div className="sm:col-span-7 space-y-4">
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-[#8b5f10]">
-                    <span>Sacred Hamper Goody</span>
-                  </div>
                   <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18] mt-1 leading-snug">
                     {selectedProductModal.name}
                   </h3>
@@ -1641,18 +1632,6 @@ function CustomiseContent() {
                   <p className="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed">
                     {selectedProductModal.description}
                   </p>
-                </div>
-
-                {/* Gifting Guarantee Badges */}
-                <div className="grid grid-cols-2 gap-2 text-[11px] text-stone-600">
-                  <div className="flex items-center gap-1.5 p-2 rounded-xl bg-[#FAF5E9] border border-[#eed08e]/30">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                    <span>Pure Natural Blend</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 p-2 rounded-xl bg-[#FAF5E9] border border-[#eed08e]/30">
-                    <Gift className="w-3.5 h-3.5 text-[#8b5f10] shrink-0" />
-                    <span>Fragile-Safe Packed</span>
-                  </div>
                 </div>
 
                 {/* Hamper Capacity & Action CTA */}

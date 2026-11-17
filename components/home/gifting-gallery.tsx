@@ -38,8 +38,8 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Handwoven Classic",
     rating: 5.0,
     reviewsCount: 48,
-    image: "/images/product/image7.png",
-    description: "An elegant gift presentation featuring a handwoven wicker basket, silk gift pouch with gold tie, handcrafted Ganesha medallion, and 3 luxury agarbatti stick boxes.",
+    image: "/images/product/hamper-wicker-silk.jpg",
+    description: "An elegant gift presentation featuring a handwoven wicker basket lined with dark emerald raw silk, emerald silk gift pouch with gold tie, handcrafted Ganesha medallion, and 3 luxury agarbatti stick boxes.",
     inclusions: ["3 Packs Artisanal Agarbatti Sticks", "Handcrafted Silk Gift Pouch", "Brass-plated Ganesha Keepsake", "Handwoven Wicker Basket"]
   },
   {
@@ -54,9 +54,9 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Spiritual Luxury",
     rating: 4.9,
     reviewsCount: 62,
-    image: "/images/product/earth-front.png",
-    description: "Elevate your meditation sanctuary with this serene wooden pedestal set featuring a gold-draped Buddha idol and five elemental agarbatti boxes.",
-    inclusions: ["Meditative Buddha Idol", "Polished Hardwood Burner Base", "5 Elemental Agarbatti Suites (135 sticks)", "Kurma Ritual Guide"]
+    image: "/images/product/hamper-buddha-wooden.jpg",
+    description: "Elevate your meditation sanctuary with this serene rosewood pedestal set featuring an antique solid brass Buddha idol, traditional brass diya lamp, and five elemental agarbatti boxes.",
+    inclusions: ["Meditative Brass Buddha Idol", "Polished Hardwood Burner Base", "5 Elemental Agarbatti Suites (135 sticks)", "Kurma Ritual Guide"]
   },
   {
     id: "hamper-3",
@@ -70,9 +70,9 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Signature Suite",
     rating: 5.0,
     reviewsCount: 39,
-    image: "/images/product/fire-front.png",
-    description: "A thoughtful gift tray for tea lovers and mindfulness seekers, combining a premium ceramic cup, artisanal tin of Hibiscus Tea, and 3 luxury agarbatti stick boxes.",
-    inclusions: ["Handcrafted Leatherette Tray", "Artisan Ceramic Cup", "Tin of Organic Hibiscus Tea", "3 Luxury Agarbatti Suites", "Brass Diya Holder"]
+    image: "/images/product/hamper-royal-tea.jpg",
+    description: "A thoughtful gift tray for tea lovers and mindfulness seekers, combining a premium artisan ceramic cup, embossed brass canister of Organic Tea, and 3 luxury agarbatti stick boxes.",
+    inclusions: ["Handcrafted Leatherette Tray", "Artisan Ceramic Cup", "Embossed Brass Canister of Organic Tea", "3 Luxury Agarbatti Suites", "Brass Diya Holder"]
   },
   {
     id: "hamper-4",
@@ -86,8 +86,8 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Heirloom Edition",
     rating: 4.9,
     reviewsCount: 54,
-    image: "/images/product/water-front.png",
-    description: "Unbox timeless tradition with this vintage wooden slatted chest housing premium agarbatti boxes and a rustic burlap pouch with a handcrafted seal.",
+    image: "/images/product/hamper-slatted-trunk.jpg",
+    description: "Unbox timeless tradition with this vintage slatted wooden chest housing premium agarbatti boxes, a rustic natural burlap pouch with a gold wax seal, and a solid brass turtle burner.",
     inclusions: ["Slatted Wooden Chest with Clasp", "Natural Jute Sack with Seal", "3 Agarbatti Suites (81 sticks)", "Brass Turtle Incense Holder"]
   },
   {
@@ -102,8 +102,8 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Ceremonial Suite",
     rating: 5.0,
     reviewsCount: 71,
-    image: "/images/product/air-front.png",
-    description: "Crafted for festive rituals and daily prayers, this tray includes an engraved brass thali, twin brass oil lamps, a golden Ganesha idol, and fragrant agarbatti packs.",
+    image: "/images/product/hamper-devotional-puja.jpg",
+    description: "Crafted for festive rituals and daily prayers, this tray includes an engraved brass thali, twin glowing brass oil lamps, a golden Ganesha idol, and fragrant agarbatti packs.",
     inclusions: ["Engraved Brass Puja Thali", "Twin Artisan Brass Diyas", "Solid Brass Ganesha Idol", "2 Premium Agarbatti Stick Boxes"]
   },
   {
@@ -118,9 +118,9 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Wellness Gift",
     rating: 4.9,
     reviewsCount: 31,
-    image: "/images/product/space-front.png",
-    description: "Bring peace and positive energy to any home with this pine crate featuring healing quartz crystals, aromatic agarbatti packs, and sacred cleansing accessories.",
-    inclusions: ["Natural Pine Crate", "Healing Crystals & Rose Quartz", "4 Fragrance Agarbatti Packs", "Brass Incense Holder"]
+    image: "/images/product/hamper-crystal-sanctuary.jpg",
+    description: "Bring peace and positive energy to any home with this pine crate featuring healing raw quartz and amethyst crystals, aromatic agarbatti packs, and sacred brass incense accessories.",
+    inclusions: ["Natural Pine Crate", "Healing Raw Quartz & Amethyst", "4 Fragrance Agarbatti Packs", "Brass Incense Holder"]
   },
   {
     id: "hamper-7",
@@ -134,7 +134,7 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Festive Bestseller",
     rating: 5.0,
     reviewsCount: 89,
-    image: "/images/product/image8.png",
+    image: "/images/product/suite-portrait.jpg",
     description: "An opulent arrangement featuring brass lotus candle holders, a golden brass tea tin, engraved thali, and four elemental agarbatti stick boxes.",
     inclusions: ["Stitched Leatherette Tray", "Dual Brass Lotus Diya Holders", "Brass Agarbatti Canister", "4 Elemental Agarbatti Suites"]
   },
@@ -150,73 +150,9 @@ export const HAMPER_ITEMS: HamperItem[] = [
     tag: "Special Occasion",
     rating: 4.8,
     reviewsCount: 42,
-    image: "/images/product/image9.png",
-    description: "Make milestone celebrations unforgettable with this decorative wicker hamper complete with a solid brass turtle burner, silk gift pouch, and soothing agarbatti suites.",
-    inclusions: ["Handwoven Wicker Tray", "Solid Brass Turtle Holder", "Handcrafted Silk Gift Pouch", "3 Fragrance Agarbatti Suites"]
-  },
-  {
-    id: "hamper-9",
-    skuId: "ancient-mantra-wooden-scroll-box",
-    name: "Ancient Mantra Wooden Scroll & Mala Box",
-    subtitle: "Engraved wooden scroll box with Ganesha emblem, Rudraksha mala & agarbatti",
-    price: 5499,
-    priceDisplay: "₹5,499",
-    originalPrice: "₹6,200",
-    category: "crates",
-    tag: "Heirloom Edition",
-    rating: 5.0,
-    reviewsCount: 65,
-    image: "/images/product/image1.png",
-    description: "An heirloom treasure box featuring Sanskrit mantra engravings, Ganesha artwork, 108 Rudraksha prayer beads, brass lamp, and 3 agarbatti suites.",
-    inclusions: ["Engraved Hardwood Chest", "Sanskrit Mantra Scroll Artwork", "108 Rudraksha Meditation Mala", "3 Agarbatti Suites & Brass Diya"]
-  },
-  {
-    id: "hamper-10",
-    skuId: "zen-boat-botanical-gift-set",
-    name: "Zen Boat Burner & Botanical Gift Set",
-    subtitle: "Sculpted wooden boat holder, dried magnolia bloom & natural agarbatti",
-    price: 2799,
-    priceDisplay: "₹2,799",
-    originalPrice: "₹3,299",
-    category: "brass",
-    tag: "Minimalist Elegance",
-    rating: 4.9,
-    reviewsCount: 37,
-    image: "/images/product/image2.png",
-    description: "A tranquil arrangement featuring a hand-carved wooden boat burner, preserved lotus/magnolia flower, and organic botanical agarbatti sticks.",
-    inclusions: ["Sculpted Wooden Boat Burner", "Preserved Botanical Bloom", "2 Botanical Agarbatti Suites", "Linen Gift Ribbon"]
-  },
-  {
-    id: "hamper-11",
-    skuId: "golden-lotus-saffron-leatherette-suite",
-    name: "Golden Lotus & Saffron Fragrance Suite",
-    subtitle: "Golden stitched leatherette tray, brass elephant burner & saffron agarbatti",
-    price: 4199,
-    priceDisplay: "₹4,199",
-    originalPrice: "₹4,899",
-    category: "leatherette",
-    tag: "Artisan Gold",
-    rating: 5.0,
-    reviewsCount: 51,
-    image: "/images/product/image3.png",
-    description: "An opulent gift tray featuring brass lotus candle diyas, a brass elephant burner, and three luxury saffron agarbatti stick boxes.",
-    inclusions: ["Stitched Leatherette Gift Tray", "Brass Elephant Incense Burner", "3 Brass Lotus Candle Diyas", "Saffron Fragrance Suite"]
-  },
-  {
-    id: "hamper-12",
-    skuId: "vedic-heritage-brass-incense-chest",
-    name: "Vedic Heritage Brass & Incense Chest",
-    subtitle: "Carved teakwood tray, spherical brass incense urn & oil lamp",
-    price: 4899,
-    priceDisplay: "₹4,899",
-    originalPrice: "₹5,600",
-    category: "brass",
-    tag: "Heritage Special",
-    rating: 4.9,
-    reviewsCount: 44,
-    image: "/images/product/image4.png",
-    description: "A sacred devotional gift set housed in a carved dark teakwood tray, complete with engraved brass incense urn, traditional brass oil lamp, and sandalwood agarbatti boxes.",
-    inclusions: ["Carved Teakwood Serving Tray", "Engraved Brass Incense Urn", "Traditional Brass Oil Lamp", "Mysore Sandalwood Agarbatti Boxes"]
+    image: "/images/product/trunk-portrait.jpg",
+    description: "Make milestone celebrations unforgettable with this decorative keepsake hamper complete with a solid brass turtle burner, silk gift pouch, and soothing agarbatti suites.",
+    inclusions: ["Heirloom Keepsake Chest", "Solid Brass Turtle Holder", "Handcrafted Silk Gift Pouch", "3 Fragrance Agarbatti Suites"]
   }
 ];
 
@@ -522,83 +458,70 @@ export function GiftingGallery() {
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-[#092B20] rounded-2xl sm:rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-[#28513B] relative flex flex-col md:flex-row max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-3.5rem)] md:max-h-[min(84vh,680px)] min-h-0 my-auto -translate-y-2 sm:-translate-y-4 md:-translate-y-6 lg:-translate-y-8 text-[#E8D9AE]"
+            className="bg-[#FAF7F2] rounded-2xl sm:rounded-3xl max-w-4xl lg:max-w-5xl w-full overflow-hidden shadow-2xl border border-[#EAE3D8] relative flex flex-col md:flex-row max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-3.5rem)] md:max-h-[min(88vh,720px)] min-h-0 my-auto -translate-y-2 sm:-translate-y-4 md:-translate-y-6 lg:-translate-y-8 text-stone-900"
           >
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setSelectedHamper(null)}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#123D2D] hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center shadow-md transition-all cursor-pointer border border-[#28513B]"
+              className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-900 flex items-center justify-center shadow-md transition-all cursor-pointer border border-[#EAE3D8] hover:scale-105 active:scale-95"
               aria-label="Close details popup"
             >
               <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             {/* Modal Image */}
-            <div className="relative w-full md:w-[45%] lg:w-1/2 h-44 sm:h-56 md:h-auto min-h-0 shrink-0 bg-[#092B20] flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-[#28513B]/60">
+            <div className="relative w-full md:w-[48%] lg:w-[46%] h-64 sm:h-80 md:h-auto min-h-[300px] md:min-h-[460px] shrink-0 bg-[#092B20] flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-[#EAE3D8]">
               <Image
                 src={selectedHamper.image}
                 alt={selectedHamper.name}
                 fill
                 unoptimized
-                className="w-full h-full object-contain p-4 sm:p-6 md:p-8"
-                sizes="(max-width: 768px) 100vw, 400px"
+                className="w-full h-full object-cover object-center"
+                sizes="(max-width: 768px) 100vw, 500px"
               />
             </div>
 
             {/* Modal Details */}
-            <div className="p-5 sm:p-6 md:p-7 lg:p-8 w-full md:w-[55%] lg:w-1/2 flex flex-col justify-between overflow-y-auto min-h-0 scrollbar-thin">
+            <div className="p-6 sm:p-8 md:p-9 lg:p-10 w-full md:w-[52%] lg:w-[54%] flex flex-col justify-between overflow-y-auto min-h-0 scrollbar-thin">
               <div className="space-y-3 sm:space-y-4">
-                <h3 className="font-serif text-xl sm:text-2xl text-white font-medium leading-tight">
+                <h3 className="font-serif text-2xl sm:text-3xl lg:text-[32px] text-stone-900 font-medium leading-tight">
                   {selectedHamper.name}
                 </h3>
 
-                <p className="text-xs sm:text-sm text-[#E8D9AE]/85 leading-relaxed">
+                <p className="text-sm sm:text-base text-stone-600 leading-relaxed">
                   {selectedHamper.description}
                 </p>
               </div>
 
               {/* Pricing & Cart Action */}
-              <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-[#28513B]/40 flex items-center justify-between gap-3 shrink-0">
+              <div className="mt-6 sm:mt-8 pt-4 sm:pt-5 border-t border-[#EAE3D8] flex items-center justify-between gap-3 shrink-0">
                 <div>
-                  <span className="text-[10px] sm:text-xs text-[#E8D9AE]/60 block font-medium">Total Suite Price</span>
+                  <span className="text-[11px] sm:text-xs text-stone-500 block font-medium uppercase tracking-wider">Total Suite Price</span>
                   <div className="flex items-baseline gap-1.5 sm:gap-2">
-                    <span className="font-serif text-xl sm:text-2xl font-bold text-[#C5A45B]">
+                    <span className="font-serif text-2xl sm:text-3xl font-bold text-[#8C6215]">
                       {selectedHamper.priceDisplay}
                     </span>
                     {selectedHamper.originalPrice && (
-                      <span className="text-xs text-[#E8D9AE]/50 line-through">
+                      <span className="text-xs sm:text-sm text-stone-400 line-through">
                         {selectedHamper.originalPrice}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const targetId = selectedHamper.skuId || selectedHamper.id;
-                      setSelectedHamper(null);
-                      router.push(`/elements?box=${targetId}`);
-                    }}
-                    className="bg-[#123D2D] hover:bg-[#28513B] text-[#E8D9AE] py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl sm:rounded-2xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-[#28513B]"
-                    title="Customise this hamper"
-                  >
-                    <span>Customise</span>
-                  </button>
-
+                <div className="flex items-center">
                   <button
                     type="button"
                     onClick={() => {
                       handleAddToCart(selectedHamper);
                       setSelectedHamper(null);
                     }}
-                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#C5A45B] text-[#092B20] hover:bg-[#E8D9AE] active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer shrink-0 font-bold"
-                    title="Add to Bag"
-                    aria-label="Add to Bag"
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#8C6215] text-white hover:bg-[#724f11] active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer shrink-0"
+                    title="Add to Cart"
+                    aria-label="Add to Cart"
                   >
-                    <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                    <ShoppingCart className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2]" />
                   </button>
                 </div>
               </div>
@@ -626,7 +549,7 @@ export function GiftingGallery() {
             type="button"
             onClick={goToPrev}
             aria-label="Previous hamper"
-            className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95"
+            className="absolute left-2 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95 shadow-md"
           >
             <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
           </button>
@@ -636,7 +559,7 @@ export function GiftingGallery() {
             type="button"
             onClick={goToNext}
             aria-label="Next hamper"
-            className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95"
+            className="absolute right-2 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-[#092B20]/90 hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] border border-[#28513B] hover:border-[#C5A45B] flex items-center justify-center transition-all duration-200 cursor-pointer backdrop-blur-xs hover:scale-105 active:scale-95 shadow-md"
           >
             <ChevronRight className="w-5 h-5 stroke-[2.2]" />
           </button>
@@ -702,14 +625,7 @@ export function GiftingGallery() {
                 const isCenter = Math.abs(currentOffset) < 0.48;
 
                 // Card images
-                const galleryList = Array.from(
-                  new Set([
-                    hamper.image,
-                    "/images/product/image7.png",
-                    "/images/product/image8.png",
-                    "/images/product/image9.png",
-                  ])
-                );
+                const galleryList = [hamper.image];
                 const activeImgIdx = cardImgIdx[hamper.id] || 0;
                 const currentDisplayImg = galleryList[activeImgIdx] || hamper.image;
 
@@ -737,9 +653,9 @@ export function GiftingGallery() {
                     <div className="relative rounded-2xl transition-all duration-300 flex flex-col w-full">
                       {/* Portrait Product Image Canvas (Aspect 3:4) */}
                       <div
-                        className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-white border transition-all duration-300 flex items-center justify-center group/img ${
+                        className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#092B20] border transition-all duration-300 flex items-center justify-center group/img ${
                           isCenter
-                            ? "border-[#C5A45B]/90"
+                            ? "border-[#C5A45B]/90 shadow-xl"
                             : "border-white/20"
                         }`}
                       >
@@ -749,11 +665,9 @@ export function GiftingGallery() {
                           fill
                           draggable={false}
                           loading={absOffset <= 1 ? "eager" : "lazy"}
-                          className="w-full h-full object-contain object-center group-hover:scale-104 transition-transform duration-500 p-2.5 sm:p-3.5 select-none pointer-events-none"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none"
                           sizes="(max-width: 640px) 270px, (max-width: 1024px) 305px, 335px"
                         />
-
-
 
                         {/* Side Vignette Fade Overlay for non-center cards */}
                         {!isCenter && (
@@ -778,7 +692,7 @@ export function GiftingGallery() {
                                 className={`transition-all duration-300 rounded-full cursor-pointer shadow-xs ${
                                   i === activeImgIdx
                                     ? "w-2.5 h-1.5 bg-[#C5A45B] shadow-md"
-                                    : "w-1.5 h-1.5 bg-stone-300 hover:bg-stone-400"
+                                    : "w-1.5 h-1.5 bg-[#28513B] hover:bg-[#28513B]/80"
                                 }`}
                               />
                             ))}

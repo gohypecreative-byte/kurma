@@ -100,7 +100,6 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
   const [isInteracting, setIsInteracting] = useState(false);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   // Dynamic card metrics for clean scrolling
   const getCardMetrics = useCallback(() => {
@@ -174,11 +173,6 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
       observer.disconnect();
     };
   }, [isInteracting, getCardMetrics]);
-
-  const toggleExpand = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
 
   return (
     <section
@@ -272,19 +266,10 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
                 </div>
 
                 {/* Review Text Centered */}
-                <div className="flex-1 flex flex-col justify-between text-center w-full">
+                <div className="flex-1 flex flex-col justify-center text-center w-full">
                   <p className="text-stone-700 text-xs sm:text-[13px] lg:text-[13.5px] font-normal leading-relaxed font-sans">
-                    &ldquo; {expanded[review.id] ? review.fullReview : review.quote} &rdquo;
+                    &ldquo; {review.quote} &rdquo;
                   </p>
-                  {review.fullReview !== review.quote && (
-                    <button
-                      type="button"
-                      onClick={(e) => toggleExpand(review.id, e)}
-                      className="mt-2.5 text-[11px] font-medium text-[#8C6215] hover:text-[#1C1B18] hover:underline cursor-pointer mx-auto block"
-                    >
-                      {expanded[review.id] ? "Show Less" : "Read More"}
-                    </button>
-                  )}
                 </div>
               </div>
             ))}

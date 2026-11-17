@@ -73,10 +73,6 @@ export default function Home() {
               />
             </div>
 
-            <div className="relative z-10 bg-[#FAF7F2] overflow-hidden">
-              <RitualAndQuestions onExploreGifts={scrollToCatalog} />
-            </div>
-
             {/* Premium Scroll-Triggered 3D Box Unboxing Experience */}
             <div className="relative z-30">
               <UnboxingExperience
@@ -85,13 +81,17 @@ export default function Home() {
               />
             </div>
 
+            <div className="relative z-10 bg-[#FAF7F2] overflow-hidden">
+              <RitualAndQuestions onExploreGifts={scrollToCatalog} />
+            </div>
+
+            {/* 3D Autoplay Carousel Review Section */}
+            <ReviewsSection onExploreProducts={scrollToCatalog} />
+
             {/* Everything You Need to Know About Kurma FAQ Section */}
             <div className="relative z-10 bg-[#FAF7F2]">
               <KurmaFAQSection />
             </div>
-
-            {/* 3D Autoplay Carousel Review Section (Positioned directly above Footer) */}
-            <ReviewsSection onExploreProducts={scrollToCatalog} />
           </div>
         </MotionConfig>
       </main>

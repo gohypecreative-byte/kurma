@@ -162,7 +162,7 @@ export function ProductCardItem({
     >
       {/* Modern Image Canvas */}
       <div
-        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl ${
+        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl flex items-center justify-center ${
           cardBg || (isDark ? "bg-[#092B20] border border-[#28513B]/50 shadow-md" : "bg-[#FAF7F2] border border-[#DDD3C2] shadow-sm hover:shadow-md transition-shadow")
         }`}
       >
@@ -174,7 +174,7 @@ export function ProductCardItem({
           className={`absolute inset-0 w-full h-full ${
             objectFit || "object-contain object-center"
           } transition-transform duration-500 ease-out ${
-            imagePadding !== undefined ? imagePadding : "p-0"
+            imagePadding !== undefined ? imagePadding : "p-2 sm:p-2.5"
           } ${
             imageScale || "group-hover:scale-100"
           }`}
@@ -310,10 +310,26 @@ export function ProductShowcase({
   // 1. The Four Initial Flagship Products (Gift Boxes & Complete Suites) with Live DB Sync
   const initialGiftBoxes = useMemo(() => {
     const defaultIds = [
-      { id: "marble-gift-box", img: "/images/product/marble-portrait.jpg", gal: ["/images/product/marble-portrait.jpg", "/images/product/image9.png"] },
-      { id: "mdf-gift-box", img: "/images/product/trunk-portrait.jpg", gal: ["/images/product/trunk-portrait.jpg", "/images/product/image.png"] },
-      { id: "5-elements-suite", img: "/images/product/suite-portrait.jpg", gal: ["/images/product/suite-portrait.jpg", "/images/product/image7.png"] },
-      { id: "empty-marble-box", img: "/images/product/marble-portrait.jpg", gal: ["/images/product/marble-portrait.jpg", "/images/product/image9.png"] },
+      {
+        id: "marble-gift-box",
+        img: "/images/product/initial-box-marble.jpg",
+        gal: ["/images/product/initial-box-marble.jpg", "/images/product/image8.png"],
+      },
+      {
+        id: "mdf-gift-box",
+        img: "/images/product/initial-box-mdf.jpg",
+        gal: ["/images/product/initial-box-mdf.jpg", "/images/product/image.png"],
+      },
+      {
+        id: "5-elements-suite",
+        img: "/images/product/initial-box-suite.jpg",
+        gal: ["/images/product/initial-box-suite.jpg", "/images/product/image7.png"],
+      },
+      {
+        id: "empty-marble-box",
+        img: "/images/product/initial-box-empty-marble.jpg",
+        gal: ["/images/product/initial-box-empty-marble.jpg", "/images/product/image9.png"],
+      },
     ];
 
     const list: ProductSKU[] = [];
@@ -322,8 +338,8 @@ export function ProductShowcase({
       if (live) {
         list.push({
           ...live,
-          image: live.image || item.img,
-          gallery: live.gallery && live.gallery.length > 0 ? live.gallery : item.gal,
+          image: item.img,
+          gallery: item.gal,
         });
       }
     }
@@ -392,8 +408,8 @@ export function ProductShowcase({
                 theme="dark"
                 imagePadding="p-0"
                 imageScale="group-hover:scale-100"
-                containerAspect="aspect-[4/3] sm:aspect-[3/4]"
-                objectFit="object-contain object-center"
+                containerAspect="aspect-[3/4]"
+                objectFit="object-cover object-center"
               />
             ))}
           </div>

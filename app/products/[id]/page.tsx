@@ -585,9 +585,9 @@ export default function ProductDetailPage() {
           /* MAIN TWO-COLUMN PRODUCT DETAIL & CUSTOMIZATION STAGE (Balanced 6-Col / 6-Col Grid) */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-start w-full">
             {/* LEFT COLUMN: Luxury Studio Gallery with Interactive Canvas & Heritage Guarantee */}
-            <div className="lg:col-span-6 xl:col-span-6 space-y-3 sm:space-y-4 lg:sticky lg:top-24 min-w-0">
+            <div className="lg:col-span-5 xl:col-span-5 space-y-3 sm:space-y-4 lg:sticky lg:top-24 min-w-0 max-w-[480px] sm:max-w-[520px] lg:max-w-none mx-auto w-full">
               {/* Main Hero Showcase Canvas */}
-              <div className="relative w-full aspect-square sm:aspect-[4/4.2] lg:aspect-[4/4.5] max-h-[440px] sm:max-h-[560px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#FAF8F5] border border-stone-200/90 shadow-xs flex items-center justify-center p-3 sm:p-8 group select-none">
+              <div className="relative w-full aspect-[3/4] max-h-[560px] sm:max-h-[640px] rounded-2xl sm:rounded-3xl overflow-hidden bg-[#FAF8F5] border border-stone-200/90 shadow-xs flex items-center justify-center p-0 group select-none">
                 {/* Visual Perspective Badge (Top-Left) */}
                 {!hidePromotionalElements && (
                   <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
@@ -608,14 +608,18 @@ export default function ProductDetailPage() {
                 )}
 
                 {/* Main Centered Product Image */}
-                <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                   <Image
                     src={selectedImage || galleryImages[0]?.src || product.image}
                     alt={galleryImages[activeIndex]?.title || product.name}
                     fill
                     priority
-                    className="object-contain p-2 sm:p-4 drop-shadow-[0_12px_24px_rgba(0,0,0,0.08)] transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                    sizes="(max-width: 1024px) 100vw, 600px"
+                    className={`w-full h-full ${
+                      isFragrance || selectedImage?.includes("-3d") || selectedImage?.includes("-clean")
+                        ? "object-contain p-2 sm:p-4"
+                        : "object-cover"
+                    } object-center drop-shadow-[0_8px_20px_rgba(0,0,0,0.06)] transition-transform duration-500 ease-out group-hover:scale-[1.02]`}
+                    sizes="(max-width: 1024px) 100vw, 700px"
                   />
                 </div>
 
@@ -626,7 +630,7 @@ export default function ProductDetailPage() {
                       type="button"
                       onClick={prevImage}
                       aria-label="Previous view"
-                      className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-950 shadow-md border border-stone-200/80 flex items-center justify-center cursor-pointer transition-all duration-200 opacity-90 sm:opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 z-10"
+                      className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-950 shadow-md border border-stone-200/80 flex items-center justify-center cursor-pointer transition-all duration-200 opacity-90 sm:opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 z-20"
                     >
                       <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 -ml-0.5" />
                     </button>
@@ -634,7 +638,7 @@ export default function ProductDetailPage() {
                       type="button"
                       onClick={nextImage}
                       aria-label="Next view"
-                      className="absolute right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-950 shadow-md border border-stone-200/80 flex items-center justify-center cursor-pointer transition-all duration-200 opacity-90 sm:opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 z-10"
+                      className="absolute right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-950 shadow-md border border-stone-200/80 flex items-center justify-center cursor-pointer transition-all duration-200 opacity-90 sm:opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 z-20"
                     >
                       <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 -mr-0.5" />
                     </button>
@@ -731,7 +735,7 @@ export default function ProductDetailPage() {
             </div>
 
             {/* RIGHT COLUMN: Customization, Products to Add into the Element & Express Pay */}
-            <div className="lg:col-span-6 xl:col-span-6 min-w-0 bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 shadow-sm p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-5">
+            <div className="lg:col-span-7 xl:col-span-7 min-w-0 bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 shadow-sm p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-5">
               {/* Product Title & Badge */}
               <div className="space-y-1.5">
                 {!hidePromotionalElements && (
