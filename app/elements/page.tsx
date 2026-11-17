@@ -576,16 +576,16 @@ function CustomiseContent() {
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       <main className="flex-1 w-full">
-        {/* HERO BANNER SECTION (Single Static Widescreen Banner - No Slide Animation, No Black Overlays) */}
-        <section className="relative w-full h-[40vh] sm:h-[48vh] lg:h-[54vh] max-h-[560px] min-h-[300px] sm:min-h-[380px] bg-[#FAF8F5] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
-          {/* Full-Bleed High-Fidelity Background Image */}
+        {/* HERO BANNER SECTION (Single Full-Bleed Original Hero Banner - Elevated Height) */}
+        <section className="relative w-full h-[48vh] sm:h-[56vh] lg:h-[64vh] min-h-[380px] sm:min-h-[460px] lg:min-h-[540px] max-h-[720px] bg-[#2A180E] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
+          {/* Full-Bleed Single Original High-Fidelity Hero Banner */}
           <div className="absolute inset-0 w-full h-full pointer-events-none">
             <Image
-              src="/images/customizer/customise-wedding-trunk-banner-v2.jpg"
+              src="/images/customizer/customise-elements-banner-v5.jpg"
               alt="Customise Kurma Handcrafted Keepsake Trunk & Sacred Elements"
               fill
               priority
-              className="object-cover object-right md:object-center"
+              className="object-cover object-center w-full h-full"
               sizes="100vw"
             />
           </div>
