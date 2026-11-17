@@ -11,7 +11,6 @@ import {
   Check,
   Plus,
   Minus,
-  ShoppingCart,
   Trash2,
   Gift,
   Heart,
@@ -899,7 +898,7 @@ function CustomiseContent() {
                               aria-label={`Add ${item.name}`}
                               className="w-8 h-8 rounded-full bg-[#121829] hover:bg-[#33312D] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
                             >
-                              <ShoppingCart className="w-3.5 h-3.5 stroke-[2]" />
+                              <Plus className="w-4 h-4 stroke-[2.5]" />
                             </button>
                           ) : (
                             <div className="flex items-center gap-1.5 bg-stone-100 rounded-full p-1 border border-stone-200">
@@ -967,49 +966,47 @@ function CustomiseContent() {
                         </div>
                       </div>
 
-                      {/* Middle: Added Goodies Item List with Quantity Controls */}
-                      <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
-                        <div className="flex items-center gap-3.5">
-                          {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                            const goody = getGoodyById(goodyId);
-                            if (!goody || qty === 0) return null;
-                            return (
-                              <div
-                                key={goodyId}
-                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 shrink-0 min-w-[270px] sm:min-w-[290px]"
-                              >
-                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
-                                  <Image src={goody.image} alt={goody.name} fill className="object-contain" />
-                                </div>
+                      {/* Middle: Added Goodies Item List with Quantity Controls (2-column layout) */}
+                      <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 py-1">
+                        {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                          const goody = getGoodyById(goodyId);
+                          if (!goody || qty === 0) return null;
+                          return (
+                            <div
+                              key={goodyId}
+                              className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
+                            >
+                              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
+                                <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                              </div>
 
-                                <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
-                                    {goody.name}
-                                  </h5>
-                                  <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
-                                    ₹{goody.price.toLocaleString("en-IN")}
-                                  </p>
+                              <div className="min-w-0 flex-1">
+                                <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
+                                  {goody.name}
+                                </h5>
+                                <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
+                                  ₹{goody.price.toLocaleString("en-IN")}
+                                </p>
 
-                                  <div className="flex items-center gap-2 mt-1.5">
-                                    <button
-                                      onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                    >
-                                      -
-                                    </button>
-                                    <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
-                                    <button
-                                      onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                  <button
+                                    onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
+                                  <button
+                                    onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                  >
+                                    +
+                                  </button>
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Right: Vertical Separator & Total */}
@@ -1133,49 +1130,47 @@ function CustomiseContent() {
                         </div>
                       </div>
 
-                      {/* Middle: Added Goodies Item List with Red Remove Badge & Quantity Controls */}
-                      <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
-                        <div className="flex items-center gap-3.5">
-                          {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                            const goody = getGoodyById(goodyId);
-                            if (!goody || qty === 0) return null;
-                            return (
-                              <div
-                                key={goodyId}
-                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 shrink-0 min-w-[270px] sm:min-w-[290px]"
-                              >
-                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
-                                  <Image src={goody.image} alt={goody.name} fill className="object-contain" />
-                                </div>
+                      {/* Middle: Added Goodies Item List with Quantity Controls (2-column layout) */}
+                      <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 py-1">
+                        {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                          const goody = getGoodyById(goodyId);
+                          if (!goody || qty === 0) return null;
+                          return (
+                            <div
+                              key={goodyId}
+                              className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
+                            >
+                              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
+                                <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                              </div>
 
-                                <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
-                                    {goody.name}
-                                  </h5>
-                                  <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
-                                    ₹{goody.price.toLocaleString("en-IN")}
-                                  </p>
+                              <div className="min-w-0 flex-1">
+                                <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
+                                  {goody.name}
+                                </h5>
+                                <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
+                                  ₹{goody.price.toLocaleString("en-IN")}
+                                </p>
 
-                                  <div className="flex items-center gap-2 mt-1.5">
-                                    <button
-                                      onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                    >
-                                      -
-                                    </button>
-                                    <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
-                                    <button
-                                      onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                  <button
+                                    onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
+                                  <button
+                                    onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                  >
+                                    +
+                                  </button>
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Right: Vertical Separator & Total */}
@@ -1307,49 +1302,47 @@ function CustomiseContent() {
                         </div>
                       </div>
 
-                      {/* Middle: Added Goodies Item List with Red Remove Badge & Quantity Controls */}
-                      <div className="flex-1 max-w-full overflow-x-auto py-1 px-2 scrollbar-thin">
-                        <div className="flex items-center gap-3.5">
-                          {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
-                            const goody = getGoodyById(goodyId);
-                            if (!goody || qty === 0) return null;
-                            return (
-                              <div
-                                key={goodyId}
-                                className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 shrink-0 min-w-[270px] sm:min-w-[290px]"
-                              >
-                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
-                                  <Image src={goody.image} alt={goody.name} fill className="object-contain" />
-                                </div>
+                      {/* Middle: Added Goodies Item List with Quantity Controls (2-column layout) */}
+                      <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 py-1">
+                        {Object.entries(selectedGoodies).map(([goodyId, qty]) => {
+                          const goody = getGoodyById(goodyId);
+                          if (!goody || qty === 0) return null;
+                          return (
+                            <div
+                              key={goodyId}
+                              className="relative bg-stone-50 border border-stone-200/90 rounded-2xl p-2.5 sm:p-3 flex items-center gap-3 min-w-0"
+                            >
+                              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-white border border-stone-200 shrink-0 p-1">
+                                <Image src={goody.image} alt={goody.name} fill className="object-contain" />
+                              </div>
 
-                                <div className="min-w-0 flex-1">
-                                  <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
-                                    {goody.name}
-                                  </h5>
-                                  <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
-                                    ₹{goody.price.toLocaleString("en-IN")}
-                                  </p>
+                              <div className="min-w-0 flex-1">
+                                <h5 className="font-serif text-sm sm:text-[15px] font-semibold text-[#1C1B18] truncate">
+                                  {goody.name}
+                                </h5>
+                                <p className="text-xs sm:text-sm font-sans font-medium text-stone-700 mt-0.5">
+                                  ₹{goody.price.toLocaleString("en-IN")}
+                                </p>
 
-                                  <div className="flex items-center gap-2 mt-1.5">
-                                    <button
-                                      onClick={() => handleUpdateGoodyQty(goodyId, -1)}
-                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                    >
-                                      -
-                                    </button>
-                                    <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
-                                    <button
-                                      onClick={() => handleUpdateGoodyQty(goodyId, 1)}
-                                      className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
-                                    >
-                                      +
-                                    </button>
-                                  </div>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                  <button
+                                    onClick={() => handleUpdateGoodyQty(goodyId, -1)}
+                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="text-xs sm:text-sm font-bold font-sans text-stone-900 px-1">{qty}</span>
+                                  <button
+                                    onClick={() => handleUpdateGoodyQty(goodyId, 1)}
+                                    className="w-6 h-6 rounded-full bg-white border border-stone-300 text-stone-700 flex items-center justify-center text-xs font-bold hover:bg-stone-100 cursor-pointer transition-all active:scale-95"
+                                  >
+                                    +
+                                  </button>
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Right: Vertical Separator & Total */}
@@ -1467,7 +1460,7 @@ function CustomiseContent() {
                           onClick={() => handleUpdateGoodyQty(selectedProductModal.id, 1)}
                           className="w-full py-3.5 px-6 rounded-full bg-[#121829] hover:bg-[#33312D] text-white text-xs sm:text-sm font-semibold uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                         >
-                          <ShoppingCart className="w-4 h-4 stroke-[2]" />
+                          <Plus className="w-4 h-4 stroke-[2.5]" />
                           <span>Add to Hamper (+ ₹{selectedProductModal.price})</span>
                         </button>
                       );

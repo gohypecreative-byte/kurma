@@ -827,7 +827,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                       stiffness: 300,
                       mass: 0.8,
                     }}
-                    className="fixed top-0 inset-x-0 z-[110] bg-[#092B20] border-b border-[#28513B]/40 rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain text-[#E8D9AE]"
+                    className="fixed top-0 inset-x-0 z-[110] bg-[#FAF8F5] border-b border-[#DDD3C2] rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain text-stone-900"
                   >
                     {/* Top Row: Navigation Links, Kurma Brand Logo & Icons (matching reference header) */}
                     <div className="w-full border-b border-[#28513B]/40 bg-[#092B20] shrink-0">
@@ -913,12 +913,12 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     </div>
 
                     {/* Search Bar Row & Content Container */}
-                    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 sm:space-y-7">
+                    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 sm:space-y-7 bg-[#FAF8F5] text-stone-900">
                     {/* Search Bar Row (Refined Input with Search Icon + X Close Button beside it) */}
                     <div className="flex items-center gap-3 sm:gap-4 w-full">
                       <form
                         onSubmit={handleSearchSubmit}
-                        className="flex-1 relative flex items-center bg-[#123D2D] focus-within:bg-[#123D2D] rounded-xl border border-[#28513B] focus-within:border-[#C5A45B] transition-all p-1.5 pl-4 sm:pl-6 pr-3 shadow-inner"
+                        className="flex-1 relative flex items-center bg-white focus-within:bg-white rounded-xl border border-[#DDD3C2] focus-within:border-[#8b5f10] transition-all p-1.5 pl-4 sm:pl-6 pr-3 shadow-xs"
                       >
                         <input
                           ref={searchInputRef}
@@ -926,14 +926,14 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Search here...."
-                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm md:text-base text-[#E8D9AE] placeholder:text-[#E8D9AE]/50 font-sans py-1 sm:py-1.5 focus:outline-none focus:ring-0"
+                          className="flex-1 min-w-0 bg-transparent border-none outline-none text-xs sm:text-sm md:text-base text-stone-900 placeholder:text-stone-400 font-sans py-1 sm:py-1.5 focus:outline-none focus:ring-0"
                           style={{ outline: "none", boxShadow: "none", border: "none" }}
                         />
                         {searchQuery && (
                           <button
                             type="button"
                             onClick={() => setSearchQuery("")}
-                            className="p-1 rounded-full text-[#E8D9AE]/60 hover:text-[#E8D9AE] transition-colors mr-1 cursor-pointer"
+                            className="p-1 rounded-full text-stone-400 hover:text-stone-700 transition-colors mr-1 cursor-pointer"
                             aria-label="Clear search input"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -942,7 +942,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         <button
                           type="submit"
                           aria-label="Submit search"
-                          className="p-1 text-[#C5A45B] hover:text-[#E8D9AE] transition-colors cursor-pointer"
+                          className="p-1 text-[#8b5f10] hover:text-[#553a0a] transition-colors cursor-pointer"
                         >
                           <Search className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.8]" />
                         </button>
@@ -953,7 +953,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         type="button"
                         onClick={() => setSearchOpen(false)}
                         aria-label="Close search overlay"
-                        className="p-2 sm:p-2.5 rounded-full bg-[#123D2D] hover:bg-[#28513B] text-[#E8D9AE] hover:text-[#C5A45B] transition-colors cursor-pointer shrink-0 touch-manipulation border border-[#28513B]"
+                        className="p-2 sm:p-2.5 rounded-full bg-white hover:bg-[#F5F2EB] text-stone-700 hover:text-stone-900 transition-colors cursor-pointer shrink-0 touch-manipulation border border-[#DDD3C2] shadow-xs"
                       >
                         <X className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.9]" />
                       </button>
@@ -965,20 +965,20 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                         {/* LEFT COLUMN: Collections List (exact layout from screenshot) */}
                         <div className="md:col-span-5 lg:col-span-5 space-y-3.5">
                           <div className="flex items-center justify-between pb-1">
-                            <h3 className="text-sm sm:text-base font-bold text-[#E8D9AE] font-serif tracking-tight">
+                            <h3 className="text-sm sm:text-base font-bold text-stone-900 font-serif tracking-tight">
                               Collections
                             </h3>
                           </div>
 
-                          <div className="divide-y divide-[#28513B]/40">
+                          <div className="divide-y divide-[#DDD3C2]/60">
                             {searchCollections.map((col) => (
                               <Link
                                 key={col.title}
                                 href={col.href}
                                 onClick={() => setSearchOpen(false)}
-                                className="flex items-center gap-3.5 py-3 group cursor-pointer hover:bg-[#123D2D]/60 px-2 rounded-lg transition-all"
+                                className="flex items-center gap-3.5 py-3 group cursor-pointer hover:bg-[#F5F2EB]/70 px-2 rounded-lg transition-all"
                               >
-                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden bg-[#092B20] border border-[#28513B] shrink-0 p-1 shadow-2xs group-hover:scale-103 transition-transform">
+                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden bg-white border border-[#DDD3C2] shrink-0 p-1 shadow-2xs group-hover:scale-103 transition-transform">
                                   <Image
                                     src={col.image}
                                     alt={col.title}
@@ -987,7 +987,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                                   />
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                  <span className="text-xs sm:text-[13.5px] font-semibold text-[#E8D9AE] group-hover:text-[#C5A45B] transition-colors block font-serif truncate">
+                                  <span className="text-xs sm:text-[13.5px] font-semibold text-stone-900 group-hover:text-[#8b5f10] transition-colors block font-serif truncate">
                                     {col.title}
                                   </span>
                                   <span className="text-[10.5px] text-stone-500 font-sans block mt-0.5">
