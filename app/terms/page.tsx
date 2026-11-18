@@ -1,108 +1,152 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { LegalLayout } from "@/components/legal/legal-layout";
-
-function TermsPageContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const tab = searchParams.get("tab");
-
-  useEffect(() => {
-    if (tab === "privacy") {
-      router.replace("/privacy");
-    } else if (tab === "shipping") {
-      router.replace("/shipping-policy");
-    } else if (tab === "refunds") {
-      router.replace("/refund-policy");
-    }
-  }, [tab, router]);
-
-  return (
-    <LegalLayout
-      title="Terms of Service &"
-      titleHighlight="Sanctuary Policies"
-      subtitle="Transparent, fair, and crafted with the same uncompromising integrity as our hand-cast brass and sacred charcoal-free agarbatti."
-      hideBadge
-      hideLastUpdated
-      hideBreadcrumb
-    >
-      <article className="space-y-6 text-stone-700 font-sans text-xs sm:text-sm leading-relaxed">
-        <div className="border-b border-stone-100 pb-4">
-          <h2 className="font-serif text-2xl sm:text-3xl font-medium text-stone-900">
-            Terms &amp; Conditions of Service
-          </h2>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">
-            1. Acceptance of Terms &amp; Brand Identity
-          </h3>
-          <p>
-            Welcome to <strong>Kurma</strong> (operating via <em>kurma.co.in</em> / <em>gohypecreative-byte/kurma</em>). By browsing, accessing, or purchasing through this website, you agree to be bound by these Terms and Conditions, all applicable laws and regulations of the Republic of India, and agree that you are responsible for compliance with any applicable local laws. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">
-            2. Artisanal Handcrafted Authenticity &amp; Product Variance
-          </h3>
-          <p>
-            All Kurma brass holders, turtle burners, and medallions are individually cast in virgin brass by master metalsmiths in Moradabad, India. Minor variations in antique patina, repoussé detailing, weight (+/- 5%), and natural brass oxidation are organic hallmarks of traditional Indian metalcraft and shall not be classified as manufacturing defects.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">
-            3. Pricing, Taxes &amp; GST Invoicing
-          </h3>
-          <p>
-            All retail product prices displayed on the website are inclusive of applicable Goods and Services Tax (GST) under Indian tax laws. A valid GST tax invoice is automatically generated upon order confirmation and emailed with dispatch tracking details. For registered corporate entities claiming input tax credit, GSTIN numbers must be entered during checkout or bespoke consultation.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">
-            4. Personalization &amp; Customization Rules
-          </h3>
-          <p>
-            Customizations such as lid monogram foil debossing, engraved brass plaques, wax seals, and handwritten message scrolls are executed in strict accordance with the text provided by the customer. Customers are solely responsible for verifying correct spelling, honorifics, and dates. Personalized items cannot be returned or refunded once laser engraving or hot-foil stamping has commenced.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">
-            5. Intellectual Property &amp; Sacred Trade Dress
-          </h3>
-          <p>
-            The Kurma name, stylized turtle emblem, Pancha Mahabhuta iconography, bespoke trunk packaging architecture, and editorial ritual guides are proprietary intellectual property protected under Indian Trademark, Copyright, and Design Acts. Reproduction, reselling, or commercial imitation without prior written authorization is strictly prohibited.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <h3 className="font-serif text-base sm:text-lg font-bold text-stone-900">
-            6. Governing Law &amp; Judicial Jurisdiction
-          </h3>
-          <p>
-            These terms and conditions are governed by and construed in accordance with the substantive laws of the Republic of India. Any disputes arising out of or in connection with the website or purchase contracts shall be subject to the exclusive jurisdiction of the competent courts in <strong>New Delhi, India</strong>.
-          </p>
-        </div>
-      </article>
-    </LegalLayout>
-  );
-}
+import Link from "next/link";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { useCart } from "@/lib/cart-context";
 
 export default function TermsPage() {
+  const { cartCount, setIsCartOpen } = useCart();
+
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-          <div className="w-8 h-8 rounded-full border-2 border-[#8b5f10] border-t-transparent animate-spin" />
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] font-sans">
+      <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
+
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 md:pt-16 pb-16 sm:pb-28">
+        {/* ========================================================================= */}
+        {/* 1. HERO HEADER                                                            */}
+        {/* ========================================================================= */}
+        <div className="text-center pb-6 sm:pb-8">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-normal text-[#092B20] tracking-tight uppercase leading-[1.15]">
+            Terms &amp; Conditions
+          </h1>
         </div>
-      }
-    >
-      <TermsPageContent />
-    </Suspense>
+
+        {/* ========================================================================= */}
+        {/* 2. DIRECT EDITORIAL CONTENT (NO BOX CONTAINER)                            */}
+        {/* ========================================================================= */}
+        <div className="mt-4 sm:mt-6 space-y-8 sm:space-y-11 text-sm sm:text-base md:text-[17px] text-[#383229] leading-relaxed font-sans">
+          {/* Introductory Mission Statement */}
+          <p className="text-base sm:text-lg md:text-[19px] text-[#1C1B18] font-normal leading-relaxed">
+            Welcome to Kurma. By accessing our website and purchasing our products, you agree to
+            comply with and be bound by the following terms and conditions. Please review them
+            carefully.
+          </p>
+
+          {/* Section 1 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              1. Eligibility
+            </h2>
+            <p>
+              You must be at least 18 years old or accessing the site under the supervision of a
+              parent or legal guardian to use this website and make a purchase.
+            </p>
+          </section>
+
+          {/* Section 2 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              2. Products &amp; Pricing
+            </h2>
+            <p>
+              All prices are displayed in Indian Rupees (INR) and are inclusive of GST unless stated
+              otherwise. Product descriptions and prices are subject to change without prior notice.
+              We strive for accuracy in depicting our handcrafted brass, natural incense, and curated
+              gift trunks, but do not warrant that product descriptions or other content are entirely
+              error-free.
+            </p>
+          </section>
+
+          {/* Section 3 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              3. Orders &amp; Payments
+            </h2>
+            <p>
+              We reserve the right to refuse or cancel any order for any reason, including limitations
+              on quantities available, inaccuracies in product or pricing information, or issues
+              identified by our fraud avoidance department. Payment must be completed through
+              authorized payment methods available at checkout.
+            </p>
+          </section>
+
+          {/* Section 4 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              4. Shipping &amp; Delivery
+            </h2>
+            <p>
+              Please refer to our{" "}
+              <Link
+                href="/shipping-policy"
+                className="text-[#8C6D23] font-semibold underline underline-offset-4 hover:text-[#092B20] transition-colors"
+              >
+                Shipping Policy
+              </Link>{" "}
+              for detailed information on processing times, delivery estimates, and costs. Kurma is not
+              liable for any delays in delivery caused by courier partners or circumstances beyond our
+              control.
+            </p>
+          </section>
+
+          {/* Section 5 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              5. Returns &amp; Exchanges
+            </h2>
+            <p>
+              All returns and exchanges are subject to our official{" "}
+              <Link
+                href="/refund-policy"
+                className="text-[#8C6D23] font-semibold underline underline-offset-4 hover:text-[#092B20] transition-colors"
+              >
+                Refund Policy
+              </Link>
+              . By making a purchase, you agree to the terms outlined in that policy.
+            </p>
+          </section>
+
+          {/* Section 6 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              6. Intellectual Property
+            </h2>
+            <p>
+              All content on this website, including text, graphics, logos, images, ritual guides,
+              packaging architecture, and software, is the property of Kurma and is protected by
+              Indian and international copyright and trademark laws. Any unauthorized use is strictly
+              prohibited.
+            </p>
+          </section>
+
+          {/* Section 7 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              7. User Conduct
+            </h2>
+            <p>
+              You agree not to use this site for any unlawful purpose or to post any content that is
+              offensive, defamatory, or harmful. We reserve the right to terminate your access for
+              violating these terms.
+            </p>
+          </section>
+
+          {/* Section 8 */}
+          <section className="space-y-3 sm:space-y-3.5">
+            <h2 className="font-serif text-xl sm:text-2xl md:text-[26px] font-bold text-[#092B20] tracking-tight">
+              8. Limitation of Liability
+            </h2>
+            <p>
+              To the fullest extent permitted by law, Kurma shall not be liable for any indirect,
+              incidental, or consequential damages arising from your use of this website or the
+              purchase of any products.
+            </p>
+          </section>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

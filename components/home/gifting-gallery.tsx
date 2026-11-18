@@ -798,9 +798,6 @@ export function GiftingGallery() {
                 />
               ))}
             </div>
-            <span className="font-serif text-[11px] text-[#E8D9AE]/60 tracking-widest uppercase">
-              {String(activeIndex + 1).padStart(2, "0")} / {String(HAMPER_ITEMS.length).padStart(2, "0")}
-            </span>
           </div>
         </div>
       </div>

@@ -348,3 +348,51 @@ input:focus, input:focus-visible, textarea:focus, textarea:focus-visible, select
   }
 }
 
+/* ========================================================================= */
+/* Kurma Footer Text Continuous Shimmer / Shine (Seamless Non-Stop Animation)*/
+/* ========================================================================= */
+@keyframes kurmaContinuousShimmer {
+  0% {
+    -webkit-mask-position: 135% 0;
+    mask-position: 135% 0;
+  }
+  100% {
+    -webkit-mask-position: -35% 0;
+    mask-position: -35% 0;
+  }
+}
+
+.kurma-footer-shimmer {
+  -webkit-mask-image: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 32%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0.75) 46%,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0.75) 54%,
+    rgba(0, 0, 0, 0.15) 60%,
+    transparent 68%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 32%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0.75) 46%,
+    rgba(0, 0, 0, 1) 50%,
+    rgba(0, 0, 0, 0.75) 54%,
+    rgba(0, 0, 0, 0.15) 60%,
+    transparent 68%,
+    transparent 100%
+  );
+  -webkit-mask-size: 250% 100%;
+  mask-size: 250% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: kurmaContinuousShimmer 2.2s linear infinite;
+  will-change: mask-position, -webkit-mask-position;
+  transform: translateZ(0);
+}
+

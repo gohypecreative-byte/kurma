@@ -1,15 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
-import { Flame, ShieldCheck, Heart, Leaf, ChevronDown, ArrowRight, Droplets } from "lucide-react";
+import { ShieldCheck, Heart, Leaf, Droplets } from "lucide-react";
 
 export default function RitualPage() {
   const { cartCount, setIsCartOpen } = useCart();
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const stages = [
     {
@@ -54,25 +51,6 @@ export default function RitualPage() {
       icon: Heart,
       title: "Sustained Longevity",
       desc: "Each stick burns evenly for 55 to 65 minutes, leaving a lasting delicate scent that lingers harmoniously for hours.",
-    },
-  ];
-
-  const faqs = [
-    {
-      q: "How long does each Kurma incense stick burn?",
-      a: "Each handcrafted stick burns steadily for 55 to 65 minutes. Because we use concentrated natural resins rather than powdered charcoal, the aroma diffuses gradually and lingers in the room for several hours after burning.",
-    },
-    {
-      q: "Why is 100% charcoal-free incense healthier for my home?",
-      a: "Traditional mass-market incense relies on black charcoal dust and synthetic chemical burning agents, which release soot, benzene, and harsh carbon into your living space. Kurma sticks use natural wood powder and flower extracts, ensuring the smoke is white, pure, and soothing to the respiratory tract.",
-    },
-    {
-      q: "How should I clean and care for the solid brass turtle holder?",
-      a: "Simply wipe the brass turtle with a dry, soft cotton cloth after the ash has cooled. Brass naturally develops an authentic antique patina over decades. If you prefer high polish, use natural brass polish or lemon juice and salt.",
-    },
-    {
-      q: "Can I burn different elements at different times of the day?",
-      a: "Yes, this is our recommended practice. Earth (Prithvi) is ideal for dawn grounding, Water (Jal) for morning renewal, Air (Vayu) for midday clarity, Fire (Agni) for twilight contemplation, and Space (Akasha) for deep night stillness.",
     },
   ];
 
@@ -149,66 +127,6 @@ export default function RitualPage() {
                 </div>
               );
             })}
-          </div>
-        </section>
-
-        {/* Frequently Asked Questions Accordion */}
-        <section className="max-w-3xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-stone-900">
-              Ritual Wisdom &amp; Guidance
-            </h2>
-            <p className="text-xs sm:text-sm lg:text-base text-stone-500 font-sans font-normal tracking-wide">
-              Frequently asked questions regarding mindful burning, materials, and care.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {faqs.map((faq, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div
-                  key={idx}
-                  className="rounded-xl border border-stone-200/80 bg-white overflow-hidden transition-colors"
-                >
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full text-left p-5 flex items-center justify-between gap-4 font-serif text-sm sm:text-base text-stone-900 hover:text-stone-600 cursor-pointer"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown
-                      className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {isOpen && (
-                    <div className="px-5 pb-5 text-xs sm:text-sm text-stone-600 font-sans leading-relaxed border-t border-stone-100 pt-3">
-                      {faq.a}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Call to Action Bar */}
-        <section className="text-center space-y-4 py-8 border-t border-stone-200/80">
-          <h3 className="text-xl sm:text-2xl font-serif text-stone-900 font-normal">
-            Ready to Begin Your Sacred Ritual?
-          </h3>
-          <p className="text-xs sm:text-sm text-stone-500 max-w-md mx-auto">
-            Explore the 5 Sacred Elements and artisanal solid brass turtle holders.
-          </p>
-          <div className="pt-2">
-            <Link
-              href="/shop"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-cinzel font-semibold uppercase tracking-wider transition-all duration-200 shadow-md cursor-pointer"
-            >
-              <span>Explore The Collection</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </section>
       </main>

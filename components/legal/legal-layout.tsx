@@ -24,6 +24,7 @@ interface LegalLayoutProps {
   hideLastUpdated?: boolean;
   hideBreadcrumb?: boolean;
   hideTrustBadges?: boolean;
+  hideSidebar?: boolean;
   children: React.ReactNode;
 }
 
@@ -37,6 +38,7 @@ export function LegalLayout({
   hideLastUpdated = false,
   hideBreadcrumb = false,
   hideTrustBadges = false,
+  hideSidebar = false,
   children,
 }: LegalLayoutProps) {
   const { cartCount, setIsCartOpen } = useCart();
@@ -96,91 +98,93 @@ export function LegalLayout({
           </div>
         )}
 
-        {/* 2-Column Grid: Policy Document + Contact & Trust Sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-          {/* Main Policy Document (8 cols) */}
-          <div className="lg:col-span-8 bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-8 md:p-10 shadow-xs space-y-6 sm:space-y-8">
+        {/* Policy Document (Full Width if hideSidebar, else 2-Column Grid) */}
+        <div className={hideSidebar ? "w-full max-w-4xl mx-auto" : "grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start"}>
+          {/* Main Policy Document */}
+          <div className={`${hideSidebar ? "w-full" : "lg:col-span-8"} bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 p-4 sm:p-8 md:p-10 shadow-xs space-y-6 sm:space-y-8`}>
             {children}
           </div>
 
           {/* Quick Help & Grievance Sidebar (4 cols) */}
-          <aside className="lg:col-span-4 space-y-6">
-            {/* Quick Contact Card */}
-            <div className="bg-[#ECE4D8] text-[#1C1B18] rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#DDD3C2] space-y-5 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#8b5f10]/15 border border-[#8b5f10]/30 flex items-center justify-center text-[#8b5f10]">
-                  <HelpCircle className="w-5 h-5" />
+          {!hideSidebar && (
+            <aside className="lg:col-span-4 space-y-6">
+              {/* Quick Contact Card */}
+              <div className="bg-[#ECE4D8] text-[#1C1B18] rounded-2xl sm:rounded-3xl p-5 sm:p-7 border border-[#DDD3C2] space-y-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#8b5f10]/15 border border-[#8b5f10]/30 flex items-center justify-center text-[#8b5f10]">
+                    <HelpCircle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-serif text-base font-bold text-stone-900">
+                      Need Clarification?
+                    </h4>
+                    <p className="text-[11px] text-stone-600 font-sans">
+                      Kurma Concierge &amp; Legal Desk
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-serif text-base font-bold text-stone-900">
-                    Need Clarification?
+
+                <p className="text-xs text-stone-600 font-sans leading-relaxed">
+                  Have specific queries regarding corporate invoicing, customized plaque engraving, or live shipment tracking?
+                </p>
+
+                <div className="space-y-3 pt-1 text-xs font-sans">
+                  <div className="flex items-center gap-2.5 text-[#8b5f10]">
+                    <Mail className="w-4 h-4 shrink-0 text-[#8b5f10]" />
+                    <a href="mailto:concierge@kurma.co.in" className="hover:underline font-medium">
+                      concierge@kurma.co.in
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2.5 text-[#8b5f10]">
+                    <Phone className="w-4 h-4 shrink-0 text-[#8b5f10]" />
+                    <a href="tel:+918005876200" className="hover:underline font-medium">
+                      +91 800-KURMA-01 (Mon–Sat, 10am–7pm)
+                    </a>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-[#eed08e]/20">
+                  <Link
+                    href="/contact"
+                    className="w-full py-2.5 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-sans font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-98"
+                  >
+                    <span>Open Inquiry Ticket</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Certification Trust Badges */}
+              {!hideTrustBadges && (
+                <div className="bg-white rounded-3xl border border-stone-200/90 p-6 space-y-4 shadow-xs">
+                  <h4 className="font-serif text-sm font-bold text-stone-900 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-[#8b5f10]" />
+                    <span>Kurma Quality Assurance</span>
                   </h4>
-                  <p className="text-[11px] text-stone-600 font-sans">
-                    Kurma Concierge &amp; Legal Desk
-                  </p>
-                </div>
-              </div>
 
-              <p className="text-xs text-stone-600 font-sans leading-relaxed">
-                Have specific queries regarding corporate invoicing, customized plaque engraving, or live shipment tracking?
-              </p>
-
-              <div className="space-y-3 pt-1 text-xs font-sans">
-                <div className="flex items-center gap-2.5 text-[#8b5f10]">
-                  <Mail className="w-4 h-4 shrink-0 text-[#8b5f10]" />
-                  <a href="mailto:concierge@kurma.co.in" className="hover:underline font-medium">
-                    concierge@kurma.co.in
-                  </a>
-                </div>
-                <div className="flex items-center gap-2.5 text-[#8b5f10]">
-                  <Phone className="w-4 h-4 shrink-0 text-[#8b5f10]" />
-                  <a href="tel:+918005876200" className="hover:underline font-medium">
-                    +91 800-KURMA-01 (Mon–Sat, 10am–7pm)
-                  </a>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-[#eed08e]/20">
-                <Link
-                  href="/contact"
-                  className="w-full py-2.5 rounded-xl bg-[#1E1E1C] hover:bg-[#33312D] text-white text-xs font-sans font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 transition-all shadow-md active:scale-98"
-                >
-                  <span>Open Inquiry Ticket</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Certification Trust Badges */}
-            {!hideTrustBadges && (
-              <div className="bg-white rounded-3xl border border-stone-200/90 p-6 space-y-4 shadow-xs">
-                <h4 className="font-serif text-sm font-bold text-stone-900 flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#8b5f10]" />
-                  <span>Kurma Quality Assurance</span>
-                </h4>
-
-                <div className="space-y-3 text-xs text-stone-600 font-sans">
-                  <div className="flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <span>
-                      <strong>100% Charcoal-Free:</strong> Zero toxic benzene or chemical binders; certified indoor safe.
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <span>
-                      <strong>Virgin Brass:</strong> Cast by Moradabad hereditary guild metalsmiths with anti-tarnish coating.
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                    <span>
-                      <strong>Transit Insurance:</strong> Free 24h replacements for any verified courier damages.
-                    </span>
+                  <div className="space-y-3 text-xs text-stone-600 font-sans">
+                    <div className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>100% Charcoal-Free:</strong> Zero toxic benzene or chemical binders; certified indoor safe.
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Virgin Brass:</strong> Cast by Moradabad hereditary guild metalsmiths with anti-tarnish coating.
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Transit Insurance:</strong> Free 24h replacements for any verified courier damages.
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </aside>
+              )}
+            </aside>
+          )}
         </div>
       </main>
 

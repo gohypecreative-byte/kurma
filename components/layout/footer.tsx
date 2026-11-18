@@ -42,7 +42,6 @@ function YoutubeIcon({ className = "w-4 h-4" }: { className?: string }) {
 
 export function Footer() {
   const [email, setEmail] = useState("");
-  const [consent, setConsent] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -56,19 +55,19 @@ export function Footer() {
 
   return (
     <footer className="relative w-full max-w-full overflow-hidden bg-[#FAF7F2] text-[#1C1B18] border-t border-[#EAE3D8] font-sans select-none">
-      <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-6 sm:pt-8 lg:pt-9 pb-5 sm:pb-6">
+      <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-3 sm:pt-4 lg:pt-5 pb-5 sm:pb-6">
         
         {/* ========================================================================= */}
         {/* 1. TOP BRAND LOGO (Centered)                                              */}
         {/* ========================================================================= */}
-        <div className="w-full flex items-center justify-center text-center pt-1 sm:pt-2">
+        <div className="w-full flex items-center justify-center text-center pt-0">
           <Link href="/" className="group inline-flex items-center justify-center cursor-pointer" aria-label="Kurma Home">
-            <div className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-center justify-center shrink-0">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 flex items-center justify-center shrink-0">
               <Image
                 src="/images/logo-transparent.png"
                 alt="Kurma Logo"
-                width={112}
-                height={112}
+                width={130}
+                height={130}
                 className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
                 priority
               />
@@ -79,16 +78,35 @@ export function Footer() {
         {/* ========================================================================= */}
         {/* 2. PROMINENT HERO STATEMENT BANNER (Matching reference "Own It #Trust...")*/}
         {/* ========================================================================= */}
-        <div className="w-full text-center mt-3 sm:mt-4 mb-5 sm:mb-6 lg:mb-7 overflow-hidden">
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[50px] font-medium tracking-tight leading-tight text-[#1C1B18]/90">
-            Sacred Living <span className="text-[#8C6215]/85 italic font-serif">#KurmaRitual</span>
+        <div className="w-full text-center mt-1 sm:mt-1.5 mb-5 sm:mb-6 lg:mb-7 overflow-hidden">
+          <h2 className="relative inline-block font-serif text-3xl sm:text-4xl md:text-[46px] lg:text-[58px] font-semibold tracking-wide leading-tight select-none">
+            {/* Base text: Both words in the same elegant light gold color */}
+            <span className="text-[#B89246]">
+              Sacred Living
+            </span>{" "}
+            <span className="text-[#B89246] italic font-serif">
+              #KurmaRitual
+            </span>
+
+            {/* Seamless, continuous glowing shimmer wave (no stops or pauses) */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none select-none kurma-footer-shimmer"
+            >
+              <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.95)] drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]">
+                Sacred Living
+              </span>{" "}
+              <span className="text-white italic font-serif drop-shadow-[0_0_12px_rgba(255,255,255,0.95)] drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]">
+                #KurmaRitual
+              </span>
+            </span>
           </h2>
         </div>
 
         {/* ========================================================================= */}
         {/* 3. FOUR-COLUMN MAIN GRID (Customer Service, Company, Follow, Newsletter) */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.05fr_1.35fr] gap-6 sm:gap-8 lg:gap-8 xl:gap-10">
           
           {/* COLUMN 1: Customer Service */}
           <div>
@@ -124,11 +142,6 @@ export function Footer() {
               <li>
                 <Link href="/terms" className="hover:text-[#8C6215] transition-colors block">
                   Terms &amp; Conditions
-                </Link>
-              </li>
-              <li>
-                <Link href="/#faq" className="hover:text-[#8C6215] transition-colors block">
-                  FAQ
                 </Link>
               </li>
             </ul>
@@ -247,11 +260,11 @@ export function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. name@example.com"
                   required
-                  className="flex-1 min-w-0 px-4 py-2.5 sm:py-3 bg-white border border-stone-200/90 rounded-lg text-sm sm:text-base text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#C5A45B] transition-colors shadow-2xs"
+                  className="w-[190px] sm:w-[195px] shrink-0 px-3 py-2 sm:py-2.5 bg-white border border-stone-200/90 rounded-lg text-xs sm:text-[13px] text-stone-900 placeholder:text-stone-400 placeholder:text-xs sm:placeholder:text-[13px] focus:outline-none focus:border-[#C5A45B] transition-colors shadow-2xs"
                 />
                 <button
                   type="submit"
-                  className="px-5 sm:px-6 py-2.5 sm:py-3 bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] rounded-lg text-sm sm:text-base font-medium transition-all cursor-pointer shrink-0 shadow-xs active:scale-95"
+                  className="px-4 py-2 sm:py-2.5 bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] rounded-lg text-xs sm:text-[13px] font-medium transition-all cursor-pointer shrink-0 shadow-xs active:scale-95"
                 >
                   Subscribe
                 </button>
@@ -262,23 +275,6 @@ export function Footer() {
                   &check; Thank you for joining Kurma&apos;s sacred circle.
                 </p>
               )}
-
-              {/* Marketing Consent Checkbox */}
-              <div className="flex items-start gap-2 pt-0.5 text-xs sm:text-[13px] text-stone-500 leading-snug">
-                <input
-                  type="checkbox"
-                  id="newsletter-consent"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  className="mt-0.5 rounded border-stone-300 text-[#123D2D] focus:ring-[#C5A45B] cursor-pointer"
-                />
-                <label htmlFor="newsletter-consent" className="cursor-pointer">
-                  I agree to receive marketing emails from Kurma. Read our{" "}
-                  <Link href="/privacy" className="underline hover:text-black">
-                    Privacy Policy
-                  </Link>.
-                </label>
-              </div>
             </form>
           </div>
 

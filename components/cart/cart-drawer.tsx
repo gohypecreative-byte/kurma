@@ -180,7 +180,10 @@ export function CartDrawer({
           {checkoutStep === "cart" && (
             <>
               {/* Items List */}
-              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-3 divide-y divide-stone-100">
+              <div
+                className="flex-1 overflow-y-auto px-4 sm:px-6 py-3 divide-y divide-stone-100"
+                data-lenis-prevent
+              >
                 {items.length === 0 ? (
                   <div className="py-12 sm:py-16 text-center space-y-4">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#fbf6ea] text-[#c0881b] rounded-full flex items-center justify-center mx-auto">
@@ -327,7 +330,7 @@ export function CartDrawer({
 
           {/* STEP 2: EXPRESS CHECKOUT FORM */}
           {checkoutStep === "checkout" && (
-            <div className="flex-1 flex flex-col justify-between p-4 sm:p-6 overflow-y-auto">
+            <div className="flex-1 flex flex-col justify-between p-4 sm:p-6 overflow-y-auto" data-lenis-prevent>
               <form onSubmit={handlePlaceOrder} className="space-y-3.5 sm:space-y-4">
                 <div>
                   <h3 className="text-sm font-serif font-bold text-stone-900 mb-0.5">

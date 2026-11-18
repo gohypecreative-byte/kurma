@@ -121,7 +121,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#E8D9AE] text-[#092B20] text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer"
                 >
                   Explore Collection
                 </button>
@@ -129,7 +129,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreBestsellers || onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#123D2D]/80 hover:bg-[#123D2D] text-[#E8D9AE] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#123D2D]/80 hover:bg-[#123D2D] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
                 >
                   View Marble Trunk
                 </button>
@@ -144,7 +144,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#E8D9AE] text-[#092B20] text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer"
                 >
                   Explore Collection
                 </button>
@@ -152,7 +152,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreBestsellers || onExploreGifts}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#123D2D]/80 hover:bg-[#123D2D] text-[#E8D9AE] text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 sm:px-8 sm:py-4 bg-[#123D2D]/80 hover:bg-[#123D2D] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs"
                 >
                   View Marble Trunk
                 </button>

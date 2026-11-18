@@ -15,7 +15,6 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
 import { AnimatedText } from "@/components/ui/animated-text";
-import { RealisticSmoke } from "@/components/home/realistic-smoke";
 
 export default function ShopPage() {
   const router = useRouter();
@@ -115,25 +114,20 @@ export default function ShopPage() {
       {/* Navigation Bar */}
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Warm Beige Palette with Unobstructed Sandalwood Products */}
-      <section className="relative w-full h-[52vh] sm:h-[58vh] lg:h-[64vh] min-h-[440px] max-h-[600px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
+      {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Custom Product Suite Collection */}
+      <section className="relative w-full h-[48vh] sm:h-[56vh] lg:h-[64vh] min-h-[380px] sm:min-h-[440px] max-h-[640px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
         {/* Full-Bleed End-to-End Background Image */}
         <div className="absolute inset-0 w-full h-full pointer-events-none">
           <Image
-            src="/images/shop/shop-hero-banner-beige.jpg"
-            alt="Kurma Heirloom Slatted Keepsake Trunk, 5 Elements Incense Suites, Solid Cast Brass Turtle Burner and Mysore Sandalwood"
+            src="/images/shop/shop-hero-banner-redesign.jpg"
+            alt="Kurma Sacred Collection: Heirloom Walnut Keepsake Trunk, 5 Elements Incense Suites, Green-Veined Marble Box, Solid Brass Turtle Burner, Medallion and Mysore Sandalwood"
             fill
             priority
-            className="object-cover object-right md:object-[center_35%]"
+            className="object-cover object-center"
             sizes="100vw"
           />
-          {/* Realistic Flowing Sandalwood Smoke Animation */}
-          <RealisticSmoke preset="shop" />
         </div>
       </section>
-
-      {/* Spacer gap between Hero Banner and Shop Products Section (Prevents sticking) */}
-      <div className="w-full h-8 sm:h-12 lg:h-14 bg-[#FAF8F5]" />
 
       {/* Main Content Area - Luxury Dark Green Section */}
       <main className="flex-1 w-full bg-[#123D2D] border-t border-b border-[#28513B]/40 text-[#E8D9AE] py-10 sm:py-14 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
