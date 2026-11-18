@@ -39,14 +39,6 @@ function FacebookIcon({ className = "w-4 h-4" }: { className?: string }) {
   );
 }
 
-function PinterestIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
-    </svg>
-  );
-}
-
 export default function ContactPage() {
   const { cartCount, setIsCartOpen } = useCart();
 
@@ -205,42 +197,33 @@ export default function ContactPage() {
                 >
                   <FacebookIcon className="w-4 h-4" />
                 </a>
-                <a
-                  href="https://pinterest.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Pinterest"
-                  className="w-10 h-10 rounded-full bg-[#F3EDE2] hover:bg-[#E8D9AE] border border-[#DDD3C2] text-[#6B5A3E] hover:text-[#1C1B18] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
-                >
-                  <PinterestIcon className="w-4 h-4" />
-                </a>
               </div>
             </div>
           </div>
 
           {/* ========================================================================= */}
-          {/* RIGHT COLUMN: PINE GREEN FORM CARD ("Send us a message")                  */}
+          {/* RIGHT COLUMN: WHITE FORM CARD ("Send us a message")                       */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-7 bg-[#28513B] rounded-3xl sm:rounded-[32px] border border-[#3C6E52]/60 shadow-2xl p-6 sm:p-10 lg:p-12 text-[#FDFCF9]">
+          <div className="lg:col-span-7 bg-white rounded-3xl sm:rounded-[32px] border border-[#EAE3D8] shadow-[0_4px_24px_rgba(9,43,32,0.06)] p-6 sm:p-10 lg:p-12 text-[#1C1B18]">
             <div className="text-center space-y-2 mb-8">
-              <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-normal text-[#FDFCF9] tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-serif font-normal text-[#092B20] tracking-tight">
                 Send us a message
               </h2>
-              <p className="text-xs sm:text-sm text-[#E8D9AE]/85 font-sans max-w-md mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#5A5248] font-sans max-w-md mx-auto leading-relaxed">
                 Your email address will not be published. Required fields are marked *
               </p>
             </div>
 
             {isSubmitted ? (
-              <div className="py-12 text-center space-y-5 bg-[#143B2B]/90 border border-[#3C6E52] rounded-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
-                <div className="w-16 h-16 rounded-full bg-[#C5A45B]/15 border border-[#C5A45B]/40 text-[#C5A45B] flex items-center justify-center mx-auto shadow-inner">
+              <div className="py-12 text-center space-y-5 bg-[#FAF7F2] border border-[#EAE3D8] rounded-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
+                <div className="w-16 h-16 rounded-full bg-[#092B20]/10 border border-[#092B20]/20 text-[#092B20] flex items-center justify-center mx-auto shadow-inner">
                   <CheckCircle2 className="w-9 h-9 stroke-[2.2]" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="font-serif text-2xl font-normal text-[#FDFCF9]">
+                  <h3 className="font-serif text-2xl font-normal text-[#092B20]">
                     Message Sent Successfully
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#E8D9AE]/80 max-w-md mx-auto leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#5A5248] max-w-md mx-auto leading-relaxed">
                     Thank you, {form.name || "Esteemed Patron"}. Our concierge team has received your message and will reach out to you shortly.
                   </p>
                 </div>
@@ -250,7 +233,7 @@ export default function ContactPage() {
                     setForm({ name: "", email: "", phone: "", message: "" });
                     setIsSubmitted(false);
                   }}
-                  className="px-8 py-3 rounded-full bg-[#C5A45B] hover:bg-[#D4B368] text-[#123D2D] text-xs font-sans uppercase tracking-wider font-bold transition-all cursor-pointer shadow-md active:scale-95 mt-2"
+                  className="px-8 py-3 rounded-full bg-[#092B20] hover:bg-[#123D2D] text-white text-xs font-sans uppercase tracking-wider font-bold transition-all cursor-pointer shadow-md active:scale-95 mt-2"
                 >
                   Send Another Message
                 </button>
@@ -259,7 +242,7 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-5 font-sans">
                 {/* 1. Name */}
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-[#FDFCF9]">
+                  <label className="block text-sm font-medium text-[#1C1B18]">
                     Name <span className="text-[#C5A45B]">*</span>
                   </label>
                   <input
@@ -268,13 +251,13 @@ export default function ContactPage() {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder=""
-                    className="w-full h-12 px-4 rounded-xl bg-[#143B2B]/90 border border-[#3C6E52]/80 text-white placeholder-emerald-200/30 focus:border-[#C5A45B] focus:ring-1 focus:ring-[#C5A45B] focus:bg-[#0E2F22] outline-none transition-all text-sm"
+                    className="w-full h-12 px-4 rounded-xl bg-white border border-[#DDD3C2] text-[#1C1B18] placeholder-stone-400 focus:border-[#092B20] focus:ring-1 focus:ring-[#092B20] outline-none transition-all text-sm"
                   />
                 </div>
 
                 {/* 2. Email Address */}
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-[#FDFCF9]">
+                  <label className="block text-sm font-medium text-[#1C1B18]">
                     Email Address <span className="text-[#C5A45B]">*</span>
                   </label>
                   <input
@@ -283,13 +266,13 @@ export default function ContactPage() {
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder=""
-                    className="w-full h-12 px-4 rounded-xl bg-[#143B2B]/90 border border-[#3C6E52]/80 text-white placeholder-emerald-200/30 focus:border-[#C5A45B] focus:ring-1 focus:ring-[#C5A45B] focus:bg-[#0E2F22] outline-none transition-all text-sm"
+                    className="w-full h-12 px-4 rounded-xl bg-white border border-[#DDD3C2] text-[#1C1B18] placeholder-stone-400 focus:border-[#092B20] focus:ring-1 focus:ring-[#092B20] outline-none transition-all text-sm"
                   />
                 </div>
 
                 {/* 3. Phone Number */}
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-[#FDFCF9]">
+                  <label className="block text-sm font-medium text-[#1C1B18]">
                     Phone Number
                   </label>
                   <input
@@ -297,13 +280,13 @@ export default function ContactPage() {
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
                     placeholder=""
-                    className="w-full h-12 px-4 rounded-xl bg-[#143B2B]/90 border border-[#3C6E52]/80 text-white placeholder-emerald-200/30 focus:border-[#C5A45B] focus:ring-1 focus:ring-[#C5A45B] focus:bg-[#0E2F22] outline-none transition-all text-sm"
+                    className="w-full h-12 px-4 rounded-xl bg-white border border-[#DDD3C2] text-[#1C1B18] placeholder-stone-400 focus:border-[#092B20] focus:ring-1 focus:ring-[#092B20] outline-none transition-all text-sm"
                   />
                 </div>
 
                 {/* 4. Messages */}
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-[#FDFCF9]">
+                  <label className="block text-sm font-medium text-[#1C1B18]">
                     Messages <span className="text-[#C5A45B]">*</span>
                   </label>
                   <textarea
@@ -312,7 +295,7 @@ export default function ContactPage() {
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     placeholder=""
-                    className="w-full p-4 rounded-xl bg-[#143B2B]/90 border border-[#3C6E52]/80 text-white placeholder-emerald-200/30 focus:border-[#C5A45B] focus:ring-1 focus:ring-[#C5A45B] focus:bg-[#0E2F22] outline-none transition-all text-sm resize-none leading-relaxed"
+                    className="w-full p-4 rounded-xl bg-white border border-[#DDD3C2] text-[#1C1B18] placeholder-stone-400 focus:border-[#092B20] focus:ring-1 focus:ring-[#092B20] outline-none transition-all text-sm resize-none leading-relaxed"
                   />
                 </div>
 
@@ -320,7 +303,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-12 sm:h-13 rounded-full bg-[#C5A45B] hover:bg-[#D4B368] active:scale-[0.99] text-[#123D2D] font-bold text-sm sm:text-base tracking-wide transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-6"
+                  className="w-full h-12 sm:h-13 rounded-full bg-[#28513B] hover:bg-[#1E3F2E] active:scale-[0.99] text-white font-semibold text-sm sm:text-base tracking-wide transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-6"
                 >
                   {isSubmitting ? (
                     <span>Sending...</span>

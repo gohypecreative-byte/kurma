@@ -24,6 +24,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCart } from "@/lib/cart-context";
 import { AdminOrder } from "@/lib/orders";
+import { PRODUCTS } from "@/lib/products";
 
 function DeliveryBoxGraphic() {
   return (
@@ -262,79 +263,7 @@ function TrackOrderContent() {
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* 2. FLOATING INTEGRATED SEARCH BAR (Matching Reference Card)              */}
-        {/* ========================================================================= */}
-        <div className="max-w-4xl mx-auto mb-10 sm:mb-12 font-sans">
-          <form
-            onSubmit={handleSearchSubmit}
-            className="bg-white rounded-2xl sm:rounded-full border border-[#EAE3D8] shadow-[0_4px_24px_rgba(9,43,32,0.06)] p-2 sm:p-2.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 transition-all focus-within:shadow-[0_6px_30px_rgba(9,43,32,0.12)] focus-within:border-[#092B20]/40"
-          >
-            {/* Field 1: Order ID */}
-            <div className="flex-1 flex items-center gap-3 px-4 py-2 sm:py-1">
-              <Package className="w-5 h-5 text-[#8C8275] shrink-0 stroke-[1.8]" />
-              <input
-                type="text"
-                value={orderIdInput}
-                onChange={(e) => setOrderIdInput(e.target.value)}
-                placeholder="Order ID (e.g. ORD-10245)"
-                className="w-full bg-transparent text-xs sm:text-sm text-[#1C1B18] placeholder:text-[#A3998C] focus:outline-none font-medium font-sans"
-              />
-            </div>
 
-            {/* Vertical Divider */}
-            <div className="hidden sm:block h-7 w-px bg-[#EAE3D8] mx-2" />
-
-            {/* Field 2: Email or Phone */}
-            <div className="flex-1 flex items-center gap-3 px-4 py-2 sm:py-1">
-              <Mail className="w-5 h-5 text-[#8C8275] shrink-0 stroke-[1.8]" />
-              <input
-                type="text"
-                value={emailPhoneInput}
-                onChange={(e) => setEmailPhoneInput(e.target.value)}
-                placeholder="Email or Phone Number"
-                className="w-full bg-transparent text-xs sm:text-sm text-[#1C1B18] placeholder:text-[#A3998C] focus:outline-none font-medium font-sans"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-[#092B20] hover:bg-[#123D2D] text-[#E8D9AE] hover:text-white px-7 py-3.5 rounded-xl sm:rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg cursor-pointer shrink-0 disabled:opacity-70 active:scale-95 border border-[#28513B]/60"
-            >
-              {loading ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin text-[#C5A45B]" />
-                  <span>Tracking...</span>
-                </>
-              ) : (
-                <span>Track Order</span>
-              )}
-            </button>
-          </form>
-
-          {/* Quick Sample Demo Chips */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-3.5 text-xs text-[#5A5248] font-sans">
-            <span className="text-[11px] font-medium text-[#8C8275]">Sample Consignments:</span>
-            {["#KURMA-1048", "#KURMA-1047", "#KURMA-1046", "#KURMA-1045"].map((demoNo) => (
-              <button
-                key={demoNo}
-                type="button"
-                onClick={() => {
-                  setOrderIdInput(demoNo);
-                  fetchOrderTracking(demoNo);
-                }}
-                className={`px-3 py-1 rounded-full text-[11px] font-mono border transition-all cursor-pointer ${order?.orderNumber === demoNo
-                  ? "bg-[#092B20] text-[#E8D9AE] border-[#092B20] font-semibold shadow-2xs"
-                  : "bg-white text-[#5A5248] border-[#EAE3D8] hover:border-[#C5A45B] hover:text-[#092B20]"
-                  }`}
-              >
-                {demoNo}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Error Notice */}
         {error && (
@@ -350,316 +279,260 @@ function TrackOrderContent() {
         )}
 
         {/* ========================================================================= */}
-        {/* 3. ORDER STATUS CARD (Matching Reference 1:1)                            */}
+        {/* 3. ORDER STATUS CARDS (Individual Card For Each Product)                  */}
         {/* ========================================================================= */}
         {order && (
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl sm:rounded-3xl border border-[#EAE3D8] shadow-[0_4px_30px_rgba(9,43,32,0.06)] overflow-hidden transition-all">
-            {/* Top Header Strip (1:1 with Reference Screenshot) */}
-            <div className="bg-[#F6F2EB] border-b border-[#EAE3D8] px-5 sm:px-8 py-3.5 sm:py-4 flex flex-wrap items-center justify-between gap-3 font-sans">
-              <div>
-                <span className="text-[11px] font-semibold text-[#8C8275] uppercase tracking-wider block">
-                  ORDER PLACED
-                </span>
-                <span className="text-xs sm:text-sm font-semibold text-[#1C1B18] block mt-0.5">
-                  {order.date || "25 October 2026"}
-                </span>
-              </div>
+          <div className="space-y-6 sm:space-y-8 max-w-4xl mx-auto">
+            {orderItems.map((item, idx) => {
+              const matchedProduct = PRODUCTS.find(
+                (p) =>
+                  p.id.toLowerCase() === (item.sku || "").toLowerCase() ||
+                  p.name.toLowerCase() === item.name.toLowerCase()
+              );
+              const productHref = matchedProduct ? `/product/${matchedProduct.id}` : "/shop";
 
-              <div className="text-right">
-                <span className="text-xs font-semibold text-[#5A5248] block font-mono">
-                  ORDER # {order.orderNumber.replace(/^#/, "")}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowDetailsModal(true)}
-                  className="text-xs font-semibold text-[#C5A45B] hover:text-[#092B20] hover:underline cursor-pointer transition-colors block mt-0.5"
+              return (
+                <div
+                  key={item.sku ? `${item.sku}-${idx}` : idx}
+                  className="bg-white rounded-2xl sm:rounded-3xl border border-[#EAE3D8] shadow-[0_4px_30px_rgba(9,43,32,0.06)] overflow-hidden transition-all hover:shadow-[0_6px_36px_rgba(9,43,32,0.09)]"
                 >
-                  View order details
-                </button>
-              </div>
-            </div>
-
-            {/* Card Body */}
-            <div className="p-5 sm:p-8 space-y-6">
-              {/* Status Heading & Explanation Message (1:1 with Screenshot) */}
-              <div>
-                <h3
-                  className={`font-serif text-xl sm:text-2xl font-bold tracking-tight ${
-                    statusLower.includes("cancel")
-                      ? "text-[#9B2335]"
-                      : statusLower.includes("deliver")
-                      ? "text-[#28513B]"
-                      : "text-[#1C1B18]"
-                  }`}
-                >
-                  {statusLower.includes("cancel")
-                    ? "Cancelled"
-                    : statusLower.includes("deliver")
-                    ? "Delivered"
-                    : statusLower.includes("out for delivery")
-                    ? "Out for Delivery"
-                    : statusLower.includes("shipped")
-                    ? "In Transit"
-                    : "Order Confirmed"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5A5248] mt-1.5 leading-relaxed font-sans max-w-2xl">
-                  {statusLower.includes("cancel")
-                    ? "If you were charged, a refund will be processed and credited to the original payment method within next 3-5 business days"
-                    : statusLower.includes("deliver")
-                    ? `Package was handed over directly to recipient on ${order.estimatedDate || "22 Nov 2026"}. Thank you for honoring Kurma rituals.`
-                    : statusLower.includes("out for delivery")
-                    ? `Consignment is out for delivery with our express courier partner. Expected delivery today by 8:00 PM.`
-                    : statusLower.includes("shipped")
-                    ? `Dispatched via ${order.courier || "BlueDart Express"}. Expected delivery by ${order.estimatedDate || "22 Nov 2026"}.`
-                    : "Your sacred creations have been confirmed and are currently being carefully curated and packed at Kurma Sacred Atelier."}
-                </p>
-              </div>
-
-              {/* Product Showcase Row with Carousel Arrows (Matching `< [Thumbnail] [Title Link] >`) */}
-              <div className="relative flex items-center justify-between gap-3 sm:gap-5 py-2">
-                {/* Previous Item Carousel Arrow */}
-                {orderItems.length > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setActiveItemIdx((prev) => (prev > 0 ? prev - 1 : orderItems.length - 1))
-                    }
-                    aria-label="Previous item in order"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF7F2] hover:bg-[#092B20] text-[#5A5248] hover:text-[#E8D9AE] border border-[#EAE3D8] flex items-center justify-center transition-all cursor-pointer shadow-xs shrink-0"
-                  >
-                    <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
-                  </button>
-                ) : (
-                  <div className="w-0 sm:w-2" />
-                )}
-
-                {/* Center Product Thumbnail & Info */}
-                <div className="flex-1 flex items-center gap-4 sm:gap-6 min-w-0">
-                  <div className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-xl bg-[#FAF7F2] border border-[#EAE3D8] p-2 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs">
-                    <Image
-                      src={currentItem.image || "/images/product/suite-clean.png"}
-                      alt={currentItem.name}
-                      fill
-                      className="object-contain p-1.5"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5 min-w-0 flex-1">
-                    <Link
-                      href="/shop"
-                      className="font-serif font-medium text-base sm:text-lg text-[#092B20] hover:text-[#C5A45B] transition-colors leading-snug block line-clamp-2"
-                    >
-                      {currentItem.name}
-                    </Link>
-                    <p className="text-xs sm:text-sm text-[#5A5248] font-medium font-sans">
-                      Qty: {currentItem.quantity} &nbsp;|&nbsp; ₹
-                      {(currentItem.price * currentItem.quantity).toLocaleString("en-IN")}
-                    </p>
-                    <div className="pt-0.5 flex flex-wrap items-center gap-2 font-sans">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#28513B]/10 text-[#092B20] border border-[#28513B]/25">
-                        {order.paymentStatus || "Paid"}
+                  {/* Top Header Strip */}
+                  <div className="bg-[#F6F2EB] border-b border-[#EAE3D8] px-5 sm:px-8 py-3.5 sm:py-4 flex flex-wrap items-center justify-between gap-3 font-sans">
+                    <div>
+                      <span className="text-[11px] font-semibold text-[#8C8275] uppercase tracking-wider block">
+                        ORDER PLACED
                       </span>
-                      {orderItems.length > 1 && (
-                        <span className="text-[11px] text-[#8C8275] font-medium">
-                          Item {activeItemIdx + 1} of {orderItems.length}
-                        </span>
-                      )}
+                      <span className="text-xs sm:text-sm font-semibold text-[#1C1B18] block mt-0.5">
+                        {order.date || "25 October 2026"}
+                      </span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-xs font-semibold text-[#5A5248] block font-mono">
+                        ORDER # {order.orderNumber.replace(/^#/, "")}
+                      </span>
                     </div>
                   </div>
-                </div>
 
-                {/* Next Item Carousel Arrow */}
-                {orderItems.length > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setActiveItemIdx((prev) => (prev < orderItems.length - 1 ? prev + 1 : 0))
-                    }
-                    aria-label="Next item in order"
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FAF7F2] hover:bg-[#092B20] text-[#5A5248] hover:text-[#E8D9AE] border border-[#EAE3D8] flex items-center justify-center transition-all cursor-pointer shadow-xs shrink-0"
-                  >
-                    <ChevronRight className="w-4 h-4 stroke-[2.2]" />
-                  </button>
-                ) : (
-                  <div className="w-0 sm:w-2" />
-                )}
-              </div>
-
-              {/* 4. Horizontal 5-Stage Stepper (when order is not cancelled) */}
-              {!statusLower.includes("cancel") && (
-                <div className="pt-5 pb-2 border-t border-[#F0EBE1]">
-                  <div className="relative">
-                    {/* 5-Step Grid */}
-                    <div className="grid grid-cols-5 gap-2 relative">
-                      {/* Step 1: Order Placed */}
-                      <div className="relative flex flex-col items-center text-center">
-                        <div
-                          className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                            isConfirmed ? "bg-[#092B20]" : "bg-[#EAE3D8]"
-                          }`}
+                  {/* Card Body */}
+                  <div className="p-5 sm:p-8 space-y-6">
+                    {/* Product Showcase */}
+                    <div className="flex items-center gap-4 sm:gap-6 py-2 min-w-0">
+                      <Link
+                        href={productHref}
+                        className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-xl bg-[#FAF7F2] border border-[#EAE3D8] p-2 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs hover:border-[#C5A45B] transition-colors group cursor-pointer"
+                      >
+                        <Image
+                          src={item.image || "/images/product/suite-clean.png"}
+                          alt={item.name}
+                          fill
+                          className="object-contain p-1.5 transition-transform group-hover:scale-105"
                         />
-                        <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#092B20] text-[#E8D9AE] shadow-xs">
-                          <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A45B] stroke-[2.5]" />
-                        </div>
-                        <h4 className="font-serif text-xs sm:text-sm font-medium text-[#092B20] mt-2.5 sm:mt-3 leading-snug">
-                          Order Placed
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
-                          {order.date || "18 Nov, 10:30 AM"}
-                        </p>
-                      </div>
+                      </Link>
 
-                      {/* Step 2: Order Confirmed */}
-                      <div className="relative flex flex-col items-center text-center">
-                        <div
-                          className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                            isShipped ? "bg-[#092B20]" : "bg-[#EAE3D8]"
-                          }`}
-                        />
-                        <div
-                          className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
-                            isConfirmed
-                              ? "bg-[#092B20] text-[#E8D9AE] shadow-xs"
-                              : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
-                          }`}
+                      <div className="space-y-1.5 min-w-0 flex-1">
+                        <Link
+                          href={productHref}
+                          className="font-serif font-medium text-base sm:text-lg text-[#092B20] hover:text-[#C5A45B] transition-colors leading-snug block line-clamp-2"
                         >
-                          <Check
-                            className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
-                              isConfirmed ? "text-[#C5A45B]" : "text-[#A3998C]"
-                            }`}
-                          />
-                        </div>
-                        <h4
-                          className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
-                            isConfirmed ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
-                          }`}
-                        >
-                          Order Confirmed
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
-                          {isConfirmed ? "18 Nov, 11:00 AM" : "Pending"}
+                          {item.name}
+                        </Link>
+                        <p className="text-xs sm:text-sm text-[#5A5248] font-medium font-sans">
+                          Qty: {item.quantity} &nbsp;|&nbsp; ₹
+                          {(item.price * item.quantity).toLocaleString("en-IN")}
                         </p>
-                      </div>
-
-                      {/* Step 3: Shipped */}
-                      <div className="relative flex flex-col items-center text-center">
-                        <div
-                          className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                            isOutForDelivery ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
-                          }`}
-                        />
-                        <div
-                          className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
-                            isShipped
-                              ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
-                              : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
-                          }`}
-                        >
-                          <Truck
-                            className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2] ${
-                              isShipped ? "text-[#C5A45B]" : "text-[#A3998C]"
-                            }`}
-                          />
+                        <div className="pt-0.5 flex flex-wrap items-center gap-2 font-sans">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#28513B]/10 text-[#092B20] border border-[#28513B]/25">
+                            {order.paymentStatus || "Paid"}
+                          </span>
+                          <Link
+                            href={productHref}
+                            className="inline-flex items-center text-[11px] font-medium text-[#C5A45B] hover:text-[#092B20] hover:underline transition-colors"
+                          >
+                            View Product &rarr;
+                          </Link>
                         </div>
-                        <h4
-                          className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
-                            isShipped ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
-                          }`}
-                        >
-                          Shipped
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
-                          {isShipped ? "19 Nov, 09:00 AM" : "Pending"}
-                        </p>
-                      </div>
-
-                      {/* Step 4: Out for Delivery */}
-                      <div className="relative flex flex-col items-center text-center">
-                        <div
-                          className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                            isDelivered ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
-                          }`}
-                        />
-                        <div
-                          className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
-                            isOutForDelivery
-                              ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
-                              : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
-                          }`}
-                        >
-                          <Package
-                            className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2] ${
-                              isOutForDelivery ? "text-[#C5A45B]" : "text-[#A3998C]"
-                            }`}
-                          />
-                        </div>
-                        <h4
-                          className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
-                            isOutForDelivery ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
-                          }`}
-                        >
-                          Out for Delivery
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
-                          {isOutForDelivery ? "Today" : "Pending"}
-                        </p>
-                      </div>
-
-                      {/* Step 5: Delivered */}
-                      <div className="relative flex flex-col items-center text-center">
-                        <div
-                          className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
-                            isDelivered
-                              ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
-                              : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
-                          }`}
-                        >
-                          <Check
-                            className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
-                              isDelivered ? "text-[#C5A45B]" : "text-[#A3998C]"
-                            }`}
-                          />
-                        </div>
-                        <h4
-                          className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
-                            isDelivered ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
-                          }`}
-                        >
-                          Delivered
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
-                          {isDelivered ? order.estimatedDate || "Delivered" : "Pending"}
-                        </p>
                       </div>
                     </div>
+
+                    {/* 4. Horizontal 5-Stage Stepper (when order is not cancelled) */}
+                    {!statusLower.includes("cancel") && (
+                      <div className="pt-5 pb-2 border-t border-[#F0EBE1]">
+                        <div className="relative">
+                          {/* 5-Step Grid */}
+                          <div className="grid grid-cols-5 gap-2 relative">
+                            {/* Step 1: Order Placed */}
+                            <div className="relative flex flex-col items-center text-center">
+                              <div
+                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                  isConfirmed ? "bg-[#092B20]" : "bg-[#EAE3D8]"
+                                }`}
+                              />
+                              <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#092B20] text-[#E8D9AE] shadow-xs">
+                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A45B] stroke-[2.5]" />
+                              </div>
+                              <h4 className="font-serif text-xs sm:text-sm font-medium text-[#092B20] mt-2.5 sm:mt-3 leading-snug">
+                                Order Placed
+                              </h4>
+                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                                {order.date || "18 Nov, 10:30 AM"}
+                              </p>
+                            </div>
+
+                            {/* Step 2: Order Confirmed */}
+                            <div className="relative flex flex-col items-center text-center">
+                              <div
+                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                  isShipped ? "bg-[#092B20]" : "bg-[#EAE3D8]"
+                                }`}
+                              />
+                              <div
+                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                  isConfirmed
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs"
+                                    : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
+                                }`}
+                              >
+                                <Check
+                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
+                                    isConfirmed ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                  }`}
+                                />
+                              </div>
+                              <h4
+                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                  isConfirmed ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                }`}
+                              >
+                                Order Confirmed
+                              </h4>
+                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                                {isConfirmed ? "18 Nov, 11:00 AM" : "Pending"}
+                              </p>
+                            </div>
+
+                            {/* Step 3: Shipped */}
+                            <div className="relative flex flex-col items-center text-center">
+                              <div
+                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                  isOutForDelivery ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
+                                }`}
+                              />
+                              <div
+                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                  isShipped
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
+                                    : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
+                                }`}
+                              >
+                                <Truck
+                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2] ${
+                                    isShipped ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                  }`}
+                                />
+                              </div>
+                              <h4
+                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                  isShipped ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                }`}
+                              >
+                                Shipped
+                              </h4>
+                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                                {isShipped ? "19 Nov, 09:00 AM" : "Pending"}
+                              </p>
+                            </div>
+
+                            {/* Step 4: Out for Delivery */}
+                            <div className="relative flex flex-col items-center text-center">
+                              <div
+                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                  isDelivered ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
+                                }`}
+                              />
+                              <div
+                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                  isOutForDelivery
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
+                                    : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
+                                }`}
+                              >
+                                <Package
+                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2] ${
+                                    isOutForDelivery ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                  }`}
+                                />
+                              </div>
+                              <h4
+                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                  isOutForDelivery ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                }`}
+                              >
+                                Out for Delivery
+                              </h4>
+                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                                {isOutForDelivery ? "Today" : "Pending"}
+                              </p>
+                            </div>
+
+                            {/* Step 5: Delivered */}
+                            <div className="relative flex flex-col items-center text-center">
+                              <div
+                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                  isDelivered
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
+                                    : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
+                                }`}
+                              >
+                                <Check
+                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
+                                    isDelivered ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                  }`}
+                                />
+                              </div>
+                              <h4
+                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                  isDelivered ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                }`}
+                              >
+                                Delivered
+                              </h4>
+                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                                {isDelivered ? order.estimatedDate || "Delivered" : "Pending"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              );
+            })}
 
-              {/* 5. Need Help / Concierge Support Banner */}
-              <div className="bg-[#FAF7F2] border border-[#EAE3D8] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-sans">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-full bg-white border border-[#EAE3D8] flex items-center justify-center text-[#092B20] shrink-0 shadow-2xs">
-                    <Headphones className="w-5 h-5 stroke-[1.8]" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-medium text-[#092B20] text-sm sm:text-base leading-snug">
-                      Need Help?
-                    </h4>
-                    <p className="text-xs text-[#5A5248] mt-0.5 font-sans font-light">
-                      Our concierge support team is here to assist you.
-                    </p>
-                  </div>
+            {/* 5. Need Help / Concierge Support Banner */}
+            <div className="bg-[#FAF7F2] border border-[#EAE3D8] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-sans">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-full bg-white border border-[#EAE3D8] flex items-center justify-center text-[#092B20] shrink-0 shadow-2xs">
+                  <Headphones className="w-5 h-5 stroke-[1.8]" />
                 </div>
-
-                <Link
-                  href="/contact"
-                  className="bg-white hover:bg-[#FAF7F2] border border-[#D9CEBF] hover:border-[#C5A45B] text-[#092B20] text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-xs hover:shadow-sm cursor-pointer shrink-0 uppercase tracking-wider font-sans"
-                >
-                  <span>Contact Concierge</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-[#C5A45B]" />
-                </Link>
+                <div>
+                  <h4 className="font-serif font-medium text-[#092B20] text-sm sm:text-base leading-snug">
+                    Need Help?
+                  </h4>
+                  <p className="text-xs text-[#5A5248] mt-0.5 font-sans font-light">
+                    Our concierge support team is here to assist you.
+                  </p>
+                </div>
               </div>
+
+              <Link
+                href="/contact"
+                className="bg-white hover:bg-[#FAF7F2] border border-[#D9CEBF] hover:border-[#C5A45B] text-[#092B20] text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-xs hover:shadow-sm cursor-pointer shrink-0 uppercase tracking-wider font-sans"
+              >
+                <span>Contact Concierge</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#C5A45B]" />
+              </Link>
             </div>
           </div>
         )}
