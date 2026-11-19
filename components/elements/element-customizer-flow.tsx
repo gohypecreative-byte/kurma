@@ -416,7 +416,7 @@ export function ElementCustomizerFlow({
               </div>
               <div className="flex justify-between">
                 <span>Engraving:</span>
-                <span className="italic font-medium text-stone-900">&quot;{engraving}&quot;</span>
+                <span className="font-medium text-stone-900">&quot;{engraving}&quot;</span>
               </div>
               <div className="flex justify-between">
                 <span>Payment Mode:</span>
@@ -478,7 +478,7 @@ export function ElementCustomizerFlow({
                       Personalized Engraving
                     </span>
                   </div>
-                  <span className="font-serif text-xs text-[#eed08e] font-semibold italic">
+                  <span className="text-xs text-[#eed08e] font-semibold">
                     &quot;{engraving}&quot;
                   </span>
                 </div>

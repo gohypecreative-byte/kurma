@@ -913,6 +913,262 @@ export const PRODUCTS: ProductSKU[] = [
       },
     ],
   },
+  // 17. Imperial Wicker & Silk Fragrance Basket
+  {
+    id: "wicker-silk-incense-basket",
+    name: "Imperial Wicker & Silk Fragrance Basket",
+    subtitle: "Handwoven wicker basket with silk pouch & trio agarbatti sticks",
+    category: "Gift Boxes",
+    price: 3499,
+    originalPrice: 4299,
+    image: "/images/product/hamper-wicker-silk.jpg",
+    gallery: [
+      "/images/product/hamper-wicker-silk.jpg",
+      "/images/product/suite-portrait.jpg",
+    ],
+    badge: "Handwoven Classic",
+    description:
+      "An elegant gift presentation featuring a handwoven wicker basket lined with dark emerald raw silk, emerald silk gift pouch with gold tie, handcrafted Ganesha medallion, and 3 luxury agarbatti stick boxes.",
+    details: [
+      "Handwoven artisan wicker basket with raw silk lining",
+      "Emerald silk gift pouch with gold tie and tassel",
+      "Handcrafted Ganesha keepsake medallion",
+      "3 packs of artisanal charcoal-free agarbatti sticks",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 18. Sacred Buddha & Fragrance Wooden Suite
+  {
+    id: "sacred-buddha-wooden-suite",
+    name: "Sacred Buddha & Fragrance Wooden Suite",
+    subtitle: "Polished hardwood stand, Buddha statue & 5-element agarbatti boxes",
+    category: "Gift Boxes",
+    price: 4299,
+    originalPrice: 4999,
+    image: "/images/product/hamper-buddha-wooden.jpg",
+    gallery: [
+      "/images/product/hamper-buddha-wooden.jpg",
+      "/images/product/suite-portrait.jpg",
+    ],
+    badge: "Spiritual Luxury",
+    description:
+      "Elevate your meditation sanctuary with this serene rosewood pedestal set featuring an antique solid brass Buddha idol, traditional brass diya lamp, and five elemental agarbatti boxes.",
+    details: [
+      "Antique solid brass meditative Buddha idol",
+      "Polished rosewood pedestal burner stand",
+      "Complete 5 elemental agarbatti suites (135 sticks)",
+      "Traditional brass oil diya and Kurma ritual guide",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 19. The Royal Tea & Fragrance Leatherette Hamper
+  {
+    id: "royal-tea-incense-leatherette-hamper",
+    name: "The Royal Tea & Fragrance Leatherette Hamper",
+    subtitle: "Round stitched leatherette tray, artisan cup, organic tea & incense",
+    category: "Gift Boxes",
+    price: 3899,
+    originalPrice: 4500,
+    image: "/images/product/hamper-royal-tea.jpg",
+    gallery: [
+      "/images/product/hamper-royal-tea.jpg",
+      "/images/product/suite-portrait.jpg",
+    ],
+    badge: "Signature Suite",
+    description:
+      "A thoughtful gift tray for tea lovers and mindfulness seekers, combining a premium artisan ceramic cup, embossed brass canister of Organic Tea, and 3 luxury agarbatti stick boxes.",
+    details: [
+      "Handcrafted round stitched leatherette gift tray",
+      "Designer artisanal ceramic cup with glaze finish",
+      "Embossed brass canister of premium organic tea",
+      "3 luxury agarbatti suites and brass diya holder",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 20. Heirloom Slatted Wooden Chest & Burlap Trunk
+  {
+    id: "heirloom-slatted-wooden-trunk",
+    name: "Heirloom Slatted Wooden Chest & Burlap Trunk",
+    subtitle: "Lidded wooden chest, natural jute sack & multi-scent agarbatti packs",
+    category: "Gift Boxes",
+    price: 4599,
+    originalPrice: 5200,
+    image: "/images/product/hamper-slatted-trunk.jpg",
+    gallery: [
+      "/images/product/hamper-slatted-trunk.jpg",
+      "/images/product/trunk-portrait.jpg",
+    ],
+    badge: "Heirloom Edition",
+    description:
+      "Unbox timeless tradition with this vintage slatted wooden chest housing premium agarbatti boxes, a rustic natural burlap pouch with a gold wax seal, and a solid brass turtle burner.",
+    details: [
+      "Vintage slatted wooden keepsake chest with antique clasp",
+      "Natural jute burlap sack with gold wax seal",
+      "Solid cast Moradabad brass turtle incense burner",
+      "3 fragrance agarbatti suites (81 charcoal-free sticks)",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 21. Devotional Brass Puja & Fragrance Tray
+  {
+    id: "devotional-brass-puja-tray",
+    name: "Devotional Brass Puja & Fragrance Tray",
+    subtitle: "Engraved brass thali, twin brass diyas, Ganesha idol & agarbatti",
+    category: "Gift Boxes",
+    price: 3299,
+    originalPrice: 3999,
+    image: "/images/product/hamper-devotional-puja.jpg",
+    gallery: [
+      "/images/product/hamper-devotional-puja.jpg",
+      "/images/product/suite-portrait.jpg",
+    ],
+    badge: "Ceremonial Suite",
+    description:
+      "Crafted for festive rituals and daily prayers, this tray includes an engraved brass thali, twin glowing brass oil lamps, a golden Ganesha idol, and fragrant agarbatti packs.",
+    details: [
+      "Solid engraved Moradabad brass puja thali (10-inch)",
+      "Twin artisan brass diya lamps with handcrafted detailing",
+      "Antique finish solid brass Ganesha idol",
+      "2 premium fragrance agarbatti suites (54 sticks)",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 22. Mindfulness & Crystal Sanctuary Crate
+  {
+    id: "mindfulness-crystal-sanctuary-crate",
+    name: "Mindfulness & Crystal Sanctuary Crate",
+    subtitle: "Natural pine crate, raw crystals, aromatic agarbatti & turtle burner",
+    category: "Gift Boxes",
+    price: 3999,
+    originalPrice: 4699,
+    image: "/images/product/hamper-crystal-sanctuary.jpg",
+    gallery: [
+      "/images/product/hamper-crystal-sanctuary.jpg",
+      "/images/product/trunk-portrait.jpg",
+    ],
+    badge: "Wellness Gift",
+    description:
+      "Bring peace and positive energy to any home with this pine crate featuring healing raw quartz and amethyst crystals, aromatic agarbatti packs, and sacred brass incense accessories.",
+    details: [
+      "Natural sustainable pine wood keepsake crate with lid",
+      "Genuine raw quartz and amethyst healing crystals",
+      "Solid cast brass turtle incense burner",
+      "4 fragrance agarbatti packs (108 sticks)",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 23. Festive Lotus Brass & Fragrance Tray
+  {
+    id: "festive-lotus-brass-leatherette-tray",
+    name: "Festive Lotus Brass & Fragrance Tray",
+    subtitle: "Dark leatherette tray, lotus brass candle stands & agarbatti canister",
+    category: "Gift Boxes",
+    price: 4799,
+    originalPrice: 5500,
+    image: "/images/product/suite-portrait.jpg",
+    gallery: [
+      "/images/product/suite-portrait.jpg",
+      "/images/product/hamper-royal-tea.jpg",
+    ],
+    badge: "Festive Bestseller",
+    description:
+      "An opulent arrangement featuring brass lotus candle holders, a golden brass tea tin, engraved thali, and four elemental agarbatti stick boxes.",
+    details: [
+      "Stitched forest green luxury leatherette tray",
+      "Twin solid brass blooming lotus candle holders",
+      "Embossed golden brass agarbatti canister",
+      "4 elemental agarbatti suites and ceremonial matchbox",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
+  // 24. Milestone Celebration Sacred Fragrance Basket
+  {
+    id: "celebration-keepsake-basket",
+    name: "Milestone Celebration Sacred Fragrance Basket",
+    subtitle: "Wicker tray with solid brass turtle burner, silk pouch & fragrance trio",
+    category: "Gift Boxes",
+    price: 2999,
+    originalPrice: 3600,
+    image: "/images/product/trunk-portrait.jpg",
+    gallery: [
+      "/images/product/trunk-portrait.jpg",
+      "/images/product/hamper-wicker-silk.jpg",
+    ],
+    badge: "Special Occasion",
+    description:
+      "Make milestone celebrations unforgettable with this decorative keepsake hamper complete with a solid brass turtle burner, silk gift pouch, and soothing agarbatti suites.",
+    details: [
+      "Heirloom keepsake basket with handcrafted brass clasp",
+      "Solid Moradabad brass turtle incense holder",
+      "Handcrafted silk gift pouch with gold wax insignia",
+      "3 sacred fragrance agarbatti suites (81 sticks)",
+    ],
+    customizationFields: [
+      {
+        id: "gift_note",
+        label: "Personalized Gift Message",
+        type: "text",
+        placeholder: "Enter custom message for the recipient...",
+        maxLength: 150,
+      },
+    ],
+  },
 ];
 
 export function getProductById(id: string): ProductSKU | undefined {

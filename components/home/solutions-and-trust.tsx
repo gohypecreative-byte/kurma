@@ -79,9 +79,9 @@ export function SolutionsAndTrust({
             {/* Text Overlay Content */}
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
               <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
                   Sacred 5 elements{" "}
-                  <span className="italic font-serif font-normal text-[#EED08E]">
+                  <span className="font-normal text-[#EED08E]">
                     luxury suite
                   </span>
                 </h2>
@@ -131,9 +131,9 @@ export function SolutionsAndTrust({
             {/* Text Overlay Content */}
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
               <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
                   Sacred fragrance suites for timeless{" "}
-                  <span className="italic font-serif font-normal text-[#EED08E]">
+                  <span className="font-normal text-[#EED08E]">
                     festive celebrations
                   </span>
                 </h2>
@@ -183,9 +183,9 @@ export function SolutionsAndTrust({
             {/* Text Overlay Content */}
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col justify-center px-6 sm:px-10 md:px-14 lg:px-20">
               <div className="max-w-md sm:max-w-lg space-y-3.5 sm:space-y-4 text-white">
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-white">
                   Corporate{" "}
-                  <span className="italic font-serif font-normal text-[#EED08E]">
+                  <span className="font-normal text-[#EED08E]">
                     gifting
                   </span>
                 </h2>

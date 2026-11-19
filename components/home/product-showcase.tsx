@@ -3,9 +3,10 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Plus, Check, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, Plus, Check, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Flame, RotateCcw, Sun, CheckCircle2, Heart } from "lucide-react";
 import { PRODUCTS, ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
 import { useProducts } from "@/lib/products-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { AnimatedWords } from "@/components/ui/animated-text";
 import { CartItem } from "@/components/cart/cart-drawer";
 
@@ -128,6 +129,8 @@ export function ProductCardItem({
   cardBg,
 }: ProductCardItemProps) {
   const router = useRouter();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(product.id);
   const isDark = theme ? theme === "dark" : variant === "dark";
   const primarySrc = product.image ? `${product.image}?v=4` : "/images/product/image9.png";
   const [activeImgIdx, setActiveImgIdx] = useState(0);
@@ -162,7 +165,7 @@ export function ProductCardItem({
     >
       {/* Modern Image Canvas */}
       <div
-        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-2xl flex items-center justify-center ${
+        className={`relative w-full ${containerAspect || "aspect-[3/4]"} overflow-hidden rounded-lg sm:rounded-2xl flex items-center justify-center ${
           cardBg || (isDark ? "bg-[#092B20] border border-[#28513B]/50 shadow-md" : "bg-[#FAF7F2] border border-[#DDD3C2] shadow-sm hover:shadow-md transition-shadow")
         }`}
       >
@@ -171,13 +174,10 @@ export function ProductCardItem({
           alt={product.name}
           fill
           loading="lazy"
-          className={`absolute inset-0 w-full h-full ${
-            objectFit || "object-contain object-center"
-          } transition-transform duration-500 ease-out ${
-            imagePadding !== undefined ? imagePadding : "p-2 sm:p-2.5"
-          } ${
-            imageScale || "group-hover:scale-100"
-          }`}
+          className={`absolute inset-0 w-full h-full ${objectFit || "object-contain object-center"
+            } transition-transform duration-500 ease-out ${imagePadding !== undefined ? imagePadding : "p-2 sm:p-2.5"
+            } ${imageScale || "group-hover:scale-100"
+            }`}
           style={{
             objectFit: (objectFit?.includes("cover") ? "cover" : "contain") as any,
             objectPosition: "center",
@@ -185,7 +185,31 @@ export function ProductCardItem({
           sizes="(max-width: 640px) 48vw, (max-width: 1024px) 33vw, 25vw"
         />
 
-
+        {/* Wishlist Heart Button on Upper Right */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              priceDisplay: `RS. ${product.price.toLocaleString("en-IN")}`,
+              image: currentDisplayImg,
+              skuId: product.id,
+            });
+          }}
+          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="group/btn absolute top-2.5 right-2.5 z-20 p-1 sm:p-1.5 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
+        >
+          <Heart
+            className={`w-4.5 h-4.5 sm:w-5 sm:h-5 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] ${isWishlisted
+              ? "fill-white text-white scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+              : "fill-transparent text-white group-hover/btn:scale-110"
+              }`}
+          />
+        </button>
 
         {/* Previous & Next Carousel Navigation Arrows (visible on hover) */}
         {images.length > 1 && (
@@ -221,15 +245,14 @@ export function ProductCardItem({
             {images.map((_, idx) => (
               <span
                 key={idx}
-                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                  idx === activeImgIdx
-                    ? isLightCard
-                      ? "bg-stone-800 scale-125 shadow-xs"
-                      : "bg-[#C5A45B] scale-125 shadow-xs"
-                    : isLightCard
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${idx === activeImgIdx
+                  ? isLightCard
+                    ? "bg-stone-800 scale-125 shadow-xs"
+                    : "bg-[#C5A45B] scale-125 shadow-xs"
+                  : isLightCard
                     ? "bg-stone-400/50"
                     : "bg-[#28513B]"
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -240,27 +263,24 @@ export function ProductCardItem({
       <div className="mt-2.5 flex items-start justify-between gap-2 px-0.5">
         <div className="space-y-0.5 min-w-0 flex-1">
           <h3
-            className={`font-serif text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate transition-colors ${
-              isDark
-                ? "text-[#fdfcf9] group-hover:text-[#C5A45B]"
-                : "text-stone-900 group-hover:text-stone-600"
-            }`}
+            className={`font-serif text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate transition-colors ${isDark
+              ? "text-[#fdfcf9] group-hover:text-[#C5A45B]"
+              : "text-stone-900 group-hover:text-stone-600"
+              }`}
           >
             {cleanTitle}
           </h3>
           <div className="flex items-center gap-1.5 font-sans">
             <span
-              className={`text-xs sm:text-[12.5px] font-medium ${
-                isDark ? "text-[#C5A45B]" : "text-stone-700"
-              }`}
+              className={`text-xs sm:text-[12.5px] font-medium ${isDark ? "text-[#C5A45B]" : "text-stone-700"
+                }`}
             >
               RS. {product.price.toLocaleString("en-IN")}
             </span>
             {product.originalPrice && product.originalPrice > product.price && (
               <span
-                className={`text-[11px] line-through ${
-                  isDark ? "text-[#E8D9AE]/60" : "text-stone-400"
-                }`}
+                className={`text-[11px] line-through ${isDark ? "text-[#E8D9AE]/60" : "text-stone-400"
+                  }`}
               >
                 RS. {product.originalPrice.toLocaleString("en-IN")}
               </span>
@@ -277,17 +297,15 @@ export function ProductCardItem({
             }}
             title={`Quick add ${product.name} to cart`}
             aria-label={`Quick add ${product.name} to cart`}
-            className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${
-              isDark
-                ? "text-[#E8D9AE] hover:text-[#C5A45B] hover:bg-[#28513B]/30"
-                : "text-stone-800 hover:text-black hover:bg-stone-100"
-            }`}
+            className={`p-1.5 sm:p-1 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer touch-manipulation ${isDark
+              ? "text-[#E8D9AE] hover:text-[#C5A45B] hover:bg-[#28513B]/30"
+              : "text-stone-800 hover:text-black hover:bg-stone-100"
+              }`}
           >
             {addedId === product.id ? (
               <Check
-                className={`w-3.5 h-3.5 stroke-[2.5] ${
-                  isDark ? "text-[#C5A45B]" : "text-[#7A5A28]"
-                }`}
+                className={`w-3.5 h-3.5 stroke-[2.5] ${isDark ? "text-[#C5A45B]" : "text-[#7A5A28]"
+                  }`}
               />
             ) : (
               <ShoppingCart className="w-3.5 h-3.5 stroke-[1.8]" />

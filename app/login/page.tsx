@@ -7,12 +7,9 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { useCart } from "@/lib/cart-context";
 import {
-  ArrowUpRight,
   Eye,
   EyeOff,
-  User,
   Check,
-  Package,
   Truck,
   CheckCircle2,
 } from "lucide-react";
@@ -362,12 +359,9 @@ export default function LoginPage() {
             {/* =============================================================== */}
             {mode === "signin" && (
               <div>
-                <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight">
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight mb-8">
                   SIGN IN TO YOUR ACCOUNT
                 </h1>
-                <p className="text-xs sm:text-sm text-stone-500 mt-2.5 mb-8 font-sans leading-relaxed">
-                  Access your saved products, track your orders, and manage your member profile.
-                </p>
 
                 <form onSubmit={handleSignIn} className="space-y-6">
                   {/* Email Input */}
@@ -448,20 +442,13 @@ export default function LoginPage() {
                     </label>
                   </div>
 
-                  {/* Submit Button: SIGN IN  ↗ */}
+                  {/* Submit Button: SIGN IN */}
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-4 bg-black hover:bg-stone-800 text-white text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 rounded-none transition-colors shadow-xs cursor-pointer"
+                    className="w-full py-4 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center rounded-none transition-colors shadow-sm cursor-pointer"
                   >
-                    {isLoading ? (
-                      <span>SIGNING IN...</span>
-                    ) : (
-                      <>
-                        <span>SIGN IN</span>
-                        <ArrowUpRight className="w-4 h-4" />
-                      </>
-                    )}
+                    {isLoading ? "SIGNING IN..." : "SIGN IN"}
                   </button>
                 </form>
 
@@ -474,27 +461,6 @@ export default function LoginPage() {
                   >
                     CREATE ONE
                   </Link>
-                </div>
-
-                {/* Subtle Instant Demo Login Option */}
-                <div className="mt-8 pt-6 border-t border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-500 font-sans">
-                  <button
-                    type="button"
-                    onClick={handleDemoLogin}
-                    disabled={isLoading}
-                    className="hover:text-black underline font-medium flex items-center gap-1 cursor-pointer"
-                  >
-                    <User className="w-3.5 h-3.5" />
-                    <span>Instant Demo Login (Priyesh Sharma)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMode("track")}
-                    className="hover:text-black underline font-medium flex items-center gap-1 cursor-pointer"
-                  >
-                    <Package className="w-3.5 h-3.5" />
-                    <span>Track guest order</span>
-                  </button>
                 </div>
               </div>
             )}
@@ -557,16 +523,9 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full py-4 bg-black hover:bg-stone-800 text-white text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 rounded-none transition-colors shadow-xs cursor-pointer"
+                      className="w-full py-4 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center rounded-none transition-colors shadow-sm cursor-pointer"
                     >
-                      {isLoading ? (
-                        <span>SENDING LINK...</span>
-                      ) : (
-                        <>
-                          <span>SEND RESET LINK</span>
-                          <ArrowUpRight className="w-4 h-4" />
-                        </>
-                      )}
+                      {isLoading ? "SENDING LINK..." : "SEND RESET LINK"}
                     </button>
                   </form>
                 )}
@@ -651,16 +610,9 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={isTracking}
-                    className="w-full py-4 bg-black hover:bg-stone-800 text-white text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 rounded-none transition-colors shadow-xs cursor-pointer"
+                    className="w-full py-4 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center rounded-none transition-colors shadow-sm cursor-pointer"
                   >
-                    {isTracking ? (
-                      <span>TRACKING CONSIGNMENT...</span>
-                    ) : (
-                      <>
-                        <span>TRACK ORDER</span>
-                        <ArrowUpRight className="w-4 h-4" />
-                      </>
-                    )}
+                    {isTracking ? "TRACKING CONSIGNMENT..." : "TRACK ORDER"}
                   </button>
                 </form>
 
@@ -685,10 +637,9 @@ export default function LoginPage() {
 
                     <Link
                       href={`/track-order?orderNumber=${encodeURIComponent(trackedOrder.id)}`}
-                      className="mt-2 w-full py-2 bg-[#072515] text-[#eed08e] text-xs font-semibold flex items-center justify-center gap-1.5 transition hover:bg-[#0b3820]"
+                      className="mt-2 w-full py-2 bg-[#072515] text-[#eed08e] text-xs font-semibold flex items-center justify-center transition hover:bg-[#0b3820]"
                     >
-                      <span>View Live Timeline &amp; Consignment Details</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      View Live Timeline &amp; Consignment Details
                     </Link>
                   </div>
                 )}

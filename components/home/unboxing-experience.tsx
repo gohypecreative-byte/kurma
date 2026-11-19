@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ShoppingCart, Check } from "lucide-react";
+import { ShoppingCart, Check, Heart } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { createCartItemId } from "@/lib/products";
 
 if (typeof window !== "undefined") {
@@ -118,10 +120,63 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
   const emergingProductsGroupRef = useRef<HTMLDivElement>(null);
   const emergingItemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
+  const router = useRouter();
   const auraGlowRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
 
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
+
+  // Mobile horizontal scroll carousel state & auto-scroll
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+  const [isMobileInteracting, setIsMobileInteracting] = useState(false);
+  const interactionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-advance horizontally every 3.2 seconds on mobile (pauses on user interaction)
+  useEffect(() => {
+    if (isMobileInteracting) return;
+
+    const interval = setInterval(() => {
+      const container = mobileScrollRef.current;
+      if (!container) return;
+
+      const cardCount = FIVE_ELEMENTS_PRODUCTS.length;
+      const firstCard = container.firstElementChild as HTMLElement;
+      const step = firstCard ? firstCard.offsetWidth + 12 : container.clientWidth / 2;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+
+      setMobileActiveIndex((prev) => {
+        const next = (prev + 1) % cardCount;
+
+        container.scrollTo({
+          left: next === 0 ? 0 : Math.min(next * step, maxScroll),
+          behavior: "smooth",
+        });
+
+        return next;
+      });
+    }, 3200);
+
+    return () => clearInterval(interval);
+  }, [isMobileInteracting]);
+
+  const handleMobileScroll = () => {
+    const container = mobileScrollRef.current;
+    if (!container) return;
+
+    const cardCount = FIVE_ELEMENTS_PRODUCTS.length;
+    const firstCard = container.firstElementChild as HTMLElement;
+    const step = firstCard ? firstCard.offsetWidth + 12 : container.clientWidth / 2;
+    const currentIdx = Math.round(container.scrollLeft / (step || 1));
+    setMobileActiveIndex(Math.min(cardCount - 1, Math.max(0, currentIdx)));
+
+    setIsMobileInteracting(true);
+    if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+    interactionTimerRef.current = setTimeout(() => {
+      setIsMobileInteracting(false);
+    }, 3500);
+  };
 
   const handleQuickAdd = (product: (typeof FIVE_ELEMENTS_PRODUCTS)[0]) => {
     effectiveAddToCart({
@@ -141,6 +196,11 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
   };
 
   useEffect(() => {
+    // Disable 3D GSAP Scroll animation on mobile (< 768px) so simple cards render naturally
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      return;
+    }
+
     const sectionEl = sectionRef.current;
     const stageEl = boxStageRef.current;
     const lidEl = boxLidRef.current;
@@ -251,9 +311,9 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       const fanOffsets = [
         { x: -2 * fanStep, y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: -5, scale: isMobile ? 0.88 : 0.84 },
         { x: -1 * fanStep, y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: -2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 0,             y: fanBaseY + (isMobile ? -4 : -8), z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
-        { x: 1 * fanStep,   y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 2 * fanStep,   y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
+        { x: 0, y: fanBaseY + (isMobile ? -4 : -8), z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
+        { x: 1 * fanStep, y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
+        { x: 2 * fanStep, y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
       ];
 
       // State B: Dedicated Product Section Row
@@ -262,9 +322,9 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       const sectionOffsets = [
         { x: -2 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
         { x: -1 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: 0,                y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: 1 * sectionStep,  y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: 2 * sectionStep,  y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
+        { x: 0, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
+        { x: 1 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
+        { x: 2 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
       ];
 
       // MASTER COORDINATED GSAP TIMELINE CONTROLLED BY SCROLL WITH SCRUB
@@ -528,266 +588,442 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="unboxing-ritual"
-      className="relative z-30 w-full h-[100dvh] min-h-[560px] bg-[#E4DCD0] text-[#1C1B18] select-none flex flex-col justify-between border-t border-[#DDD4C6] overflow-hidden"
-    >
-      {/* Ambient Luxury Lighting Backdrop (Clean Warm Studio Vignette) */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 48%, #EAE2D6 0%, #E4DCD0 65%, #DDD4C6 100%)",
-        }}
-      />
-
-      {/* Golden Aura Glow (Illuminates the opened chest and emerging products) */}
-      <div
-        ref={auraGlowRef}
-        className="absolute inset-0 pointer-events-none flex items-center justify-center"
+    <>
+      {/* ================= MOBILE RESPONSIVE VIEW (HORIZONTAL AUTO & SIDE SCROLL) ================= */}
+      <section
+        id="elements-collection-mobile"
+        className="block md:hidden bg-[#E4DCD0] text-[#1C1B18] select-none py-8 px-0 border-t border-[#DDD4C6] overflow-hidden"
       >
-        <div className="w-[650px] h-[450px] rounded-full bg-[#C5A45B]/15 blur-3xl" />
-      </div>
-
-      {/* SECTION HEADER */}
-      <div
-        ref={titleRef}
-        className="absolute top-0 inset-x-0 z-40 pt-16 min-[380px]:pt-18 sm:pt-24 lg:pt-28 px-3 sm:px-6 max-w-4xl mx-auto text-center pointer-events-none"
-      >
-        <h2 className="font-serif text-xl min-[380px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#1C1B18]">
-          The 5 Elements Collection
-        </h2>
-      </div>
-
-      {/* 3D BOX STAGE & PRODUCT CARDS CONTAINER */}
-      <div
-        ref={containerRef}
-        className="relative z-20 flex-1 w-full max-w-full flex items-center justify-center px-1 sm:px-4 lg:px-6 pt-14 sm:pt-20 pb-3 sm:pb-6 overflow-hidden"
-        style={{
-          perspective: "1200px",
-        }}
-      >
-        {/* THE 3D GREEN MARBLE BOX (Opens, products emerge, then moves upward & vanishes) */}
-        <div
-          ref={boxStageRef}
-          className="relative w-[250px] min-[380px]:w-[280px] sm:w-[340px] md:w-[390px] lg:w-[420px] aspect-[417/370] rounded-2xl shadow-2xl transition-shadow"
-          style={{
-            transformStyle: "preserve-3d",
-            willChange: "transform, opacity",
-          }}
-        >
-          {/* BOX BASE TRAY */}
-          <div
-            className="absolute inset-0 rounded-2xl overflow-hidden border border-[#28513B]/80 shadow-2xl"
-            style={{
-              backgroundColor: "#0A241A",
-              transformStyle: "preserve-3d",
-            }}
-          >
-            {/* 1. Empty Velvet Interior Tray (Revealed as products emerge) */}
-            <div className="absolute inset-0">
-              <Image
-                src="/images/unboxing/empty-tray.png"
-                alt="Empty Kurma Luxury Suite Tray"
-                fill
-                priority
-                sizes="(max-width: 768px) 90vw, 450px"
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/50 via-transparent to-black/20" />
-            </div>
-
-            {/* 2. Tray with 5 products (Smoothly fades out as 3D products lift out) */}
-            <div ref={trayWithProductsRef} className="absolute inset-0">
-              <Image
-                src="/images/unboxing/suite-5-elements-tray.png"
-                alt="Kurma 5 Elements Incense Luxury Suite"
-                fill
-                priority
-                sizes="(max-width: 768px) 90vw, 450px"
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-            </div>
-
-            {/* Front Marble Wall & Brass Clasp Base */}
-            <div className="absolute inset-x-0 bottom-0 h-9 sm:h-11 bg-transparent flex items-center justify-center z-10 pointer-events-none">
-              <div
-                ref={boxClaspRef}
-                className="w-13 sm:w-15 h-5 sm:h-6 rounded-sm bg-gradient-to-b from-[#E5C985] via-[#C5A45B] to-[#8C6215] border border-[#FFE7A8] shadow-md flex items-center justify-center"
-              >
-                <div className="w-2.5 h-2.5 rounded-full border border-[#523B0F] bg-[#3B2909]" />
-              </div>
-            </div>
+        <div className="w-full">
+          {/* Section Header */}
+          <div className="text-center px-4 mb-4">
+            <h2 className="text-2xl font-medium tracking-tight leading-tight text-[#1C1B18]">
+              The 5 Elements Collection
+            </h2>
+            <p className="text-xs text-stone-600 mt-1">
+              Handcrafted 100% Charcoal-Free Elemental Incense Suites
+            </p>
           </div>
 
-          {/* HINGED TOP LID (Flips backward in 3D during Stage 2) */}
+          {/* Horizontal Scrolling Track (Auto-scroll + Manual Side Swipe, exactly 2 cards visible) */}
           <div
-            ref={boxLidRef}
-            className="absolute inset-x-0 top-0 h-full rounded-2xl border border-[#28513B] shadow-2xl"
+            ref={mobileScrollRef}
+            onScroll={handleMobileScroll}
+            onTouchStart={() => setIsMobileInteracting(true)}
+            onTouchEnd={() => {
+              if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+              interactionTimerRef.current = setTimeout(() => setIsMobileInteracting(false), 3000);
+            }}
+            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-3 pb-3 pt-1 touch-pan-x"
             style={{
-              transformOrigin: "center top",
-              transformStyle: "preserve-3d",
-              willChange: "transform",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
             }}
           >
-            {/* Top Outer Marble Face (Visible when closed) */}
-            <div
-              className="absolute inset-0 rounded-2xl overflow-hidden border border-[#3C6E52]/40 bg-[#123D2D]"
-              style={{
-                backfaceVisibility: "hidden",
-                transform: "rotateY(0deg)",
-              }}
-            >
-              <Image
-                src="/images/unboxing/suite-5-elements-lid-top.png"
-                alt="Kurma Green Marble Box Top"
-                fill
-                priority
-                sizes="450px"
-                className="object-cover object-center"
+            {FIVE_ELEMENTS_PRODUCTS.map((prod) => {
+              const isAdded = !!addedIds[prod.id];
+              const isWishlisted = isInWishlist(prod.id) || isInWishlist(prod.skuId);
+
+              return (
+                <div
+                  key={`mobile-${prod.id}`}
+                  onClick={() => router.push(`/products/${prod.skuId}`)}
+                  className="w-[calc(50%-6px)] shrink-0 snap-start group relative flex flex-col cursor-pointer select-none"
+                >
+                  {/* Card Image Canvas - End to End without cutting */}
+                  <div className="relative w-full aspect-[445/1024] overflow-hidden rounded-lg bg-transparent flex items-center justify-center p-0 shadow-sm border border-[#DDD4C6]/80">
+                    <Image
+                      src={prod.image}
+                      alt={prod.name}
+                      fill
+                      loading="lazy"
+                      sizes="(max-width: 640px) 210px, 240px"
+                      className="object-contain w-full h-full p-0 select-none pointer-events-none group-hover:scale-102 transition-transform duration-300"
+                    />
+
+                    {/* Wishlist Heart Button on Upper Right */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist({
+                          id: prod.id,
+                          name: prod.name,
+                          price: prod.price,
+                          priceDisplay: prod.priceDisplay,
+                          image: prod.image,
+                          skuId: prod.skuId,
+                        });
+                      }}
+                      title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                      className="group/btn absolute top-2 right-2 z-10 p-1 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
+                    >
+                      <Heart
+                        className={`w-4 h-4 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] ${isWishlisted
+                          ? "fill-white text-white scale-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
+                          : "fill-transparent text-white group-hover/btn:scale-110"
+                          }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Card Details Directly Below Image */}
+                  <div className="mt-2.5 flex items-start justify-between gap-1.5 px-0.5">
+                    <div className="space-y-0.5 min-w-0 flex-1">
+                      <h3 className="text-xs font-semibold text-[#1C1B18] truncate">
+                        {prod.name}
+                      </h3>
+                      <p className="text-[10px] text-stone-500 truncate font-sans">
+                        {prod.subtitle}
+                      </p>
+                      <div className="flex items-center gap-1.5 font-sans pt-0.5">
+                        <span className="text-xs font-bold text-[#8C6215]">
+                          {prod.priceDisplay}
+                        </span>
+                        <span className="text-[10px] text-stone-400 line-through">
+                          {prod.originalPriceDisplay}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Quick Add To Cart Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleQuickAdd(prod);
+                      }}
+                      title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
+                      aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
+                      className={`p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 active:scale-95 cursor-pointer shrink-0 mt-0.5 ${isAdded ? "bg-emerald-600 text-white" : "bg-[#092B20] hover:bg-[#123D2D] text-[#C5A45B]"
+                        }`}
+                    >
+                      {isAdded ? (
+                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                      ) : (
+                        <ShoppingCart className="w-3.5 h-3.5 stroke-[2]" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Carousel Slide Indicators */}
+          <div className="flex items-center justify-center gap-1.5 pt-2">
+            {FIVE_ELEMENTS_PRODUCTS.map((_, dotIdx) => (
+              <button
+                key={dotIdx}
+                type="button"
+                onClick={() => {
+                  const container = mobileScrollRef.current;
+                  if (!container) return;
+                  const firstCard = container.firstElementChild as HTMLElement;
+                  const step = firstCard ? firstCard.offsetWidth + 12 : container.clientWidth / 2;
+                  container.scrollTo({ left: dotIdx * step, behavior: "smooth" });
+                  setMobileActiveIndex(dotIdx);
+                }}
+                aria-label={`Go to element ${dotIdx + 1}`}
+                className={`transition-all duration-300 rounded-full cursor-pointer ${mobileActiveIndex === dotIdx
+                  ? "w-5 h-1.5 bg-[#8C6215] shadow-xs"
+                  : "w-1.5 h-1.5 bg-stone-400/60 hover:bg-stone-600"
+                  }`}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10" />
-            </div>
-
-            {/* Inner Velvet Inscription Face (Revealed when opened backwards) */}
-            <div
-              className="absolute inset-0 rounded-2xl overflow-hidden border border-[#3C6E52] bg-[#0A241A]"
-              style={{
-                backfaceVisibility: "hidden",
-                transform: "rotateX(180deg)",
-              }}
-            >
-              <Image
-                src="/images/unboxing/suite-5-elements-lid-inner.png"
-                alt="Elements in Harmony Inner Lid"
-                fill
-                sizes="450px"
-                className="object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-[#C5A45B]/15 via-transparent to-black/50" />
-            </div>
-
-            {/* Front Lip / Flap of the Lid */}
-            <div
-              ref={lidFrontLipRef}
-              className="absolute inset-x-0 bottom-0 h-9 sm:h-11 rounded-b-xl overflow-hidden bg-[#123D2D] border-t border-[#3C6E52] flex items-center justify-center"
-              style={{
-                transformOrigin: "center top",
-                backfaceVisibility: "hidden",
-              }}
-            >
-              <Image
-                src="/images/unboxing/suite-5-elements-clasp-lip.png"
-                alt="Box Clasp Lip"
-                fill
-                sizes="450px"
-                className="object-cover object-center"
-              />
-            </div>
-
-            {/* Left Tuck Flap */}
-            <div
-              ref={lidLeftWingRef}
-              className="absolute top-0 left-0 w-8 sm:w-10 h-full rounded-l-xl bg-[#0F3527] border-r border-[#28513B]/60"
-              style={{
-                transformOrigin: "left center",
-                backfaceVisibility: "hidden",
-              }}
-            />
-
-            {/* Right Tuck Flap */}
-            <div
-              ref={lidRightWingRef}
-              className="absolute top-0 right-0 w-8 sm:w-10 h-full rounded-r-xl bg-[#0F3527] border-l border-[#28513B]/60"
-              style={{
-                transformOrigin: "right center",
-                backfaceVisibility: "hidden",
-              }}
-            />
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* ──────────────────────────────────────────────────────────
+      {/* ================= DESKTOP VIEW (3D UNBOXING WITH ANIMATION) ================= */}
+      <section
+        ref={sectionRef}
+        id="unboxing-ritual"
+        className="hidden md:flex relative z-30 w-full h-[100dvh] min-h-[560px] bg-[#E4DCD0] text-[#1C1B18] select-none flex-col justify-between border-t border-[#DDD4C6] overflow-hidden"
+      >
+        {/* Ambient Luxury Lighting Backdrop (Clean Warm Studio Vignette) */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 48%, #EAE2D6 0%, #E4DCD0 65%, #DDD4C6 100%)",
+          }}
+        />
+
+        {/* Golden Aura Glow (Illuminates the opened chest and emerging products) */}
+        <div
+          ref={auraGlowRef}
+          className="absolute inset-0 pointer-events-none flex items-center justify-center"
+        >
+          <div className="w-[650px] h-[450px] rounded-full bg-[#C5A45B]/15 blur-3xl" />
+        </div>
+
+        {/* SECTION HEADER */}
+        <div
+          ref={titleRef}
+          className="absolute top-0 inset-x-0 z-40 pt-16 min-[380px]:pt-18 sm:pt-24 lg:pt-28 px-3 sm:px-6 max-w-4xl mx-auto text-center pointer-events-none"
+        >
+          <h2 className="font-serif text-xl min-[380px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#1C1B18]">
+            The 5 Elements Collection
+          </h2>
+        </div>
+
+        {/* 3D BOX STAGE & PRODUCT CARDS CONTAINER */}
+        <div
+          ref={containerRef}
+          className="relative z-20 flex-1 w-full max-w-full flex items-center justify-center px-1 sm:px-4 lg:px-6 pt-14 sm:pt-20 pb-3 sm:pb-6 overflow-hidden"
+          style={{
+            perspective: "1200px",
+          }}
+        >
+          {/* THE 3D GREEN MARBLE BOX (Opens, products emerge, then moves upward & vanishes) */}
+          <div
+            ref={boxStageRef}
+            className="relative w-[250px] min-[380px]:w-[280px] sm:w-[340px] md:w-[390px] lg:w-[420px] aspect-[417/370] rounded-2xl shadow-2xl transition-shadow"
+            style={{
+              transformStyle: "preserve-3d",
+              willChange: "transform, opacity",
+            }}
+          >
+            {/* BOX BASE TRAY */}
+            <div
+              className="absolute inset-0 rounded-2xl overflow-hidden border border-[#28513B]/80 shadow-2xl"
+              style={{
+                backgroundColor: "#0A241A",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              {/* 1. Empty Velvet Interior Tray (Revealed as products emerge) */}
+              <div className="absolute inset-0">
+                <Image
+                  src="/images/unboxing/empty-tray.png"
+                  alt="Empty Kurma Luxury Suite Tray"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 90vw, 450px"
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/50 via-transparent to-black/20" />
+              </div>
+
+              {/* 2. Tray with 5 products (Smoothly fades out as 3D products lift out) */}
+              <div ref={trayWithProductsRef} className="absolute inset-0">
+                <Image
+                  src="/images/unboxing/suite-5-elements-tray.png"
+                  alt="Kurma 5 Elements Incense Luxury Suite"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 90vw, 450px"
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+              </div>
+
+              {/* Front Marble Wall & Brass Clasp Base */}
+              <div className="absolute inset-x-0 bottom-0 h-9 sm:h-11 bg-transparent flex items-center justify-center z-10 pointer-events-none">
+                <div
+                  ref={boxClaspRef}
+                  className="w-13 sm:w-15 h-5 sm:h-6 rounded-sm bg-gradient-to-b from-[#E5C985] via-[#C5A45B] to-[#8C6215] border border-[#FFE7A8] shadow-md flex items-center justify-center"
+                >
+                  <div className="w-2.5 h-2.5 rounded-full border border-[#523B0F] bg-[#3B2909]" />
+                </div>
+              </div>
+            </div>
+
+            {/* HINGED TOP LID (Flips backward in 3D during Stage 2) */}
+            <div
+              ref={boxLidRef}
+              className="absolute inset-x-0 top-0 h-full rounded-2xl border border-[#28513B] shadow-2xl"
+              style={{
+                transformOrigin: "center top",
+                transformStyle: "preserve-3d",
+                willChange: "transform",
+              }}
+            >
+              {/* Top Outer Marble Face (Visible when closed) */}
+              <div
+                className="absolute inset-0 rounded-2xl overflow-hidden border border-[#3C6E52]/40 bg-[#123D2D]"
+                style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateY(0deg)",
+                }}
+              >
+                <Image
+                  src="/images/unboxing/suite-5-elements-lid-top.png"
+                  alt="Kurma Green Marble Box Top"
+                  fill
+                  priority
+                  sizes="450px"
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10" />
+              </div>
+
+              {/* Inner Velvet Inscription Face (Revealed when opened backwards) */}
+              <div
+                className="absolute inset-0 rounded-2xl overflow-hidden border border-[#3C6E52] bg-[#0A241A]"
+                style={{
+                  backfaceVisibility: "hidden",
+                  transform: "rotateX(180deg)",
+                }}
+              >
+                <Image
+                  src="/images/unboxing/suite-5-elements-lid-inner.png"
+                  alt="Elements in Harmony Inner Lid"
+                  fill
+                  sizes="450px"
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#C5A45B]/15 via-transparent to-black/50" />
+              </div>
+
+              {/* Front Lip / Flap of the Lid */}
+              <div
+                ref={lidFrontLipRef}
+                className="absolute inset-x-0 bottom-0 h-9 sm:h-11 rounded-b-xl overflow-hidden bg-[#123D2D] border-t border-[#3C6E52] flex items-center justify-center"
+                style={{
+                  transformOrigin: "center top",
+                  backfaceVisibility: "hidden",
+                }}
+              >
+                <Image
+                  src="/images/unboxing/suite-5-elements-clasp-lip.png"
+                  alt="Box Clasp Lip"
+                  fill
+                  sizes="450px"
+                  className="object-cover object-center"
+                />
+              </div>
+
+              {/* Left Tuck Flap */}
+              <div
+                ref={lidLeftWingRef}
+                className="absolute top-0 left-0 w-8 sm:w-10 h-full rounded-l-xl bg-[#0F3527] border-r border-[#28513B]/60"
+                style={{
+                  transformOrigin: "left center",
+                  backfaceVisibility: "hidden",
+                }}
+              />
+
+              {/* Right Tuck Flap */}
+              <div
+                ref={lidRightWingRef}
+                className="absolute top-0 right-0 w-8 sm:w-10 h-full rounded-r-xl bg-[#0F3527] border-l border-[#28513B]/60"
+                style={{
+                  transformOrigin: "right center",
+                  backfaceVisibility: "hidden",
+                }}
+              />
+            </div>
+          </div>
+
+          {/* ──────────────────────────────────────────────────────────
             THE EXACT SAME 5 PRODUCTS:
             Emerges in 3D from the box -> transforms into the dedicated
             product section as the box moves upward and vanishes!
             NO duplicate cards or extra sections!
            ────────────────────────────────────────────────────────── */}
-        <div
-          ref={emergingProductsGroupRef}
-          className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none"
-          style={{ perspective: "1200px" }}
-        >
-          {FIVE_ELEMENTS_PRODUCTS.map((prod, index) => {
-            const isAdded = !!addedIds[prod.id];
-            return (
-              <div
-                key={`product-card-${prod.id}`}
-                ref={(el) => {
-                  emergingItemRefs.current[index] = el;
-                }}
-                className="absolute w-[66px] min-[380px]:w-[74px] min-[420px]:w-[80px] sm:w-[122px] md:w-[164px] lg:w-[214px] xl:w-[242px] rounded-xl sm:rounded-2xl border border-stone-200/90 bg-white flex flex-col justify-between p-1 min-[380px]:p-1.5 sm:p-2.5 md:p-3 lg:p-3.5 transition-shadow shadow-xl shadow-stone-900/10 hover:border-[#C5A45B]"
-                style={{
-                  transformStyle: "preserve-3d",
-                  willChange: "transform, opacity",
-                  backfaceVisibility: "hidden",
-                }}
-              >
-                {/* Product Image Visual Container */}
-                <div className="relative w-full aspect-[445/640] my-0.5 sm:my-1 rounded-lg sm:rounded-xl overflow-hidden bg-white border border-stone-200/60 flex items-center justify-center shadow-xs">
-                  <Image
-                    src={prod.image}
-                    alt={prod.name}
-                    fill
-                    priority
-                    sizes="(max-width: 640px) 25vw, (max-width: 1024px) 20vw, 250px"
-                    className="object-contain object-center transition-transform duration-300"
-                  />
-                </div>
+          <div
+            ref={emergingProductsGroupRef}
+            className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none"
+            style={{ perspective: "1200px" }}
+          >
+            {FIVE_ELEMENTS_PRODUCTS.map((prod, index) => {
+              const isAdded = !!addedIds[prod.id];
+              return (
+                <div
+                  key={`product-card-${prod.id}`}
+                  ref={(el) => {
+                    emergingItemRefs.current[index] = el;
+                  }}
+                  className="absolute w-[66px] min-[380px]:w-[74px] min-[420px]:w-[80px] sm:w-[122px] md:w-[164px] lg:w-[214px] xl:w-[242px] rounded-xl sm:rounded-2xl border border-stone-200/90 bg-white flex flex-col justify-between p-1 min-[380px]:p-1.5 sm:p-2.5 md:p-3 lg:p-3.5 transition-shadow shadow-xl shadow-stone-900/10 hover:border-[#C5A45B]"
+                  style={{
+                    transformStyle: "preserve-3d",
+                    willChange: "transform, opacity",
+                    backfaceVisibility: "hidden",
+                  }}
+                >
+                  {/* Product Image Visual Container */}
+                  <div className="relative w-full aspect-[445/640] my-0.5 sm:my-1 rounded-lg sm:rounded-xl overflow-hidden bg-white border border-stone-200/60 flex items-center justify-center shadow-xs">
+                    <Image
+                      src={prod.image}
+                      alt={prod.name}
+                      fill
+                      priority
+                      sizes="(max-width: 640px) 25vw, (max-width: 1024px) 20vw, 250px"
+                      className="object-contain object-center transition-transform duration-300"
+                    />
 
-                {/* Product Name */}
-                <div className="pt-0.5">
-                  <h4 className="font-sans text-[8.5px] min-[380px]:text-[9.5px] sm:text-xs md:text-sm lg:text-[15px] font-semibold text-[#1C1B18] truncate">
-                    {prod.name}
-                  </h4>
-                </div>
-
-                {/* Price and Action Button (Reveals during transformation to product section) */}
-                <div className="card-extra-detail pt-1 sm:pt-1.5 mt-0.5 sm:mt-1 border-t border-stone-200/80 flex items-center justify-between gap-0.5 sm:gap-1 opacity-0">
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-sans text-[9px] min-[380px]:text-[10.5px] sm:text-xs md:text-sm lg:text-base font-bold text-[#8C6215] leading-tight">
-                      {prod.priceDisplay}
-                    </span>
-                    <span className="font-sans text-[7px] min-[380px]:text-[8px] sm:text-[9.5px] md:text-[11px] text-stone-400 line-through leading-tight">
-                      {prod.originalPriceDisplay}
-                    </span>
+                    {/* Wishlist Heart Button on Upper Right */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist({
+                          id: prod.id,
+                          name: prod.name,
+                          price: prod.price,
+                          priceDisplay: prod.priceDisplay,
+                          image: prod.image,
+                          skuId: prod.skuId,
+                        });
+                      }}
+                      title={isInWishlist(prod.id) ? "Remove from wishlist" : "Add to wishlist"}
+                      aria-label={isInWishlist(prod.id) ? "Remove from wishlist" : "Add to wishlist"}
+                      className="group/btn absolute top-1.5 right-1.5 z-10 p-1 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
+                    >
+                      <Heart
+                        className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] ${isInWishlist(prod.id)
+                          ? "fill-white text-white scale-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
+                          : "fill-transparent text-white group-hover/btn:scale-110"
+                          }`}
+                      />
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleQuickAdd(prod)}
-                    title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                    aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                    className={`w-5.5 h-5.5 min-[380px]:w-6.5 min-[380px]:h-6.5 sm:w-8 sm:h-8 lg:w-8.5 lg:h-8.5 rounded-md sm:rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 ${
-                      isAdded
+                  {/* Product Name */}
+                  <div className="pt-0.5">
+                    <h4 className="font-sans text-[8.5px] min-[380px]:text-[9.5px] sm:text-xs md:text-sm lg:text-[15px] font-semibold text-[#1C1B18] truncate">
+                      {prod.name}
+                    </h4>
+                  </div>
+
+                  {/* Price and Action Button (Reveals during transformation to product section) */}
+                  <div className="card-extra-detail pt-1 sm:pt-1.5 mt-0.5 sm:mt-1 border-t border-stone-200/80 flex items-center justify-between gap-0.5 sm:gap-1 opacity-0">
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-sans text-[9px] min-[380px]:text-[10.5px] sm:text-xs md:text-sm lg:text-base font-bold text-[#8C6215] leading-tight">
+                        {prod.priceDisplay}
+                      </span>
+                      <span className="font-sans text-[7px] min-[380px]:text-[8px] sm:text-[9.5px] md:text-[11px] text-stone-400 line-through leading-tight">
+                        {prod.originalPriceDisplay}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleQuickAdd(prod)}
+                      title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
+                      aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
+                      className={`w-5.5 h-5.5 min-[380px]:w-6.5 min-[380px]:h-6.5 sm:w-8 sm:h-8 lg:w-8.5 lg:h-8.5 rounded-md sm:rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 ${isAdded
                         ? "bg-emerald-600 text-white"
                         : "bg-[#1C1B18] hover:bg-[#8C6215] text-[#FAF7F2]"
-                    }`}
-                  >
-                    {isAdded ? (
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 stroke-[2.5]" />
-                    ) : (
-                      <ShoppingCart className="w-2.5 h-2.5 min-[380px]:w-3.5 min-[380px]:h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
-                    )}
-                  </button>
+                        }`}
+                    >
+                      {isAdded ? (
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4 stroke-[2.5]" />
+                      ) : (
+                        <ShoppingCart className="w-2.5 h-2.5 min-[380px]:w-3.5 min-[380px]:h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

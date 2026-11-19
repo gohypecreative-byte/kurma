@@ -825,7 +825,7 @@ function CustomiseContent() {
                   </div>
                 ) : (
                   <div className="text-center pt-2 pb-4">
-                    <p className="text-xs sm:text-sm text-stone-400 italic">
+                    <p className="text-xs sm:text-sm text-stone-400">
                       Please select a gift box above to continue
                     </p>
                   </div>

@@ -7,9 +7,9 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, phone, password, city, tier } = body;
 
-    if (!email || !name) {
+    if (!email || !name || !phone) {
       return NextResponse.json(
-        { error: "Name and email are required" },
+        { error: "Name, email, and mobile number are required" },
         { status: 400 }
       );
     }

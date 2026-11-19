@@ -131,9 +131,9 @@ export default function AboutPage() {
 
           {/* Right Column: Narrative with Highlighted Accent Word */}
           <div className="lg:col-span-6 space-y-4 sm:space-y-6">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-serif font-normal text-stone-900 leading-[1.2] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-normal text-stone-900 leading-[1.2] tracking-tight">
               We believe that sacred aroma should be{" "}
-              <span className="text-[#C5A45B] italic font-serif">accessible</span> to
+              <span className="text-[#C5A45B]">accessible</span> to
               every sanctuary.
             </h2>
             <p className="text-stone-600 text-xs sm:text-sm md:text-base font-sans leading-relaxed">

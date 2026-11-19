@@ -18,9 +18,11 @@ import {
   ChevronRight,
   PhoneCall,
   ShieldCheck,
+  Heart,
 } from "lucide-react";
 import { PRODUCTS, formatPrice, ProductSKU } from "@/lib/products";
 import { useProducts } from "@/lib/products-context";
+import { useWishlist } from "@/lib/wishlist-context";
 
 interface NavbarProps {
   cartCount: number;
@@ -37,6 +39,7 @@ interface UserProfile {
 export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { wishlistCount, setIsWishlistOpen } = useWishlist();
 
   // SSR Mount State for React Portals
   const [mounted, setMounted] = useState(false);
@@ -358,6 +361,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   const mobileNavLinks = [
     { name: "HOME", href: "/", badge: "Sanctuary" },
     { name: "SHOP", href: "/shop", badge: "Collection" },
+    { name: "WISHLIST", href: "/wishlist", badge: "Saved" },
     { name: "CUSTOMISE", href: "/elements", badge: "Bespoke" },
     { name: "ABOUT", href: "/about", badge: "Heritage" },
     { name: "CONTACT", href: "/contact", badge: "Support" },
@@ -496,6 +500,24 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                             type="button"
                             onClick={() => {
                               setAccountMenuOpen(false);
+                              router.push("/wishlist");
+                            }}
+                            className="w-full px-4 py-2 text-left text-xs text-[#E8D9AE] hover:bg-[#092B20] hover:text-[#C5A45B] flex items-center justify-between cursor-pointer transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Heart className="w-3.5 h-3.5 text-[#E8D9AE]/60 pointer-events-none" />
+                              <span>My Wishlist</span>
+                            </div>
+                            {wishlistCount > 0 && (
+                              <span className="text-[10px] font-bold bg-[#C5A45B] text-[#092B20] px-1.5 py-0.2 rounded-full">
+                                {wishlistCount}
+                              </span>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAccountMenuOpen(false);
                               router.push("/elements");
                             }}
                             className="w-full px-4 py-2 text-left text-xs text-[#E8D9AE] hover:bg-[#092B20] hover:text-[#C5A45B] flex items-center gap-2 cursor-pointer transition-colors"
@@ -536,7 +558,26 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               )}
             </div>
 
-            {/* 3. CART ICON BUTTON */}
+            {/* 3. WISHLIST ICON BUTTON (NEXT TO CART) */}
+            <button
+              type="button"
+              onClick={() => setIsWishlistOpen(true)}
+              aria-label={`View wishlist with ${wishlistCount} items`}
+              className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-transparent hover:border-[#28513B]/40 bg-transparent hover:bg-[#123D2D]/60 active:bg-[#123D2D] text-[#E8D9AE]/90 hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
+            >
+              <Heart
+                className={`w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] ${
+                  wishlistCount > 0 ? "fill-[#C5A45B] text-[#C5A45B]" : "text-[#E8D9AE]/90"
+                } pointer-events-none`}
+              />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#C5A45B] text-[#092B20] border border-[#092B20] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs pointer-events-none">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+
+            {/* 4. CART ICON BUTTON */}
             <button
               type="button"
               onClick={handleOpenCartDrawer}
@@ -640,12 +681,12 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
               document.body
             )}
 
-          {/* TOP FULL-WIDTH LUXURY SEARCH OVERLAY (ATTACHED TIGHTLY TO TOP WITH SMOOTH SLIDE-DOWN ANIMATION) */}
+          {/* TOP FULL-WIDTH LUXURY SEARCH OVERLAY (SLIDING DOWN SMOOTHLY FROM UNDERNEATH THE NAVBAR) */}
           {createPortal(
             <AnimatePresence>
               {searchOpen && (
                 <div
-                  className="fixed inset-0 z-[100] overflow-hidden select-none"
+                  className="fixed inset-0 z-[70] overflow-hidden select-none"
                   role="dialog"
                   aria-modal="true"
                   aria-label="Search Kurma Creations & Collections"
@@ -655,108 +696,23 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                    className="fixed inset-0 bg-stone-950/65 backdrop-blur-xs"
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="fixed inset-0 top-16 sm:top-20 bg-stone-950/60 backdrop-blur-xs z-[71]"
                     onClick={handleCloseSearchModal}
                     aria-hidden="true"
                   />
 
-                  {/* Top Dropdown Panel Attached Tightly Against Top (top: 0) with Smooth Slide-Down */}
+                  {/* Dropdown Panel sliding down smoothly from underneath the navbar */}
                   <motion.div
-                    initial={{ y: "-100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "-100%" }}
+                    initial={{ y: "-100%", opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: "-100%", opacity: 0 }}
                     transition={{
-                      type: "spring",
-                      damping: 32,
-                      stiffness: 300,
-                      mass: 0.8,
+                      duration: 0.38,
+                      ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="fixed top-0 inset-x-0 z-[110] bg-[#FAF8F5] border-b border-[#DDD3C2] rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain text-stone-900"
+                    className="fixed top-16 sm:top-20 inset-x-0 z-[75] bg-[#FAF8F5] border-b border-[#DDD3C2] rounded-b-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain text-stone-900"
                   >
-                    {/* Top Row: Navigation Links, Kurma Brand Logo & Icons (matching reference header) */}
-                    <div className="w-full border-b border-[#28513B]/40 bg-[#092B20] shrink-0">
-                      <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
-                        {/* Brand Logo */}
-                        <Link
-                          href="/"
-                          onClick={() => setSearchOpen(false)}
-                          className="flex items-center group shrink-0"
-                          aria-label="Kurma Home"
-                        >
-                          <div className="relative w-14 h-14 sm:w-[68px] sm:h-[68px] lg:w-[74px] lg:h-[74px] flex items-center justify-center shrink-0">
-                            <Image
-                              src="/images/logo-transparent.png"
-                              alt="Kurma Logo"
-                              width={80}
-                              height={80}
-                              className="w-full h-full object-contain pointer-events-none"
-                            />
-                          </div>
-                        </Link>
-
-                        {/* Desktop Navigation Links */}
-                        <nav className="hidden lg:flex items-center space-x-7 xl:space-x-8 text-[13px] xl:text-[13.5px] font-semibold uppercase tracking-wider">
-                          {desktopNavLinks.map((link) => {
-                            const isActive =
-                              link.href === "/"
-                                ? pathname === "/"
-                                : pathname?.startsWith(link.href);
-
-                            return (
-                              <Link
-                                key={link.name}
-                                href={link.href}
-                                onClick={() => setSearchOpen(false)}
-                                className={`relative py-2 transition-colors cursor-pointer ${
-                                  isActive
-                                    ? "text-[#C5A45B] font-semibold"
-                                    : "text-[#E8D9AE]/85 hover:text-[#C5A45B]"
-                                }`}
-                              >
-                                <span>{link.name}</span>
-                              </Link>
-                            );
-                          })}
-                        </nav>
-
-                        {/* Right Action Icons */}
-                        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-                          {/* Active Search indicator button */}
-                          <div className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border bg-[#123D2D] text-[#C5A45B] border-[#28513B] flex items-center justify-center shadow-2xs">
-                            <Search className="w-4.5 h-4.5 stroke-[1.8]" />
-                          </div>
-
-                          {/* Login / User button */}
-                          <Link
-                            href="/login"
-                            onClick={() => setSearchOpen(false)}
-                            aria-label="Patron Sign In"
-                            className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#28513B] bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs"
-                          >
-                            <User className="w-4.5 h-4.5 stroke-[1.8]" />
-                          </Link>
-
-                          {/* Cart Button */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSearchOpen(false);
-                              handleOpenCartDrawer();
-                            }}
-                            className="relative w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-[#28513B] bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
-                          >
-                            <ShoppingBag className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.75] text-[#E8D9AE]" />
-                            {cartCount > 0 && (
-                              <span className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-[#C5A45B] text-[#092B20] border border-[#092B20] rounded-full text-[10px] font-bold flex items-center justify-center shadow-xs">
-                                {cartCount}
-                              </span>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Search Bar Row & Content Container */}
                     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 sm:space-y-7 bg-[#FAF8F5] text-stone-900">
                     {/* Search Bar Row (Refined Input with Search Icon + X Close Button beside it) */}
@@ -792,16 +748,6 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           <Search className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.8]" />
                         </button>
                       </form>
-
-                      {/* Close 'X' Button on the Far Right */}
-                      <button
-                        type="button"
-                        onClick={() => setSearchOpen(false)}
-                        aria-label="Close search overlay"
-                        className="p-2 sm:p-2.5 rounded-full bg-white hover:bg-[#F5F2EB] text-stone-700 hover:text-stone-900 transition-colors cursor-pointer shrink-0 touch-manipulation border border-[#DDD3C2] shadow-xs"
-                      >
-                        <X className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.9]" />
-                      </button>
                     </div>
 
                     {/* Main Content Area: Collections & Recommended Products when no query */}

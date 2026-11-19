@@ -7,11 +7,8 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { useCart } from "@/lib/cart-context";
 import {
-  ArrowUpRight,
   Eye,
   EyeOff,
-  User,
-  Package,
   CheckCircle2,
 } from "lucide-react";
 
@@ -223,12 +220,9 @@ export default function SignUpPage() {
 
             {/* CREATE ACCOUNT FORM */}
             <div>
-              <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight">
+              <h1 className="text-2xl sm:text-3xl font-serif font-normal uppercase tracking-tight text-black leading-tight mb-8">
                 CREATE AN ACCOUNT
               </h1>
-              <p className="text-xs sm:text-sm text-stone-500 mt-2.5 mb-8 font-sans leading-relaxed">
-                Join Kurma to access saved creations, track bespoke orders, and enjoy member benefits.
-              </p>
 
               <form onSubmit={handleSignUp} className="space-y-5">
                 <div>
@@ -272,11 +266,12 @@ export default function SignUpPage() {
                     htmlFor="signup-phone"
                     className="block text-xs font-bold uppercase tracking-wider text-black mb-2 font-sans"
                   >
-                    MOBILE / WHATSAPP NUMBER (OPTIONAL)
+                    MOBILE / WHATSAPP NUMBER <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="signup-phone"
                     type="tel"
+                    required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+91 98200 00000"
@@ -336,16 +331,9 @@ export default function SignUpPage() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-4 bg-black hover:bg-stone-800 text-white text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center gap-2 rounded-none transition-colors shadow-xs cursor-pointer"
+                  className="w-full py-4 bg-[#072515] hover:bg-[#0c3823] text-[#eed08e] text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center justify-center rounded-none transition-colors shadow-sm cursor-pointer"
                 >
-                  {isLoading ? (
-                    <span>CREATING ACCOUNT...</span>
-                  ) : (
-                    <>
-                      <span>CREATE ACCOUNT</span>
-                      <ArrowUpRight className="w-4 h-4" />
-                    </>
-                  )}
+                  {isLoading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
                 </button>
               </form>
 
@@ -357,26 +345,6 @@ export default function SignUpPage() {
                   className="font-bold text-black uppercase hover:underline ml-1 cursor-pointer"
                 >
                   SIGN IN
-                </Link>
-              </div>
-
-              {/* Demo Login & Track Order Options */}
-              <div className="mt-8 pt-6 border-t border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-500 font-sans">
-                <button
-                  type="button"
-                  onClick={handleDemoLogin}
-                  disabled={isLoading}
-                  className="hover:text-black underline font-medium flex items-center gap-1 cursor-pointer"
-                >
-                  <User className="w-3.5 h-3.5" />
-                  <span>Instant Demo Login (Priyesh Sharma)</span>
-                </button>
-                <Link
-                  href="/track-order"
-                  className="hover:text-black underline font-medium flex items-center gap-1 cursor-pointer"
-                >
-                  <Package className="w-3.5 h-3.5" />
-                  <span>Track guest order</span>
                 </Link>
               </div>
             </div>

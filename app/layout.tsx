@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Cinzel } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import { cn } from "@/lib/utils";
 import { CartProvider } from "@/lib/cart-context";
+import { WishlistProvider } from "@/lib/wishlist-context";
 import { ProductsProvider } from "@/lib/products-context";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 
@@ -15,18 +16,6 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
 });
 
 export const viewport: Viewport = {
@@ -59,15 +48,15 @@ export default function RootLayout({
         "antialiased",
         geistSans.variable,
         geistMono.variable,
-        playfair.variable,
-        cinzel.variable,
         "font-sans"
       )}
     >
       <body className="min-h-screen w-full max-w-full relative flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
         <SmoothScrollProvider>
           <ProductsProvider>
-            <CartProvider>{children}</CartProvider>
+            <CartProvider>
+              <WishlistProvider>{children}</WishlistProvider>
+            </CartProvider>
           </ProductsProvider>
         </SmoothScrollProvider>
       </body>

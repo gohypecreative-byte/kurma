@@ -4193,7 +4193,7 @@ export default function AdminDashboardPage() {
                 <span className="text-[10px] font-bold text-[#c89e43] uppercase tracking-wider block mb-1">
                   Deckle-Edge Gift Card Message
                 </span>
-                <p className="text-sm font-serif italic text-[#072515]">
+                <p className="text-sm text-[#072515]">
                   &ldquo;{inspectOrder.personalization.giftNote}&rdquo;
                 </p>
                 <div className="mt-3 flex justify-between text-xs text-black/60 pt-2 border-t border-black/10">

@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { createPortal } from "react-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "motion/react";
-import { ShoppingBag, ShoppingCart, Check, X, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Check, Heart } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 
 export interface HamperItem {
   id: string;
@@ -159,16 +158,15 @@ export const HAMPER_ITEMS: HamperItem[] = [
 export function GiftingGallery() {
   const router = useRouter();
   const { addToCart } = useCart();
-  const [selectedHamper, setSelectedHamper] = useState<HamperItem | null>(null);
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
-  const [likedIds, setLikedIds] = useState<Record<string, boolean>>({});
   const [cardImgIdx, setCardImgIdx] = useState<Record<string, number>>({});
-  const [mounted, setMounted] = useState(false);
 
   // 3D Coverflow active index & drag state
   const [activeIndex, setActiveIndex] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(1200);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -184,7 +182,6 @@ export function GiftingGallery() {
 
   // Responsive dimensions
   useEffect(() => {
-    setMounted(true);
     const updateWidth = () => setViewportWidth(window.innerWidth);
     updateWidth();
     window.addEventListener("resize", updateWidth);
@@ -205,10 +202,21 @@ export function GiftingGallery() {
     setActiveIndex((prev) => (prev - 1 + HAMPER_ITEMS.length) % HAMPER_ITEMS.length);
   }, []);
 
+  // Auto-advance horizontally through hamper creations smoothly every 3 seconds (pauses on hover or drag)
+  useEffect(() => {
+    if (isDragging || isHovered) return;
+
+    const interval = setInterval(() => {
+      goToNext();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isDragging, isHovered, goToNext]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedHamper || e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.key === "ArrowLeft") {
         goToPrev();
       } else if (e.key === "ArrowRight") {
@@ -217,31 +225,19 @@ export function GiftingGallery() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedHamper, goToNext, goToPrev]);
+  }, [goToNext, goToPrev]);
 
   // Mouse wheel horizontal scrolling
-  // 1. Normal vertical page scrolling does NOT change or switch the active card.
-  // 2. Cards change only on horizontal scroll gestures (|deltaX| > |deltaY| or Shift + wheel).
-  // 3. One horizontal scroll gesture moves exactly one card at a time with smooth lock.
   useEffect(() => {
     const el = sectionRef.current || stageRef.current;
     if (!el) return;
 
     const onWheel = (e: WheelEvent) => {
-      // Check if this is an explicit horizontal gesture:
-      // (a) Touchpad two-finger horizontal scroll has |deltaX| > |deltaY|
-      // (b) Mouse horizontal tilt wheel has |deltaX| > |deltaY|
-      // (c) Standard mouse wheel horizontal scrolling uses Shift key (e.shiftKey)
       const isShift = e.shiftKey;
       const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) || isShift;
 
-      // 1. Normal vertical page scrolling must NOT change or switch the active card.
-      if (!isHorizontal) {
-        return;
-      }
+      if (!isHorizontal) return;
 
-      // 2. Cards change only when the user scrolls horizontally.
-      // Prevent horizontal browser bounce / history swipe back-forward navigation
       e.preventDefault();
 
       const delta = isShift && Math.abs(e.deltaX) <= Math.abs(e.deltaY) ? e.deltaY : e.deltaX;
@@ -250,18 +246,13 @@ export function GiftingGallery() {
       const now = Date.now();
       const currentDirection = Math.sign(delta);
 
-      // Reset accumulator if user reverses scroll direction
       if (lastWheelDirectionRef.current !== 0 && currentDirection !== lastWheelDirectionRef.current) {
         wheelDeltaAccumulator.current = 0;
       }
       lastWheelDirectionRef.current = currentDirection;
 
-      // Cooldown between card steps to ensure EXACTLY one card moves per scroll action
-      // 420ms matches the smooth 0.6s card transition ease curve
       const timeSinceLastStep = now - lastWheelStepTimeRef.current;
-      if (timeSinceLastStep < 420) {
-        return;
-      }
+      if (timeSinceLastStep < 420) return;
 
       wheelDeltaAccumulator.current += delta;
       const THRESHOLD = 18;
@@ -272,7 +263,6 @@ export function GiftingGallery() {
         } else {
           goToPrev();
         }
-        // Lock timestamp until this step gesture finishes
         lastWheelStepTimeRef.current = now;
         wheelDeltaAccumulator.current = 0;
       }
@@ -284,7 +274,7 @@ export function GiftingGallery() {
     };
   }, [goToNext, goToPrev]);
 
-  // Mouse click-and-drag with window listeners
+  // Mouse click-and-drag
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     dragStartX.current = e.clientX;
@@ -296,46 +286,42 @@ export function GiftingGallery() {
   useEffect(() => {
     if (!isDragging) return;
 
-    const onMouseMove = (e: MouseEvent) => {
-      const deltaX = e.clientX - dragStartX.current;
-      if (Math.abs(deltaX) > 6) {
+    const handleMouseMove = (e: MouseEvent) => {
+      const diffX = e.clientX - dragStartX.current;
+      if (Math.abs(diffX) > 6) {
         hasMovedRef.current = true;
       }
-      const clampedDeltaX = Math.max(-spacing * 0.95, Math.min(spacing * 0.95, deltaX));
-      setDragOffset(clampedDeltaX);
+      setDragOffset(diffX);
     };
 
-    const onMouseUp = (e: MouseEvent) => {
-      const deltaX = e.clientX - dragStartX.current;
-      const elapsed = Math.max(1, Date.now() - dragStartTime.current);
-      const velocity = Math.abs(deltaX) / elapsed;
+    const handleMouseUp = (e: MouseEvent) => {
+      const diffX = e.clientX - dragStartX.current;
+      const duration = Date.now() - dragStartTime.current;
+      const velocity = Math.abs(diffX) / Math.max(duration, 1);
 
       setIsDragging(false);
       setDragOffset(0);
 
-      const threshold = spacing * 0.16;
-      // One gesture moves exactly one card at a time
-      if (deltaX < -threshold || (deltaX < -25 && velocity > 0.25)) {
+      const SWIPE_THRESHOLD = 50;
+      if (diffX < -SWIPE_THRESHOLD || (diffX < -20 && velocity > 0.4)) {
         goToNext();
-      } else if (deltaX > threshold || (deltaX > 25 && velocity > 0.25)) {
+      } else if (diffX > SWIPE_THRESHOLD || (diffX > 20 && velocity > 0.4)) {
         goToPrev();
       }
     };
 
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
     return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, spacing, goToNext, goToPrev]);
+  }, [isDragging, goToNext, goToPrev]);
 
-  // Touch swiping on mobile
+  // Touch swipe support
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    dragStartX.current = touch.clientX;
-    touchStartY.current = touch.clientY;
+    dragStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
     dragStartTime.current = Date.now();
     hasMovedRef.current = false;
     isSwipingHorizontal.current = null;
@@ -343,89 +329,61 @@ export function GiftingGallery() {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - dragStartX.current;
-    const deltaY = touch.clientY - touchStartY.current;
+    if (!isDragging) return;
+    const diffX = e.touches[0].clientX - dragStartX.current;
+    const diffY = e.touches[0].clientY - touchStartY.current;
 
-    // Detect direction within first 8px of movement
     if (isSwipingHorizontal.current === null) {
-      if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
-        isSwipingHorizontal.current = Math.abs(deltaX) > Math.abs(deltaY);
+      if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
+        isSwipingHorizontal.current = Math.abs(diffX) > Math.abs(diffY);
       }
     }
 
-    // 1. Normal vertical page scrolling should NOT change or switch the active card
     if (isSwipingHorizontal.current === false) {
-      // Vertical scroll: do not call preventDefault, let native page scroll happen
       return;
     }
 
-    // 2. Cards should change only when the user scrolls horizontally
-    if (isSwipingHorizontal.current === true) {
-      if (e.cancelable) e.preventDefault();
+    if (Math.abs(diffX) > 6) {
       hasMovedRef.current = true;
-      const clampedDeltaX = Math.max(-spacing * 0.95, Math.min(spacing * 0.95, deltaX));
-      setDragOffset(clampedDeltaX);
     }
+    setDragOffset(diffX);
   };
 
   const handleTouchEnd = () => {
     if (!isDragging) return;
+    const diffX = dragOffset;
+    const duration = Date.now() - dragStartTime.current;
+    const velocity = Math.abs(diffX) / Math.max(duration, 1);
+
     setIsDragging(false);
+    setDragOffset(0);
 
-    // Only switch card if it was an intentional horizontal swipe
-    if (isSwipingHorizontal.current === true) {
-      const deltaX = dragOffset;
-      const elapsed = Math.max(1, Date.now() - dragStartTime.current);
-      const velocity = Math.abs(deltaX) / elapsed;
-      const threshold = spacing * 0.16;
-
-      // 4. One horizontal scroll gesture should move exactly one card at a time.
-      if (deltaX < -threshold || (deltaX < -25 && velocity > 0.3)) {
-        goToNext();
-      } else if (deltaX > threshold || (deltaX > 25 && velocity > 0.3)) {
-        goToPrev();
-      }
+    if (isSwipingHorizontal.current === false) {
+      isSwipingHorizontal.current = null;
+      return;
     }
 
-    setDragOffset(0);
+    const SWIPE_THRESHOLD = 40;
+    if (diffX < -SWIPE_THRESHOLD || (diffX < -15 && velocity > 0.35)) {
+      goToNext();
+    } else if (diffX > SWIPE_THRESHOLD || (diffX > 15 && velocity > 0.35)) {
+      goToPrev();
+    }
+
     isSwipingHorizontal.current = null;
   };
 
-  const handleCardClick = (idx: number, diff: number) => {
+  const handleCardClick = (idx: number) => {
     if (hasMovedRef.current) return;
-    if (diff === 0) {
-      setSelectedHamper(HAMPER_ITEMS[idx]);
+    if (idx === activeIndex) {
+      router.push(`/products/${HAMPER_ITEMS[idx].skuId}`);
     } else {
       setActiveIndex(idx);
     }
   };
 
-  // Lock body scroll and close on Escape key when modal is open
-  useEffect(() => {
-    if (!selectedHamper) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setSelectedHamper(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedHamper]);
-
-  const toggleWishlist = (id: string) => {
-    setLikedIds((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const handleAddToCart = (hamper: HamperItem) => {
+  const handleAddToCart = (e: React.MouseEvent, hamper: HamperItem) => {
+    e.stopPropagation();
     addToCart({
       id: hamper.id,
       skuId: hamper.skuId,
@@ -439,104 +397,31 @@ export function GiftingGallery() {
     setAddedIds((prev) => ({ ...prev, [hamper.id]: true }));
     setTimeout(() => {
       setAddedIds((prev) => ({ ...prev, [hamper.id]: false }));
-    }, 2000);
+    }, 1500);
   };
 
-  const modalContent = (
-    <AnimatePresence>
-      {selectedHamper && (
-        <div
-          onClick={() => setSelectedHamper(null)}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 md:p-6 lg:p-8 bg-stone-950/65 backdrop-blur-sm overflow-y-auto"
-          role="dialog"
-          aria-modal="true"
-          aria-label={selectedHamper.name}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 16 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-[#FAF7F2] rounded-2xl sm:rounded-3xl max-w-4xl lg:max-w-5xl w-full overflow-hidden shadow-2xl border border-[#EAE3D8] relative flex flex-col md:flex-row max-h-[calc(100dvh-2.5rem)] sm:max-h-[calc(100dvh-3.5rem)] md:max-h-[min(88vh,720px)] min-h-0 my-auto -translate-y-2 sm:-translate-y-4 md:-translate-y-6 lg:-translate-y-8 text-stone-900"
-          >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setSelectedHamper(null)}
-              className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-900 flex items-center justify-center shadow-md transition-all cursor-pointer border border-[#EAE3D8] hover:scale-105 active:scale-95"
-              aria-label="Close details popup"
-            >
-              <X className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
+  const handleToggleWishlist = (e: React.MouseEvent | React.TouchEvent, hamper: HamperItem) => {
+    e.stopPropagation();
 
-            {/* Modal Image */}
-            <div className="relative w-full md:w-[48%] lg:w-[46%] h-64 sm:h-80 md:h-auto min-h-[300px] md:min-h-[460px] shrink-0 bg-[#092B20] flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-[#EAE3D8]">
-              <Image
-                src={selectedHamper.image}
-                alt={selectedHamper.name}
-                fill
-                unoptimized
-                className="w-full h-full object-cover object-center"
-                sizes="(max-width: 768px) 100vw, 500px"
-              />
-            </div>
-
-            {/* Modal Details */}
-            <div className="p-6 sm:p-8 md:p-9 lg:p-10 w-full md:w-[52%] lg:w-[54%] flex flex-col justify-between overflow-y-auto min-h-0 scrollbar-thin">
-              <div className="space-y-3 sm:space-y-4">
-                <h3 className="font-serif text-2xl sm:text-3xl lg:text-[32px] text-stone-900 font-medium leading-tight">
-                  {selectedHamper.name}
-                </h3>
-
-                <p className="text-sm sm:text-base text-stone-600 leading-relaxed">
-                  {selectedHamper.description}
-                </p>
-              </div>
-
-              {/* Pricing & Cart Action */}
-              <div className="mt-6 sm:mt-8 pt-4 sm:pt-5 border-t border-[#EAE3D8] flex items-center justify-between gap-3 shrink-0">
-                <div>
-                  <span className="text-[11px] sm:text-xs text-stone-500 block font-medium uppercase tracking-wider">Total Suite Price</span>
-                  <div className="flex items-baseline gap-1.5 sm:gap-2">
-                    <span className="font-serif text-2xl sm:text-3xl font-bold text-[#8C6215]">
-                      {selectedHamper.priceDisplay}
-                    </span>
-                    {selectedHamper.originalPrice && (
-                      <span className="text-xs sm:text-sm text-stone-400 line-through">
-                        {selectedHamper.originalPrice}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleAddToCart(selectedHamper);
-                      setSelectedHamper(null);
-                    }}
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#8C6215] text-white hover:bg-[#724f11] active:scale-95 shadow-md transition-all flex items-center justify-center cursor-pointer shrink-0"
-                    title="Add to Cart"
-                    aria-label="Add to Cart"
-                  >
-                    <ShoppingCart className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2]" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
-  );
+    toggleWishlist({
+      id: hamper.id,
+      name: hamper.name,
+      price: hamper.price,
+      priceDisplay: hamper.priceDisplay,
+      image: hamper.image,
+      skuId: hamper.skuId,
+    });
+  };
 
   return (
-    <section ref={sectionRef} id="gifting-gallery" className="bg-[#123D2D] py-14 sm:py-20 px-2 sm:px-6 md:px-8 lg:py-24 border-t border-b border-[#28513B]/40 text-[#E8D9AE] w-full overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="gifting-gallery"
+      className="bg-[#123D2D] py-8 sm:py-10 px-2 sm:px-6 md:px-8 border-t border-b border-[#28513B]/40 text-[#E8D9AE] w-full overflow-hidden"
+    >
       <div className="mx-auto max-w-[1700px] w-full">
         {/* Section Header */}
-        <div className="text-center max-w-5xl mx-auto mb-6 sm:mb-10 px-4">
+        <div className="text-center max-w-5xl mx-auto mb-4 sm:mb-6 px-4">
           <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#E8D9AE]">
             Artisanal Luxury Hampers &amp; Gift Suites
           </h2>
@@ -567,7 +452,9 @@ export function GiftingGallery() {
           {/* 3D Perspective Stage Container */}
           <div
             ref={stageRef}
-            className="relative w-full overflow-hidden select-none cursor-grab active:cursor-grabbing py-4 sm:py-6 touch-pan-y"
+            className="relative w-full overflow-hidden select-none cursor-grab active:cursor-grabbing py-1 sm:py-2 touch-pan-y"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -582,10 +469,9 @@ export function GiftingGallery() {
           >
             {/* Stage Track Holding All 3D Cards */}
             <div
-              className="relative w-full h-[470px] xs:h-[495px] sm:h-[530px] md:h-[560px] lg:h-[580px] flex items-center justify-center"
+              className="relative w-full h-[385px] xs:h-[400px] sm:h-[430px] md:h-[465px] lg:h-[480px] flex items-center justify-center"
               style={{ transformStyle: "preserve-3d" }}
             >
-
               {HAMPER_ITEMS.map((hamper, idx) => {
                 const N = HAMPER_ITEMS.length;
                 let rawDiff = idx - activeIndex;
@@ -596,7 +482,6 @@ export function GiftingGallery() {
                 const absOffset = Math.abs(currentOffset);
                 const sign = Math.sign(currentOffset);
 
-                // Hide cards far out of view for peak rendering performance
                 const isVisible = absOffset <= 3.2;
                 if (!isVisible) return null;
 
@@ -624,15 +509,18 @@ export function GiftingGallery() {
                 const zIndex = Math.round(40 - Math.min(absOffset, 4) * 10);
                 const isCenter = Math.abs(currentOffset) < 0.48;
 
-                // Card images
                 const galleryList = [hamper.image];
                 const activeImgIdx = cardImgIdx[hamper.id] || 0;
                 const currentDisplayImg = galleryList[activeImgIdx] || hamper.image;
 
+                const isWishlisted = isInWishlist(hamper.id) || (hamper.skuId ? isInWishlist(hamper.skuId) : false);
+
                 return (
                   <div
                     key={hamper.id}
-                    onClick={() => handleCardClick(idx, diff)}
+                    onClick={() => handleCardClick(idx)}
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
                     style={{
                       width: `${cardWidth}px`,
                       transform: `translate3d(calc(-50% + ${translateX}px), -50%, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
@@ -645,19 +533,16 @@ export function GiftingGallery() {
                         : "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
                       pointerEvents: isVisible ? "auto" : "none",
                     }}
-                    className={`absolute left-1/2 top-1/2 flex flex-col justify-between group select-none will-change-transform ${
-                      isCenter ? "cursor-default" : "cursor-pointer"
-                    }`}
+                    className="absolute left-1/2 top-1/2 flex flex-col justify-between group select-none will-change-transform cursor-pointer"
                   >
                     {/* Card Container */}
-                    <div className="relative rounded-2xl transition-all duration-300 flex flex-col w-full">
+                    <div className="relative rounded-lg sm:rounded-2xl transition-all duration-300 flex flex-col w-full">
                       {/* Portrait Product Image Canvas (Aspect 3:4) */}
                       <div
-                        className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-[#092B20] border transition-all duration-300 flex items-center justify-center group/img ${
-                          isCenter
-                            ? "border-[#C5A45B]/90 shadow-xl"
-                            : "border-white/20"
-                        }`}
+                        className={`relative aspect-[3/4] w-full overflow-hidden rounded-lg sm:rounded-2xl bg-[#092B20] border transition-all duration-300 flex items-center justify-center group/img ${isCenter
+                          ? "border-[#C5A45B]/90 shadow-xl"
+                          : "border-white/20"
+                          }`}
                       >
                         <Image
                           src={currentDisplayImg}
@@ -668,6 +553,28 @@ export function GiftingGallery() {
                           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none"
                           sizes="(max-width: 640px) 270px, (max-width: 1024px) 305px, 335px"
                         />
+
+                        {/* Wishlist Heart Button on Upper Right */}
+                        <button
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onTouchStart={(e) => {
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => handleToggleWishlist(e, hamper)}
+                          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                          className="group/btn absolute top-3 right-3 z-40 p-1 sm:p-1.5 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer pointer-events-auto bg-transparent border-none text-white hover:scale-110"
+                        >
+                          <Heart
+                            className={`w-4.5 h-4.5 sm:w-5 sm:h-5 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] ${isWishlisted
+                              ? "fill-white text-white scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                              : "fill-transparent text-white group-hover/btn:scale-110"
+                              }`}
+                          />
+                        </button>
 
                         {/* Side Vignette Fade Overlay for non-center cards */}
                         {!isCenter && (
@@ -689,11 +596,10 @@ export function GiftingGallery() {
                                   setCardImgIdx((prev) => ({ ...prev, [hamper.id]: i }));
                                 }}
                                 aria-label={`Show image ${i + 1}`}
-                                className={`transition-all duration-300 rounded-full cursor-pointer shadow-xs ${
-                                  i === activeImgIdx
-                                    ? "w-2.5 h-1.5 bg-[#C5A45B] shadow-md"
-                                    : "w-1.5 h-1.5 bg-[#28513B] hover:bg-[#28513B]/80"
-                                }`}
+                                className={`transition-all duration-300 rounded-full cursor-pointer shadow-xs ${i === activeImgIdx
+                                  ? "w-2.5 h-1.5 bg-[#C5A45B] shadow-md"
+                                  : "w-1.5 h-1.5 bg-[#28513B] hover:bg-[#28513B]/80"
+                                  }`}
                               />
                             ))}
                           </div>
@@ -734,43 +640,44 @@ export function GiftingGallery() {
                             </button>
                           </>
                         )}
-                      </div>
 
-                      {/* Card Details & Pricing */}
-                      <div className="mt-2.5 px-0.5 flex items-start justify-between gap-1.5 sm:gap-2">
-                        <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
-                          <h3 className="font-serif text-xs sm:text-[13.5px] font-medium text-white group-hover:text-[#C5A45B] transition-colors truncate">
-                            {hamper.name}
-                          </h3>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs sm:text-[12.5px] font-medium text-[#C5A45B]">
-                              RS. {hamper.price.toLocaleString("en-IN")}
-                            </span>
-                            {hamper.originalPrice && (
-                              <span className="text-[10px] sm:text-[11px] text-[#E8D9AE]/50 line-through">
-                                {hamper.originalPrice}
-                              </span>
-                            )}
+                        {/* Hover Details Overlay pinned at the bottom end of the image */}
+                        <div
+                          className={`absolute bottom-0 inset-x-0 z-30 pt-4 pb-2.5 px-3 sm:px-3.5 transition-all duration-300 pointer-events-auto ${isCenter ? "max-sm:opacity-100 max-sm:translate-y-0" : "max-sm:opacity-0 max-sm:translate-y-2"
+                            } opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0`}
+                        >
+                          <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                            <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
+                              <h3 className="font-serif text-xs sm:text-[13.5px] font-medium text-white transition-colors truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
+                                {hamper.name}
+                              </h3>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs sm:text-[12.5px] font-medium text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
+                                  RS. {hamper.price.toLocaleString("en-IN")}
+                                </span>
+                                {hamper.originalPrice && (
+                                  <span className="text-[10px] sm:text-[11px] text-white/70 line-through drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                                    {hamper.originalPrice}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Add to Cart Quick Icon (+ icon) */}
+                            <button
+                              type="button"
+                              onClick={(e) => handleAddToCart(e, hamper)}
+                              aria-label={`Add ${hamper.name} to cart`}
+                              className="p-1 text-white hover:text-white/80 transition-transform hover:scale-110 cursor-pointer shrink-0 mt-0.5 active:scale-95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]"
+                              title="Add to Cart"
+                            >
+                              {addedIds[hamper.id] ? (
+                                <Check className="w-4 h-4 text-white stroke-[2.5]" />
+                              ) : (
+                                <Plus className="w-4 h-4 text-white stroke-[2.2]" />
+                              )}
+                            </button>
                           </div>
-                        </div>
-
-                        {/* Quick Action Icons */}
-                        <div className="flex items-center gap-1 shrink-0">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleAddToCart(hamper);
-                            }}
-                            className="p-1 text-[#E8D9AE] hover:text-[#C5A45B] transition-colors cursor-pointer"
-                            title="Add to Cart"
-                          >
-                            {addedIds[hamper.id] ? (
-                              <Check className="w-3.5 h-3.5 text-[#C5A45B] stroke-[2.5]" />
-                            ) : (
-                              <ShoppingCart className="w-3.5 h-3.5 stroke-[1.8]" />
-                            )}
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -779,33 +686,8 @@ export function GiftingGallery() {
               })}
             </div>
           </div>
-
-          {/* Page Dots & Counter */}
-          <div className="flex flex-col items-center justify-center gap-2 pt-5 sm:pt-6 select-none">
-            {/* Indicator Dots */}
-            <div className="flex items-center justify-center gap-1.5">
-              {HAMPER_ITEMS.map((_, dotIdx) => (
-                <button
-                  key={dotIdx}
-                  type="button"
-                  onClick={() => setActiveIndex(dotIdx)}
-                  aria-label={`Go to hamper ${dotIdx + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    activeIndex === dotIdx
-                      ? "w-8 bg-[#C5A45B] shadow-[0_0_8px_rgba(197,164,91,0.6)]"
-                      : "w-2 bg-[#28513B] hover:bg-[#C5A45B]/60"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
-
-      {/* Quick View Modal rendered via Portal */}
-      {mounted && typeof document !== "undefined"
-        ? createPortal(modalContent, document.body)
-        : modalContent}
     </section>
   );
 }

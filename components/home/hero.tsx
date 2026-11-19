@@ -2,11 +2,12 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
 import { RealisticSmoke } from "@/components/home/realistic-smoke";
 
 interface HeroProps {
-  onExploreGifts: () => void;
+  onExploreGifts?: () => void;
   onExploreBestsellers?: () => void;
 }
 
@@ -119,61 +120,45 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
 
             {/* Framer Motion Animated Subtext */}
             {shouldReduceMotion ? (
-              <p className="text-[11px] min-[360px]:text-xs sm:text-sm md:text-base text-[#F5EDE0] sm:text-[#3E362D] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)] sm:drop-shadow-none leading-relaxed max-w-md font-normal sm:font-light">
-                Handcrafted 100% charcoal-free sacred incense suites, pure botanical resins, and solid cast brassware made for quiet living.
+              <p className="text-[10px] min-[360px]:text-[10.5px] min-[390px]:text-[11px] sm:text-sm md:text-base text-[#F5EDE0] sm:text-[#3E362D] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)] sm:drop-shadow-none leading-relaxed max-w-xl lg:max-w-2xl font-normal sm:font-light">
+                Handcrafted 100% charcoal-free sacred incense suites, pure botanical resins,
+                <br className="hidden sm:inline" /> and solid cast brassware made for quiet living.
               </p>
             ) : (
               <motion.p
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.35, ease: LUXURY_EASE }}
-                className="text-[11px] min-[360px]:text-xs sm:text-sm md:text-base text-[#F5EDE0] sm:text-[#3E362D] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)] sm:drop-shadow-none leading-relaxed max-w-md font-normal sm:font-light"
+                className="text-[10px] min-[360px]:text-[10.5px] min-[390px]:text-[11px] sm:text-sm md:text-base text-[#F5EDE0] sm:text-[#3E362D] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)] sm:drop-shadow-none leading-relaxed max-w-xl lg:max-w-2xl font-normal sm:font-light"
               >
-                Handcrafted 100% charcoal-free sacred incense suites, pure botanical resins, and solid cast brassware made for quiet living.
+                Handcrafted 100% charcoal-free sacred incense suites, pure botanical resins,
+                <br className="hidden sm:inline" /> and solid cast brassware made for quiet living.
               </motion.p>
             )}
 
-            {/* Action Buttons - Compact on Mobile */}
+            {/* Action Button - Shop */}
             {shouldReduceMotion ? (
-              <div className="flex flex-row items-center gap-2 sm:gap-4 pt-1 sm:pt-1 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-bold tracking-wide uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
+              <div className="pt-1 sm:pt-1">
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center justify-center px-6 py-2.5 min-[360px]:px-8 min-[360px]:py-3 sm:px-10 sm:py-4 bg-[#315546] hover:bg-[#234336] text-white text-[11px] min-[360px]:text-xs sm:text-sm font-bold tracking-widest uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
                 >
-                  Explore Collection
-                </button>
-
-                <button
-                  type="button"
-                  onClick={onExploreBestsellers || onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#123D2D]/85 hover:bg-[#123D2D] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-semibold tracking-wide uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs whitespace-nowrap"
-                >
-                  View Marble Trunk
-                </button>
+                  Shop
+                </Link>
               </div>
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.48, ease: LUXURY_EASE }}
-                className="flex flex-row items-center gap-2 sm:gap-4 pt-1 sm:pt-1 w-full sm:w-auto"
+                className="pt-1 sm:pt-1"
               >
-                <button
-                  type="button"
-                  onClick={onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-bold tracking-wide uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center justify-center px-6 py-2.5 min-[360px]:px-8 min-[360px]:py-3 sm:px-10 sm:py-4 bg-[#315546] hover:bg-[#234336] text-white text-[11px] min-[360px]:text-xs sm:text-sm font-bold tracking-widest uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
                 >
-                  Explore Collection
-                </button>
-
-                <button
-                  type="button"
-                  onClick={onExploreBestsellers || onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#123D2D]/85 hover:bg-[#123D2D] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-semibold tracking-wide uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs whitespace-nowrap"
-                >
-                  View Marble Trunk
-                </button>
+                  Shop
+                </Link>
               </motion.div>
             )}
           </div>

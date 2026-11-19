@@ -692,7 +692,7 @@ function CheckoutGiftContent() {
                     <span>Handwritten Note Card</span>
                     <span>FREE</span>
                   </div>
-                  <p className="text-xs text-stone-700 italic font-serif leading-relaxed line-clamp-3">
+                  <p className="text-xs text-stone-700 leading-relaxed line-clamp-3">
                     &ldquo;{hamper.personalization.giftNote}&rdquo;
                   </p>
                   {hamper.personalization.recipientName && (

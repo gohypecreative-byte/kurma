@@ -4,8 +4,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
-import { ShoppingCart, Check, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ShoppingCart, Check, ChevronDown, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 import { GiftingGallery } from "@/components/home/gifting-gallery";
 
 export function ScrollProgress() {
@@ -207,6 +208,8 @@ function BestsellerCard({
   onAddToCart: (item: (typeof BESTSELLER_ITEMS)[0]) => void;
 }) {
   const router = useRouter();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const isWishlisted = isInWishlist(item.id) || isInWishlist(item.skuId) || isLiked;
   const [activeIdx, setActiveIdx] = useState(0);
   const images = item.images && item.images.length > 0 ? item.images : [item.image];
   const currentImg = images[activeIdx] || item.image;
@@ -217,7 +220,7 @@ function BestsellerCard({
       className="flex-shrink-0 w-[88%] sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] snap-start group relative flex flex-col cursor-pointer select-none transition-all duration-300"
     >
       {/* Modern Image Canvas with in-card scrolling/carousel */}
-      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-2xl bg-transparent flex items-center justify-center">
+      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg sm:rounded-2xl bg-transparent flex items-center justify-center">
         <Image
           src={currentImg}
           alt={item.name}
@@ -229,7 +232,33 @@ function BestsellerCard({
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
         />
 
-
+        {/* Wishlist Heart Button on Upper Right */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleWishlist(item.id);
+            toggleWishlist({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              priceDisplay: item.priceDisplay,
+              image: currentImg,
+              skuId: item.skuId,
+            });
+          }}
+          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className="group/btn absolute top-2.5 right-2.5 z-20 p-1 sm:p-1.5 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
+        >
+          <Heart
+            className={`w-4.5 h-4.5 sm:w-5 sm:h-5 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)] ${
+              isWishlisted
+                ? "fill-white text-white scale-110 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                : "fill-transparent text-white group-hover/btn:scale-110"
+            }`}
+          />
+        </button>
 
         {/* Previous & Next Carousel Navigation Arrows (visible on hover) */}
         {images.length > 1 && (
@@ -520,25 +549,9 @@ const FAQ_ITEMS = [
 
 export function KurmaFAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
-
-  const handleMouseEnter = (idx: number) => {
-    setOpenIndex(idx);
-  };
-
-  const handleMouseLeave = () => {
-    setOpenIndex(null);
-  };
 
   const handleToggle = (idx: number) => {
-    const isCurrentlyOpen = openIndex !== null ? openIndex === idx : pinnedIndex === idx;
-    if (isCurrentlyOpen) {
-      setOpenIndex(null);
-      setPinnedIndex(null);
-    } else {
-      setPinnedIndex(idx);
-      setOpenIndex(idx);
-    }
+    setOpenIndex((prev) => (prev === idx ? null : idx));
   };
 
   return (
@@ -552,14 +565,13 @@ export function KurmaFAQSection() {
         </div>
 
         {/* Accordion Questions List */}
-        <div className="space-y-2.5 sm:space-y-3" onMouseLeave={handleMouseLeave}>
+        <div className="space-y-2.5 sm:space-y-3">
           {FAQ_ITEMS.map((faq, idx) => {
-            const isOpen = openIndex !== null ? openIndex === idx : pinnedIndex === idx;
+            const isOpen = openIndex === idx;
 
             return (
               <div
                 key={idx}
-                onMouseEnter={() => handleMouseEnter(idx)}
                 className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs overflow-hidden transition-all duration-300 hover:border-[#1E1E1C]/40"
               >
                 <button
