@@ -851,7 +851,7 @@ function CustomiseContent() {
                 </div>
 
                 {/* Goodies Selection Grid Matching Screenshots 2 & 3 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
                   {goodiesList.map((item) => {
                     const qty = selectedGoodies[item.id] || 0;
                     return (
@@ -863,18 +863,18 @@ function CustomiseContent() {
                       >
                         <div>
                           {/* Vertical Portrait Image Canvas matching home page (Aspect 3:4) */}
-                          <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f5f3ec] rounded-2xl flex items-center justify-center p-2 sm:p-3 mb-3">
+                          <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#f5f3ec] rounded-2xl flex items-center justify-center p-1.5 sm:p-3 mb-2 sm:mb-3">
                             <Image
                               src={item.image}
                               alt={item.name}
                               fill
                               unoptimized
-                              className="object-contain object-center p-2 sm:p-3 group-hover:scale-105 transition-transform duration-500"
+                              className="object-contain object-center p-1.5 sm:p-3 group-hover:scale-105 transition-transform duration-500"
                             />
                           </div>
 
-                          <div className="px-4">
-                            <h4 className="font-serif text-sm font-semibold text-[#1C1B18] line-clamp-1 group-hover:text-[#8b5f10] transition-colors">
+                          <div className="px-2.5 sm:px-4">
+                            <h4 className="font-serif text-xs sm:text-sm font-semibold text-[#1C1B18] line-clamp-1 group-hover:text-[#8b5f10] transition-colors">
                               {item.name}
                             </h4>
                           </div>
@@ -882,10 +882,10 @@ function CustomiseContent() {
 
                         {/* Card Footer: Price & Dark Plus Action Button */}
                         <div
-                          className="px-4 pb-4 pt-3 flex items-center justify-between"
+                          className="px-2.5 sm:px-4 pb-3 sm:pb-4 pt-2 sm:pt-3 flex items-center justify-between"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <span className="font-serif text-sm font-bold text-stone-900">
+                          <span className="font-serif text-xs sm:text-sm font-bold text-stone-900">
                             ₹{item.price.toLocaleString("en-IN")}
                           </span>
 
@@ -896,18 +896,18 @@ function CustomiseContent() {
                                 handleUpdateGoodyQty(item.id, 1);
                               }}
                               aria-label={`Add ${item.name}`}
-                              className="w-8 h-8 rounded-full bg-[#121829] hover:bg-[#33312D] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
+                              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#121829] hover:bg-[#33312D] text-white flex items-center justify-center transition-all shadow-2xs cursor-pointer active:scale-95"
                             >
-                              <Plus className="w-4 h-4 stroke-[2.5]" />
+                              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
                             </button>
                           ) : (
-                            <div className="flex items-center gap-1.5 bg-stone-100 rounded-full p-1 border border-stone-200">
+                            <div className="flex items-center gap-1 sm:gap-1.5 bg-stone-100 rounded-full p-0.5 sm:p-1 border border-stone-200">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleUpdateGoodyQty(item.id, -1);
                                 }}
-                                className="w-6 h-6 rounded-full bg-white text-stone-700 flex items-center justify-center hover:bg-stone-200 cursor-pointer text-xs font-bold"
+                                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white text-stone-700 flex items-center justify-center hover:bg-stone-200 cursor-pointer text-[10px] sm:text-xs font-bold"
                               >
                                 <Minus className="w-3 h-3" />
                               </button>

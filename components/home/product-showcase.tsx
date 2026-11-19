@@ -240,7 +240,7 @@ export function ProductCardItem({
       <div className="mt-2.5 flex items-start justify-between gap-2 px-0.5">
         <div className="space-y-0.5 min-w-0 flex-1">
           <h3
-            className={`text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate transition-colors ${
+            className={`font-serif text-xs sm:text-[13px] font-medium tracking-tight leading-snug truncate transition-colors ${
               isDark
                 ? "text-[#fdfcf9] group-hover:text-[#C5A45B]"
                 : "text-stone-900 group-hover:text-stone-600"
@@ -248,7 +248,7 @@ export function ProductCardItem({
           >
             {cleanTitle}
           </h3>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 font-sans">
             <span
               className={`text-xs sm:text-[12.5px] font-medium ${
                 isDark ? "text-[#C5A45B]" : "text-stone-700"

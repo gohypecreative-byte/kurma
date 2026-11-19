@@ -531,14 +531,14 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
     <section
       ref={sectionRef}
       id="unboxing-ritual"
-      className="relative z-30 w-full h-[100dvh] min-h-[560px] bg-[#FAF7F2] text-[#1C1B18] select-none flex flex-col justify-between border-t border-[#EAE3D8] overflow-hidden"
+      className="relative z-30 w-full h-[100dvh] min-h-[560px] bg-[#E4DCD0] text-[#1C1B18] select-none flex flex-col justify-between border-t border-[#DDD4C6] overflow-hidden"
     >
       {/* Ambient Luxury Lighting Backdrop (Clean Warm Studio Vignette) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 48%, #FFFFFF 0%, #FAF7F2 70%, #F2ECE1 100%)",
+            "radial-gradient(ellipse at 50% 48%, #EAE2D6 0%, #E4DCD0 65%, #DDD4C6 100%)",
         }}
       />
 

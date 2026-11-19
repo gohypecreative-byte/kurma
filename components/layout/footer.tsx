@@ -71,24 +71,24 @@ export function Footer() {
         {/* 2. PROMINENT HERO STATEMENT BANNER (Matching reference "Own It #Trust...")*/}
         {/* ========================================================================= */}
         <div className="w-full text-center mt-1 sm:mt-1.5 mb-5 sm:mb-6 lg:mb-7 overflow-hidden">
-          <h2 className="relative inline-block font-serif text-3xl sm:text-4xl md:text-[46px] lg:text-[58px] font-semibold tracking-wide leading-tight select-none">
-            {/* Base text: Both words in the same elegant light gold color */}
+          <h2 className="relative inline-block font-serif text-[clamp(16px,5.1vw,58px)] font-semibold tracking-wide leading-tight select-none whitespace-nowrap">
+            {/* Base text: Both words in the same elegant light gold color and consistent upright serif style */}
             <span className="text-[#B89246]">
               Sacred Living
             </span>{" "}
-            <span className="text-[#B89246] italic font-serif">
+            <span className="text-[#B89246]">
               #KurmaRitual
             </span>
 
             {/* Seamless, continuous glowing shimmer wave (no stops or pauses) */}
             <span
               aria-hidden="true"
-              className="absolute inset-0 pointer-events-none select-none kurma-footer-shimmer"
+              className="absolute inset-0 pointer-events-none select-none kurma-footer-shimmer whitespace-nowrap"
             >
               <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.95)] drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]">
                 Sacred Living
               </span>{" "}
-              <span className="text-white italic font-serif drop-shadow-[0_0_12px_rgba(255,255,255,0.95)] drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]">
+              <span className="text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.95)] drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]">
                 #KurmaRitual
               </span>
             </span>
@@ -98,14 +98,14 @@ export function Footer() {
         {/* ========================================================================= */}
         {/* 3. FOUR-COLUMN MAIN GRID (Customer Service, Company, Follow, Newsletter) */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.05fr_1.35fr] gap-6 sm:gap-8 lg:gap-8 xl:gap-10">
+        <div className="grid grid-cols-2 lg:grid-cols-[1fr_1fr_1.05fr_1.35fr] gap-x-5 sm:gap-x-8 gap-y-7 sm:gap-y-8 lg:gap-8 xl:gap-10">
           
           {/* COLUMN 1: Customer Service */}
           <div>
-            <h3 className="font-serif text-lg sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2.5 sm:mb-3">
+            <h3 className="font-serif text-base sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2 sm:mb-3">
               Customer Service
             </h3>
-            <ul className="space-y-2 sm:space-y-2.5 text-sm sm:text-[15px] lg:text-base text-stone-600 font-normal">
+            <ul className="space-y-1.5 sm:space-y-2.5 text-xs sm:text-[15px] lg:text-base text-stone-600 font-normal">
               <li>
                 <Link href="/contact" className="hover:text-[#8C6215] transition-colors block">
                   Contact
@@ -141,10 +141,10 @@ export function Footer() {
 
           {/* COLUMN 2: Company & Secure Payment */}
           <div>
-            <h3 className="font-serif text-lg sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2.5 sm:mb-3">
+            <h3 className="font-serif text-base sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2 sm:mb-3">
               Company
             </h3>
-            <ul className="space-y-2 sm:space-y-2.5 text-sm sm:text-[15px] lg:text-base text-stone-600 font-normal">
+            <ul className="space-y-1.5 sm:space-y-2.5 text-xs sm:text-[15px] lg:text-base text-stone-600 font-normal">
               <li>
                 <Link href="/about" className="hover:text-[#8C6215] transition-colors block">
                   About Us
@@ -171,44 +171,44 @@ export function Footer() {
           {/* COLUMN 3: Follow Us & Office Address */}
           <div>
             {/* Follow Us */}
-            <h3 className="font-serif text-lg sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2.5 sm:mb-3">
+            <h3 className="font-serif text-base sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2 sm:mb-3">
               Follow Us
             </h3>
-            <div className="flex items-center gap-3 mb-3.5 sm:mb-4">
+            <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
               >
-                <InstagramIcon className="w-4.5 h-4.5" />
+                <InstagramIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </a>
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
               >
-                <FacebookIcon className="w-4.5 h-4.5" />
+                <FacebookIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </a>
               <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95"
               >
-                <YoutubeIcon className="w-4.5 h-4.5" />
+                <YoutubeIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </a>
             </div>
 
             {/* Office Address */}
-            <h4 className="font-serif text-base sm:text-lg lg:text-[19px] font-semibold text-[#1C1B18] tracking-tight mb-2">
+            <h4 className="font-serif text-sm sm:text-lg lg:text-[19px] font-semibold text-[#1C1B18] tracking-tight mb-1.5 sm:mb-2">
               Office Address
             </h4>
-            <p className="text-sm sm:text-[15px] text-stone-600 leading-relaxed font-normal">
+            <p className="text-xs sm:text-[15px] text-stone-600 leading-relaxed font-normal">
               Shop No. 3, DLF Galleria,<br />
               Sector 28, Golf Course Road,<br />
               Gurugram, Haryana 122009
@@ -217,27 +217,27 @@ export function Footer() {
 
           {/* COLUMN 4: Join Our Newsletter */}
           <div>
-            <h3 className="font-serif text-lg sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-2 sm:mb-2.5">
+            <h3 className="font-serif text-base sm:text-xl lg:text-[22px] font-semibold text-[#1C1B18] tracking-tight mb-1.5 sm:mb-2.5">
               Join Our Newsletter
             </h3>
-            <p className="text-sm sm:text-[15px] text-stone-600 leading-relaxed mb-3">
+            <p className="text-xs sm:text-[15px] text-stone-600 leading-relaxed mb-2.5 sm:mb-3">
               Get drops, tips &amp; members-only offers. No spam.
             </p>
 
             {/* Newsletter Subscription Form */}
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <div className="flex items-center gap-2">
+            <form onSubmit={handleSubscribe} className="space-y-2.5 sm:space-y-3">
+              <div className="flex flex-col min-[480px]:flex-row items-stretch min-[480px]:items-center gap-2">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. name@example.com"
                   required
-                  className="w-[190px] sm:w-[195px] shrink-0 px-3 py-2 sm:py-2.5 bg-white border border-stone-200/90 rounded-lg text-xs sm:text-[13px] text-stone-900 placeholder:text-stone-400 placeholder:text-xs sm:placeholder:text-[13px] focus:outline-none focus:border-[#C5A45B] transition-colors shadow-2xs"
+                  className="w-full min-[480px]:flex-1 min-w-0 px-3 py-2 sm:py-2.5 bg-white border border-stone-200/90 rounded-lg text-xs sm:text-[13px] text-stone-900 placeholder:text-stone-400 placeholder:text-xs sm:placeholder:text-[13px] focus:outline-none focus:border-[#C5A45B] transition-colors shadow-2xs"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 sm:py-2.5 bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] rounded-lg text-xs sm:text-[13px] font-medium transition-all cursor-pointer shrink-0 shadow-xs active:scale-95"
+                  className="w-full min-[480px]:w-auto px-4 py-2 sm:py-2.5 bg-[#123D2D] hover:bg-[#092B20] text-[#E8D9AE] hover:text-[#FFE7A8] rounded-lg text-xs sm:text-[13px] font-medium transition-all cursor-pointer shrink-0 shadow-xs active:scale-95 text-center"
                 >
                   Subscribe
                 </button>

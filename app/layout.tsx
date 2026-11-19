@@ -33,6 +33,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  themeColor: "#092B20",
 };
 
 export const metadata: Metadata = {
@@ -54,7 +55,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn(
-        "min-h-full overflow-x-clip",
+        "min-h-full overflow-x-clip bg-[#092B20]",
         "antialiased",
         geistSans.variable,
         geistMono.variable,

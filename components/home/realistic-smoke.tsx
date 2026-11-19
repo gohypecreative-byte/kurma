@@ -6,13 +6,22 @@ import { useEffect, useRef } from "react";
 const IMG_NATURAL_WIDTH = 1376;
 const IMG_NATURAL_HEIGHT = 768;
 
-export type SmokePreset = "hero" | "shop" | "about" | "contact";
+export type SmokePreset = "hero" | "hero-mobile" | "shop" | "about" | "contact";
 
-const PRESET_COORDINATES: Record<SmokePreset, { x: number; y: number }> = {
-  hero: { x: 832.5, y: 178.0 },
-  shop: { x: 738.5, y: 320.5 },
-  about: { x: 867.0, y: 295.5 },
-  contact: { x: 894.5, y: 354.5 },
+interface PresetConfig {
+  x: number;
+  y: number;
+  naturalW: number;
+  naturalH: number;
+  objectPosition?: "center" | "right";
+}
+
+const PRESET_CONFIG: Record<SmokePreset, PresetConfig> = {
+  hero: { x: 832.5, y: 178.0, naturalW: 1376, naturalH: 768, objectPosition: "center" },
+  "hero-mobile": { x: 415, y: 398, naturalW: 768, naturalH: 1376, objectPosition: "center" },
+  shop: { x: 738.5, y: 320.5, naturalW: 1376, naturalH: 768, objectPosition: "center" },
+  about: { x: 867.0, y: 295.5, naturalW: 1376, naturalH: 768, objectPosition: "center" },
+  contact: { x: 894.5, y: 354.5, naturalW: 1376, naturalH: 768, objectPosition: "center" },
 };
 
 export interface RealisticSmokeProps {
@@ -46,9 +55,11 @@ export function RealisticSmoke({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const coords = PRESET_COORDINATES[preset] || PRESET_COORDINATES.hero;
-    const activeRatioX = tipRatioX !== undefined ? tipRatioX : coords.x / IMG_NATURAL_WIDTH;
-    const activeRatioY = tipRatioY !== undefined ? tipRatioY : coords.y / IMG_NATURAL_HEIGHT;
+    const config = PRESET_CONFIG[preset] || PRESET_CONFIG.hero;
+    const naturalW = config.naturalW;
+    const naturalH = config.naturalH;
+    const activeRatioX = tipRatioX !== undefined ? tipRatioX : config.x / naturalW;
+    const activeRatioY = tipRatioY !== undefined ? tipRatioY : config.y / naturalH;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -91,7 +102,7 @@ export function RealisticSmoke({
       ctx?.scale(dpr, dpr);
 
       const containerAspect = W / H;
-      const imageAspect = IMG_NATURAL_WIDTH / IMG_NATURAL_HEIGHT;
+      const imageAspect = naturalW / naturalH;
 
       let renderedW: number;
       let renderedH: number;
@@ -102,11 +113,13 @@ export function RealisticSmoke({
         renderedW = W;
         renderedH = W / imageAspect;
         renderedLeft = 0;
-        renderedTop = (H - renderedH) * (window.innerWidth >= 768 ? 0.35 : 0.5);
+        renderedTop = (H - renderedH) * (preset === "hero" && window.innerWidth >= 768 ? 0.35 : 0.5);
       } else {
         renderedH = H;
         renderedW = H * imageAspect;
-        if (window.innerWidth >= 768) {
+        if (preset === "hero-mobile" || config.objectPosition === "center") {
+          renderedLeft = (W - renderedW) / 2;
+        } else if (window.innerWidth >= 768) {
           renderedLeft = (W - renderedW) / 2;
         } else {
           renderedLeft = W - renderedW; // object-right on mobile

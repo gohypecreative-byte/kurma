@@ -115,7 +115,7 @@ export default function ShopPage() {
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
       {/* 1. DISTINCT LUXURY EDITORIAL SHOP BANNER - Custom Product Suite Collection */}
-      <section className="relative w-full h-[48vh] sm:h-[56vh] lg:h-[64vh] min-h-[380px] sm:min-h-[440px] max-h-[640px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
+      <section className="relative w-full h-[34vh] sm:h-[56vh] lg:h-[64vh] min-h-[240px] sm:min-h-[440px] max-h-[640px] bg-[#EDE1D1] border-b border-[#DDD3C2] overflow-hidden flex items-center select-none">
         {/* Full-Bleed End-to-End Background Image */}
         <div className="absolute inset-0 w-full h-full pointer-events-none">
           <Image
@@ -130,7 +130,7 @@ export default function ShopPage() {
       </section>
 
       {/* Main Content Area - Luxury Dark Green Section */}
-      <main className="flex-1 w-full bg-[#123D2D] border-t border-b border-[#28513B]/40 text-[#E8D9AE] py-10 sm:py-14 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <main className="flex-1 w-full bg-[#123D2D] border-t border-b border-[#28513B]/40 text-[#E8D9AE] py-8 sm:py-14 lg:py-16 px-3 min-[400px]:px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
         <div className="w-full max-w-[1520px] mx-auto space-y-10 sm:space-y-12">
           {/* UNIFIED SECTION: SHOP ALL PRODUCTS */}
           <section className="space-y-8 sm:space-y-10">

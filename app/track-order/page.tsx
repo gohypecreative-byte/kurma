@@ -297,9 +297,9 @@ function TrackOrderContent() {
                   className="bg-white rounded-2xl sm:rounded-3xl border border-[#EAE3D8] shadow-[0_4px_30px_rgba(9,43,32,0.06)] overflow-hidden transition-all hover:shadow-[0_6px_36px_rgba(9,43,32,0.09)]"
                 >
                   {/* Top Header Strip */}
-                  <div className="bg-[#F6F2EB] border-b border-[#EAE3D8] px-5 sm:px-8 py-3.5 sm:py-4 flex flex-wrap items-center justify-between gap-3 font-sans">
+                  <div className="bg-[#F6F2EB] border-b border-[#EAE3D8] px-4 sm:px-8 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 font-sans">
                     <div>
-                      <span className="text-[11px] font-semibold text-[#8C8275] uppercase tracking-wider block">
+                      <span className="text-[10px] sm:text-[11px] font-semibold text-[#8C8275] uppercase tracking-wider block">
                         ORDER PLACED
                       </span>
                       <span className="text-xs sm:text-sm font-semibold text-[#1C1B18] block mt-0.5">
@@ -308,46 +308,51 @@ function TrackOrderContent() {
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs font-semibold text-[#5A5248] block font-mono">
+                      <span className="text-[11px] sm:text-xs font-semibold text-[#5A5248] block font-mono">
                         ORDER # {order.orderNumber.replace(/^#/, "")}
                       </span>
                     </div>
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-5 sm:p-8 space-y-6">
+                  <div className="p-4 sm:p-8 space-y-5 sm:space-y-6">
                     {/* Product Showcase */}
-                    <div className="flex items-center gap-4 sm:gap-6 py-2 min-w-0">
+                    <div className="flex items-center gap-3.5 sm:gap-6 py-1 sm:py-2 min-w-0">
                       <Link
                         href={productHref}
-                        className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-xl bg-[#FAF7F2] border border-[#EAE3D8] p-2 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs hover:border-[#C5A45B] transition-colors group cursor-pointer"
+                        className="relative w-16 h-16 sm:w-28 sm:h-28 rounded-xl bg-[#FAF7F2] border border-[#EAE3D8] p-1.5 sm:p-2 overflow-hidden shrink-0 flex items-center justify-center shadow-2xs hover:border-[#C5A45B] transition-colors group cursor-pointer"
                       >
                         <Image
                           src={item.image || "/images/product/suite-clean.png"}
                           alt={item.name}
                           fill
-                          className="object-contain p-1.5 transition-transform group-hover:scale-105"
+                          className="object-contain p-1 sm:p-1.5 transition-transform group-hover:scale-105"
                         />
                       </Link>
 
-                      <div className="space-y-1.5 min-w-0 flex-1">
+                      <div className="space-y-1 sm:space-y-1.5 min-w-0 flex-1">
                         <Link
                           href={productHref}
-                          className="font-serif font-medium text-base sm:text-lg text-[#092B20] hover:text-[#C5A45B] transition-colors leading-snug block line-clamp-2"
+                          className="font-serif font-medium text-sm sm:text-lg text-[#092B20] hover:text-[#C5A45B] tracking-tight leading-snug block line-clamp-2 transition-colors"
                         >
                           {item.name}
                         </Link>
-                        <p className="text-xs sm:text-sm text-[#5A5248] font-medium font-sans">
-                          Qty: {item.quantity} &nbsp;|&nbsp; ₹
-                          {(item.price * item.quantity).toLocaleString("en-IN")}
-                        </p>
+                        <div className="flex items-center gap-2 font-sans text-xs sm:text-[13px]">
+                          <span className="font-medium text-[#1C1B18]">
+                            Qty: {item.quantity}
+                          </span>
+                          <span className="text-[#8C8275]">&bull;</span>
+                          <span className="font-medium text-[#092B20]">
+                            RS. {(item.price * item.quantity).toLocaleString("en-IN")}
+                          </span>
+                        </div>
                         <div className="pt-0.5 flex flex-wrap items-center gap-2 font-sans">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#28513B]/10 text-[#092B20] border border-[#28513B]/25">
+                          <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-[#28513B]/10 text-[#092B20] border border-[#28513B]/25">
                             {order.paymentStatus || "Paid"}
                           </span>
                           <Link
                             href={productHref}
-                            className="inline-flex items-center text-[11px] font-medium text-[#C5A45B] hover:text-[#092B20] hover:underline transition-colors"
+                            className="inline-flex items-center text-[10.5px] sm:text-[11px] font-medium text-[#C5A45B] hover:text-[#092B20] hover:underline transition-colors"
                           >
                             View Product &rarr;
                           </Link>
@@ -357,24 +362,24 @@ function TrackOrderContent() {
 
                     {/* 4. Horizontal 5-Stage Stepper (when order is not cancelled) */}
                     {!statusLower.includes("cancel") && (
-                      <div className="pt-5 pb-2 border-t border-[#F0EBE1]">
+                      <div className="pt-4 sm:pt-5 pb-1 sm:pb-2 border-t border-[#F0EBE1]">
                         <div className="relative">
                           {/* 5-Step Grid */}
-                          <div className="grid grid-cols-5 gap-2 relative">
+                          <div className="grid grid-cols-5 gap-1 min-[400px]:gap-2 relative">
                             {/* Step 1: Order Placed */}
                             <div className="relative flex flex-col items-center text-center">
                               <div
-                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
                                   isConfirmed ? "bg-[#092B20]" : "bg-[#EAE3D8]"
                                 }`}
                               />
-                              <div className="relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#092B20] text-[#E8D9AE] shadow-xs">
-                                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-[#C5A45B] stroke-[2.5]" />
+                              <div className="relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#092B20] text-[#E8D9AE] shadow-xs">
+                                <Check className="w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 text-[#C5A45B] stroke-[2.5]" />
                               </div>
-                              <h4 className="font-serif text-xs sm:text-sm font-medium text-[#092B20] mt-2.5 sm:mt-3 leading-snug">
+                              <h4 className="font-serif text-[10px] min-[420px]:text-xs sm:text-sm font-medium text-[#092B20] mt-2 sm:mt-3 leading-tight sm:leading-snug">
                                 Order Placed
                               </h4>
-                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                              <p className="text-[8.5px] min-[420px]:text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans leading-none">
                                 {order.date || "18 Nov, 10:30 AM"}
                               </p>
                             </div>
@@ -382,31 +387,31 @@ function TrackOrderContent() {
                             {/* Step 2: Order Confirmed */}
                             <div className="relative flex flex-col items-center text-center">
                               <div
-                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
                                   isShipped ? "bg-[#092B20]" : "bg-[#EAE3D8]"
                                 }`}
                               />
                               <div
-                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isConfirmed
                                     ? "bg-[#092B20] text-[#E8D9AE] shadow-xs"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Check
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
+                                  className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
                                     isConfirmed ? "text-[#C5A45B]" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
-                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
                                   isConfirmed ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Order Confirmed
                               </h4>
-                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                              <p className="text-[8.5px] min-[420px]:text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans leading-none">
                                 {isConfirmed ? "18 Nov, 11:00 AM" : "Pending"}
                               </p>
                             </div>
@@ -414,31 +419,31 @@ function TrackOrderContent() {
                             {/* Step 3: Shipped */}
                             <div className="relative flex flex-col items-center text-center">
                               <div
-                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
                                   isOutForDelivery ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
                                 }`}
                               />
                               <div
-                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isShipped
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-2 sm:ring-4 ring-[#C5A45B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Truck
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2] ${
+                                  className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2] ${
                                     isShipped ? "text-[#C5A45B]" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
-                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
                                   isShipped ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Shipped
                               </h4>
-                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                              <p className="text-[8.5px] min-[420px]:text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans leading-none">
                                 {isShipped ? "19 Nov, 09:00 AM" : "Pending"}
                               </p>
                             </div>
@@ -446,31 +451,31 @@ function TrackOrderContent() {
                             {/* Step 4: Out for Delivery */}
                             <div className="relative flex flex-col items-center text-center">
                               <div
-                                className={`absolute top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
+                                className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
                                   isDelivered ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
                                 }`}
                               />
                               <div
-                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isOutForDelivery
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-2 sm:ring-4 ring-[#C5A45B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Package
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2] ${
+                                  className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2] ${
                                     isOutForDelivery ? "text-[#C5A45B]" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
-                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
                                   isOutForDelivery ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Out for Delivery
                               </h4>
-                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                              <p className="text-[8.5px] min-[420px]:text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans leading-none">
                                 {isOutForDelivery ? "Today" : "Pending"}
                               </p>
                             </div>
@@ -478,26 +483,26 @@ function TrackOrderContent() {
                             {/* Step 5: Delivered */}
                             <div className="relative flex flex-col items-center text-center">
                               <div
-                                className={`relative z-10 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
+                                className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isDelivered
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-4 ring-[#C5A45B]/25"
+                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-2 sm:ring-4 ring-[#C5A45B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Check
-                                  className={`w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
+                                  className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
                                     isDelivered ? "text-[#C5A45B]" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
-                                className={`font-serif text-xs sm:text-sm mt-2.5 sm:mt-3 leading-snug ${
+                                className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
                                   isDelivered ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Delivered
                               </h4>
-                              <p className="text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans">
+                              <p className="text-[8.5px] min-[420px]:text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans leading-none">
                                 {isDelivered ? order.estimatedDate || "Delivered" : "Pending"}
                               </p>
                             </div>

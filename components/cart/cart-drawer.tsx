@@ -153,8 +153,8 @@ export function CartDrawer({
       />
 
       {/* Slide-over Panel */}
-      <div className="fixed inset-y-0 right-0 flex max-w-full sm:pl-10">
-        <div className="w-screen sm:w-[420px] max-w-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+      <div className="fixed inset-y-0 right-0 flex w-full sm:w-auto max-w-full sm:pl-10">
+        <div className="w-full sm:w-[420px] max-w-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
           {/* Header */}
           <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-stone-200 bg-[#fbf6ea]/60">
             <div className="flex items-center gap-2.5">

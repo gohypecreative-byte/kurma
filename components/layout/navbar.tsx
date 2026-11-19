@@ -52,7 +52,6 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   // Search States
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [drawerSearchQuery, setDrawerSearchQuery] = useState("");
 
   const searchCollections = [
     {
@@ -337,14 +336,6 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
     }
   };
 
-  const handleDrawerSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (drawerSearchQuery.trim()) {
-      setMobileMenuOpen(false);
-      router.push(`/search?q=${encodeURIComponent(drawerSearchQuery.trim())}`);
-    }
-  };
-
   const handleSignOut = () => {
     if (isAdmin) {
       try {
@@ -365,22 +356,21 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
   ];
 
   const mobileNavLinks = [
-    { name: "Home", href: "/", badge: "Sanctuary" },
-    { name: "Shop All Creations", href: "/shop", badge: "Collection" },
-    { name: "Customise 5 Elements", href: "/elements", badge: "Bespoke" },
-    { name: "Ritual & Sacred Guide", href: "/ritual", badge: "Wisdom" },
-    { name: "Patron Reviews", href: "/reviews", badge: "Stories" },
-    { name: "About Kurma", href: "/about", badge: "Heritage" },
-    { name: "Contact & Concierge", href: "/contact", badge: "Support" },
+    { name: "HOME", href: "/", badge: "Sanctuary" },
+    { name: "SHOP", href: "/shop", badge: "Collection" },
+    { name: "CUSTOMISE", href: "/elements", badge: "Bespoke" },
+    { name: "ABOUT", href: "/about", badge: "Heritage" },
+    { name: "CONTACT", href: "/contact", badge: "Support" },
   ];
 
   return (
     <>
       {/* ========================================================================= */}
-      {/* 1. TOP STICKY HEADER (z-[60] to remain securely above standard content) */}
+      {/* 1. TOP FIXED HEADER (z-[80] to remain permanently pinned at the top on scroll) */}
       {/* ========================================================================= */}
-      <header className="sticky top-0 z-[60] w-full bg-[#092B20]/95 backdrop-blur-md border-b border-[#28513B]/40 text-[#E8D9AE] shadow-2xs">
-        <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
+      <div className="relative w-full h-16 sm:h-20 shrink-0">
+        <header className="fixed top-0 inset-x-0 z-[80] w-full bg-[#092B20] border-b border-[#28513B]/40 text-[#E8D9AE] shadow-md">
+          <div className="w-full px-3.5 sm:px-6 md:px-8 lg:px-12 xl:px-16 h-16 sm:h-20 flex items-center justify-between">
           {/* Brand Logo */}
           <Link
             href="/"
@@ -583,6 +573,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
           </div>
         </div>
       </header>
+    </div>
 
       {/* ========================================================================= */}
       {/* 2. MOBILE NAVIGATION DRAWER & SEARCH MODAL (VIA REACT PORTALS)            */}
@@ -595,7 +586,7 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
           {mobileMenuOpen &&
             createPortal(
               <div
-                className="fixed top-16 sm:top-20 inset-x-0 bottom-0 z-[70] lg:hidden flex flex-col justify-start"
+                className="fixed top-16 sm:top-20 inset-x-0 bottom-0 z-[75] lg:hidden flex flex-col justify-start"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Mobile Navigation Menu"
@@ -610,41 +601,9 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                 {/* Slide-Down Drawer Container */}
                 <div
                   id="mobile-navigation"
-                  className="relative z-10 w-full bg-[#092B20] border-b border-[#28513B]/40 shadow-2xl flex flex-col max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain text-[#E8D9AE] transition-all duration-200 p-4 sm:p-5 space-y-4"
+                  className="relative z-10 w-full bg-[#092B20] border-b border-[#28513B]/40 shadow-2xl flex flex-col max-h-[calc(100dvh-4rem)] sm:max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain text-[#E8D9AE] transition-all duration-200 p-4 sm:p-5"
                 >
-                  {/* 1. In-Drawer Live Search Form */}
-                  <form
-                    onSubmit={handleDrawerSearchSubmit}
-                    className="relative flex items-center bg-[#123D2D] border border-[#28513B]/60 rounded-xl px-3 py-2.5 shadow-2xs focus-within:border-[#C5A45B] focus-within:bg-[#123D2D] transition-all"
-                  >
-                    <Search className="w-4 h-4 text-[#C5A45B] mr-2 shrink-0 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={drawerSearchQuery}
-                      onChange={(e) => setDrawerSearchQuery(e.target.value)}
-                      placeholder="Search creations, brass burners, scents..."
-                      className="w-full bg-transparent border-none outline-none text-xs sm:text-sm text-[#E8D9AE] placeholder:text-[#E8D9AE]/50 font-sans"
-                    />
-                    {drawerSearchQuery ? (
-                      <button
-                        type="button"
-                        onClick={() => setDrawerSearchQuery("")}
-                        className="p-1 text-[#E8D9AE]/60 hover:text-[#E8D9AE] cursor-pointer touch-manipulation"
-                        aria-label="Clear search input"
-                      >
-                        <X className="w-4 h-4 pointer-events-none" />
-                      </button>
-                    ) : (
-                      <button
-                        type="submit"
-                        className="text-[11px] font-bold text-[#C5A45B] uppercase tracking-wider shrink-0 cursor-pointer touch-manipulation px-1"
-                      >
-                        Search
-                      </button>
-                    )}
-                  </form>
-
-                  {/* 2. Navigation Link Cards */}
+                  {/* Navigation Link Cards */}
                   <nav className="space-y-1.5" aria-label="Mobile Navigation Links">
                     {mobileNavLinks.map((link) => {
                       const isActive =
@@ -658,138 +617,24 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                           href={link.href}
                           prefetch={true}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center justify-between px-3.5 py-3 rounded-xl transition-all cursor-pointer touch-manipulation ${
+                          className={`flex items-center justify-between px-4 py-3.5 rounded-xl transition-all cursor-pointer touch-manipulation ${
                             isActive
                               ? "bg-[#123D2D] text-[#C5A45B] font-bold border border-[#28513B]/60 shadow-xs"
                               : "bg-[#092B20]/80 hover:bg-[#123D2D] text-[#E8D9AE] border border-[#28513B]/30"
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <span className="text-xs sm:text-sm font-semibold tracking-wide uppercase font-sans">
-                              {link.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
-                                isActive
-                                  ? "bg-[#C5A45B]/20 text-[#C5A45B]"
-                                  : "bg-[#123D2D] text-[#E8D9AE]/70 border border-[#28513B]/40"
-                              }`}
-                            >
-                              {link.badge}
-                            </span>
-                            <ChevronRight
-                              className={`w-4 h-4 ${
-                                isActive ? "text-[#C5A45B]" : "text-[#28513B]"
-                              }`}
-                            />
-                          </div>
+                          <span className="text-sm font-semibold tracking-wide uppercase font-sans">
+                            {link.name}
+                          </span>
+                          <ChevronRight
+                            className={`w-4 h-4 ${
+                              isActive ? "text-[#C5A45B]" : "text-[#28513B]"
+                            }`}
+                          />
                         </Link>
                       );
                     })}
                   </nav>
-
-                  {/* 3. Account / Login Drawer Area */}
-                  <div className="pt-2 border-t border-[#28513B]/40">
-                    {user ? (
-                      <div className="p-3.5 rounded-2xl bg-[#123D2D] border border-[#28513B]/60 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-[#092B20] text-[#C5A45B] border border-[#28513B] flex items-center justify-center text-xs font-bold">
-                              {userDisplayName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-white truncate max-w-[160px]">
-                                {userDisplayName}
-                              </p>
-                              <p className="text-[10px] text-[#E8D9AE]/70 truncate max-w-[160px]">
-                                {user.email}
-                              </p>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleSignOut}
-                            className="text-xs font-semibold text-red-400 hover:underline cursor-pointer touch-manipulation"
-                          >
-                            Sign Out
-                          </button>
-                        </div>
-
-                        {isAdmin && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              router.push("/admin");
-                            }}
-                            className="w-full py-2 px-3 rounded-xl bg-[#092B20] text-[#C5A45B] text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-xs touch-manipulation border border-[#28513B]"
-                          >
-                            <ShieldCheck className="w-3.5 h-3.5 text-[#C5A45B]" />
-                            <span>Open Admin Dashboard</span>
-                          </button>
-                        )}
-
-                        <div className="grid grid-cols-2 gap-2 pt-0.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              router.push("/shop");
-                            }}
-                            className="py-2.5 px-3 rounded-xl bg-[#092B20] border border-[#28513B] text-[#E8D9AE] text-xs font-semibold text-center hover:bg-[#123D2D] active:bg-[#123D2D] cursor-pointer shadow-2xs touch-manipulation"
-                          >
-                            My Orders
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              router.push("/elements");
-                            }}
-                            className="py-2.5 px-3 rounded-xl bg-[#C5A45B] text-[#092B20] text-xs font-semibold text-center hover:bg-[#E8D9AE] active:bg-[#E8D9AE] cursor-pointer shadow-xs touch-manipulation"
-                          >
-                            Custom Hamper
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-2 gap-2">
-                        <Link
-                          href="/login"
-                          prefetch={true}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="w-full py-3 px-3 rounded-xl bg-[#C5A45B] hover:bg-[#E8D9AE] text-[#092B20] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
-                        >
-                          <User className="w-3.5 h-3.5 pointer-events-none" />
-                          <span>Sign In</span>
-                        </Link>
-                        <Link
-                          href="/signup"
-                          prefetch={true}
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="w-full py-3 px-3 rounded-xl bg-[#123D2D] hover:bg-[#28513B]/40 border border-[#28513B] text-[#E8D9AE] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors touch-manipulation"
-                        >
-                          <span>Sign Up</span>
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 4. Mobile Concierge Hotline Snippet */}
-                  <div className="pt-2 flex items-center justify-between text-[11px] text-[#E8D9AE]/70 font-sans border-t border-[#28513B]/40">
-                    <span className="flex items-center gap-1.5">
-                      <PhoneCall className="w-3 h-3 text-[#C5A45B]" />
-                      Concierge Assistance
-                    </span>
-                    <a
-                      href="tel:+918005876200"
-                      className="font-semibold text-[#E8D9AE] hover:text-[#C5A45B]"
-                    >
-                      +91 800-KURMA-01
-                    </a>
-                  </div>
                 </div>
               </div>,
               document.body
