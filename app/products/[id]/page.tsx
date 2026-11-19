@@ -171,6 +171,9 @@ export default function ProductDetailPage() {
   const isMarbleBox =
     product.id === "marble-gift-box" ||
     productId === "marble-gift-box";
+  const isMdfBox =
+    product.id === "mdf-gift-box" ||
+    productId === "mdf-gift-box";
   const isHamper =
     product.id === "wicker-silk-incense-basket" ||
     productId === "wicker-silk-incense-basket" ||
@@ -999,10 +1002,11 @@ export default function ProductDetailPage() {
                   <button
                     type="button"
                     onClick={handleAddToCart}
+                    style={{ backgroundColor: added ? undefined : "#28513B" }}
                     className={`w-full py-3 sm:py-3.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer active:scale-98 ${
                       added
                         ? "bg-emerald-700 text-white"
-                        : "bg-[#072515] hover:bg-[#0c3823] text-white"
+                        : "bg-[#28513B] hover:bg-[#1e3e2d] text-white"
                     }`}
                   >
                     {added ? (
@@ -1011,10 +1015,7 @@ export default function ProductDetailPage() {
                         <span className="truncate">Added</span>
                       </>
                     ) : (
-                      <>
-                        <ShoppingBag className="w-4 h-4 text-[#eed08e] shrink-0" />
-                        <span className="truncate">Add to Cart</span>
-                      </>
+                      <span className="truncate">Add to Cart</span>
                     )}
                   </button>
 
@@ -1254,44 +1255,46 @@ export default function ProductDetailPage() {
         )}
       </main>
 
-      {/* Sticky Mobile Quick Buy Bar for Phones */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 px-4 py-2.5 sm:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <span className="text-[10px] text-stone-400 block font-sans leading-none">Total Price</span>
-          <span className="text-base font-bold font-serif text-stone-900 leading-tight">
-            {formatPrice(totalPrice)}
-          </span>
+      {/* Sticky Mobile Quick Buy Bar for Phones (Removed on MDF Gift Box in mobile responsive view) */}
+      {!isMdfBox && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 px-4 py-2.5 sm:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <span className="text-[10px] text-stone-400 block font-sans leading-none">Total Price</span>
+            <span className="text-base font-bold font-serif text-stone-900 leading-tight">
+              {formatPrice(totalPrice)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                added
+                  ? "bg-emerald-700 text-white border-emerald-700"
+                  : "border-stone-300 text-stone-800 bg-white hover:bg-stone-50"
+              }`}
+              aria-label="Add to cart"
+              title="Add to Cart"
+            >
+              {added ? <Check className="w-4 h-4 text-emerald-400" /> : <ShoppingBag className="w-4 h-4 text-stone-800" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCheckout(true);
+                setTimeout(() => {
+                  const el = document.getElementById("express-checkout-form");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              }}
+              className="py-2.5 px-4 rounded-xl bg-[#c0881b] hover:bg-[#a97514] text-white text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-98"
+            >
+              <span>Buy Now</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-              added
-                ? "bg-emerald-700 text-white border-emerald-700"
-                : "border-stone-300 text-stone-800 bg-white hover:bg-stone-50"
-            }`}
-            aria-label="Add to cart"
-            title="Add to Cart"
-          >
-            {added ? <Check className="w-4 h-4 text-emerald-400" /> : <ShoppingBag className="w-4 h-4 text-stone-800" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setShowCheckout(true);
-              setTimeout(() => {
-                const el = document.getElementById("express-checkout-form");
-                if (el) el.scrollIntoView({ behavior: "smooth" });
-              }, 100);
-            }}
-            className="py-2.5 px-4 rounded-xl bg-[#c0881b] hover:bg-[#a97514] text-white text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-98"
-          >
-            <span>Buy Now</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
+      )}
 
       <Footer />
     </div>

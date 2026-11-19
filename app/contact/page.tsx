@@ -91,11 +91,11 @@ export default function ContactPage() {
           {/* ========================================================================= */}
           <div className="lg:col-span-5 space-y-8 sm:space-y-10">
             {/* Header Text */}
-            <div className="space-y-3">
+            <div className="space-y-3 text-center lg:text-left">
               <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-serif font-normal text-[#1C1B18] tracking-tight leading-tight">
                 Get in touch
               </h1>
-              <p className="text-stone-600 text-sm sm:text-[15px] font-sans leading-relaxed">
+              <p className="text-stone-600 text-sm sm:text-[15px] font-sans leading-relaxed max-w-xl mx-auto lg:mx-0">
                 We&apos;re here for you every step of the way. Whether you have
                 questions, need order assistance, or want to share feedback, our
                 friendly customer support team is ready to assist. Our team is here
@@ -104,7 +104,7 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Items List */}
-            <div className="space-y-5">
+            <div className="space-y-5 max-w-md mx-auto lg:mx-0">
               {/* 1. Mail */}
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#FFF2E8] border border-[#FFE1CD] text-[#E07A2B] flex items-center justify-center shrink-0 shadow-2xs">
@@ -165,11 +165,11 @@ export default function ContactPage() {
             </div>
 
             {/* Stay Connected */}
-            <div className="space-y-3.5 pt-2">
+            <div className="space-y-3.5 pt-2 text-center lg:text-left">
               <h2 className="text-xl sm:text-2xl font-serif font-normal text-[#1C1B18] tracking-tight">
                 Stay Connected
               </h2>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center lg:justify-start gap-3">
                 <a
                   href="https://instagram.com"
                   target="_blank"
