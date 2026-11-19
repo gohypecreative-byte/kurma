@@ -65,7 +65,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
         </div>
 
         {/* Content Container (Headline, Subtitle, and Action CTAs) */}
-        <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 z-10 pb-20 min-[400px]:pb-24 sm:pb-16 lg:pb-20 pt-0 sm:pt-16 lg:pt-20">
+        <div className="relative w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 z-10 pb-28 min-[400px]:pb-32 sm:pb-16 lg:pb-20 pt-0 sm:pt-16 lg:pt-20">
           <div className="max-w-xl lg:max-w-[560px] xl:max-w-[640px] space-y-3.5 min-[380px]:space-y-4 sm:space-y-6">
             {/* Framer Motion Animated Headline */}
             {shouldReduceMotion ? (
@@ -133,13 +133,13 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
               </motion.p>
             )}
 
-            {/* Action Buttons - Matching Luxury Pill Style */}
+            {/* Action Buttons - Compact on Mobile */}
             {shouldReduceMotion ? (
-              <div className="flex flex-row items-center gap-2.5 sm:gap-4 pt-1.5 min-[380px]:pt-2 sm:pt-1 w-full sm:w-auto">
+              <div className="flex flex-row items-center gap-2 sm:gap-4 pt-1 sm:pt-1 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 min-[360px]:px-5 min-[360px]:py-3 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-[10px] min-[360px]:text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-bold tracking-wide uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
                 >
                   Explore Collection
                 </button>
@@ -147,7 +147,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreBestsellers || onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 min-[360px]:px-5 min-[360px]:py-3 sm:px-8 sm:py-4 bg-[#123D2D]/85 hover:bg-[#123D2D] text-white text-[10px] min-[360px]:text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs whitespace-nowrap"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#123D2D]/85 hover:bg-[#123D2D] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-semibold tracking-wide uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs whitespace-nowrap"
                 >
                   View Marble Trunk
                 </button>
@@ -157,12 +157,12 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.48, ease: LUXURY_EASE }}
-                className="flex flex-row items-center gap-2.5 sm:gap-4 pt-1.5 min-[380px]:pt-2 sm:pt-1 w-full sm:w-auto"
+                className="flex flex-row items-center gap-2 sm:gap-4 pt-1 sm:pt-1 w-full sm:w-auto"
               >
                 <button
                   type="button"
                   onClick={onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 min-[360px]:px-5 min-[360px]:py-3 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-[10px] min-[360px]:text-xs sm:text-sm font-bold tracking-wider uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#C5A45B] hover:bg-[#B5934A] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-bold tracking-wide uppercase rounded-full shadow-md hover:shadow-xl transition-all duration-200 active:scale-[0.98] cursor-pointer whitespace-nowrap"
                 >
                   Explore Collection
                 </button>
@@ -170,7 +170,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                 <button
                   type="button"
                   onClick={onExploreBestsellers || onExploreGifts}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 min-[360px]:px-5 min-[360px]:py-3 sm:px-8 sm:py-4 bg-[#123D2D]/85 hover:bg-[#123D2D] text-white text-[10px] min-[360px]:text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs whitespace-nowrap"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center px-3 py-2 min-[360px]:px-4 min-[360px]:py-2.5 sm:px-8 sm:py-4 bg-[#123D2D]/85 hover:bg-[#123D2D] text-white text-[9.5px] min-[360px]:text-[10.5px] sm:text-sm font-semibold tracking-wide uppercase rounded-full border border-[#C5A45B]/60 hover:border-[#C5A45B] transition-all duration-200 shadow-2xs active:scale-[0.98] cursor-pointer backdrop-blur-xs whitespace-nowrap"
                 >
                   View Marble Trunk
                 </button>

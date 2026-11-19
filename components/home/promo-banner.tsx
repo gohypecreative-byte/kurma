@@ -144,31 +144,31 @@ export function PromoBanner({ onExploreGifts }: PromoBannerProps) {
                 }}
                 className={`absolute top-0 w-[92vw] sm:w-[82vw] md:w-[78vw] lg:w-[74vw] max-w-[1020px] h-full rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ease-in-out cursor-pointer ${
                   isActive
-                    ? "z-20 shadow-[0_8px_30px_rgba(0,0,0,0.22)] opacity-100 ring-1 ring-[#1E1E1C]/15"
-                    : "z-10 shadow-xs opacity-80 hover:opacity-100"
+                    ? "z-20 shadow-none sm:shadow-[0_8px_30px_rgba(0,0,0,0.22)] opacity-100 ring-1 ring-[#1E1E1C]/15"
+                    : "z-10 shadow-none opacity-80 hover:opacity-100"
                 }`}
               >
                 <div className="relative w-full h-full overflow-hidden group">
-                  {/* Full Card Image Background - Contain without cropping */}
+                  {/* Full Card Image Background - Cover full card without bars */}
                   <Image
                     src={slide.productImage}
                     alt={slide.title}
                     fill
                     priority={idx === 0}
-                    className="object-contain object-center filter brightness-[1.04] contrast-[1.02] transition-transform duration-700 ease-out"
-                    style={{ objectFit: "contain", objectPosition: "center" }}
+                    className="object-cover object-center filter brightness-[1.04] contrast-[1.02] transition-transform duration-700 ease-out"
+                    style={{ objectFit: "cover", objectPosition: "center" }}
                     sizes="(max-width: 1024px) 90vw, 1020px"
                   />
 
-                  {/* Subtle, gentle gradient scrim so the image is clearly visible while text stays sharp */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 sm:via-black/20 to-transparent pointer-events-none" />
+                  {/* Gradient Scrim - Hidden completely on mobile to eliminate black shadow */}
+                  <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 sm:via-black/20 to-transparent pointer-events-none" />
 
                   {/* Left Content - Responsive width and clean typography */}
                   <div className="relative z-10 h-full flex flex-col justify-center px-4 sm:px-8 lg:px-10 max-w-[65%] sm:max-w-[50%] lg:max-w-[38%] text-white space-y-1 sm:space-y-1.5 pointer-events-none">
-                    <h3 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-[21px] xl:text-[22px] font-serif font-normal text-white tracking-tight leading-snug sm:leading-normal sm:whitespace-nowrap drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                    <h3 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-[21px] xl:text-[22px] font-serif font-normal text-white tracking-tight leading-snug sm:leading-normal sm:whitespace-nowrap drop-shadow-none sm:drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                       {slide.title}
                     </h3>
-                    <p className="text-[11px] sm:text-xs md:text-sm text-stone-200/95 font-light leading-relaxed truncate max-w-full drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+                    <p className="text-[11px] sm:text-xs md:text-sm text-stone-200/95 font-light leading-relaxed truncate max-w-full drop-shadow-none sm:drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                       {slide.subtitle}
                     </p>
                   </div>
