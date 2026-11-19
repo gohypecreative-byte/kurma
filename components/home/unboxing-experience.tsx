@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ShoppingCart, Check, Heart } from "lucide-react";
+import { ShoppingCart, Check, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useWishlist } from "@/lib/wishlist-context";
 import { createCartItemId } from "@/lib/products";
@@ -133,6 +133,25 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
   const [isMobileInteracting, setIsMobileInteracting] = useState(false);
   const interactionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Mouse cursor drag-to-scroll refs
+  const isMouseDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftStartRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+
+  // Global mouseup listener so cursor drag cleanly ends even when released outside container
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isMouseDownRef.current) {
+        handleMouseUpOrLeave();
+      }
+    };
+    window.addEventListener("mouseup", handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, []);
+
   // Auto-advance horizontally every 3.2 seconds on mobile (pauses on user interaction)
   useEffect(() => {
     if (isMobileInteracting) return;
@@ -171,6 +190,76 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
     const currentIdx = Math.round(container.scrollLeft / (step || 1));
     setMobileActiveIndex(Math.min(cardCount - 1, Math.max(0, currentIdx)));
 
+    setIsMobileInteracting(true);
+    if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+    interactionTimerRef.current = setTimeout(() => {
+      setIsMobileInteracting(false);
+    }, 3500);
+  };
+
+  // Mouse drag handlers for desktop / cursor side-scrolling
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = mobileScrollRef.current;
+    if (!container) return;
+    isMouseDownRef.current = true;
+    hasDraggedRef.current = false;
+    startXRef.current = e.pageX;
+    scrollLeftStartRef.current = container.scrollLeft;
+    setIsMobileInteracting(true);
+    // Temporarily turn off CSS snap so manual cursor drag is buttery smooth
+    container.style.scrollSnapType = "none";
+    container.style.scrollBehavior = "auto";
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isMouseDownRef.current) return;
+    const container = mobileScrollRef.current;
+    if (!container) return;
+    e.preventDefault();
+    const currentX = e.pageX;
+    const deltaX = currentX - startXRef.current;
+    if (Math.abs(deltaX) > 4) {
+      hasDraggedRef.current = true;
+    }
+    container.scrollLeft = scrollLeftStartRef.current - deltaX;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (!isMouseDownRef.current) return;
+    isMouseDownRef.current = false;
+    const container = mobileScrollRef.current;
+    if (container) {
+      // Re-enable smooth CSS snapping
+      container.style.scrollSnapType = "x mandatory";
+      container.style.scrollBehavior = "smooth";
+      // Snap to closest card
+      const firstCard = container.firstElementChild as HTMLElement;
+      const step = firstCard ? firstCard.offsetWidth + 12 : container.clientWidth / 2;
+      const nearestIdx = Math.round(container.scrollLeft / (step || 1));
+      container.scrollTo({
+        left: nearestIdx * step,
+        behavior: "smooth",
+      });
+      setMobileActiveIndex(nearestIdx);
+    }
+
+    if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+    interactionTimerRef.current = setTimeout(() => {
+      setIsMobileInteracting(false);
+      hasDraggedRef.current = false;
+    }, 3200);
+  };
+
+  // Step scroll by left / right button
+  const scrollByDirection = (dir: "left" | "right") => {
+    const container = mobileScrollRef.current;
+    if (!container) return;
+    const firstCard = container.firstElementChild as HTMLElement;
+    const step = firstCard ? firstCard.offsetWidth + 12 : container.clientWidth / 2;
+    container.scrollBy({
+      left: dir === "left" ? -step : step,
+      behavior: "smooth",
+    });
     setIsMobileInteracting(true);
     if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
     interactionTimerRef.current = setTimeout(() => {
@@ -592,7 +681,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       {/* ================= MOBILE RESPONSIVE VIEW (HORIZONTAL AUTO & SIDE SCROLL) ================= */}
       <section
         id="elements-collection-mobile"
-        className="block md:hidden bg-[#E4DCD0] text-[#1C1B18] select-none py-8 px-0 border-t border-[#DDD4C6] overflow-hidden"
+        className="block md:hidden bg-[#E4DCD0] text-[#1C1B18] select-none py-8 border-t border-[#DDD4C6] overflow-hidden"
       >
         <div className="w-full">
           {/* Section Header */}
@@ -605,111 +694,154 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
             </p>
           </div>
 
-          {/* Horizontal Scrolling Track (Auto-scroll + Manual Side Swipe, exactly 2 cards visible) */}
-          <div
-            ref={mobileScrollRef}
-            onScroll={handleMobileScroll}
-            onTouchStart={() => setIsMobileInteracting(true)}
-            onTouchEnd={() => {
-              if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
-              interactionTimerRef.current = setTimeout(() => setIsMobileInteracting(false), 3000);
-            }}
-            className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-3 pb-3 pt-1 touch-pan-x"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
-          >
-            {FIVE_ELEMENTS_PRODUCTS.map((prod) => {
-              const isAdded = !!addedIds[prod.id];
-              const isWishlisted = isInWishlist(prod.id) || isInWishlist(prod.skuId);
+          {/* Carousel Viewport Wrapper with side padding & clipping */}
+          <div className="relative w-full px-3.5 sm:px-4">
+            {/* Left Chevron Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                scrollByDirection("left");
+              }}
+              className="absolute left-1 top-[40%] -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-white/90 backdrop-blur-xs border border-stone-300 shadow-md flex items-center justify-center text-stone-800 hover:bg-white active:scale-90 transition-all opacity-80 hover:opacity-100 cursor-pointer"
+              aria-label="Previous card"
+            >
+              <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
+            </button>
 
-              return (
-                <div
-                  key={`mobile-${prod.id}`}
-                  onClick={() => router.push(`/products/${prod.skuId}`)}
-                  className="w-[calc(50%-6px)] shrink-0 snap-start group relative flex flex-col cursor-pointer select-none"
-                >
-                  {/* Card Image Canvas - End to End without cutting */}
-                  <div className="relative w-full aspect-[445/1024] overflow-hidden rounded-lg bg-transparent flex items-center justify-center p-0 shadow-sm border border-[#DDD4C6]/80">
-                    <Image
-                      src={prod.image}
-                      alt={prod.name}
-                      fill
-                      loading="lazy"
-                      sizes="(max-width: 640px) 210px, 240px"
-                      className="object-contain w-full h-full p-0 select-none pointer-events-none group-hover:scale-102 transition-transform duration-300"
-                    />
+            {/* Right Chevron Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                scrollByDirection("right");
+              }}
+              className="absolute right-1 top-[40%] -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-white/90 backdrop-blur-xs border border-stone-300 shadow-md flex items-center justify-center text-stone-800 hover:bg-white active:scale-90 transition-all opacity-80 hover:opacity-100 cursor-pointer"
+              aria-label="Next card"
+            >
+              <ChevronRight className="w-4 h-4 stroke-[2.2]" />
+            </button>
 
-                    {/* Wishlist Heart Button on Upper Right */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
+            {/* Horizontal Scrolling Track (Strictly 2 cards visible at a time, cursor drag & touch swipe) */}
+            <div
+              ref={mobileScrollRef}
+              onScroll={handleMobileScroll}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUpOrLeave}
+              onMouseLeave={handleMouseUpOrLeave}
+              onTouchStart={() => setIsMobileInteracting(true)}
+              onTouchEnd={() => {
+                if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+                interactionTimerRef.current = setTimeout(() => setIsMobileInteracting(false), 3000);
+              }}
+              className="w-full flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar p-0 pb-3 pt-1 touch-pan-x cursor-grab active:cursor-grabbing select-none"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                WebkitOverflowScrolling: "touch",
+              }}
+            >
+              {FIVE_ELEMENTS_PRODUCTS.map((prod) => {
+                const isAdded = !!addedIds[prod.id];
+                const isWishlisted = isInWishlist(prod.id) || isInWishlist(prod.skuId);
+
+                return (
+                  <div
+                    key={`mobile-${prod.id}`}
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      if (hasDraggedRef.current) {
+                        e.preventDefault();
                         e.stopPropagation();
-                        toggleWishlist({
-                          id: prod.id,
-                          name: prod.name,
-                          price: prod.price,
-                          priceDisplay: prod.priceDisplay,
-                          image: prod.image,
-                          skuId: prod.skuId,
-                        });
-                      }}
-                      title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                      className="group/btn absolute top-2 right-2 z-10 p-1 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
-                    >
-                      <Heart
-                        className={`w-4 h-4 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] ${isWishlisted
-                          ? "fill-white text-white scale-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
-                          : "fill-transparent text-white group-hover/btn:scale-110"
-                          }`}
+                        return;
+                      }
+                      router.push(`/products/${prod.skuId}`);
+                    }}
+                    className="w-[calc(50%-6px)] min-w-[calc(50%-6px)] max-w-[calc(50%-6px)] shrink-0 snap-start group relative flex flex-col cursor-pointer select-none"
+                  >
+                    {/* Card Image Canvas - End to End without cutting */}
+                    <div className="relative w-full aspect-[445/1024] overflow-hidden rounded-lg bg-transparent flex items-center justify-center p-0 shadow-sm border border-[#DDD4C6]/80">
+                      <Image
+                        src={prod.image}
+                        alt={prod.name}
+                        fill
+                        loading="lazy"
+                        draggable={false}
+                        sizes="(max-width: 640px) 210px, 240px"
+                        className="object-contain w-full h-full p-0 select-none pointer-events-none group-hover:scale-102 transition-transform duration-300"
                       />
-                    </button>
-                  </div>
 
-                  {/* Card Details Directly Below Image */}
-                  <div className="mt-2.5 flex items-start justify-between gap-1.5 px-0.5">
-                    <div className="space-y-0.5 min-w-0 flex-1">
-                      <h3 className="text-xs font-semibold text-[#1C1B18] truncate">
-                        {prod.name}
-                      </h3>
-                      <p className="text-[10px] text-stone-500 truncate font-sans">
-                        {prod.subtitle}
-                      </p>
-                      <div className="flex items-center gap-1.5 font-sans pt-0.5">
-                        <span className="text-xs font-bold text-[#8C6215]">
-                          {prod.priceDisplay}
-                        </span>
-                        <span className="text-[10px] text-stone-400 line-through">
-                          {prod.originalPriceDisplay}
-                        </span>
-                      </div>
+                      {/* Wishlist Heart Button on Upper Right */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishlist({
+                            id: prod.id,
+                            name: prod.name,
+                            price: prod.price,
+                            priceDisplay: prod.priceDisplay,
+                            image: prod.image,
+                            skuId: prod.skuId,
+                          });
+                        }}
+                        title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                        className="group/btn absolute top-2 right-2 z-10 p-1 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
+                      >
+                        <Heart
+                          className={`w-4 h-4 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] ${isWishlisted
+                            ? "fill-white text-white scale-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
+                            : "fill-transparent text-white group-hover/btn:scale-110"
+                            }`}
+                        />
+                      </button>
                     </div>
 
-                    {/* Quick Add To Cart Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleQuickAdd(prod);
-                      }}
-                      title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                      aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                      className={`p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 active:scale-95 cursor-pointer shrink-0 mt-0.5 ${isAdded ? "bg-emerald-600 text-white" : "bg-[#092B20] hover:bg-[#123D2D] text-[#C5A45B]"
-                        }`}
-                    >
-                      {isAdded ? (
-                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                      ) : (
-                        <ShoppingCart className="w-3.5 h-3.5 stroke-[2]" />
-                      )}
-                    </button>
+                    {/* Card Details Directly Below Image */}
+                    <div className="mt-2.5 flex items-start justify-between gap-1.5 px-0.5">
+                      <div className="space-y-0.5 min-w-0 flex-1">
+                        <h3 className="text-xs font-semibold text-[#1C1B18] truncate">
+                          {prod.name}
+                        </h3>
+                        <p className="text-[10px] text-stone-500 truncate font-sans">
+                          {prod.subtitle}
+                        </p>
+                        <div className="flex items-center gap-1.5 font-sans pt-0.5">
+                          <span className="text-xs font-bold text-[#8C6215]">
+                            {prod.priceDisplay}
+                          </span>
+                          <span className="text-[10px] text-stone-400 line-through">
+                            {prod.originalPriceDisplay}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Quick Add To Cart Button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleQuickAdd(prod);
+                        }}
+                        title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
+                        aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
+                        className={`p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-md transition-all duration-200 active:scale-95 cursor-pointer shrink-0 mt-0.5 ${isAdded ? "bg-emerald-600 text-white" : "bg-[#092B20] hover:bg-[#123D2D] text-[#C5A45B]"
+                          }`}
+                      >
+                        {isAdded ? (
+                          <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                        ) : (
+                          <ShoppingCart className="w-3.5 h-3.5 stroke-[2]" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           {/* Carousel Slide Indicators */}
