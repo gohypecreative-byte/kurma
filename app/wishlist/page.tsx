@@ -37,10 +37,6 @@ export default function WishlistPage() {
         {/* Header Row */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 border-b border-[#DDD3C2]/70">
           <div>
-            <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[#8C6215] font-bold mb-2">
-              <Heart className="w-4 h-4 fill-[#8C6215] text-[#8C6215]" />
-              <span>Sacred Keepsakes</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light text-[#092B20]">
               My Wishlist ({wishlistCount})
             </h1>
@@ -131,9 +127,9 @@ export default function WishlistPage() {
                   <button
                     type="button"
                     onClick={() => handleMoveToCart(item)}
-                    className="w-full py-2.5 px-3 bg-[#092B20] hover:bg-[#123D2D] text-[#C5A45B] border border-[#28513B]/80 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    style={{ backgroundColor: "#28513B" }}
+                    className="w-full py-2.5 px-3 bg-[#28513B] hover:bg-[#1e3e2d] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center transition-colors cursor-pointer"
                   >
-                    <ShoppingBag className="w-3.5 h-3.5" />
                     <span>Move to Cart</span>
                   </button>
                 </div>

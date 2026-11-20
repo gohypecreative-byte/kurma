@@ -437,8 +437,8 @@ function BoxEditorInner() {
     <div className="min-h-screen bg-[#FAF8F5] text-[#1A1A18] font-sans antialiased flex flex-col selection:bg-[#eed08e]/30 selection:text-[#072515]">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-[#072515] text-[#eed08e] rounded-xl shadow-2xl text-xs font-medium border border-[#eed08e]/30 animate-in slide-in-from-bottom-5">
-          <CheckCircle2 className="size-4 shrink-0 text-[#eed08e]" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-[#28513B] text-white rounded-xl shadow-2xl text-xs font-medium border border-white/20 animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="size-4 shrink-0 text-white" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -494,9 +494,9 @@ function BoxEditorInner() {
               type="button"
               onClick={handleSaveBox}
               disabled={isSaving}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-bold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#28513B] text-white text-xs font-bold hover:bg-[#28513B]/90 transition shadow-sm cursor-pointer disabled:opacity-50"
             >
-              <Save className="size-3.5" />
+              <Save className="size-3.5 text-white" />
               <span>{isSaving ? "Saving Changes..." : "Save Box Changes"}</span>
             </button>
           </div>
@@ -681,7 +681,7 @@ function BoxEditorInner() {
                       onClick={() => setCapacity(slots)}
                       className={`px-3 py-1 rounded-lg text-xs font-semibold border transition cursor-pointer ${
                         capacity === slots
-                          ? "bg-[#072515] text-[#eed08e] border-[#072515]"
+                          ? "bg-[#28513B] text-white border-[#28513B]"
                           : "bg-white text-stone-700 border-stone-200 hover:border-stone-400"
                       }`}
                     >
@@ -731,9 +731,9 @@ function BoxEditorInner() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-bold hover:bg-[#072515]/90 transition shadow-2xs cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#28513B] text-white text-xs font-bold hover:bg-[#28513B]/90 transition shadow-2xs cursor-pointer"
                     >
-                      <Upload className="size-3.5" />
+                      <Upload className="size-3.5 text-white" />
                       <span>Upload Image File</span>
                     </button>
                     <input
@@ -906,7 +906,7 @@ function BoxEditorInner() {
                       onClick={() => router.push(`/admin/customise/edit?id=${b.id}`)}
                       className={`w-full p-2 rounded-xl border flex items-center justify-between text-left transition cursor-pointer ${
                         isCurrent
-                          ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
+                          ? "bg-[#28513B] text-white border-[#28513B] font-bold"
                           : "bg-stone-50/70 hover:bg-stone-100 border-black/5 text-stone-800"
                       }`}
                     >
@@ -931,9 +931,9 @@ function BoxEditorInner() {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="w-full py-2.5 rounded-xl bg-[#eed08e] text-[#072515] font-bold text-xs hover:bg-[#eed08e]/90 transition shadow-sm cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-xl bg-[#28513B] hover:bg-[#28513B]/90 text-white border border-[#3C6E52] font-bold text-xs transition shadow-sm cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <Save className="size-4" />
+                  <Save className="size-4 text-white" />
                   <span>{isSaving ? "Saving Trunk Changes..." : "Save Box Changes"}</span>
                 </button>
                 <Link

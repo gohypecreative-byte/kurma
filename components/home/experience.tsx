@@ -593,10 +593,41 @@ export function KurmaFAQSection() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      transition={{ duration: 0.28, ease: "easeInOut" }}
                       className="px-4 sm:px-5 pb-4 pt-0 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-stone-100 font-sans overflow-hidden"
                     >
-                      <p className="pt-2">{faq.answer}</p>
+                      <motion.p
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                          hidden: { opacity: 0 },
+                          visible: {
+                            opacity: 1,
+                            transition: {
+                              staggerChildren: 0.02,
+                              delayChildren: 0.08,
+                            },
+                          },
+                        }}
+                        className="pt-2 leading-relaxed"
+                      >
+                        {faq.answer.split(" ").map((word, wIdx) => (
+                          <motion.span
+                            key={wIdx}
+                            variants={{
+                              hidden: { opacity: 0, y: 5 },
+                              visible: {
+                                opacity: 1,
+                                y: 0,
+                                transition: { duration: 0.2, ease: "easeOut" },
+                              },
+                            }}
+                            className="inline-block mr-[0.25em]"
+                          >
+                            {word}
+                          </motion.span>
+                        ))}
+                      </motion.p>
                     </motion.div>
                   )}
                 </AnimatePresence>

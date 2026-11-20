@@ -508,7 +508,7 @@ export default function ProductDetailPage() {
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515]">
       <Navbar cartCount={cartCount} onOpenCart={() => setIsCartOpen(true)} />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8 pb-20 sm:pb-8">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8 pb-8">
         {/* Breadcrumb Navigation */}
         {!hidePromotionalElements && (
           <nav className="flex items-center gap-2 text-xs font-sans text-stone-400">
@@ -1255,46 +1255,7 @@ export default function ProductDetailPage() {
         )}
       </main>
 
-      {/* Sticky Mobile Quick Buy Bar for Phones (Removed on MDF Gift Box in mobile responsive view) */}
-      {!isMdfBox && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200/90 px-4 py-2.5 sm:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <span className="text-[10px] text-stone-400 block font-sans leading-none">Total Price</span>
-            <span className="text-base font-bold font-serif text-stone-900 leading-tight">
-              {formatPrice(totalPrice)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                added
-                  ? "bg-emerald-700 text-white border-emerald-700"
-                  : "border-stone-300 text-stone-800 bg-white hover:bg-stone-50"
-              }`}
-              aria-label="Add to cart"
-              title="Add to Cart"
-            >
-              {added ? <Check className="w-4 h-4 text-emerald-400" /> : <ShoppingBag className="w-4 h-4 text-stone-800" />}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowCheckout(true);
-                setTimeout(() => {
-                  const el = document.getElementById("express-checkout-form");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }, 100);
-              }}
-              className="py-2.5 px-4 rounded-xl bg-[#c0881b] hover:bg-[#a97514] text-white text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-98"
-            >
-              <span>Buy Now</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
+
 
       <Footer />
     </div>

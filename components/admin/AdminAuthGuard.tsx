@@ -193,27 +193,8 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
   // 1. Loading / Verification State
   if (authStatus === "checking") {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center p-6 text-[#1A1A18] selection:bg-[#eed08e]/30">
-        <div className="flex flex-col items-center max-w-sm text-center space-y-4">
-          <div className="relative size-16 rounded-2xl overflow-hidden shadow-lg border border-[#eed08e]/40 bg-[#072515] flex items-center justify-center animate-pulse">
-            <Image
-              src="/images/logo.jpeg"
-              alt="Kurma Logo"
-              width={64}
-              height={64}
-              className="w-full h-full object-cover"
-              priority
-            />
-          </div>
-          <div className="space-y-1">
-            <h2 className="font-serif text-lg font-semibold tracking-wide text-[#072515]">KURMA ATELIER</h2>
-            <p className="text-xs text-black/55 tracking-wider uppercase font-medium">Administration Security Console</p>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-[#072515] font-medium pt-2">
-            <Loader2 className="size-4 animate-spin text-[#072515]" />
-            <span>Verifying administrator credentials...</span>
-          </div>
-        </div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-[#28513B]" />
       </div>
     );
   }

@@ -582,7 +582,7 @@ function CustomiseAdminInner() {
                         onClick={() => setEditingBox({ ...editingBox, image: p.url })}
                         className={`px-2 py-1 rounded-md text-[10px] border transition cursor-pointer ${
                           editingBox.image === p.url
-                            ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
+                            ? "bg-[#072515] text-white border-[#072515] font-bold"
                             : "bg-white text-black/70 border-black/15 hover:border-black/40"
                         }`}
                       >
@@ -630,7 +630,7 @@ function CustomiseAdminInner() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-[#072515] text-[#eed08e] font-semibold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-lg bg-[#072515] text-white font-semibold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer flex items-center gap-1.5"
                 >
                   <Check className="size-3.5" />
                   <span>Save Trunk Details</span>
@@ -739,7 +739,7 @@ function CustomiseAdminInner() {
                       onClick={() => setNewBoxData({ ...newBoxData, image: p.url })}
                       className={`px-2 py-1 rounded-md text-[10px] border transition cursor-pointer ${
                         newBoxData.image === p.url
-                          ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
+                          ? "bg-[#072515] text-white border-[#072515] font-bold"
                           : "bg-white text-black/70 border-black/15 hover:border-black/40"
                       }`}
                     >
@@ -770,7 +770,7 @@ function CustomiseAdminInner() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-[#072515] text-[#eed08e] font-semibold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer"
+                  className="px-4 py-2 rounded-lg bg-[#072515] text-white font-semibold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer"
                 >
                   Create Bespoke Trunk
                 </button>
@@ -827,7 +827,7 @@ function CustomiseAdminInner() {
                 localStorage.setItem("kurma_custom_goodies", JSON.stringify(goodies));
                 triggerToast("All Customise Studio changes saved!");
               }}
-              className="px-4 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-1.5 rounded-lg bg-[#072515] text-white text-xs font-semibold hover:bg-[#072515]/90 transition shadow-sm flex items-center gap-1.5 cursor-pointer"
             >
               <Save className="size-3.5" />
               <span>Save Studio Config</span>
@@ -945,7 +945,7 @@ function CustomiseAdminInner() {
             <button
               type="button"
               onClick={() => router.push("/admin/customise/edit?id=new")}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#072515] text-white text-xs font-semibold hover:bg-[#072515]/90 transition cursor-pointer"
             >
               <Plus className="size-3.5" />
               <span>Add Bespoke Box</span>

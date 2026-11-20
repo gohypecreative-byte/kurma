@@ -550,7 +550,7 @@ export function GiftingGallery() {
                           fill
                           draggable={false}
                           loading={absOffset <= 1 ? "eager" : "lazy"}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 select-none pointer-events-none"
+                          className={`w-full h-full object-cover object-center ${isCenter ? "group-hover:scale-105" : ""} transition-transform duration-500 select-none pointer-events-none`}
                           sizes="(max-width: 640px) 270px, (max-width: 1024px) 305px, 335px"
                         />
 
@@ -641,10 +641,13 @@ export function GiftingGallery() {
                           </>
                         )}
 
-                        {/* Hover Details Overlay pinned at the bottom end of the image */}
+                        {/* Hover Details Overlay pinned at the bottom end of the image - only shown on front center card */}
                         <div
-                          className={`absolute bottom-0 inset-x-0 z-30 pt-4 pb-2.5 px-3 sm:px-3.5 transition-all duration-300 pointer-events-auto ${isCenter ? "max-sm:opacity-100 max-sm:translate-y-0" : "max-sm:opacity-0 max-sm:translate-y-2"
-                            } opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0`}
+                          className={`absolute bottom-0 inset-x-0 z-30 pt-4 pb-2.5 px-3 sm:px-3.5 transition-all duration-300 ${
+                            isCenter
+                              ? "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 max-sm:opacity-100 max-sm:translate-y-0 pointer-events-auto"
+                              : "opacity-0 pointer-events-none translate-y-2"
+                          }`}
                         >
                           <div className="flex items-start justify-between gap-1.5 sm:gap-2">
                             <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">

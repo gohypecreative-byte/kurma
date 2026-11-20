@@ -447,12 +447,10 @@ export function Navbar({ cartCount, onOpenCart }: NavbarProps) {
                   <button
                     type="button"
                     onClick={handleToggleAccountMenu}
-                    aria-label={`Account menu for ${userDisplayName}`}
-                    className="h-10 sm:h-11 px-3.5 sm:px-4 shrink-0 rounded-full border border-[#28513B]/60 hover:border-[#C5A45B]/60 bg-[#123D2D]/60 hover:bg-[#123D2D] active:bg-[#123D2D] text-[#E8D9AE] hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
+                    aria-label="Account menu"
+                    className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-full border border-transparent hover:border-[#28513B]/40 bg-transparent hover:bg-[#123D2D]/60 active:bg-[#123D2D] text-[#E8D9AE]/90 hover:text-[#C5A45B] flex items-center justify-center transition-colors shadow-2xs hover:shadow-xs cursor-pointer touch-manipulation"
                   >
-                    <span className="text-xs sm:text-[13px] font-semibold tracking-wide max-w-[100px] truncate pointer-events-none">
-                      {userDisplayName}
-                    </span>
+                    <User className="w-4.5 h-4.5 stroke-[1.8] pointer-events-none" />
                   </button>
 
                   {/* Account Popover Menu */}

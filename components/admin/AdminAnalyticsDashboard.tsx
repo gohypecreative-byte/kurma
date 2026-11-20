@@ -508,30 +508,29 @@ export default function AdminAnalyticsDashboard({
   const activePoint = hoveredPointIndex !== null ? points[hoveredPointIndex] : points[points.length - 1];
 
   return (
-    <main className="flex-1 p-4 sm:p-6 bg-[#FAF8F5] space-y-6">
+    <main className="min-h-full flex-1 bg-[#f5f5f5] p-4 text-black sm:p-5 space-y-4">
       {/* ==================================================================== */}
       {/* 1. HEADER & CONTROLS BAR                                             */}
       {/* ==================================================================== */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-black/10">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#072515] tracking-tight">
-            Analytics &amp; Atelier Intelligence
-          </h1>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="flex items-center gap-2 text-lg font-semibold text-black">
+          <BarChart3 className="size-4" />
+          Analytics
+        </h1>
 
         {/* Global Controls: Timeframe Selector & Export */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Timeframe Pills */}
-          <div className="flex items-center p-1 bg-white rounded-xl border border-black/10 shadow-2xs text-xs font-semibold">
+          <div className="flex items-center p-0.5 bg-black/[0.05] rounded-lg text-xs font-medium">
             {(["7d", "30d", "90d", "ytd", "all"] as AnalyticsTimeframe[]).map((tf) => (
               <button
                 key={tf}
                 type="button"
                 onClick={() => setTimeframe(tf)}
-                className={`px-3 py-1.5 rounded-lg transition cursor-pointer capitalize ${
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer capitalize ${
                   timeframe === tf
-                    ? "bg-[#072515] text-[#eed08e] shadow-2xs font-bold"
-                    : "text-black/60 hover:text-black hover:bg-black/5"
+                    ? "bg-white text-black shadow-2xs font-semibold"
+                    : "text-black/60 hover:text-black"
                 }`}
               >
                 {tf === "7d" ? "7D" : tf === "30d" ? "30D" : tf === "90d" ? "90D" : tf === "ytd" ? "YTD" : "All"}
@@ -543,11 +542,11 @@ export default function AdminAnalyticsDashboard({
           <button
             type="button"
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-stone-50 border border-black/15 text-xs font-semibold text-[#072515] transition shadow-2xs cursor-pointer group"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium hover:bg-black/10 text-black transition"
             title="Download formatted CSV report"
           >
-            <Download className="size-3.5 text-[#c89e43] group-hover:scale-110 transition-transform" />
-            <span>Export Report</span>
+            <Download className="size-3.5" />
+            <span>Export</span>
           </button>
         </div>
       </div>
@@ -555,27 +554,27 @@ export default function AdminAnalyticsDashboard({
       {/* ==================================================================== */}
       {/* 2. SUB-TAB SEGMENTED NAVIGATION                                      */}
       {/* ==================================================================== */}
-      <div className="flex items-center gap-1.5 p-1 bg-stone-200/60 rounded-xl text-xs font-semibold w-fit max-w-full overflow-x-auto">
+      <div className="flex items-center gap-1 p-1 bg-black/[0.04] rounded-lg text-xs font-medium w-fit max-w-full overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab("overview")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition whitespace-nowrap cursor-pointer ${
             activeTab === "overview"
-              ? "bg-[#072515] text-[#eed08e] shadow-sm font-bold"
-              : "text-stone-700 hover:text-black hover:bg-white/60"
+              ? "bg-white text-black shadow-2xs font-semibold"
+              : "text-black/60 hover:text-black"
           }`}
         >
           <Activity className="size-3.5" />
-          <span>Executive Overview</span>
+          <span>Overview</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("sales")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition whitespace-nowrap cursor-pointer ${
             activeTab === "sales"
-              ? "bg-[#072515] text-[#eed08e] shadow-sm font-bold"
-              : "text-stone-700 hover:text-black hover:bg-white/60"
+              ? "bg-white text-black shadow-2xs font-semibold"
+              : "text-black/60 hover:text-black"
           }`}
         >
           <TrendingUp className="size-3.5" />
@@ -585,814 +584,613 @@ export default function AdminAnalyticsDashboard({
         <button
           type="button"
           onClick={() => setActiveTab("products")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition whitespace-nowrap cursor-pointer ${
             activeTab === "products"
-              ? "bg-[#072515] text-[#eed08e] shadow-sm font-bold"
-              : "text-stone-700 hover:text-black hover:bg-white/60"
+              ? "bg-white text-black shadow-2xs font-semibold"
+              : "text-black/60 hover:text-black"
           }`}
         >
           <Flame className="size-3.5" />
-          <span>Product Performance ({BEST_SELLER_PRODUCTS.length})</span>
+          <span>Products</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("customers")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition whitespace-nowrap cursor-pointer ${
             activeTab === "customers"
-              ? "bg-[#072515] text-[#eed08e] shadow-sm font-bold"
-              : "text-stone-700 hover:text-black hover:bg-white/60"
+              ? "bg-white text-black shadow-2xs font-semibold"
+              : "text-black/60 hover:text-black"
           }`}
         >
           <UsersRound className="size-3.5" />
-          <span>Visitors &amp; Patrons</span>
+          <span>Customers</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("inventory")}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition whitespace-nowrap cursor-pointer ${
             activeTab === "inventory"
-              ? "bg-[#072515] text-[#eed08e] shadow-sm font-bold"
-              : "text-stone-700 hover:text-black hover:bg-white/60"
+              ? "bg-white text-black shadow-2xs font-semibold"
+              : "text-black/60 hover:text-black"
           }`}
         >
           <Boxes className="size-3.5" />
-          <span>Inventory Insights</span>
+          <span>Inventory</span>
         </button>
       </div>
 
       {/* ==================================================================== */}
-      {/* 3. THREE HERO KPI METRIC CARDS                                        */}
+      {/* 3. METRIC CARDS STRIP (admin-panel styling)                          */}
       {/* ==================================================================== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* CARD 1: TOTAL REVENUE */}
-        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] uppercase font-bold text-black/50 tracking-wider">Total Sales Revenue</span>
-            <div className="size-8 rounded-lg bg-[#072515]/5 text-[#072515] flex items-center justify-center">
-              <DollarSign className="size-4 text-[#c89e43]" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="text-2xl font-serif font-bold text-[#072515] block">
-              {formatINR(currentData.totalRevenue)}
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                <TrendingUp className="size-3" />
-                +{currentData.revenueGrowth}%
-              </span>
-              <span className="text-[11px] text-black/50">vs prior period</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-black/5 flex items-center justify-between text-[11px] text-black/60">
-            <span>Avg Order Value:</span>
-            <span className="font-bold text-[#072515]">{formatINR(currentData.aov)}</span>
-          </div>
-          <div className="absolute -right-6 -bottom-6 size-24 rounded-full bg-[#eed08e]/10 pointer-events-none" />
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Total sales
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {formatINR(currentData.totalRevenue)}{" "}
+            <span className="text-xs font-normal text-emerald-700">+{currentData.revenueGrowth}%</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
         </div>
 
-        {/* CARD 2: TOTAL NUMBER OF SALES (ORDERS) */}
-        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] uppercase font-bold text-black/50 tracking-wider">Total Gifting Orders</span>
-            <div className="size-8 rounded-lg bg-[#072515]/5 text-[#072515] flex items-center justify-center">
-              <ShoppingBag className="size-4 text-[#072515]" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="text-2xl font-serif font-bold text-[#072515] block">
-              {currentData.totalOrders.toLocaleString()} <span className="text-sm font-normal text-black/50">orders</span>
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                <TrendingUp className="size-3" />
-                +{currentData.ordersGrowth}%
-              </span>
-              <span className="text-[11px] text-black/50">fulfilled via ateliers</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-black/5 flex items-center justify-between text-[11px] text-black/60">
-            <span>Conversion Rate:</span>
-            <span className="font-bold text-emerald-700">{currentData.conversionRate}%</span>
-          </div>
-          <div className="absolute -right-6 -bottom-6 size-24 rounded-full bg-[#072515]/5 pointer-events-none" />
+        {/* CARD 2: TOTAL ORDERS */}
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Total orders
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {currentData.totalOrders.toLocaleString()}{" "}
+            <span className="text-xs font-normal text-emerald-700">+{currentData.ordersGrowth}%</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
         </div>
 
-        {/* CARD 3: CUSTOMERS WHO VISITED WEBSITE (FOOTFALL) */}
-        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] uppercase font-bold text-black/50 tracking-wider">Website Footfall Visitors</span>
-            <div className="size-8 rounded-lg bg-[#072515]/5 text-[#072515] flex items-center justify-center">
-              <Eye className="size-4 text-[#c89e43]" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="text-2xl font-serif font-bold text-[#072515] block">
-              {currentData.visitors.toLocaleString()} <span className="text-sm font-normal text-black/50">patrons</span>
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                <ArrowUpRight className="size-3" />
-                +{currentData.visitorsGrowth}%
-              </span>
-              <span className="text-[11px] text-black/50">unique sanctuary sessions</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-black/5 flex items-center justify-between text-[11px] text-black/60">
-            <span>Returning Patrons:</span>
-            <span className="font-bold text-[#072515]">38.6%</span>
-          </div>
-          <div className="absolute -right-6 -bottom-6 size-24 rounded-full bg-[#eed08e]/10 pointer-events-none" />
+        {/* CARD 3: SESSIONS */}
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Online store sessions
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {currentData.visitors.toLocaleString()}{" "}
+            <span className="text-xs font-normal text-emerald-700">+{currentData.visitorsGrowth}%</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
+        </div>
+
+        {/* CARD 4: CONVERSION RATE */}
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Online store conversion rate
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {currentData.conversionRate}%{" "}
+            <span className="text-xs font-normal text-black/45">AOV {formatINR(currentData.aov)}</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
         </div>
       </div>
 
       {/* ==================================================================== */}
-      {/* 4. INTERACTIVE PERFORMANCE VELOCITY CHART                            */}
+      {/* 4. PERFORMANCE VELOCITY CHART (admin-panel styled)                   */}
       {/* ==================================================================== */}
       {(activeTab === "overview" || activeTab === "sales" || activeTab === "customers") && (
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs p-5 space-y-4">
-        {/* Chart Header & Metric Switcher Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-black/5">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-serif font-bold text-base text-[#072515]">
-                Atelier Sales &amp; Performance Velocity
-              </h3>
-              <span className="text-[11px] font-medium text-black/50">({currentData.label})</span>
+        <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 space-y-3">
+          {/* Chart Header & Metric Switcher Tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 pb-3">
+            <div>
+              <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+                Sales over time
+              </h2>
+              <p className="text-xs text-black/50 mt-1">
+                Comparing current {currentData.label} vs previous period
+              </p>
             </div>
-            <p className="text-xs text-black/55 mt-0.5">
-              Hover over points to inspect granular revenue, patron footfall, and conversion telemetry.
-            </p>
-          </div>
 
-          {/* Metric Selector Pills */}
-          <div className="flex items-center gap-1 p-1 bg-[#FAF8F5] rounded-xl border border-black/10 text-xs font-semibold self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setChartMetric("revenue")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                chartMetric === "revenue"
-                  ? "bg-[#072515] text-[#eed08e] shadow-2xs font-bold"
-                  : "text-black/60 hover:text-black"
-              }`}
-            >
-              Revenue (₹)
-            </button>
-            <button
-              type="button"
-              onClick={() => setChartMetric("orders")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                chartMetric === "orders"
-                  ? "bg-[#072515] text-[#eed08e] shadow-2xs font-bold"
-                  : "text-black/60 hover:text-black"
-              }`}
-            >
-              Orders
-            </button>
-            <button
-              type="button"
-              onClick={() => setChartMetric("visitors")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                chartMetric === "visitors"
-                  ? "bg-[#072515] text-[#eed08e] shadow-2xs font-bold"
-                  : "text-black/60 hover:text-black"
-              }`}
-            >
-              Footfall
-            </button>
-            <button
-              type="button"
-              onClick={() => setChartMetric("aov")}
-              className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                chartMetric === "aov"
-                  ? "bg-[#072515] text-[#eed08e] shadow-2xs font-bold"
-                  : "text-black/60 hover:text-black"
-              }`}
-            >
-              AOV
-            </button>
-          </div>
-        </div>
-
-        {/* Hover Inspector Card */}
-        {activePoint && (
-          <div className="bg-[#FAF8F5] rounded-xl p-3 border border-black/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5">
-              <div className="size-2 rounded-full bg-[#072515]" />
-              <span className="font-bold text-[#072515]">{activePoint.date} Telemetry:</span>
-            </div>
-            <div className="flex items-center gap-4 text-black/70 flex-wrap">
-              <span>
-                Revenue: <strong className="text-[#072515]">{formatINR(activePoint.revenue)}</strong>
-              </span>
-              <span>•</span>
-              <span>
-                Orders: <strong className="text-[#072515]">{activePoint.orders}</strong>
-              </span>
-              <span>•</span>
-              <span>
-                Footfall: <strong className="text-[#072515]">{activePoint.visitors} visitors</strong>
-              </span>
-              <span>•</span>
-              <span>
-                Basket AOV: <strong className="text-[#072515]">{formatINR(activePoint.aov)}</strong>
-              </span>
+            {/* Metric Selector Pills */}
+            <div className="flex items-center gap-1 p-0.5 bg-black/[0.04] rounded-lg text-xs">
+              <button
+                type="button"
+                onClick={() => setChartMetric("revenue")}
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                  chartMetric === "revenue"
+                    ? "bg-white text-black shadow-2xs font-semibold"
+                    : "text-black/60 hover:text-black"
+                }`}
+              >
+                Revenue
+              </button>
+              <button
+                type="button"
+                onClick={() => setChartMetric("orders")}
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                  chartMetric === "orders"
+                    ? "bg-white text-black shadow-2xs font-semibold"
+                    : "text-black/60 hover:text-black"
+                }`}
+              >
+                Orders
+              </button>
+              <button
+                type="button"
+                onClick={() => setChartMetric("visitors")}
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                  chartMetric === "visitors"
+                    ? "bg-white text-black shadow-2xs font-semibold"
+                    : "text-black/60 hover:text-black"
+                }`}
+              >
+                Visitors
+              </button>
+              <button
+                type="button"
+                onClick={() => setChartMetric("aov")}
+                className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
+                  chartMetric === "aov"
+                    ? "bg-white text-black shadow-2xs font-semibold"
+                    : "text-black/60 hover:text-black"
+                }`}
+              >
+                AOV
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Responsive SVG Chart */}
-        <div className="relative w-full overflow-hidden">
-          <svg
-            viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-            className="w-full h-56 sm:h-64 overflow-visible select-none"
-          >
-            <defs>
-              {/* Gradient for area fill */}
-              <linearGradient id="velocityGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#eed08e" stopOpacity="0.45" />
-                <stop offset="60%" stopColor="#eed08e" stopOpacity="0.15" />
-                <stop offset="100%" stopColor="#eed08e" stopOpacity="0.0" />
-              </linearGradient>
+          {/* Active Data Inspector Card */}
+          {activePoint && (
+            <div className="flex flex-wrap items-center gap-4 text-xs text-black/70">
+              <span className="font-semibold text-black">{activePoint.date}:</span>
+              <span>Revenue: <strong className="text-black">{formatINR(activePoint.revenue)}</strong></span>
+              <span>Orders: <strong className="text-black">{activePoint.orders}</strong></span>
+              <span>Sessions: <strong className="text-black">{activePoint.visitors}</strong></span>
+              <span>AOV: <strong className="text-black">{formatINR(activePoint.aov)}</strong></span>
+            </div>
+          )}
 
-              {/* Line Glow Filter */}
-              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#072515" floodOpacity="0.15" />
-              </filter>
-            </defs>
+          {/* Responsive SVG Chart with #08a7f5 line */}
+          <div className="relative w-full overflow-hidden">
+            <svg
+              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+              className="w-full h-52 sm:h-60 overflow-visible select-none"
+            >
+              <defs>
+                <linearGradient id="velocityGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#08a7f5" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#08a7f5" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
 
-            {/* Background Horizontal Gridlines */}
-            {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
-              const y = paddingY + pct * (chartHeight - paddingY * 2);
-              const val = Math.round(maxVal - pct * (maxVal - minVal));
-              return (
-                <g key={i}>
-                  <line
-                    x1={paddingX}
-                    y1={y}
-                    x2={chartWidth - paddingX}
-                    y2={y}
-                    stroke="#E7E5E0"
-                    strokeDasharray="4 4"
-                    strokeWidth="1"
-                  />
-                  <text
-                    x={paddingX - 8}
-                    y={y + 3}
-                    textAnchor="end"
-                    className="text-[9px] fill-black/40 font-mono"
+              {/* Gridlines */}
+              {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
+                const y = paddingY + pct * (chartHeight - paddingY * 2);
+                const val = Math.round(maxVal - pct * (maxVal - minVal));
+                return (
+                  <g key={i}>
+                    <line
+                      x1={paddingX}
+                      y1={y}
+                      x2={chartWidth - paddingX}
+                      y2={y}
+                      stroke="#f0f0f0"
+                      strokeDasharray="4 4"
+                      strokeWidth="1"
+                    />
+                    <text
+                      x={paddingX - 8}
+                      y={y + 3}
+                      textAnchor="end"
+                      className="text-[9px] fill-black/40 font-mono"
+                    >
+                      {chartMetric === "revenue" || chartMetric === "aov"
+                        ? `₹${(val / 1000).toFixed(0)}k`
+                        : val.toLocaleString()}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Area Fill */}
+              {areaD && <path d={areaD} fill="url(#velocityGradient)" />}
+
+              {/* Previous Period Dashed Baseline */}
+              {prevPathD && (
+                <path
+                  d={prevPathD}
+                  fill="none"
+                  stroke="#8ed5f6"
+                  strokeWidth="1.75"
+                  strokeDasharray="4 4"
+                />
+              )}
+
+              {/* Main Spline Curve (#08a7f5 cyan) */}
+              {pathD && (
+                <path
+                  d={pathD}
+                  fill="none"
+                  stroke="#08a7f5"
+                  strokeWidth="2.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+
+              {/* Interactive Data Points */}
+              {points.map((p, i) => {
+                const coord = getCoordinates(i, p[chartMetric]);
+                const isHovered = hoveredPointIndex === i;
+                return (
+                  <g
+                    key={i}
+                    className="cursor-pointer"
+                    onMouseEnter={() => setHoveredPointIndex(i)}
+                    onMouseLeave={() => setHoveredPointIndex(null)}
                   >
-                    {chartMetric === "revenue" || chartMetric === "aov"
-                      ? `₹${(val / 1000).toFixed(0)}k`
-                      : val.toLocaleString()}
-                  </text>
-                </g>
-              );
-            })}
+                    <circle cx={coord.x} cy={coord.y} r={18} fill="transparent" />
 
-            {/* Area Fill */}
-            {areaD && <path d={areaD} fill="url(#velocityGradient)" />}
+                    {isHovered && (
+                      <circle
+                        cx={coord.x}
+                        cy={coord.y}
+                        r={9}
+                        fill="#08a7f5"
+                        fillOpacity="0.25"
+                      />
+                    )}
 
-            {/* Previous Period Dashed Baseline */}
-            {prevPathD && (
-              <path
-                d={prevPathD}
-                fill="none"
-                stroke="#c89e43"
-                strokeWidth="1.75"
-                strokeDasharray="5 5"
-                strokeOpacity="0.45"
-              />
-            )}
-
-            {/* Main Spline Curve */}
-            {pathD && (
-              <path
-                d={pathD}
-                fill="none"
-                stroke="#072515"
-                strokeWidth="2.75"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                filter="url(#glow)"
-              />
-            )}
-
-            {/* Interactive Data Points */}
-            {points.map((p, i) => {
-              const coord = getCoordinates(i, p[chartMetric]);
-              const isHovered = hoveredPointIndex === i;
-              return (
-                <g
-                  key={i}
-                  className="cursor-pointer"
-                  onMouseEnter={() => setHoveredPointIndex(i)}
-                  onMouseLeave={() => setHoveredPointIndex(null)}
-                >
-                  {/* Invisible hit-area circle for touch & hover */}
-                  <circle cx={coord.x} cy={coord.y} r={18} fill="transparent" />
-
-                  {/* Pulsing halo on hover */}
-                  {isHovered && (
                     <circle
                       cx={coord.x}
                       cy={coord.y}
-                      r={10}
-                      fill="#eed08e"
-                      fillOpacity="0.4"
-                      className="animate-ping"
+                      r={isHovered ? 5 : 3.5}
+                      fill="#08a7f5"
+                      stroke="#ffffff"
+                      strokeWidth={2}
+                      className="transition-all duration-150"
                     />
-                  )}
 
-                  {/* Outer Ring */}
-                  <circle
-                    cx={coord.x}
-                    cy={coord.y}
-                    r={isHovered ? 6 : 4}
-                    fill="#072515"
-                    stroke="#eed08e"
-                    strokeWidth={isHovered ? 3 : 2}
-                    className="transition-all duration-150"
-                  />
-
-                  {/* Date label at bottom */}
-                  <text
-                    x={coord.x}
-                    y={chartHeight - 8}
-                    textAnchor="middle"
-                    className={`text-[10px] font-medium transition-colors ${
-                      isHovered ? "fill-[#072515] font-bold" : "fill-black/45"
-                    }`}
-                  >
-                    {p.shortDate}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-
-        {/* Chart Legend & Summary Stats */}
-        <div className="pt-3 border-t border-black/5 flex flex-wrap items-center justify-between gap-4 text-xs">
-          <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full bg-[#072515]" />
-              <span className="text-black/70 font-medium">Current Period Performance</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-0.5 border-t-2 border-dashed border-[#c89e43]" />
-              <span className="text-black/50 font-medium">Prior Period Benchmark</span>
-            </div>
+                    <text
+                      x={coord.x}
+                      y={chartHeight - 8}
+                      textAnchor="middle"
+                      className={`text-[10px] font-medium transition-colors ${
+                        isHovered ? "fill-black font-semibold" : "fill-black/45"
+                      }`}
+                    >
+                      {p.shortDate}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-black/60">
-            <span>
-              Peak: <strong>{formatMetricVal(Math.max(...metricValues), chartMetric)}</strong>
+          {/* Chart Legend */}
+          <div className="pt-2 border-t border-black/5 flex items-center justify-center gap-6 text-xs text-black/60">
+            <span className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-[#08a7f5]" />
+              Current period
             </span>
-            <span>•</span>
-            <span>
-              Period Growth: <strong className="text-emerald-700">+{currentData.revenueGrowth}%</strong>
+            <span className="flex items-center gap-2">
+              <span className="w-3.5 h-0.5 border-t-2 border-dashed border-[#8ed5f6]" />
+              Previous period
             </span>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* ==================================================================== */}
-      {/* 5. DUAL INTELLIGENCE PANELS: CATEGORIES & ORDER CONVERSION FUNNEL    */}
+      {/* 5. DUAL PANELS: CATEGORIES & ORDER CONVERSION FUNNEL                  */}
       {/* ==================================================================== */}
       {(activeTab === "overview" || activeTab === "sales") && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* PANEL 1: CATEGORY-WISE SALES DISTRIBUTION */}
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs p-5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-black/5">
-              <div>
-                <h3 className="font-serif font-bold text-sm text-[#072515]">Sales by Atelier Category</h3>
-                <p className="text-xs text-black/50">Revenue and units distributed across Kurma sacred collections.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* PANEL 1: CATEGORY-WISE SALES DISTRIBUTION */}
+          <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-black/10">
+                <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+                  Sales by category
+                </h2>
+                <span className="text-xs font-semibold text-black">{formatINR(currentData.totalRevenue)}</span>
               </div>
-              <span className="text-xs font-bold text-[#072515]">{formatINR(currentData.totalRevenue)}</span>
-            </div>
 
-            {/* Multi-segment luxury visual bar */}
-            <div className="mt-4 h-3.5 rounded-full overflow-hidden flex bg-stone-100 p-0.5 border border-black/10">
-              <div
-                className="h-full bg-[#072515] rounded-l-full transition-all duration-500"
-                style={{ width: "52%" }}
-                title="Luxury Gift Trunks: 52%"
-              />
-              <div
-                className="h-full bg-[#c89e43] transition-all duration-500"
-                style={{ width: "28%" }}
-                title="Brassware: 28%"
-              />
-              <div
-                className="h-full bg-[#8C281F] rounded-r-full transition-all duration-500"
-                style={{ width: "20%" }}
-                title="Incense Suites: 20%"
-              />
-            </div>
+              {/* Multi-segment visual bar */}
+              <div className="mt-4 h-2.5 rounded-full overflow-hidden flex bg-black/5">
+                <div
+                  className="h-full bg-[#08a7f5] rounded-l-full"
+                  style={{ width: "52%" }}
+                  title="Gift Boxes: 52%"
+                />
+                <div
+                  className="h-full bg-[#55c5f7]"
+                  style={{ width: "28%" }}
+                  title="Brassware: 28%"
+                />
+                <div
+                  className="h-full bg-black/25 rounded-r-full"
+                  style={{ width: "20%" }}
+                  title="Incense Suites: 20%"
+                />
+              </div>
 
-            {/* Category breakdown rows */}
-            <div className="mt-4 space-y-3">
-              {[
-                {
-                  name: "Luxury Gift Trunks & Keepsake Boxes",
-                  share: "52%",
-                  revenue: 199800,
-                  units: "307 units sold",
-                  color: "#072515",
-                  subtext: "MDF Celebration, Heirloom Wood, Wicker Tokris",
-                },
-                {
-                  name: "Sacred Brass Burners & Accessories",
-                  share: "28%",
-                  revenue: 107700,
-                  units: "86 units sold",
-                  color: "#c89e43",
-                  subtext: "Turtle Burners, Dhoop Urns, Brass Plates",
-                },
-                {
-                  name: "Pancha Mahabhuta Incense Suites",
-                  share: "20%",
-                  revenue: 77150,
-                  units: "267 units sold",
-                  color: "#8C281F",
-                  subtext: "Earth Sandalwood, Vedic Flora, Temple Dhoop",
-                },
-              ].map((c) => (
-                <div key={c.name} className="p-3 rounded-xl bg-[#FAF8F5] border border-black/5 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
+              {/* Category breakdown rows */}
+              <div className="mt-4 space-y-2">
+                {[
+                  {
+                    name: "Luxury Keepsake & Gift Boxes",
+                    share: "52%",
+                    revenue: 199800,
+                    units: "307 sold",
+                    color: "#08a7f5",
+                  },
+                  {
+                    name: "Sacred Brass Burners & Accessories",
+                    share: "28%",
+                    revenue: 107700,
+                    units: "86 sold",
+                    color: "#55c5f7",
+                  },
+                  {
+                    name: "Elemental Incense Sticks",
+                    share: "20%",
+                    revenue: 77150,
+                    units: "267 sold",
+                    color: "#6b7280",
+                  },
+                ].map((c) => (
+                  <div key={c.name} className="flex items-center justify-between py-2 border-b border-black/5 last:border-none text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="size-2.5 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
-                      <span className="font-bold text-[#072515]">{c.name}</span>
+                      <span className="size-2 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
+                      <span className="font-medium text-black">{c.name}</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-bold text-[#072515]">{formatINR(c.revenue)}</span>
-                      <span className="text-[10px] text-black/50 ml-1.5 font-medium">({c.share})</span>
+                      <span className="font-semibold text-black">{formatINR(c.revenue)}</span>
+                      <span className="text-[11px] text-black/50 ml-1.5">({c.share})</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-black/55 pl-4.5">
-                    <span>{c.subtext}</span>
-                    <span className="font-mono text-[10px]">{c.units}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-black/5 flex items-center justify-between text-xs text-black/60">
-            <span>Fastest growing category:</span>
-            <span className="font-bold text-emerald-800">+34% Luxury Keepsake Trunks</span>
-          </div>
-        </section>
-
-        {/* PANEL 2: ORDER CONVERSION FUNNEL & STATUS */}
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs p-5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-black/5">
-              <div>
-                <h3 className="font-serif font-bold text-sm text-[#072515]">Storefront Conversion Funnel</h3>
-                <p className="text-xs text-black/50">From sanctuary visit to completed luxury hamper checkout.</p>
+                ))}
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                4.12% Overall Conv.
-              </span>
             </div>
 
-            {/* Funnel Steps */}
-            <div className="mt-4 space-y-2.5">
-              {[
-                { step: "1. Website Footfall Visitors", count: "4,890 patrons", pct: 100, conv: "100%" },
-                { step: "2. Explored Atelier Creations", count: "3,240 patrons", pct: 66, conv: "66.3%" },
-                { step: "3. Built Customizer Hamper (/elements)", count: "680 hampers", pct: 28, conv: "13.9%" },
-                { step: "4. Reached Checkout Concierge", count: "240 checkouts", pct: 15, conv: "4.9%" },
-                { step: "5. Completed Sacred Gifting Orders", count: "148 orders", pct: 10, conv: "3.03%" },
-              ].map((f, i) => (
-                <div key={f.step} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-black/80">{f.step}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#072515]">{f.count}</span>
-                      <span className="text-[10px] text-black/45 font-mono">({f.conv})</span>
+            <div className="mt-3 pt-2.5 border-t border-black/10 flex items-center justify-between text-xs text-black/60">
+              <span>Top growth:</span>
+              <span className="font-medium text-emerald-800">+34% Gift Boxes</span>
+            </div>
+          </section>
+
+          {/* PANEL 2: CONVERSION FUNNEL */}
+          <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-black/10">
+                <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+                  Conversion funnel
+                </h2>
+                <span className="rounded-full bg-emerald-200 px-2 py-0.5 text-[11px] font-medium text-emerald-900">
+                  4.12% conversion
+                </span>
+              </div>
+
+              {/* Funnel Steps */}
+              <div className="mt-4 space-y-2.5">
+                {[
+                  { step: "Added to cart", count: "3,240 sessions", pct: 66 },
+                  { step: "Customiser hamper configured", count: "680 sessions", pct: 28 },
+                  { step: "Reached checkout", count: "240 sessions", pct: 15 },
+                  { step: "Completed checkout", count: "148 sessions", pct: 10 },
+                ].map((f) => (
+                  <div key={f.step} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-black/75">{f.step}</span>
+                      <span className="font-medium text-black">{f.count}</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-black/5 overflow-hidden">
+                      <div
+                        className="h-full bg-[#08a7f5] rounded-full"
+                        style={{ width: `${f.pct}%` }}
+                      />
                     </div>
                   </div>
-                  <div className="h-2 rounded-full bg-stone-100 overflow-hidden border border-black/5">
-                    <div
-                      className="h-full bg-[#072515] rounded-full transition-all duration-500"
-                      style={{ width: `${f.pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Payment Method Distribution */}
-          <div className="mt-4 pt-3 border-t border-black/5">
-            <span className="text-[11px] font-semibold text-black/60 block mb-1.5">
-              Settlement Channels:
-            </span>
-            <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="p-2 rounded-xl bg-[#FAF8F5] border border-black/5">
-                <span className="block font-bold text-[#072515]">58%</span>
-                <span className="text-[10px] text-black/50">UPI (Instant)</span>
-              </div>
-              <div className="p-2 rounded-xl bg-[#FAF8F5] border border-black/5">
-                <span className="block font-bold text-[#072515]">34%</span>
-                <span className="text-[10px] text-black/50">Credit / Debit</span>
-              </div>
-              <div className="p-2 rounded-xl bg-[#FAF8F5] border border-black/5">
-                <span className="block font-bold text-[#072515]">8%</span>
-                <span className="text-[10px] text-black/50">Net Banking</span>
-              </div>
+            <div className="mt-3 pt-2.5 border-t border-black/10 flex items-center justify-between text-xs text-black/60">
+              <span>Payment methods:</span>
+              <span className="font-medium text-black">58% UPI · 34% Cards · 8% NetBanking</span>
             </div>
-          </div>
-        </section>
-      </div>
+          </section>
+        </div>
       )}
 
       {/* ==================================================================== */}
-      {/* 6. BEST-SELLING PRODUCTS & PERFORMANCE MATRIX                        */}
+      {/* 6. TOP PRODUCTS TABLE                                                */}
       {/* ==================================================================== */}
       {(activeTab === "overview" || activeTab === "products" || activeTab === "inventory") && (
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs overflow-hidden">
-        {/* Table Header with Filters & Search */}
-        <div className="p-4 border-b border-black/10 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-serif font-bold text-sm text-[#072515]">
-                Top-Selling Atelier Creations Leaderboard
-              </h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#eed08e]/30 text-[#072515]">
-                Ranked by Gross Sales
-              </span>
-            </div>
-            <p className="text-xs text-black/50 mt-0.5">
-              Individual product performance, unit turnover velocity, conversion rate, and inventory reserves.
-            </p>
-          </div>
+        <section className="bg-white rounded-xl border border-black/10 shadow-sm overflow-hidden">
+          {/* Table Header with Filters & Search */}
+          <div className="p-4 border-b border-black/10 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+              Top products
+            </h2>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Search Box */}
-            <div className="relative">
-              <Search className="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-black/40" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={productSearch}
-                onChange={(e) => setProductSearch(e.target.value)}
-                className="pl-8 pr-3 py-1.5 rounded-lg border border-black/15 text-xs outline-none focus:border-[#072515] w-36 sm:w-44 bg-stone-50/50"
-              />
-            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative">
+                <Search className="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-black/40" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  className="pl-8 pr-3 py-1 text-xs rounded-lg border border-black/10 bg-[#fafafa] outline-none focus:border-black w-36 sm:w-44"
+                />
+              </div>
 
-            {/* Category Dropdown */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <Filter className="size-3 text-black/40" />
               <select
                 value={productCategoryFilter}
                 onChange={(e) => setProductCategoryFilter(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg border border-black/15 text-xs font-medium outline-none bg-white focus:border-[#072515] cursor-pointer"
+                className="h-7 px-2 text-xs rounded-lg border border-black/10 bg-white text-black/70 outline-none"
               >
-                <option value="All">All Categories</option>
+                <option value="All">All categories</option>
                 <option value="Gift Boxes">Gift Boxes</option>
                 <option value="Incense">Incense</option>
                 <option value="Brassware">Brassware</option>
               </select>
+
+              <select
+                value={productSortBy}
+                onChange={(e) => setProductSortBy(e.target.value as any)}
+                className="h-7 px-2 text-xs rounded-lg border border-black/10 bg-white text-black/70 outline-none"
+              >
+                <option value="revenue">Highest revenue</option>
+                <option value="units">Most units</option>
+                <option value="conversion">Conversion rate</option>
+              </select>
             </div>
-
-            {/* Sort Dropdown */}
-            <select
-              value={productSortBy}
-              onChange={(e) => setProductSortBy(e.target.value as any)}
-              className="px-2.5 py-1.5 rounded-lg border border-black/15 text-xs font-medium outline-none bg-white focus:border-[#072515] cursor-pointer"
-            >
-              <option value="revenue">Sort: Highest Revenue</option>
-              <option value="units">Sort: Most Units Sold</option>
-              <option value="conversion">Sort: Conversion Rate</option>
-            </select>
           </div>
-        </div>
 
-        {/* Table Content */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-[#FAF8F5] text-black/70 border-b border-black/10 font-medium">
-              <tr>
-                <th className="px-4 py-3">Rank &amp; Product</th>
-                <th className="px-3 py-3">Category</th>
-                <th className="px-3 py-3">Base Price</th>
-                <th className="px-3 py-3">Units Sold</th>
-                <th className="px-3 py-3">Gross Revenue</th>
-                <th className="px-3 py-3">Conv. Rate</th>
-                <th className="px-3 py-3">Stock Reserves</th>
-                <th className="px-3 py-3 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black/5">
-              {filteredProducts.map((prod) => (
-                <tr key={prod.id} className="hover:bg-black/[0.015] transition">
-                  {/* Rank & Product Info */}
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
+          {/* Table Content */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse min-w-[700px]">
+              <thead className="bg-black/[0.025] text-black/65 font-medium">
+                <tr>
+                  <th className="border-b border-black/10 px-3 py-2.5">Product</th>
+                  <th className="border-b border-black/10 px-3 py-2.5">Category</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 text-right">Price</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 text-right">Units sold</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 text-right">Revenue</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 text-right">Conversion</th>
+                  <th className="border-b border-black/10 px-3 py-2.5">Stock</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-black/5">
+                {filteredProducts.map((prod) => (
+                  <tr key={prod.id} className="hover:bg-black/[0.02] transition">
+                    <td className="border-b border-black/10 px-3 py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="relative size-8 rounded-md overflow-hidden border border-black/10 bg-[#fafafa] shrink-0">
+                          <Image src={prod.image} alt={prod.name} fill className="object-contain" unoptimized />
+                        </div>
+                        <div className="min-w-0 max-w-xs">
+                          <span className="font-medium text-black block truncate">{prod.name}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="border-b border-black/10 px-3 py-2.5 text-black/70">
+                      {prod.category}
+                    </td>
+
+                    <td className="border-b border-black/10 px-3 py-2.5 text-right text-black/70">
+                      {formatINR(prod.price)}
+                    </td>
+
+                    <td className="border-b border-black/10 px-3 py-2.5 text-right font-medium text-black">
+                      {prod.unitsSold}
+                    </td>
+
+                    <td className="border-b border-black/10 px-3 py-2.5 text-right font-medium text-black">
+                      {formatINR(prod.revenue)}
+                    </td>
+
+                    <td className="border-b border-black/10 px-3 py-2.5 text-right text-emerald-700 font-medium">
+                      {prod.conversionRate}%
+                    </td>
+
+                    <td className="border-b border-black/10 px-3 py-2.5">
                       <span
-                        className={`size-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 ${
-                          prod.rank === 1
-                            ? "bg-[#072515] text-[#eed08e] shadow-2xs"
-                            : prod.rank === 2
-                            ? "bg-[#c89e43] text-white"
-                            : prod.rank === 3
-                            ? "bg-[#8C281F] text-white"
-                            : "bg-stone-200 text-stone-700"
+                        className={`inline-flex items-center px-2 py-0.5 text-[11px] font-medium ${
+                          prod.stockStatus === "Healthy"
+                            ? "rounded-full bg-emerald-200 text-emerald-900"
+                            : "rounded-md bg-amber-200 text-amber-900"
                         }`}
                       >
-                        {prod.rank}
+                        {prod.stockCount} in stock
                       </span>
-                      <div className="relative size-11 rounded-xl overflow-hidden border border-black/10 bg-[#FAF8F5] shrink-0">
-                        <Image src={prod.image} alt={prod.name} fill className="object-contain p-0.5" unoptimized />
-                      </div>
-                      <div className="min-w-0 max-w-xs">
-                        <span className="font-bold text-[#072515] block truncate">{prod.name}</span>
-                        <span className="text-[11px] text-black/50 line-clamp-1">{prod.description}</span>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Category */}
-                  <td className="px-3 py-3 whitespace-nowrap">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-700 border border-stone-200">
-                      {prod.category}
-                    </span>
-                  </td>
-
-                  {/* Price */}
-                  <td className="px-3 py-3 font-semibold text-black/70 whitespace-nowrap">
-                    {formatINR(prod.price)}
-                  </td>
-
-                  {/* Units Sold */}
-                  <td className="px-3 py-3 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#072515]">{prod.unitsSold}</span>
-                      <div className="w-12 h-1.5 rounded-full bg-stone-200 overflow-hidden">
-                        <div
-                          className="h-full bg-[#072515] rounded-full"
-                          style={{ width: `${Math.min(100, (prod.unitsSold / 228) * 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Revenue */}
-                  <td className="px-3 py-3 font-bold text-[#072515] whitespace-nowrap">
-                    {formatINR(prod.revenue)}
-                  </td>
-
-                  {/* Conversion */}
-                  <td className="px-3 py-3 whitespace-nowrap">
-                    <span className="text-emerald-700 font-bold">{prod.conversionRate}%</span>
-                  </td>
-
-                  {/* Stock Health */}
-                  <td className="px-3 py-3 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                        prod.stockStatus === "Healthy"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : prod.stockStatus === "Low Stock"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      <span
-                        className={`size-1.5 rounded-full ${
-                          prod.stockStatus === "Healthy"
-                            ? "bg-emerald-600"
-                            : prod.stockStatus === "Low Stock"
-                            ? "bg-amber-600"
-                            : "bg-red-600"
-                        }`}
-                      />
-                      <span>
-                        {prod.stockCount} units ({prod.stockStatus})
-                      </span>
-                    </span>
-                  </td>
-
-                  {/* Action Link */}
-                  <td className="px-3 py-3 text-center whitespace-nowrap">
-                    <Link
-                      href={prod.id === "celebration-box" || prod.id === "heritage-box" ? "/admin/customise/edit?id=celebration" : "/admin"}
-                      className="p-1.5 rounded-lg text-black/50 hover:text-[#072515] hover:bg-black/5 transition inline-flex items-center"
-                      title="Inspect Product"
-                    >
-                      <ExternalLink className="size-3.5" />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       )}
 
       {/* ==================================================================== */}
-      {/* 7. CUSTOMER GROWTH & TOP GEOGRAPHIC SANCTUARIES                       */}
+      {/* 7. CUSTOMER SESSIONS & DEMOGRAPHICS                                  */}
       {/* ==================================================================== */}
       {(activeTab === "overview" || activeTab === "customers" || activeTab === "inventory") && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Patron Demographics & Loyalty */}
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs p-5 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-black/5">
-            <h3 className="font-serif font-bold text-sm text-[#072515]">Patron Loyalty &amp; Growth</h3>
-            <UsersRound className="size-4 text-[#c89e43]" />
-          </div>
-
-          <div className="space-y-3 pt-1">
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-black/70">Returning Sanctuary Patrons</span>
-                <span className="font-bold text-[#072515]">38.6%</span>
-              </div>
-              <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
-                <div className="h-full bg-[#072515] rounded-full" style={{ width: "38.6%" }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-black/70">First-Time Gifting Patrons</span>
-                <span className="font-bold text-[#c89e43]">61.4%</span>
-              </div>
-              <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
-                <div className="h-full bg-[#c89e43] rounded-full" style={{ width: "61.4%" }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-black/70">Sovereign VIP Club Tier</span>
-                <span className="font-bold text-emerald-800">24.2%</span>
-              </div>
-              <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
-                <div className="h-full bg-emerald-700 rounded-full" style={{ width: "24.2%" }} />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Top Cities by Sacred Gifting Orders */}
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs p-5 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-black/5">
-            <h3 className="font-serif font-bold text-sm text-[#072515]">Top Cities by Sacred Gifting</h3>
-            <MapPin className="size-4 text-[#072515]" />
-          </div>
-
-          <div className="space-y-2 text-xs pt-1">
-            {[
-              { city: "Mumbai, Maharashtra", orders: 55, pct: "37%" },
-              { city: "Bengaluru, Karnataka", orders: 37, pct: "25%" },
-              { city: "New Delhi, NCR", orders: 31, pct: "21%" },
-              { city: "Hyderabad, Telangana", orders: 15, pct: "10%" },
-              { city: "Ahmedabad, Gujarat", orders: 10, pct: "7%" },
-            ].map((c) => (
-              <div key={c.city} className="flex items-center justify-between py-1 border-b border-black/5 last:border-none">
-                <span className="font-medium text-black/80">{c.city}</span>
-                <div className="flex items-center gap-3">
-                  <span className="text-black/45 text-[11px]">{c.pct}</span>
-                  <span className="font-bold text-[#072515]">{c.orders} orders</span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 space-y-3">
+            <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+              Sessions by customer type
+            </h2>
+            <div className="space-y-3 pt-1">
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-black/70">Returning patrons</span>
+                  <span className="font-semibold text-black">38.6%</span>
+                </div>
+                <div className="h-2 rounded-full bg-black/5 overflow-hidden">
+                  <div className="h-full bg-[#08a7f5] rounded-full" style={{ width: "38.6%" }} />
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Inventory Intelligence & Stock Health */}
-        <section className="bg-white rounded-2xl border border-black/10 shadow-xs p-5 space-y-3">
-          <div className="flex items-center justify-between pb-2 border-b border-black/5">
-            <h3 className="font-serif font-bold text-sm text-[#072515]">Atelier Stock Health</h3>
-            <Boxes className="size-4 text-[#c89e43]" />
-          </div>
+              <div>
+                <div className="flex justify-between text-xs mb-1">
+                  <span className="text-black/70">First-time visitors</span>
+                  <span className="font-semibold text-black">61.4%</span>
+                </div>
+                <div className="h-2 rounded-full bg-black/5 overflow-hidden">
+                  <div className="h-full bg-[#55c5f7] rounded-full" style={{ width: "61.4%" }} />
+                </div>
+              </div>
+            </div>
+          </section>
 
-          <div className="space-y-2 pt-1 text-xs">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-emerald-50 border border-emerald-200">
-              <span className="font-semibold text-emerald-900">Healthy Stock (&gt;15 units)</span>
-              <span className="font-bold text-emerald-800">12 SKUs</span>
+          <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 space-y-2">
+            <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+              Sessions by location
+            </h2>
+            <div className="space-y-2 text-xs pt-1">
+              {[
+                { city: "Mumbai, Maharashtra", orders: 55, pct: "37%" },
+                { city: "Bengaluru, Karnataka", orders: 37, pct: "25%" },
+                { city: "New Delhi, NCR", orders: 31, pct: "21%" },
+                { city: "Hyderabad, Telangana", orders: 15, pct: "10%" },
+              ].map((c) => (
+                <div key={c.city} className="flex items-center justify-between py-1 border-b border-black/5 last:border-none">
+                  <span className="text-black/75">{c.city}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-black/45 text-[11px]">{c.pct}</span>
+                    <span className="font-medium text-black">{c.orders}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-amber-50 border border-amber-200">
-              <span className="font-semibold text-amber-900">Low Stock Alert (6–15 units)</span>
-              <span className="font-bold text-amber-800">4 SKUs</span>
+          </section>
+
+          <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 space-y-2">
+            <h2 className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+              Inventory alerts
+            </h2>
+            <div className="space-y-2 pt-1 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-50 border border-emerald-200">
+                <span className="font-medium text-emerald-900">Adequate stock (&gt;15 units)</span>
+                <span className="font-semibold text-emerald-800">12 SKUs</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-amber-50 border border-amber-200">
+                <span className="font-medium text-amber-900">Low stock (6–15 units)</span>
+                <span className="font-semibold text-amber-800">4 SKUs</span>
+              </div>
+              <div className="flex items-center justify-between p-2 rounded-lg bg-red-50 border border-red-200">
+                <span className="font-medium text-red-900">Reorder needed (&lt;6 units)</span>
+                <span className="font-semibold text-red-800">2 SKUs</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-red-50 border border-red-200">
-              <span className="font-semibold text-red-900">Urgent Reorder (&lt;6 units)</span>
-              <span className="font-bold text-red-800">2 SKUs</span>
-            </div>
-          </div>
-        </section>
-      </div>
+          </section>
+        </div>
       )}
     </main>
   );

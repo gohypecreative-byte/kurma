@@ -27,6 +27,7 @@ import {
   RefreshCw,
   X,
   ArrowUpRight,
+  UsersRound,
 } from "lucide-react";
 import { AdminDiscount } from "@/app/admin/page";
 
@@ -560,143 +561,105 @@ export default function AdminDiscountsSection({
   const estimatedSavings = totalUses * 442; // Avg ~₹442 saved per voucher
 
   return (
-    <main className="flex-1 p-4 sm:p-6 bg-[#FAF8F5] space-y-6">
+    <main className="min-h-full flex-1 bg-[#f5f5f5] p-4 text-black sm:p-5 space-y-4">
       {/* ==================================================================== */}
-      {/* 1. HEADER & CONTROLS BAR                                             */}
+      {/* 1. HEADER & ACTIONS BAR                                              */}
       {/* ==================================================================== */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-black/10">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#072515] tracking-tight flex items-center gap-2">
-              <BadgePercent className="size-6 text-[#c89e43]" />
-              <span>Discounts &amp; Festive Vouchers</span>
-            </h1>
-          </div>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="flex items-center gap-2 text-lg font-semibold text-black">
+          <BadgePercent className="size-4" />
+          Discounts
+        </h1>
 
-        {/* Global Action Buttons */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleLoadCuratedMasterCoupons}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-stone-50 border border-black/15 text-xs font-semibold text-[#072515] transition shadow-2xs cursor-pointer"
-            title="Reload all 11 curated Kurma luxury vouchers"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium hover:bg-black/10 text-black transition"
+            title="Reload curated festive vouchers"
           >
-            <RefreshCw className="size-3.5 text-[#c89e43]" />
-            <span>Restore Master Presets</span>
+            <RefreshCw className="size-3.5" />
+            Restore presets
           </button>
 
           <button
             type="button"
             onClick={handleExportCSV}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-stone-50 border border-black/15 text-xs font-semibold text-[#072515] transition shadow-2xs cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium hover:bg-black/10 text-black transition"
             title="Export discounts list as CSV"
           >
-            <Download className="size-3.5 text-[#c89e43]" />
-            <span>Export CSV</span>
+            <Download className="size-3.5" />
+            Export
           </button>
 
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-bold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white transition hover:bg-black/80 shadow-2xs"
           >
-            <Plus className="size-3.5 text-[#eed08e]" />
-            <span>Create Discount</span>
+            <Plus className="size-3.5" />
+            Create discount
           </button>
         </div>
       </div>
 
       {/* ==================================================================== */}
-      {/* 2. EXECUTIVE KPI METRIC CARDS                                         */}
+      {/* 2. SUMMARY STRIP (admin-panel styled)                                */}
       {/* ==================================================================== */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* CARD 1: ACTIVE VOUCHERS */}
-        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] uppercase font-bold text-black/50 tracking-wider">Active Concessions</span>
-            <div className="size-8 rounded-lg bg-[#072515]/5 text-[#072515] flex items-center justify-center">
-              <BadgePercent className="size-4 text-[#c89e43]" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="text-2xl font-serif font-bold text-[#072515] block">
-              {totalActive} <span className="text-sm font-normal text-black/50">of {discounts.length} Active</span>
-            </span>
-            <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">
-              ✓ Ready for patron redemption at checkout
-            </span>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-black/5 text-[11px] text-black/60 flex justify-between">
-            <span>Automated in Cart:</span>
-            <span className="font-bold text-[#072515]">
-              {discounts.filter((d) => d.method === "Automatic").length} Vouchers
-            </span>
-          </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Active discounts
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {totalActive} <span className="text-xs font-normal text-black/45">of {discounts.length} active</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
         </div>
 
-        {/* CARD 2: TOTAL REDEMPTIONS */}
-        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] uppercase font-bold text-black/50 tracking-wider">Total Redemptions</span>
-            <div className="size-8 rounded-lg bg-[#072515]/5 text-[#072515] flex items-center justify-center">
-              <Tag className="size-4 text-[#072515]" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="text-2xl font-serif font-bold text-[#072515] block">
-              {totalUses} <span className="text-sm font-normal text-black/50">times</span>
-            </span>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                <ArrowUpRight className="size-3" />
-                +26.4%
-              </span>
-              <span className="text-[11px] text-black/50">festive season uptake</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-black/5 text-[11px] text-black/60 flex justify-between">
-            <span>Avg Uses per Code:</span>
-            <span className="font-bold text-[#072515]">{(totalUses / discounts.length).toFixed(0)} uses</span>
-          </div>
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Total redemptions
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {totalUses} <span className="text-xs font-normal text-emerald-700">+26.4%</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
         </div>
 
-        {/* CARD 3: ESTIMATED PATRON SAVINGS */}
-        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-xs relative overflow-hidden flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] uppercase font-bold text-black/50 tracking-wider">Patron Savings Granted</span>
-            <div className="size-8 rounded-lg bg-[#072515]/5 text-[#072515] flex items-center justify-center">
-              <DollarSign className="size-4 text-[#c89e43]" />
-            </div>
-          </div>
-          <div className="mt-2">
-            <span className="text-2xl font-serif font-bold text-[#072515] block">
-              {formatINR(estimatedSavings)}
-            </span>
-            <span className="text-[11px] text-black/50 mt-1 block">
-              Subsidized gifting privileges
-            </span>
-          </div>
-          <div className="mt-3 pt-2.5 border-t border-black/5 text-[11px] text-black/60 flex justify-between">
-            <span>Avg Concession:</span>
-            <span className="font-bold text-emerald-700">~14.8% per basket</span>
-          </div>
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Patron savings granted
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            {formatINR(estimatedSavings)}
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
+        </div>
+
+        <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+          <p className="w-fit border-b border-dotted border-black/55 text-xs font-medium text-black/75">
+            Average concession
+          </p>
+          <p className="mt-1 text-base sm:text-lg font-semibold text-black">
+            ~14.8% <span className="text-xs font-normal text-black/45">per order</span>
+          </p>
+          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
         </div>
       </div>
 
       {/* ==================================================================== */}
-      {/* 3. SEARCH, STATUS TABS & VIEW MODE CONTROLS                          */}
+      {/* 3. MAIN TABLE & CONTROLS CONTAINER                                   */}
       {/* ==================================================================== */}
-      <div className="space-y-3">
-        {/* Status Filter Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-1.5 p-1 bg-stone-200/60 rounded-xl text-xs font-semibold w-fit max-w-full overflow-x-auto">
-            {(["All", "Active", "Scheduled", "Expired", "VIP Tier"] as const).map((tab) => {
+      <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
+        {/* Toolbar Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 px-4 py-3">
+          {/* Status Tabs */}
+          <div className="flex items-center gap-1 overflow-x-auto">
+            {(["All", "Active", "Scheduled", "Expired"] as const).map((tab) => {
               const count =
                 tab === "All"
                   ? discounts.length
-                  : tab === "VIP Tier"
-                  ? discounts.filter((d) => d.eligibility === "VIP Tier").length
                   : discounts.filter((d) => d.status === tab).length;
 
               return (
@@ -704,227 +667,196 @@ export default function AdminDiscountsSection({
                   key={tab}
                   type="button"
                   onClick={() => setStatusFilter(tab)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition whitespace-nowrap cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-md text-xs transition cursor-pointer ${
                     statusFilter === tab
-                      ? "bg-[#072515] text-[#eed08e] shadow-2xs font-bold"
-                      : "text-stone-700 hover:text-black hover:bg-white/60"
+                      ? "bg-black/[0.08] text-black font-semibold"
+                      : "text-black/60 hover:text-black hover:bg-black/[0.03]"
                   }`}
                 >
                   <span>{tab}</span>
-                  <span
-                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                      statusFilter === tab ? "bg-[#eed08e]/20 text-[#eed08e]" : "bg-black/10 text-black/70"
-                    }`}
-                  >
-                    {count}
-                  </span>
+                  <span className="ml-1.5 text-[11px] text-black/45 font-medium">{count}</span>
                 </button>
               );
             })}
           </div>
 
-          {/* View Mode Toggle: Table vs Cards */}
-          <div className="flex items-center gap-1 p-1 bg-white rounded-xl border border-black/10 shadow-2xs text-xs font-semibold self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setViewMode("table")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                viewMode === "table" ? "bg-[#072515] text-[#eed08e] font-bold shadow-2xs" : "text-black/60 hover:text-black"
-              }`}
-            >
-              <List className="size-3.5" />
-              <span>Table</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("cards")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition cursor-pointer ${
-                viewMode === "cards" ? "bg-[#072515] text-[#eed08e] font-bold shadow-2xs" : "text-black/60 hover:text-black"
-              }`}
-            >
-              <LayoutGrid className="size-3.5" />
-              <span>Voucher Cards</span>
-            </button>
-          </div>
-        </div>
+          {/* Search, Filter & View Mode */}
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial justify-end">
+            <div className="relative min-w-[180px] sm:min-w-[240px]">
+              <Search className="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-black/40" />
+              <input
+                type="text"
+                placeholder="Search discounts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-8 pr-3 py-1 text-xs rounded-lg border border-black/10 bg-[#fafafa] outline-none focus:border-black placeholder:text-black/40"
+              />
+            </div>
 
-        {/* Search Bar & Method Filter */}
-        <div className="bg-white rounded-xl border border-black/10 p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex-1 relative">
-            <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-black/40" />
-            <input
-              type="text"
-              placeholder="Search coupon codes, descriptions, or discount amounts..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-black/10 text-xs outline-none focus:border-[#072515] bg-stone-50/50"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-black/50 font-medium">Method:</span>
             <select
               value={methodFilter}
               onChange={(e) => setMethodFilter(e.target.value as any)}
-              className="px-2.5 py-1.5 rounded-lg border border-black/15 text-xs font-medium outline-none bg-white focus:border-[#072515] cursor-pointer"
+              className="h-7 px-2 text-xs rounded-lg border border-black/10 bg-white text-black/70 outline-none"
             >
-              <option value="All">All Methods</option>
-              <option value="Code">Code Required</option>
-              <option value="Automatic">Automatic at Cart</option>
+              <option value="All">All methods</option>
+              <option value="Code">Code</option>
+              <option value="Automatic">Automatic</option>
             </select>
+
+            <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-black/[0.05] text-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`p-1.5 rounded-md transition ${viewMode === "table" ? "bg-white text-black shadow-2xs" : "text-black/50 hover:text-black"}`}
+                title="Table view"
+              >
+                <List className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("cards")}
+                className={`p-1.5 rounded-md transition ${viewMode === "cards" ? "bg-white text-black shadow-2xs" : "text-black/50 hover:text-black"}`}
+                title="Cards view"
+              >
+                <LayoutGrid className="size-3.5" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ==================================================================== */}
-      {/* 4. MAIN VIEW: TABLE OR LUXURY VOUCHER TICKET CARDS                   */}
-      {/* ==================================================================== */}
-      {viewMode === "table" ? (
-        /* TABLE VIEW */
-        <section className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-xs">
+        {/* View 1: Table View */}
+        {viewMode === "table" ? (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[840px] border-collapse text-left text-xs">
-              <thead className="bg-[#FAF8F5] text-black/70 border-b border-black/10 font-medium">
+            <table className="w-full min-w-[900px] border-collapse text-left text-xs">
+              <thead className="bg-black/[0.025] text-black/65">
                 <tr>
-                  <th className="px-4 py-3">Code &amp; Voucher Title</th>
-                  <th className="px-3 py-3">Benefit</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Method</th>
-                  <th className="px-3 py-3">Eligibility</th>
-                  <th className="px-3 py-3">Conditions</th>
-                  <th className="px-3 py-3 text-center">Redeemed</th>
-                  <th className="px-3 py-3 text-center">Actions</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">
+                    <input type="checkbox" aria-label="Select all discounts" />
+                  </th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">Title</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">Status</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">Method</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">Eligibility</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">Type</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 font-medium">Conditions</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 text-right font-medium">Used</th>
+                  <th className="border-b border-black/10 px-3 py-2.5 text-center font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5">
                 {filteredDiscounts.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center text-black/50">
-                      No vouchers found matching &quot;{searchQuery}&quot;.
+                    <td colSpan={9} className="px-4 py-12 text-center text-black/50">
+                      No discounts found matching &quot;{searchQuery}&quot;.
                     </td>
                   </tr>
                 ) : (
                   filteredDiscounts.map((disc) => (
-                    <tr key={disc.id} className="hover:bg-black/[0.015] transition">
-                      {/* Code & Title with 1-Click Copy */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleCopyCode(disc.title)}
-                            className="group font-mono font-bold text-xs text-[#072515] bg-[#072515]/5 hover:bg-[#072515] hover:text-[#eed08e] px-2.5 py-1 rounded-md border border-[#072515]/15 transition flex items-center gap-1.5 cursor-pointer"
-                            title="Click to copy coupon code"
-                          >
-                            <span>{disc.title}</span>
-                            {copiedCode === disc.title ? (
-                              <Check className="size-3 text-emerald-600 group-hover:text-[#eed08e]" />
-                            ) : (
-                              <Copy className="size-3 text-black/40 group-hover:text-[#eed08e]" />
-                            )}
-                          </button>
+                    <tr key={disc.id} className="hover:bg-black/[0.02] transition">
+                      <td className="border-b border-black/10 px-3 py-3">
+                        <input type="checkbox" aria-label={`Select ${disc.title}`} />
+                      </td>
+
+                      <td className="border-b border-black/10 px-3 py-3">
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-black">{disc.title}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyCode(disc.title)}
+                              className="text-black/40 hover:text-black transition"
+                              title="Copy code"
+                            >
+                              {copiedCode === disc.title ? (
+                                <Check className="size-3 text-emerald-600" />
+                              ) : (
+                                <Copy className="size-3" />
+                              )}
+                            </button>
+                          </div>
+                          <p className="text-[11px] text-black/60 max-w-sm line-clamp-1">{disc.subtitle}</p>
                         </div>
-                        <p className="text-[11px] text-black/55 mt-1 max-w-sm line-clamp-1">{disc.subtitle}</p>
                       </td>
 
-                      {/* Benefit */}
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#eed08e]/30 text-[#072515] border border-[#eed08e]/50">
-                          {disc.discountValue}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-3 py-3 whitespace-nowrap">
+                      <td className="border-b border-black/10 px-3 py-3">
                         <button
                           type="button"
                           onClick={() => handleToggleStatus(disc.id)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition cursor-pointer ${
-                            disc.status === "Active"
-                              ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
-                              : disc.status === "Scheduled"
-                              ? "bg-amber-100 text-amber-800 hover:bg-amber-200"
-                              : "bg-stone-200 text-stone-600 hover:bg-stone-300"
-                          }`}
+                          className="cursor-pointer"
                           title="Click to toggle status"
                         >
-                          <span
-                            className={`size-1.5 rounded-full ${
-                              disc.status === "Active"
-                                ? "bg-emerald-600"
-                                : disc.status === "Scheduled"
-                                ? "bg-amber-600"
-                                : "bg-stone-500"
-                            }`}
-                          />
-                          <span>{disc.status}</span>
+                          {disc.status === "Active" ? (
+                            <span className="rounded-full bg-emerald-200 px-2 py-0.5 text-[11px] font-medium text-emerald-900">
+                              Active
+                            </span>
+                          ) : disc.status === "Scheduled" ? (
+                            <span className="rounded-md bg-amber-200 px-2 py-0.5 text-[11px] font-medium text-amber-900">
+                              Scheduled
+                            </span>
+                          ) : (
+                            <span className="rounded-md bg-black/10 px-2 py-0.5 text-[11px] font-medium text-black">
+                              Expired
+                            </span>
+                          )}
                         </button>
                       </td>
 
-                      {/* Method */}
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <span className="text-black/70 font-medium">
-                          {disc.method === "Automatic" ? "Automated at Cart" : "Code Input"}
-                        </span>
+                      <td className="border-b border-black/10 px-3 py-3 text-black/75">
+                        {disc.method}
                       </td>
 
-                      {/* Eligibility */}
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-medium ${
-                            disc.eligibility === "VIP Tier"
-                              ? "bg-[#072515] text-[#eed08e] font-bold"
-                              : disc.eligibility === "First-time patrons"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-stone-100 text-stone-700"
-                          }`}
-                        >
+                      <td className="border-b border-black/10 px-3 py-3">
+                        <span className="inline-flex items-center gap-1.5 text-black/75">
+                          <UsersRound className="size-3.5 text-black/50" />
                           {disc.eligibility}
                         </span>
                       </td>
 
-                      {/* Conditions */}
-                      <td className="px-3 py-3 text-black/60 text-[11px] whitespace-nowrap">
+                      <td className="border-b border-black/10 px-3 py-3">
+                        <span className="inline-flex items-center gap-1.5 text-black/75">
+                          <Tag className="size-3.5 text-black/50" />
+                          {disc.type}
+                        </span>
+                      </td>
+
+                      <td className="border-b border-black/10 px-3 py-3 text-black/65 text-[11px]">
                         {(disc as any).minSpend ? (
-                          <span>Min Spend: {formatINR((disc as any).minSpend)}</span>
+                          <span>Min: {formatINR((disc as any).minSpend)}</span>
                         ) : (
-                          <span>No Min Spend</span>
+                          <span>No min</span>
                         )}
                         <span className="block text-[10px] text-black/45">
-                          {(disc as any).expiryDate ? `Exp: ${(disc as any).expiryDate}` : "No expiry"}
+                          {(disc as any).expiryDate ? `Exp: ${(disc as any).expiryDate}` : "Ongoing"}
                         </span>
                       </td>
 
-                      {/* Redeemed Count */}
-                      <td className="px-3 py-3 text-center font-bold text-[#072515] whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded-full bg-stone-100 font-mono text-xs">
-                          {disc.used || 0}
-                        </span>
+                      <td className="border-b border-black/10 px-3 py-3 text-right font-medium text-black">
+                        {disc.used || 0}
                       </td>
 
-                      {/* Actions */}
-                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-1.5">
+                      <td className="border-b border-black/10 px-3 py-3 text-center">
+                        <div className="flex items-center justify-center gap-1">
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(disc)}
-                            className="p-1.5 rounded-lg text-black/50 hover:text-[#072515] hover:bg-black/5 transition cursor-pointer"
-                            title="Edit Voucher"
+                            className="p-1.5 rounded text-black/50 hover:text-black hover:bg-black/5 transition"
+                            title="Edit"
                           >
                             <Pencil className="size-3.5" />
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDuplicateDiscount(disc)}
-                            className="p-1.5 rounded-lg text-black/50 hover:text-[#072515] hover:bg-black/5 transition cursor-pointer"
-                            title="Duplicate Voucher"
+                            className="p-1.5 rounded text-black/50 hover:text-black hover:bg-black/5 transition"
+                            title="Duplicate"
                           >
                             <Copy className="size-3.5" />
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDeleteDiscount(disc.id, disc.title)}
-                            className="p-1.5 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 transition cursor-pointer"
-                            title="Delete Voucher"
+                            className="p-1.5 rounded text-red-500 hover:text-red-700 hover:bg-red-50 transition"
+                            title="Delete"
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -936,273 +868,206 @@ export default function AdminDiscountsSection({
               </tbody>
             </table>
           </div>
-        </section>
-      ) : (
-        /* LUXURY VOUCHER TICKET CARDS VIEW */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredDiscounts.map((disc) => (
-            <div
-              key={disc.id}
-              className={`rounded-2xl border transition-all duration-200 relative overflow-hidden flex flex-col justify-between ${
-                disc.status === "Active"
-                  ? "bg-white border-black/10 hover:shadow-md hover:border-[#072515]/30"
-                  : "bg-stone-50 border-stone-200 opacity-75"
-              }`}
-            >
-              {/* Gold Top Band */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-[#072515] via-[#eed08e] to-[#072515]" />
-
-              <div className="p-4 space-y-3">
-                {/* Header: Status and Type */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      disc.status === "Active"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : disc.status === "Scheduled"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-stone-200 text-stone-600"
-                    }`}
-                  >
-                    {disc.status}
-                  </span>
-                  <span className="text-[10px] font-semibold text-black/45 uppercase tracking-wider">
-                    {disc.method === "Automatic" ? "Automated Voucher" : "Coupon Code"}
-                  </span>
-                </div>
-
-                {/* Main Code Box with Copy Button */}
-                <div className="p-3 rounded-xl bg-[#FAF8F5] border border-black/10 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <span className="font-mono font-bold text-sm text-[#072515] tracking-wider block truncate">
-                      {disc.title}
+        ) : (
+          /* View 2: Cards View */
+          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredDiscounts.map((disc) => (
+              <div
+                key={disc.id}
+                className="rounded-xl border border-black/10 bg-white p-4 shadow-2xs hover:shadow-sm transition flex flex-col justify-between space-y-3"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span
+                      className={`text-[11px] font-medium px-2 py-0.5 ${
+                        disc.status === "Active"
+                          ? "rounded-full bg-emerald-200 text-emerald-900"
+                          : disc.status === "Scheduled"
+                          ? "rounded-md bg-amber-200 text-amber-900"
+                          : "rounded-md bg-black/10 text-black"
+                      }`}
+                    >
+                      {disc.status}
                     </span>
-                    <span className="text-[10px] text-black/50 block">Click code or copy to share</span>
+                    <span className="text-[11px] text-black/50">{disc.method}</span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleCopyCode(disc.title)}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-bold hover:bg-[#072515]/90 transition shadow-2xs cursor-pointer shrink-0"
-                  >
-                    {copiedCode === disc.title ? (
-                      <>
-                        <Check className="size-3 text-emerald-400" />
-                        <span>Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="size-3" />
-                        <span>Copy</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-black/[0.03] border border-black/10">
+                    <span className="font-semibold text-black text-xs truncate">{disc.title}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCode(disc.title)}
+                      className="text-xs text-black/60 hover:text-black font-medium inline-flex items-center gap-1"
+                    >
+                      {copiedCode === disc.title ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                    </button>
+                  </div>
+
+                  <p className="mt-2 text-xs text-black/70 line-clamp-2">{disc.subtitle}</p>
                 </div>
 
-                {/* Concession Highlight */}
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xl font-serif font-bold text-[#072515]">{disc.discountValue}</span>
-                  <span className="text-[11px] text-black/50 font-medium">{disc.type}</span>
-                </div>
-
-                <p className="text-xs text-black/65 line-clamp-2 leading-relaxed">{disc.subtitle}</p>
-
-                {/* Details Footer */}
-                <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[11px] text-black/50">
-                  <span>
-                    {(disc as any).minSpend ? `Min: ${formatINR((disc as any).minSpend)}` : "No Min Spend"}
-                  </span>
-                  <span>{disc.used || 0} times claimed</span>
-                </div>
-              </div>
-
-              {/* Card Footer Actions */}
-              <div className="p-3 bg-stone-50 border-t border-black/5 flex items-center justify-between text-xs">
-                <span className="text-[10px] text-black/45 font-mono">
-                  {(disc as any).expiryDate ? `Exp: ${(disc as any).expiryDate}` : "Ongoing"}
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEdit(disc)}
-                    className="p-1 text-black/50 hover:text-[#072515] transition cursor-pointer"
-                    title="Edit"
-                  >
-                    <Pencil className="size-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDuplicateDiscount(disc)}
-                    className="p-1 text-black/50 hover:text-[#072515] transition cursor-pointer"
-                    title="Duplicate"
-                  >
-                    <Copy className="size-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteDiscount(disc.id, disc.title)}
-                    className="p-1 text-red-500 hover:text-red-700 transition cursor-pointer"
-                    title="Delete"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
+                <div className="pt-2 border-t border-black/10 flex items-center justify-between text-xs text-black/60">
+                  <span>{disc.used || 0} used</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEdit(disc)}
+                      className="p-1 rounded text-black/50 hover:text-black"
+                    >
+                      <Pencil className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteDiscount(disc.id, disc.title)}
+                      className="p-1 rounded text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* ==================================================================== */}
-      {/* 5. CREATE / EDIT DISCOUNT VOUCHER MODAL                              */}
+      {/* 4. CREATE / EDIT DISCOUNT DIALOG                                     */}
       {/* ==================================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border border-black/15 flex flex-col max-h-[90vh]">
-            {/* Modal Header */}
-            <div className="p-4 bg-[#072515] text-[#FAF8F5] flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="size-8 rounded-lg bg-[#eed08e]/20 border border-[#eed08e]/30 flex items-center justify-center text-[#eed08e]">
-                  <BadgePercent className="size-4" />
-                </div>
-                <div>
-                  <h3 className="font-serif font-bold text-sm text-[#eed08e]">
-                    {editingDiscountId ? "Edit Festive Voucher" : "Create New Sacred Voucher"}
-                  </h3>
-                  <p className="text-[10px] text-white/60">Configure code, concession type, and eligibility rules</p>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-2xs p-4">
+          <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden border border-black/10 flex flex-col max-h-[90vh]">
+            <div className="px-5 py-4 border-b border-black/10 flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-black text-sm">
+                  {editingDiscountId ? "Edit discount" : "Create discount"}
+                </h3>
+                <p className="text-xs text-black/50 mt-0.5">
+                  Configure discount code, rules, and customer eligibility.
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-white/60 hover:text-white cursor-pointer"
+                className="rounded-md p-1 text-black/45 hover:text-black hover:bg-black/5"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleSubmitForm} className="p-5 space-y-4 text-xs overflow-y-auto flex-1">
-              {/* Code & Generator */}
+            <form onSubmit={handleSubmitForm} className="p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-semibold text-black/80">Voucher / Coupon Code</label>
+                  <label className="font-medium text-black">Discount code</label>
                   <button
                     type="button"
                     onClick={handleGenerateRandomCode}
-                    className="text-[11px] font-bold text-[#072515] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] font-medium text-black/65 hover:text-black underline"
                   >
-                    <span>Generate Luxury Code</span>
+                    Generate random code
                   </button>
                 </div>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. DIWALI2026 or KURMAGIFT20"
+                  placeholder="e.g. SUMMER10"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none uppercase font-mono font-bold text-sm focus:border-[#072515] bg-stone-50/50"
+                  className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none font-semibold text-xs focus:border-black uppercase bg-[#fafafa]"
                 />
               </div>
 
-              {/* Type and Value */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-black/80 mb-1">Concession Type</label>
+                  <label className="block font-medium text-black mb-1">Discount type</label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none bg-white focus:border-black text-xs"
                   >
-                    <option value="Amount off order">Amount off order (%)</option>
-                    <option value="Amount off product">Amount off product (₹)</option>
-                    <option value="Buy X get Y">Buy X get Y (BOGO)</option>
+                    <option value="Amount off products">Amount off products</option>
+                    <option value="Buy X get Y">Buy X get Y</option>
+                    <option value="Amount off order">Amount off order</option>
                     <option value="Free shipping">Free shipping</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-black/80 mb-1">Concession Benefit</label>
+                  <label className="block font-medium text-black mb-1">Discount value</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. 15% or ₹500 or Free Shipping"
+                    placeholder="e.g. 10% or ₹300"
                     value={formData.discountValue}
                     onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none focus:border-black text-xs bg-white"
                   />
                 </div>
               </div>
 
-              {/* Description */}
               <div>
-                <label className="block font-semibold text-black/80 mb-1">Editorial Description &amp; Terms</label>
+                <label className="block font-medium text-black mb-1">Description</label>
                 <input
                   type="text"
-                  placeholder="e.g. 15% off festive gift trunks on orders above ₹3,000"
+                  placeholder="e.g. 10% off all incense boxes"
                   value={formData.subtitle}
                   onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none focus:border-[#072515]"
+                  className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none focus:border-black text-xs bg-white"
                 />
               </div>
 
-              {/* Method & Eligibility */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-black/80 mb-1">Redemption Method</label>
+                  <label className="block font-medium text-black mb-1">Method</label>
                   <select
                     value={formData.method}
                     onChange={(e) => setFormData({ ...formData, method: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none bg-white focus:border-black text-xs"
                   >
-                    <option value="Code">Customer Enters Code</option>
-                    <option value="Automatic">Automatic at Checkout</option>
+                    <option value="Code">Code</option>
+                    <option value="Automatic">Automatic</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-black/80 mb-1">Patron Eligibility</label>
+                  <label className="block font-medium text-black mb-1">Eligibility</label>
                   <select
                     value={formData.eligibility}
                     onChange={(e) => setFormData({ ...formData, eligibility: e.target.value as any })}
-                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none bg-white focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none bg-white focus:border-black text-xs"
                   >
-                    <option value="All customers">All Patrons</option>
-                    <option value="First-time patrons">First-Time Patrons</option>
-                    <option value="Specific patrons">Returning Patrons</option>
-                    <option value="VIP Tier">Sovereign VIP Club Only</option>
+                    <option value="All customers">All customers</option>
+                    <option value="First-time patrons">First-time customers</option>
+                    <option value="VIP Tier">VIP Tier</option>
                   </select>
                 </div>
               </div>
 
-              {/* Minimum Spend & Expiry */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-black/80 mb-1">Minimum Order Spend (₹)</label>
+                  <label className="block font-medium text-black mb-1">Minimum spend (₹)</label>
                   <input
                     type="number"
                     min={0}
-                    step={100}
-                    placeholder="2500"
+                    placeholder="0"
                     value={formData.minSpend}
                     onChange={(e) => setFormData({ ...formData, minSpend: Number(e.target.value) })}
-                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none focus:border-black text-xs bg-white"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-black/80 mb-1">Expiry Date / Season</label>
+                  <label className="block font-medium text-black mb-1">Expiry date</label>
                   <input
                     type="text"
-                    placeholder="e.g. Dec 31, 2026 or Ongoing"
+                    placeholder="Dec 31, 2026 or Ongoing"
                     value={formData.expiryDate}
                     onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-black/20 outline-none focus:border-[#072515]"
+                    className="w-full px-3 py-2 rounded-lg border border-black/15 outline-none focus:border-black text-xs bg-white"
                   />
                 </div>
               </div>
 
-              {/* Status */}
               <div>
-                <label className="block font-semibold text-black/80 mb-1">Voucher Status</label>
-                <div className="flex items-center gap-3">
+                <label className="block font-medium text-black mb-1">Status</label>
+                <div className="flex items-center gap-4">
                   {(["Active", "Scheduled", "Expired"] as const).map((st) => (
                     <label key={st} className="flex items-center gap-1.5 cursor-pointer">
                       <input
@@ -1210,29 +1075,27 @@ export default function AdminDiscountsSection({
                         name="status"
                         checked={formData.status === st}
                         onChange={() => setFormData({ ...formData, status: st })}
-                        className="accent-[#072515]"
+                        className="accent-black"
                       />
-                      <span>{st}</span>
+                      <span className="text-xs text-black/80">{st}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              {/* Modal Actions */}
-              <div className="pt-3 border-t border-black/10 flex items-center justify-end gap-2.5">
+              <div className="pt-3 border-t border-black/10 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3.5 py-2 rounded-lg border border-black/20 text-xs font-semibold hover:bg-black/5 cursor-pointer"
+                  className="h-8 px-3 rounded-lg border border-black/15 text-xs font-medium hover:bg-black/5"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-bold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer flex items-center gap-1.5"
+                  className="h-8 px-4 rounded-lg bg-black text-white text-xs font-medium hover:bg-black/80 transition"
                 >
-                  <Check className="size-3.5" />
-                  <span>{editingDiscountId ? "Save Changes" : "Create Voucher"}</span>
+                  {editingDiscountId ? "Save changes" : "Create discount"}
                 </button>
               </div>
             </form>

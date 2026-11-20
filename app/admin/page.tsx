@@ -54,6 +54,15 @@ import { notifyProductUpdated } from "@/lib/products-context";
 import AdminAnalyticsDashboard from "@/components/admin/AdminAnalyticsDashboard";
 import AdminDiscountsSection, { CURATED_MASTER_DISCOUNTS } from "@/components/admin/AdminDiscountsSection";
 import { useAdminAuth } from "@/components/admin/AdminAuthGuard";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 // ============================================================================
 // DATA STRUCTURES & INTERFACES
@@ -83,14 +92,14 @@ export interface AdminOrder {
   paymentMethod: "UPI" | "Card" | "Net Banking" | "Cash on Delivery" | string;
   paymentStatus: "Paid" | "Pending" | "Refunded" | string;
   fulfillmentStatus:
-    | "Unfulfilled"
-    | "Confirmed"
-    | "Processing"
-    | "Shipped"
-    | "Out for Delivery"
-    | "Delivered"
-    | "Cancelled"
-    | string;
+  | "Unfulfilled"
+  | "Confirmed"
+  | "Processing"
+  | "Shipped"
+  | "Out for Delivery"
+  | "Delivered"
+  | "Cancelled"
+  | string;
   channel: "Kurma Sanctuary" | "Direct Atelier" | "Corporate Concierge" | string;
   courier: string;
   awb: string;
@@ -746,12 +755,12 @@ const BOX_IMAGE_PRESETS = [
   { label: "Jute Tray", url: "/images/product/image8.png" },
 ];
 
-// Sparkline SVG coordinates for Overview metric cards
+// Sparkline SVG coordinates for Overview metric cards (from admin-panel/components/AdminOverview.tsx)
 const MINI_GRAPH_POINTS: Record<string, string> = {
-  Sessions: "0,18 6,17 12,12 18,15 24,10 30,13 36,7 42,11 48,5 54,4",
-  "Total sales": "0,18 6,16 12,14 18,9 24,11 30,6 36,8 42,3 48,4 54,2",
-  Orders: "0,18 8,16 16,11 24,14 32,8 40,10 48,4 54,3",
-  "Conversion rate": "0,18 7,16 14,13 21,11 28,12 35,7 42,9 49,5 54,4",
+  Sessions: "0,18 5,18 8,6 11,18 20,18 24,12 28,18 34,18 38,8 42,18 54,18",
+  "Total sales": "0,18 4,18 7,6 10,18 22,18 27,14 31,18 54,18",
+  Orders: "0,18 4,18 8,5 11,18 22,18 26,13 30,18 54,18",
+  "Conversion rate": "0,18 6,18 9,9 13,18 24,18 29,14 33,18 54,18",
 };
 
 // Sales overview multi-point chart data
@@ -885,7 +894,7 @@ export default function AdminDashboardPage() {
           setOrders(data.orders);
           try {
             localStorage.setItem("kurma_admin_orders", JSON.stringify(data.orders));
-          } catch {}
+          } catch { }
           hasSuccess = true;
         }
       }
@@ -913,12 +922,12 @@ export default function AdminDashboardPage() {
           setProductsList(mapped);
           try {
             localStorage.setItem("kurma_admin_products", JSON.stringify(mapped));
-          } catch {}
+          } catch { }
           if (data.inventoryStock) {
             setInventoryStock(data.inventoryStock);
             try {
               localStorage.setItem("kurma_inventory_stock", JSON.stringify(data.inventoryStock));
-            } catch {}
+            } catch { }
           }
           hasSuccess = true;
         }
@@ -931,7 +940,7 @@ export default function AdminDashboardPage() {
           setCategories(data.categories);
           try {
             localStorage.setItem("kurma_admin_categories", JSON.stringify(data.categories));
-          } catch {}
+          } catch { }
           hasSuccess = true;
         }
       }
@@ -943,7 +952,7 @@ export default function AdminDashboardPage() {
           setCustomBoxes(data.customBoxes);
           try {
             localStorage.setItem("kurma_custom_boxes", JSON.stringify(data.customBoxes));
-          } catch {}
+          } catch { }
           hasSuccess = true;
         }
       }
@@ -964,7 +973,7 @@ export default function AdminDashboardPage() {
           setDiscounts(data.discounts);
           try {
             localStorage.setItem("kurma_admin_discounts", JSON.stringify(data.discounts));
-          } catch {}
+          } catch { }
           hasSuccess = true;
         }
       }
@@ -1022,13 +1031,13 @@ export default function AdminDashboardPage() {
           try {
             const parsed = JSON.parse(e.newValue);
             if (Array.isArray(parsed) && parsed.length > 0) setCustomBoxes(parsed);
-          } catch {}
+          } catch { }
         }
         if (e.key === "kurma_admin_discounts" && e.newValue) {
           try {
             const parsed = JSON.parse(e.newValue);
             if (Array.isArray(parsed) && parsed.length > 0) setDiscounts(parsed);
-          } catch {}
+          } catch { }
         }
       };
       window.addEventListener("storage", handleStorageChange);
@@ -1039,7 +1048,7 @@ export default function AdminDashboardPage() {
             const parsed = JSON.parse(storedB);
             if (Array.isArray(parsed) && parsed.length > 0) setCustomBoxes(parsed);
           }
-        } catch {}
+        } catch { }
       };
       window.addEventListener("kurma_custom_boxes_updated", handleCustomUpdate);
       const handleDiscountsUpdate = () => {
@@ -1049,7 +1058,7 @@ export default function AdminDashboardPage() {
             const parsed = JSON.parse(storedD);
             if (Array.isArray(parsed) && parsed.length > 0) setDiscounts(parsed);
           }
-        } catch {}
+        } catch { }
       };
       window.addEventListener("kurma_discounts_updated", handleDiscountsUpdate);
 
@@ -1203,7 +1212,7 @@ export default function AdminDashboardPage() {
     setCategories((prev) =>
       prev.map((cat) =>
         cat.title.toLowerCase().includes(newProductData.category.toLowerCase()) ||
-        cat.slug.toLowerCase().includes(newProductData.category.toLowerCase())
+          cat.slug.toLowerCase().includes(newProductData.category.toLowerCase())
           ? { ...cat, productCount: cat.productCount + 1 }
           : cat
       )
@@ -1336,7 +1345,7 @@ export default function AdminDashboardPage() {
       const updated = prev.map((o) => (o.id === orderId ? { ...o, ...mergedUpdates } : o));
       try {
         localStorage.setItem("kurma_admin_orders", JSON.stringify(updated));
-      } catch {}
+      } catch { }
       return updated;
     });
 
@@ -1355,7 +1364,7 @@ export default function AdminDashboardPage() {
         .then((d) => {
           if (d.metrics) setOverviewData(d);
         })
-        .catch(() => {});
+        .catch(() => { });
     } catch (err) {
       console.warn("Failed to sync tracking updates with server", err);
     }
@@ -1381,7 +1390,7 @@ export default function AdminDashboardPage() {
         .then((d) => {
           if (d.metrics) setOverviewData(d);
         })
-        .catch(() => {});
+        .catch(() => { });
     } catch (err) {
       console.warn("Failed to update order status on server", err);
     }
@@ -1407,7 +1416,7 @@ export default function AdminDashboardPage() {
         .then((d) => {
           if (d.metrics) setOverviewData(d);
         })
-        .catch(() => {});
+        .catch(() => { });
     } catch (err) {
       console.warn("Failed to update payment status on server", err);
     }
@@ -1425,7 +1434,7 @@ export default function AdminDashboardPage() {
         .then((d) => {
           if (d.metrics) setOverviewData(d);
         })
-        .catch(() => {});
+        .catch(() => { });
     } catch (err) {
       console.warn("Failed to delete order on server", err);
     }
@@ -1502,7 +1511,7 @@ export default function AdminDashboardPage() {
           .then((d) => {
             if (d.metrics) setOverviewData(d);
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     } catch (err) {
       console.warn("Failed to create order on server", err);
@@ -1836,21 +1845,22 @@ export default function AdminDashboardPage() {
           `}
         >
           {/* Brand Header */}
-          <div className="h-16 px-5 border-b border-black/10 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 group" aria-label="Kurma Atelier Admin">
-              <div className="relative size-9 rounded-xl overflow-hidden shadow-xs border border-[#eed08e]/40 bg-[#072515] flex items-center justify-center shrink-0">
+          <div className="h-20 px-4 border-b border-black/10 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-3.5 rounded-lg group" aria-label="Admin Dashboard">
+              <div className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] shrink-0 flex items-center justify-center">
                 <Image
-                  src="/images/logo.jpeg"
+                  src="/images/logo-transparent.png"
                   alt="Kurma Logo"
-                  width={36}
-                  height={36}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105 pointer-events-none"
                   priority
                 />
               </div>
-              <div className="flex flex-col text-left">
-                <span className="font-serif font-bold text-sm tracking-wider text-[#072515]">KURMA</span>
-                <span className="text-[10px] text-black/55 font-medium tracking-wide">Atelier Administration</span>
+              <div className="min-w-0 flex-1 text-left">
+                <span className="font-semibold text-base sm:text-lg text-[#11110f] tracking-tight block whitespace-nowrap">
+                  Admin Dashboard
+                </span>
               </div>
             </Link>
             <button
@@ -1871,11 +1881,10 @@ export default function AdminDashboardPage() {
                 setActiveRoute("home");
                 setMobileSidebarOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
-                activeRoute === "home"
-                  ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
-                  : "text-black/70 hover:text-black hover:bg-black/[0.04]"
-              }`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${activeRoute === "home"
+                ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
+                : "text-black/70 hover:text-black hover:bg-black/[0.04]"
+                }`}
             >
               <Home className={`size-4 ${activeRoute === "home" ? "text-black" : "text-black/55"}`} />
               <span className="flex-1 text-left">Home</span>
@@ -1891,11 +1900,10 @@ export default function AdminDashboardPage() {
                     setOrdersSubView("all");
                     setMobileSidebarOpen(false);
                   }}
-                  className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
-                    activeRoute === "orders" && ordersSubView === "all"
-                      ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
-                      : "text-black/70 hover:text-black hover:bg-black/[0.04]"
-                  }`}
+                  className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${activeRoute === "orders" && ordersSubView === "all"
+                    ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
+                    : "text-black/70 hover:text-black hover:bg-black/[0.04]"
+                    }`}
                 >
                   <Inbox className={`size-4 ${activeRoute === "orders" && ordersSubView === "all" ? "text-black" : "text-black/55"}`} />
                   <span className="text-left">Orders</span>
@@ -1916,61 +1924,18 @@ export default function AdminDashboardPage() {
                     aria-hidden="true"
                     className="pointer-events-none absolute left-0 top-0 overflow-visible text-black/25"
                     width="16"
-                    height="94"
-                    viewBox="0 0 16 94"
+                    height="42"
+                    viewBox="0 0 16 42"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.25"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M1 0 V74" />
+                    <path d="M1 0 V22" />
                     <path d="M1 18 Q1 22 5 22 H12" />
                     <path d="M10 19 L13 22 L10 25" />
-                    <path d="M1 44 Q1 48 5 48 H12" />
-                    <path d="M10 45 L13 48 L10 51" />
-                    <path d="M1 70 Q1 74 5 74 H12" />
-                    <path d="M10 71 L13 74 L10 77" />
                   </svg>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveRoute("orders");
-                      setOrdersSubView("tracking");
-                      setMobileSidebarOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
-                      activeRoute === "orders" && ordersSubView === "tracking"
-                        ? "text-black font-semibold bg-black/5"
-                        : "text-black/65 hover:text-black hover:bg-black/5"
-                    }`}
-                  >
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <Truck className="size-3 text-[#c89e43]" />
-                      Order Tracking
-                    </span>
-                    <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider">
-                      Live
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveRoute("orders");
-                      setOrdersSubView("drafts");
-                      setMobileSidebarOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
-                      activeRoute === "orders" && ordersSubView === "drafts"
-                        ? "text-black font-semibold bg-black/5"
-                        : "text-black/65 hover:text-black hover:bg-black/5"
-                    }`}
-                  >
-                    <span>Drafts</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-black/5 text-black/70 font-medium">2</span>
-                  </button>
 
                   <button
                     type="button"
@@ -1979,11 +1944,10 @@ export default function AdminDashboardPage() {
                       setOrdersSubView("abandoned");
                       setMobileSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
-                      activeRoute === "orders" && ordersSubView === "abandoned"
-                        ? "text-black font-semibold bg-black/5"
-                        : "text-black/65 hover:text-black hover:bg-black/5"
-                    }`}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${activeRoute === "orders" && ordersSubView === "abandoned"
+                      ? "text-black font-semibold bg-black/5"
+                      : "text-black/65 hover:text-black hover:bg-black/5"
+                      }`}
                   >
                     <span>Abandoned checkouts</span>
                     <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-medium">1</span>
@@ -2002,11 +1966,10 @@ export default function AdminDashboardPage() {
                     setProductsSubView("all");
                     setMobileSidebarOpen(false);
                   }}
-                  className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
-                    activeRoute === "products" && productsSubView === "all"
-                      ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
-                      : "text-black/70 hover:text-black hover:bg-black/[0.04]"
-                  }`}
+                  className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${activeRoute === "products" && productsSubView === "all"
+                    ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
+                    : "text-black/70 hover:text-black hover:bg-black/[0.04]"
+                    }`}
                 >
                   <Package className={`size-4 ${activeRoute === "products" && productsSubView === "all" ? "text-black" : "text-black/55"}`} />
                   <span className="text-left">Products</span>
@@ -2021,132 +1984,6 @@ export default function AdminDashboardPage() {
               </div>
 
               {productsExpanded && (
-                <div className="relative ml-5 pl-4 mt-1 space-y-0.5">
-                  <svg
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-0 top-0 overflow-visible text-black/25"
-                    width="16"
-                    height="68"
-                    viewBox="0 0 16 68"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.25"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M1 0 V48" />
-                    <path d="M1 18 Q1 22 5 22 H12" />
-                    <path d="M10 19 L13 22 L10 25" />
-                    <path d="M1 44 Q1 48 5 48 H12" />
-                    <path d="M10 45 L13 48 L10 51" />
-                  </svg>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveRoute("products");
-                      setProductsSubView("customise");
-                      setMobileSidebarOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
-                      activeRoute === "products" && productsSubView === "customise"
-                        ? "text-black font-semibold bg-black/5"
-                        : "text-black/65 hover:text-black hover:bg-black/5"
-                    }`}
-                  >
-                    <span>Customise</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#072515]/10 text-[#072515] font-semibold">Bespoke</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveRoute("products");
-                      setProductsSubView("inventory");
-                      setMobileSidebarOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
-                      activeRoute === "products" && productsSubView === "inventory"
-                        ? "text-black font-semibold bg-black/5"
-                        : "text-black/65 hover:text-black hover:bg-black/5"
-                    }`}
-                  >
-                    <span>Inventory</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-medium">Live</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* 4. Customers */}
-            <button
-              type="button"
-              onClick={() => {
-                setActiveRoute("customers");
-                setMobileSidebarOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
-                activeRoute === "customers"
-                  ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
-                  : "text-black/70 hover:text-black hover:bg-black/[0.04]"
-              }`}
-            >
-              <UsersRound className={`size-4 ${activeRoute === "customers" ? "text-black" : "text-black/55"}`} />
-              <span className="flex-1 text-left">Customers</span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] bg-black/5 text-black/70 font-medium">
-                {customers.length}
-              </span>
-            </button>
-
-            {/* 5. Discounts */}
-            <button
-              type="button"
-              onClick={() => {
-                setActiveRoute("discounts");
-                setMobileSidebarOpen(false);
-              }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
-                activeRoute === "discounts"
-                  ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
-                  : "text-black/70 hover:text-black hover:bg-black/[0.04]"
-              }`}
-            >
-              <BadgePercent className={`size-4 ${activeRoute === "discounts" ? "text-black" : "text-black/55"}`} />
-              <span className="flex-1 text-left">Discounts</span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] bg-black/5 text-black/70 font-medium">
-                {discounts.length}
-              </span>
-            </button>
-
-            {/* 6. Analytics (with Reports sub-item) */}
-            <div className="pt-1">
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveRoute("analytics");
-                    setAnalyticsSubView("overview");
-                    setMobileSidebarOpen(false);
-                  }}
-                  className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${
-                    activeRoute === "analytics" && analyticsSubView === "overview"
-                      ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
-                      : "text-black/70 hover:text-black hover:bg-black/[0.04]"
-                  }`}
-                >
-                  <ChartNoAxesCombined className={`size-4 ${activeRoute === "analytics" && analyticsSubView === "overview" ? "text-black" : "text-black/55"}`} />
-                  <span className="text-left">Analytics</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAnalyticsExpanded(!analyticsExpanded)}
-                  className="p-2 text-black/45 hover:text-black"
-                >
-                  <ChevronRight className={`size-3.5 transition-transform duration-200 ${analyticsExpanded ? "rotate-90" : ""}`} />
-                </button>
-              </div>
-
-              {analyticsExpanded && (
                 <div className="relative ml-5 pl-4 mt-1 space-y-0.5">
                   <svg
                     aria-hidden="true"
@@ -2168,41 +2005,95 @@ export default function AdminDashboardPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setActiveRoute("analytics");
-                      setAnalyticsSubView("reports");
+                      setActiveRoute("products");
+                      setProductsSubView("customise");
                       setMobileSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${
-                      activeRoute === "analytics" && analyticsSubView === "reports"
-                        ? "text-black font-semibold bg-black/5"
-                        : "text-black/65 hover:text-black hover:bg-black/5"
-                    }`}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${activeRoute === "products" && productsSubView === "customise"
+                      ? "text-black font-semibold bg-black/5"
+                      : "text-black/65 hover:text-black hover:bg-black/5"
+                      }`}
                   >
-                    <span>Reports</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-black/5 text-black/70 font-medium">5</span>
+                    <span>Customise</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#072515]/10 text-[#072515] font-semibold">Bespoke</span>
                   </button>
                 </div>
               )}
             </div>
+
+            {/* 4. Customers */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveRoute("customers");
+                setMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${activeRoute === "customers"
+                ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
+                : "text-black/70 hover:text-black hover:bg-black/[0.04]"
+                }`}
+            >
+              <UsersRound className={`size-4 ${activeRoute === "customers" ? "text-black" : "text-black/55"}`} />
+              <span className="flex-1 text-left">Customers</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-black/5 text-black/70 font-medium">
+                {customers.length}
+              </span>
+            </button>
+
+            {/* 5. Discounts */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveRoute("discounts");
+                setMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${activeRoute === "discounts"
+                ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
+                : "text-black/70 hover:text-black hover:bg-black/[0.04]"
+                }`}
+            >
+              <BadgePercent className={`size-4 ${activeRoute === "discounts" ? "text-black" : "text-black/55"}`} />
+              <span className="flex-1 text-left">Discounts</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-black/5 text-black/70 font-medium">
+                {discounts.length}
+              </span>
+            </button>
+
+            {/* 6. Analytics */}
+            <button
+              type="button"
+              onClick={() => {
+                setActiveRoute("analytics");
+                setAnalyticsSubView("overview");
+                setMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all ${activeRoute === "analytics"
+                ? "bg-black/[0.08] text-black font-semibold shadow-2xs"
+                : "text-black/70 hover:text-black hover:bg-black/[0.04]"
+                }`}
+            >
+              <ChartNoAxesCombined className={`size-4 ${activeRoute === "analytics" ? "text-black" : "text-black/55"}`} />
+              <span className="flex-1 text-left">Analytics</span>
+            </button>
           </nav>
 
           {/* User Profile Footer (Matching nav-user.tsx) */}
-          <div className="p-3 border-t border-black/10 bg-white">
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-black/[0.03] border border-black/5 hover:bg-black/[0.05] transition-colors">
-              <div className="size-8 rounded-full bg-[#072515] text-[#eed08e] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                A
+          <div className="p-3 border-t border-black/10 bg-[#fafafa]">
+            <div className="flex items-center gap-2.5 p-2 rounded-lg bg-white border border-black/10 shadow-xs hover:bg-black/[0.02] transition-colors">
+              <div className="size-8 rounded-lg bg-black text-white flex items-center justify-center font-semibold text-xs shrink-0">
+                {adminUser?.name ? adminUser.name.charAt(0).toUpperCase() : "A"}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-black truncate">Admin</p>
-                <p className="text-[10px] text-black/50 truncate">{adminUser?.email || "admin@kurmaluxury.com"}</p>
+              <div className="min-w-0 flex-1 text-left">
+                <p className="text-xs font-semibold text-black truncate">{adminUser?.name || "Admin"}</p>
+                <p className="text-[11px] text-black/50 truncate">{adminUser?.email || "admin@kurmaluxury.com"}</p>
               </div>
               <button
                 type="button"
                 onClick={logout}
-                title="Sign Out of Atelier Administration"
-                className="p-1.5 rounded-lg text-black/45 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+                title="Sign Out"
+                className="p-1.5 rounded-md text-black/45 hover:text-black hover:bg-black/5 transition-colors cursor-pointer"
               >
-                <LogOut className="size-3.5" />
+                <LogOut className="size-4" />
               </button>
             </div>
           </div>
@@ -2213,7 +2104,7 @@ export default function AdminDashboardPage() {
         {/* ==================================================================== */}
         <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
           {/* Top Bar Navigation */}
-          <header className="sticky top-0 z-30 h-16 bg-white border-b border-black/10 px-4 sm:px-6 flex items-center justify-between gap-4">
+          <header className="sticky top-0 z-30 h-20 bg-white border-b border-black/10 px-4 sm:px-6 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -2223,21 +2114,21 @@ export default function AdminDashboardPage() {
                 <Menu className="size-5" />
               </button>
 
-              <div className="hidden sm:flex items-center gap-2 text-xs text-black/50 bg-[#FAF8F5] px-3 py-1.5 rounded-lg border border-black/10 w-64 lg:w-80">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-black/50 bg-[#fafafa] px-3 py-1.5 rounded-lg border border-black/10 w-64 lg:w-80">
                 <Search className="size-3.5 text-black/40" />
                 <input
                   type="text"
-                  placeholder="Search orders, creations, patrons... ⌘K"
+                  placeholder="Search and filter..."
                   className="bg-transparent outline-none w-full text-xs text-black placeholder:text-black/40"
                 />
               </div>
             </div>
 
             <div className="flex items-center gap-2.5">
-              {/* Neon DB Live status badge */}
+              {/* Live status badge */}
               <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-white shadow-2xs border-emerald-600/20 text-emerald-800">
                 <span className={`size-2 rounded-full ${isDbConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
-                <span>{isDbConnected ? "Neon Live" : "Offline Cache"}</span>
+                <span>{isDbConnected ? "Live Connected" : "Offline Cache"}</span>
               </div>
 
               {/* Sync Button */}
@@ -2245,30 +2136,30 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={() => fetchAdminData(true)}
                 disabled={isSyncing}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 bg-white text-xs font-medium text-black/80 hover:bg-black/5 transition-colors disabled:opacity-50"
+                className="inline-flex h-8 items-center gap-1.5 px-3 rounded-lg border border-black/15 bg-white text-xs font-medium text-black hover:bg-black/5 transition-colors disabled:opacity-50"
                 title="Refresh and sync data from Neon DB"
               >
-                <RefreshCw className={`size-3 text-[#072515] ${isSyncing ? "animate-spin" : ""}`} />
-                <span className="hidden md:inline">Sync Neon DB</span>
+                <RefreshCw className={`size-3 text-black ${isSyncing ? "animate-spin" : ""}`} />
+                <span className="hidden md:inline">Sync DB</span>
               </button>
 
               <Link
                 href="/"
                 target="_blank"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/15 bg-white text-xs font-medium text-black/80 hover:bg-black/5 transition-colors"
+                className="inline-flex h-8 items-center gap-1.5 px-3 rounded-lg border border-black/15 bg-white text-xs font-medium text-black hover:bg-black/5 transition-colors"
               >
-                <span>View Sanctuary</span>
+                <span>View store</span>
                 <ExternalLink className="size-3 text-black/50" />
               </Link>
 
               <button
                 type="button"
-                onClick={() => triggerNotification("No new unread atelier alerts.")}
+                onClick={() => triggerNotification("No new unread alerts.")}
                 className="relative p-2 rounded-lg text-black/70 hover:bg-black/5 transition-colors"
                 aria-label="Notifications"
               >
                 <Bell className="size-4" />
-                <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#eed08e] ring-2 ring-white" />
+                <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[#08a7f5] ring-2 ring-white" />
               </button>
             </div>
           </header>
@@ -2277,15 +2168,15 @@ export default function AdminDashboardPage() {
           {/* ROUTE 1: HOME (OVERVIEW) — Faithful Re-creation of AdminOverview.tsx */}
           {/* ================================================================== */}
           {activeRoute === "home" && (
-            <main className="flex-1 p-4 sm:p-6 space-y-5 bg-[#f6f5f1]">
+            <main className="min-h-full flex-1 bg-[#f5f5f5] p-4 text-black sm:p-5 space-y-4">
               {/* Top Greeting & Date Range Picker */}
-              <div className="relative flex flex-wrap items-center justify-between gap-4">
+              <div className="relative flex items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-xl font-serif font-bold text-[#072515] tracking-tight">
+                  <h1 className="mt-1 text-lg font-semibold tracking-tight text-black">
                     {greetingText}, {adminUser?.name ? adminUser.name.split(" ")[0] : "Admin"}
                   </h1>
-                  <p className="mt-0.5 text-xs text-black/60">
-                    Here&apos;s what&apos;s happening with your luxury Kurma sanctuary today.
+                  <p className="mt-0.5 text-xs text-black/55">
+                    Here&apos;s what&apos;s happening with your store today.
                   </p>
                 </div>
 
@@ -2294,17 +2185,17 @@ export default function AdminDashboardPage() {
                     type="button"
                     aria-expanded={isDatePickerOpen}
                     onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/20 bg-white px-3 text-xs font-medium text-black/80 shadow-sm transition hover:bg-black/[0.03]"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-black/25 bg-white px-2.5 text-xs font-medium text-black/75 shadow-sm transition-colors hover:bg-black/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25"
                   >
-                    <CalendarDays className="size-3.5 text-[#072515]" />
+                    <CalendarDays className="size-3.5 text-black/65" />
                     <span>{dateRangeLabel}</span>
-                    <ChevronDown className="size-3.5 text-black/50" />
+                    <ChevronDown className="size-3.5 text-black/55" />
                   </button>
 
                   {/* Date Picker Popover */}
                   {isDatePickerOpen && (
-                    <div className="absolute right-0 top-10 z-40 flex w-[min(580px,calc(100vw-2rem))] overflow-hidden rounded-xl border border-black/15 bg-white shadow-xl animate-fade-in">
-                      <div className="hidden sm:block w-36 border-r border-black/10 bg-[#FAF8F5] p-2">
+                    <div className="absolute right-0 top-10 z-30 flex w-[min(680px,calc(100vw-2rem))] overflow-hidden rounded-xl border border-black/15 bg-white shadow-xl animate-fade-in">
+                      <div className="hidden w-40 shrink-0 border-r border-black/10 bg-[#fafafa] p-2 sm:block">
                         {["Today", "Yesterday", "Last 7 days", "Last 30 days", "Quarter to date", "Custom range"].map(
                           (opt) => (
                             <button
@@ -2315,44 +2206,76 @@ export default function AdminDashboardPage() {
                                 setIsDatePickerOpen(false);
                                 triggerNotification(`Date range set to ${opt}`);
                               }}
-                              className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors ${
-                                opt === dateRangeLabel ? "bg-[#072515] text-[#eed08e] font-semibold" : "text-black/70 hover:bg-black/5"
-                              }`}
+                              className={`w-full rounded-md px-2 py-2 text-left text-xs transition-colors hover:bg-black/5 ${opt === dateRangeLabel ? "bg-black/10 font-medium text-black" : "text-black/70"
+                                }`}
                             >
                               {opt}
                             </button>
                           )
                         )}
                       </div>
-                      <div className="flex-1 p-4 text-xs">
-                        <div className="flex items-center gap-2 pb-3 border-b border-black/10">
-                          <span className="text-black/70">Show data for</span>
-                          <span className="font-semibold text-[#072515]">{dateRangeLabel}</span>
+                      <div className="min-w-0 flex-1 p-4">
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
+                          <span className="text-black/70">Last</span>
+                          <input
+                            aria-label="Number of days"
+                            defaultValue="30"
+                            className="h-8 w-20 rounded-md border border-black/20 px-2 outline-none focus:border-black/50 text-xs"
+                          />
+                          <select
+                            aria-label="Date unit"
+                            defaultValue="Days"
+                            className="h-8 rounded-md border border-black/20 bg-white px-2 outline-none focus:border-black/50 text-xs"
+                          >
+                            <option>Days</option>
+                            <option>Weeks</option>
+                            <option>Months</option>
+                          </select>
+                          <label className="inline-flex items-center gap-1.5 text-black/70">
+                            <input type="checkbox" defaultChecked className="accent-black" /> Include today
+                          </label>
                         </div>
-                        <div className="mt-3 grid grid-cols-2 gap-4 text-center">
-                          <div className="p-3 bg-[#FAF8F5] rounded-lg border border-black/5">
-                            <p className="font-semibold text-black/80">Active Sanctuary Period</p>
-                            <p className="mt-1 text-sm font-bold text-[#072515]">Jul 05 – Aug 04, 2026</p>
-                          </div>
-                          <div className="p-3 bg-[#FAF8F5] rounded-lg border border-black/5">
-                            <p className="font-semibold text-black/80">Comparison Period</p>
-                            <p className="mt-1 text-sm font-bold text-black/60">Jun 05 – Jul 04, 2026</p>
-                          </div>
+                        <div className="mt-5 grid grid-cols-2 gap-6 text-xs text-black/75">
+                          {["June 2026", "July 2026"].map((month) => (
+                            <div key={month}>
+                              <p className="mb-3 text-center font-semibold text-black">{month}</p>
+                              <div className="grid grid-cols-7 gap-y-2 text-center text-black/60">
+                                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+                                  <span key={day} className="text-[10px]">
+                                    {day}
+                                  </span>
+                                ))}
+                                {Array.from({ length: 35 }, (_, index) => {
+                                  const day = index - (month === "June 2026" ? 0 : 1);
+                                  return (
+                                    <span
+                                      key={index}
+                                      className={
+                                        day === 15 ? "rounded bg-black px-1 py-0.5 text-white" : "px-1 py-0.5"
+                                      }
+                                    >
+                                      {day > 0 && day < 31 ? day : ""}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <div className="mt-4 flex justify-end gap-2">
+                        <div className="mt-5 flex justify-end gap-2 border-t border-black/10 pt-3">
                           <button
                             type="button"
                             onClick={() => setIsDatePickerOpen(false)}
-                            className="px-3 py-1.5 rounded-md border border-black/20 text-xs font-medium hover:bg-black/5"
+                            className="rounded-md border border-black/20 px-3 py-1.5 text-xs text-black hover:bg-black/5"
                           >
                             Cancel
                           </button>
                           <button
                             type="button"
                             onClick={() => setIsDatePickerOpen(false)}
-                            className="px-3 py-1.5 rounded-md bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90"
+                            className="rounded-md bg-black px-3 py-1.5 text-xs text-white hover:bg-black/80"
                           >
-                            Apply Range
+                            Apply
                           </button>
                         </div>
                       </div>
@@ -2362,12 +2285,13 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Interactive 4 Metric Cards + Expandable Sales Chart (Exact from AdminOverview.tsx) */}
-              <section className="relative rounded-xl border border-black/10 bg-white p-3 sm:p-4 shadow-sm">
+              <section className="relative rounded-xl border border-black/10 bg-white p-2 shadow-sm sm:p-3">
                 <button
                   type="button"
-                  aria-label={isOverviewExpanded ? "Collapse overview chart" : "Expand overview chart"}
+                  aria-label={isOverviewExpanded ? "Collapse overview" : "Expand overview"}
+                  aria-expanded={isOverviewExpanded}
                   onClick={() => setIsOverviewExpanded(!isOverviewExpanded)}
-                  className="absolute right-3 top-3 z-10 inline-flex size-7 items-center justify-center rounded-md text-black/50 transition-colors hover:bg-black/5 hover:text-black"
+                  className="absolute right-3 top-3 z-10 inline-flex size-7 items-center justify-center rounded-md text-black/50 transition-colors hover:bg-black/5 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
                 >
                   {isOverviewExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
                 </button>
@@ -2378,25 +2302,25 @@ export default function AdminDashboardPage() {
                     {
                       label: "Sessions",
                       value: overviewData?.metrics.sessions ? overviewData.metrics.sessions.toLocaleString("en-IN") : "1,842",
-                      change: "↗ 14.8%",
+                      change: "↘ 9%",
                     },
                     {
                       label: "Total sales",
                       value: formatINR(
                         overviewData?.metrics.totalSales ??
-                          orders.filter((o) => o.paymentStatus === "Paid").reduce((acc, o) => acc + o.totalAmount, 0)
+                        orders.filter((o) => o.paymentStatus === "Paid").reduce((acc, o) => acc + o.totalAmount, 0)
                       ),
-                      change: "↗ 22.4%",
+                      change: "—",
                     },
                     {
                       label: "Orders",
                       value: overviewData?.metrics.ordersCount !== undefined ? overviewData.metrics.ordersCount.toString() : orders.length.toString(),
-                      change: "↗ 8.1%",
+                      change: "—",
                     },
                     {
                       label: "Conversion rate",
-                      value: `${overviewData?.metrics.conversionRate || "4.12"}%`,
-                      change: "↗ 1.05%",
+                      value: `${overviewData?.metrics.conversionRate || "3.44"}%`,
+                      change: "—",
                     },
                   ].map((m) => {
                     const isSelected = selectedMetric === m.label;
@@ -2404,20 +2328,17 @@ export default function AdminDashboardPage() {
                       <button
                         key={m.label}
                         type="button"
+                        aria-pressed={isSelected}
                         onClick={() => setSelectedMetric(m.label as any)}
-                        className={`relative min-h-16 rounded-lg p-3 text-left transition-all ${
-                          isSelected
-                            ? "bg-[#072515]/5 border border-[#072515]/20 shadow-sm"
-                            : "bg-white hover:bg-black/[0.02] border border-black/5"
-                        }`}
+                        className={`relative min-h-14 rounded-lg px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/25 ${isSelected ? "bg-[#f0f0f0]" : "bg-white hover:bg-black/[0.03]"
+                          }`}
                       >
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="text-xs font-medium text-black/70">{m.label}</span>
-                          {isSelected && <span className="text-xs text-[#072515] font-bold">↗</span>}
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs font-medium text-black/75">{m.label}</p>
+                          {isSelected ? <span className="text-sm text-black/45">↗</span> : null}
                         </div>
-                        <p className="mt-1 text-base font-bold text-[#072515]">
-                          {m.value}{" "}
-                          <span className="text-[11px] font-normal text-emerald-700 ml-1">{m.change}</span>
+                        <p className="mt-1 text-sm font-semibold text-black">
+                          {m.value} <span className="font-normal text-black/55">{m.change}</span>
                         </p>
                         {/* Mini Sparkline when collapsed */}
                         {!isOverviewExpanded && (
@@ -2430,8 +2351,8 @@ export default function AdminDashboardPage() {
                             <polyline
                               points={MINI_GRAPH_POINTS[m.label] || "0,18 25,10 54,4"}
                               fill="none"
-                              stroke="#c89e43"
-                              strokeWidth="1.5"
+                              stroke="#08a7f5"
+                              strokeWidth="1.2"
                               vectorEffect="non-scaling-stroke"
                             />
                           </svg>
@@ -2441,140 +2362,107 @@ export default function AdminDashboardPage() {
                   })}
                 </div>
 
-                {/* Expanded Multi-Point Line Chart */}
+                {/* Expanded Multi-Point Line Chart (Recharts) */}
                 {isOverviewExpanded && (
-                  <div className="mt-4 pt-3 border-t border-black/5">
-                    <div className="flex items-center justify-between pb-2 text-xs text-black/60">
-                      <span className="font-semibold text-black/80">{selectedMetric} Performance Over Time</span>
-                      <div className="flex items-center gap-4 text-[11px]">
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-[#072515]" /> Jul 05–Aug 04, 2026 (Current)
-                        </span>
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="size-2 rounded-full bg-[#eed08e] border border-black/20" /> Jun 05–Jul 04, 2026 (Previous)
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="relative h-56 w-full pt-4">
-                      {/* Grid Lines */}
-                      <div className="absolute inset-x-0 top-6 border-b border-dashed border-black/10" />
-                      <div className="absolute inset-x-0 top-24 border-b border-dashed border-black/10" />
-                      <div className="absolute inset-x-0 top-40 border-b border-dashed border-black/10" />
-
-                      {/* SVG Multi-curve */}
-                      <svg
-                        className="w-full h-44 overflow-visible"
-                        viewBox="0 0 900 160"
-                        preserveAspectRatio="none"
+                  <div className="mt-4 h-[220px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={
+                          overviewData?.salesChartData && overviewData.salesChartData.length > 0
+                            ? overviewData.salesChartData
+                            : SALES_CHART_DATA
+                        }
+                        margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                       >
-                        {/* Previous period line (dashed gold) */}
-                        <path
-                          d="M 20 140 Q 120 130 220 115 T 440 90 T 660 65 T 880 40"
-                          fill="none"
-                          stroke="#eed08e"
-                          strokeWidth="2"
+                        <CartesianGrid stroke="#e5e5e5" vertical={false} />
+                        <XAxis
+                          dataKey="date"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fill: "#737373", fontSize: 11 }}
+                          dy={8}
+                        />
+                        <YAxis
+                          domain={[0, 60000]}
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fill: "#737373", fontSize: 11 }}
+                          width={48}
+                          tickFormatter={(v) => (v >= 1000 ? `₹${v / 1000}k` : `₹${v}`)}
+                        />
+                        <Tooltip
+                          cursor={{ stroke: "#d4d4d4", strokeDasharray: "3 3" }}
+                          contentStyle={{
+                            borderRadius: 8,
+                            border: "1px solid #e5e5e5",
+                            fontSize: 12,
+                          }}
+                          formatter={(val: any) => [formatINR(Number(val) || 0), ""]}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="previous"
+                          stroke="#8bd4f5"
+                          strokeWidth={1.5}
                           strokeDasharray="4 4"
+                          dot={false}
                         />
-                        {/* Current period line (solid deep green) */}
-                        <path
-                          d="M 20 135 Q 120 100 220 110 T 440 60 T 660 40 T 880 15"
-                          fill="none"
-                          stroke="#072515"
-                          strokeWidth="2.5"
+                        <Line
+                          type="monotone"
+                          dataKey="current"
+                          stroke="#08a7f5"
+                          strokeWidth={1.8}
+                          dot={false}
+                          activeDot={{ r: 3 }}
                         />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
 
-                        {/* Interactive Data points */}
-                        {[
-                          [20, 135],
-                          [125, 115],
-                          [235, 105],
-                          [345, 80],
-                          [455, 60],
-                          [565, 48],
-                          [675, 40],
-                          [785, 25],
-                          [880, 15],
-                        ].map(([cx, cy], idx) => (
-                          <circle
-                            key={idx}
-                            cx={cx}
-                            cy={cy}
-                            r="4"
-                            className="fill-[#eed08e] stroke-[#072515] stroke-2 hover:r-6 cursor-pointer transition-all"
-                          />
-                        ))}
-                      </svg>
-
-                      {/* X-Axis dates */}
-                      <div className="flex justify-between text-[11px] text-black/50 pt-2 px-1">
-                        {(overviewData?.salesChartData && overviewData.salesChartData.length > 0
-                          ? overviewData.salesChartData
-                          : SALES_CHART_DATA
-                        ).map((pt) => (
-                          <span key={pt.date}>{pt.date}</span>
-                        ))}
-                      </div>
-                    </div>
+                {isOverviewExpanded && (
+                  <div className="flex justify-center gap-5 pt-2 text-[11px] text-black/55">
+                    <span className="inline-flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-[#08a7f5]" /> Jul 05–Aug 04, 2026
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-[#8bd4f5]" /> Jun 05–Jul 04, 2026
+                    </span>
                   </div>
                 )}
               </section>
 
-              {/* Atelier Tasks Action Badges (from AdminOverview.tsx) */}
-              <div className="grid gap-2.5 sm:grid-cols-3">
+              {/* Tasks Action Badges (from AdminOverview.tsx) */}
+              <div className="grid gap-2 sm:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => {
                     setActiveRoute("orders");
                     setOrderStatusFilter("Processing");
                   }}
-                  className="flex items-center justify-between rounded-lg border border-black/10 bg-white px-3.5 py-2.5 text-xs font-semibold text-[#072515] shadow-sm hover:border-[#072515]/30 transition-all text-left"
+                  className="flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-sm font-medium hover:bg-black/[0.02] text-left transition-colors cursor-pointer"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-amber-500" />
-                    <span>
-                      {overviewData?.tasks?.ordersToFulfill ??
-                        orders.filter((o) => o.fulfillmentStatus === "Processing").length}{" "}
-                      orders to fulfil
-                    </span>
+                  <span aria-hidden>▣</span>{" "}
+                  <span>
+                    {overviewData?.tasks?.ordersToFulfill ??
+                      orders.filter((o) => o.fulfillmentStatus === "Processing").length}{" "}
+                    orders to fulfil
                   </span>
-                  <span className="text-black/40 text-[11px]">View queue →</span>
                 </button>
-
                 <button
                   type="button"
                   onClick={() => {
                     setActiveRoute("orders");
                     setOrderStatusFilter("Pending");
                   }}
-                  className="flex items-center justify-between rounded-lg border border-black/10 bg-white px-3.5 py-2.5 text-xs font-semibold text-[#072515] shadow-sm hover:border-[#072515]/30 transition-all text-left"
+                  className="flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-sm font-medium hover:bg-black/[0.02] text-left transition-colors cursor-pointer"
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-blue-500" />
-                    <span>
-                      {overviewData?.tasks?.paymentsToCapture ??
-                        orders.filter((o) => o.paymentStatus === "Pending").length}{" "}
-                      payment to capture
-                    </span>
+                  <span aria-hidden>▱</span>{" "}
+                  <span>
+                    {overviewData?.tasks?.paymentsToCapture ??
+                      orders.filter((o) => o.paymentStatus === "Pending").length}{" "}
+                    payment to capture
                   </span>
-                  <span className="text-black/40 text-[11px]">Capture →</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveRoute("orders");
-                    triggerNotification("Filtering custom monogram personalization orders.");
-                  }}
-                  className="flex items-center justify-between rounded-lg border border-black/10 bg-white px-3.5 py-2.5 text-xs font-semibold text-[#072515] shadow-sm hover:border-[#072515]/30 transition-all text-left"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-[#c89e43]" />
-                    <span>
-                      {overviewData?.tasks?.monogramsToChisel ?? 3} monograms in laser chisel
-                    </span>
-                  </span>
-                  <span className="text-black/40 text-[11px]">Inspect →</span>
                 </button>
               </div>
 
@@ -2584,51 +2472,35 @@ export default function AdminDashboardPage() {
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between">
-                      <h2 className="text-sm font-semibold text-[#072515]">Recent orders</h2>
+                      <h2 className="text-sm font-semibold text-black">Recent orders</h2>
                       <button
                         type="button"
                         onClick={() => setActiveRoute("orders")}
-                        className="text-xs text-[#072515] font-medium underline underline-offset-2 hover:opacity-80"
+                        className="text-xs text-black/55 underline underline-offset-2 hover:text-black cursor-pointer"
                       >
                         View all
                       </button>
                     </div>
 
-                    <div className="mt-3 divide-y divide-black/5">
+                    <div className="mt-3 divide-y divide-black/10">
                       {(overviewData?.recentOrders && overviewData.recentOrders.length > 0
                         ? overviewData.recentOrders
                         : orders
                       )
                         .slice(0, 3)
-                        .map((ord) => (
-                          <div
+                        .map((ord, index) => (
+                          <button
                             key={ord.id}
-                            className="flex items-center justify-between gap-3 py-2.5 text-xs hover:bg-black/[0.02] transition-colors rounded-lg px-1.5"
+                            type="button"
+                            onClick={() => openInspectOrder(ord)}
+                            className="flex w-full items-center justify-between gap-3 py-3 text-left text-xs hover:bg-black/[0.02] transition-colors cursor-pointer"
                           >
-                            <div>
-                              <span className="font-semibold text-[#072515]">{ord.orderNumber}</span>
-                              <p className="text-[11px] text-black/50">{ord.customerName}</p>
-                            </div>
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                                ord.fulfillmentStatus === "Delivered"
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-amber-100 text-amber-800"
-                              }`}
-                            >
-                              {ord.fulfillmentStatus}
+                            <span className="font-medium text-black">{ord.orderNumber}</span>
+                            <span className="text-black/55">
+                              {ord.fulfillmentStatus || (index === 0 ? "Processing" : "Delivered")}
                             </span>
-                            <div className="text-right">
-                              <span className="font-semibold text-[#072515]">{formatINR(ord.totalAmount)}</span>
-                              <button
-                                type="button"
-                                onClick={() => openInspectOrder(ord)}
-                                className="block text-[10px] text-black/50 hover:text-[#072515] underline"
-                              >
-                                Inspect
-                              </button>
-                            </div>
-                          </div>
+                            <span className="font-medium text-black">{formatINR(ord.totalAmount)}</span>
+                          </button>
                         ))}
                     </div>
                   </div>
@@ -2637,28 +2509,22 @@ export default function AdminDashboardPage() {
                 {/* Column 2: Top Products */}
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h2 className="text-sm font-semibold text-[#072515]">Top products</h2>
+                    <h2 className="text-sm font-semibold text-black">Top products</h2>
                     <div className="mt-3 space-y-3">
                       {(overviewData?.topProducts && overviewData.topProducts.length > 0
                         ? overviewData.topProducts.map((p) => ({
-                            name: p.name,
-                            sales: `${p.soldCount} sold`,
-                            img: p.image || "/images/product/marble-box-clean.png",
-                          }))
+                          name: p.name,
+                          sales: `${p.soldCount} sold`,
+                        }))
                         : [
-                            { name: "Elements in Harmony Marble Box", sales: "28 sold", img: "/images/product/marble-box-clean.png" },
-                            { name: "Solid Brass Turtle Burner", sales: "24 sold", img: "/images/product/turtle-burner.png" },
-                            { name: "Royal Mysore Chandan Agarbatti", sales: "19 sold", img: "/images/product/image.png" },
-                          ]
+                          { name: "Elements in Harmony Marble Box", sales: "24 sold" },
+                          { name: "Solid Brass Turtle Burner", sales: "18 sold" },
+                          { name: "Royal Mysore Chandan Agarbatti", sales: "12 sold" },
+                        ]
                       ).map((item) => (
                         <div key={item.name} className="flex items-center justify-between gap-3 text-xs">
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="relative size-8 rounded border border-black/10 overflow-hidden shrink-0 bg-[#FAF8F5]">
-                              <Image src={item.img} alt={item.name} fill className="object-cover" />
-                            </div>
-                            <span className="truncate font-medium text-black/80">{item.name}</span>
-                          </div>
-                          <span className="shrink-0 font-semibold text-[#072515]">{item.sales}</span>
+                          <span className="truncate text-black/70">{item.name}</span>
+                          <span className="shrink-0 font-medium text-black">{item.sales}</span>
                         </div>
                       ))}
                     </div>
@@ -2668,42 +2534,31 @@ export default function AdminDashboardPage() {
                 {/* Column 3: Quick Actions */}
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h2 className="text-sm font-semibold text-[#072515]">Quick actions</h2>
+                    <h2 className="text-sm font-semibold text-black">Quick actions</h2>
                     <div className="mt-3 grid gap-2">
                       <button
                         type="button"
                         onClick={() => setIsAddProductOpen(true)}
-                        className="rounded-lg border border-black/15 px-3 py-2 text-left text-xs font-medium transition hover:bg-[#072515] hover:text-[#eed08e] flex items-center justify-between"
+                        className="rounded-md border border-black/15 px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-black hover:text-white cursor-pointer"
                       >
-                        <span>Add creation / SKU</span>
-                        <Plus className="size-3.5" />
+                        Add product
                       </button>
                       <button
                         type="button"
                         onClick={() => {
                           setActiveRoute("products");
-                          setProductsSubView("categories");
+                          setProductsSubView("customise");
                         }}
-                        className="rounded-lg border border-black/15 px-3 py-2 text-left text-xs font-medium transition hover:bg-[#072515] hover:text-[#eed08e] flex items-center justify-between"
+                        className="rounded-md border border-black/15 px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-black hover:text-white cursor-pointer"
                       >
-                        <span>Manage categories</span>
-                        <FolderTree className="size-3.5" />
+                        Manage collection
                       </button>
                       <button
                         type="button"
                         onClick={() => setActiveRoute("customers")}
-                        className="rounded-lg border border-black/15 px-3 py-2 text-left text-xs font-medium transition hover:bg-[#072515] hover:text-[#eed08e] flex items-center justify-between"
+                        className="rounded-md border border-black/15 px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-black hover:text-white cursor-pointer"
                       >
-                        <span>View patrons directory</span>
-                        <UsersRound className="size-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsCreateDiscountOpen(true)}
-                        className="rounded-lg border border-black/15 px-3 py-2 text-left text-xs font-medium transition hover:bg-[#072515] hover:text-[#eed08e] flex items-center justify-between"
-                      >
-                        <span>Create festive discount</span>
-                        <BadgePercent className="size-3.5" />
+                        View customers
                       </button>
                     </div>
                   </div>
@@ -2715,32 +2570,32 @@ export default function AdminDashboardPage() {
                 {/* 1. Store health */}
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-sm font-semibold text-[#072515]">Store health</h2>
+                    <h2 className="text-sm font-semibold text-black">Store health</h2>
                     <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
-                  <p className="mt-2 text-2xl font-bold font-serif text-[#072515]">99%</p>
-                  <p className="mt-0.5 text-xs text-black/55">All sanctuary systems operational</p>
+                  <p className="mt-3 text-2xl font-semibold text-black">98%</p>
+                  <p className="mt-1 text-xs text-black/55">All systems operational</p>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/10">
-                    <div className="h-full w-[99%] rounded-full bg-emerald-600" />
+                    <div className="h-full w-[98%] rounded-full bg-emerald-500" />
                   </div>
                 </section>
 
                 {/* 2. Traffic sources */}
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
-                  <h2 className="text-sm font-semibold text-[#072515]">Traffic sources</h2>
-                  <div className="mt-3 space-y-2 text-xs">
+                  <h2 className="text-sm font-semibold text-black">Traffic sources</h2>
+                  <div className="mt-3 space-y-2.5 text-xs">
                     {[
-                      ["Direct Atelier", "48%"],
-                      ["Instagram Gifting", "32%"],
-                      ["Organic Poojas", "20%"],
-                    ].map(([source, val]) => (
+                      ["Direct", "46%"],
+                      ["Instagram", "32%"],
+                      ["Search", "22%"],
+                    ].map(([source, value]) => (
                       <div key={source}>
                         <div className="flex justify-between text-black/70">
                           <span>{source}</span>
-                          <span className="font-semibold text-black">{val}</span>
+                          <span className="font-medium text-black">{value}</span>
                         </div>
                         <div className="mt-1 h-1 rounded-full bg-black/10">
-                          <div className="h-full rounded-full bg-[#072515]" style={{ width: val }} />
+                          <div className="h-full rounded-full bg-[#08a7f5]" style={{ width: value }} />
                         </div>
                       </div>
                     ))}
@@ -2749,15 +2604,19 @@ export default function AdminDashboardPage() {
 
                 {/* 3. Inventory alerts */}
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
-                  <h2 className="text-sm font-semibold text-[#072515]">Inventory alerts</h2>
-                  <div className="mt-3 space-y-2 text-xs">
+                  <h2 className="text-sm font-semibold text-black">Inventory alerts</h2>
+                  <div className="mt-3 space-y-3 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-black/70">Low stock</span>
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">3 items</span>
+                      <span className="rounded-full bg-amber-100 px-2 py-1 font-medium text-amber-800">
+                        {Object.values(inventoryStock).filter((s) => s < 10).length || 3} items
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-black/70">Out of stock</span>
-                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-800">0 items</span>
+                      <span className="rounded-full bg-red-100 px-2 py-1 font-medium text-red-800">
+                        {Object.values(inventoryStock).filter((s) => s === 0).length} items
+                      </span>
                     </div>
                     <button
                       type="button"
@@ -2765,19 +2624,21 @@ export default function AdminDashboardPage() {
                         setActiveRoute("products");
                         setProductsSubView("inventory");
                       }}
-                      className="pt-1 text-[#072515] underline underline-offset-2 hover:opacity-80 block"
+                      className="pt-1 text-black/55 underline underline-offset-2 hover:text-black block text-left cursor-pointer"
                     >
-                      Review inventory matrix →
+                      Review inventory
                     </button>
                   </div>
                 </section>
 
                 {/* 4. Customer snapshot */}
                 <section className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
-                  <h2 className="text-sm font-semibold text-[#072515]">Customer snapshot</h2>
-                  <p className="mt-2 text-2xl font-bold font-serif text-[#072515]">1,284</p>
-                  <p className="mt-0.5 text-xs text-black/55">Total registered patrons</p>
-                  <p className="mt-2 text-xs font-semibold text-emerald-700">↗ 12.4% this period</p>
+                  <h2 className="text-sm font-semibold text-black">Customer snapshot</h2>
+                  <p className="mt-3 text-2xl font-semibold text-black">
+                    {customers.length ? customers.length.toLocaleString() : "1,284"}
+                  </p>
+                  <p className="mt-1 text-xs text-black/55">Total customers</p>
+                  <p className="mt-3 text-xs font-medium text-emerald-700">↗ 12.4% this period</p>
                 </section>
               </div>
             </main>
@@ -2787,53 +2648,49 @@ export default function AdminDashboardPage() {
           {/* ROUTE 2: ORDERS (All Orders, Drafts, Abandoned Checkouts)           */}
           {/* ================================================================== */}
           {activeRoute === "orders" && (
-            <main className="flex-1 p-4 sm:p-6 bg-[#f6f5f1] space-y-4">
+            <main className="min-h-full flex-1 bg-[#f5f5f5] p-4 text-black sm:p-5 space-y-4">
               {/* Header Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <h1 className="flex items-center gap-2 text-lg font-semibold text-[#072515]">
-                    {ordersSubView === "tracking" ? (
-                      <Truck className="size-4 text-[#c89e43]" />
-                    ) : (
-                      <Inbox className="size-4 text-[#c89e43]" />
-                    )}
+                <div className="flex items-center gap-3">
+                  <h1 className="flex items-center gap-2 text-lg font-semibold text-black">
+                    <Package className="size-4" />
                     <span>
                       {ordersSubView === "all"
                         ? "Orders"
                         : ordersSubView === "tracking"
-                        ? "Order Tracking & Consignments"
-                        : ordersSubView === "drafts"
-                        ? "Draft Orders"
-                        : "Abandoned Checkouts"}
+                          ? "Order Tracking"
+                          : ordersSubView === "drafts"
+                            ? "Draft Orders"
+                            : "Abandoned Checkouts"}
                     </span>
                   </h1>
                   <div className="flex items-center rounded-lg bg-black/5 p-0.5 text-xs font-medium">
                     <button
                       type="button"
                       onClick={() => setOrdersSubView("all")}
-                      className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "all" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "all" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       All
                     </button>
                     <button
                       type="button"
                       onClick={() => setOrdersSubView("tracking")}
-                      className={`px-2.5 py-1 rounded-md transition flex items-center gap-1.5 ${ordersSubView === "tracking" ? "bg-white text-[#072515] shadow-xs font-semibold" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition flex items-center gap-1.5 ${ordersSubView === "tracking" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
-                      <Truck className="size-3 text-[#c89e43]" />
+                      <Truck className="size-3 text-black/65" />
                       Tracking
                     </button>
                     <button
                       type="button"
                       onClick={() => setOrdersSubView("drafts")}
-                      className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "drafts" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "drafts" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Drafts
                     </button>
                     <button
                       type="button"
                       onClick={() => setOrdersSubView("abandoned")}
-                      className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "abandoned" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "abandoned" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Abandoned
                     </button>
@@ -2841,25 +2698,23 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Link
-                    href="/track-order"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-800 text-white px-3 text-xs font-medium hover:bg-emerald-900 shadow-2xs"
-                  >
-                    <ExternalLink className="size-3.5" /> Customer Tracking Page
-                  </Link>
                   <button
                     type="button"
                     onClick={() => triggerNotification("Exported orders CSV successfully.")}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-white border border-black/15 px-3 text-xs font-medium text-black hover:bg-black/5"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/5 px-3 text-xs font-medium text-black hover:bg-black/10 transition-colors"
                   >
                     <Download className="size-3.5" /> Export
                   </button>
                   <button
                     type="button"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/5 px-3 text-xs font-medium text-black hover:bg-black/10 transition-colors"
+                  >
+                    More actions <ChevronDown className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setIsCreateOrderOpen(true)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
                   >
                     <Plus className="size-3.5" /> Create order
                   </button>
@@ -2870,83 +2725,54 @@ export default function AdminDashboardPage() {
               {ordersSubView === "tracking" ? (
                 <div className="space-y-4">
                   {/* Tracking KPI Metric Cards */}
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    <div className="rounded-xl border border-black/10 bg-white p-4 shadow-sm">
-                      <div className="flex items-center justify-between text-black/55 text-xs font-medium">
-                        <span>Total In Flight</span>
-                        <Truck className="size-4 text-[#c89e43]" />
+                  <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
+                    <div className="grid grid-cols-2 divide-x divide-y divide-black/10 sm:grid-cols-4 sm:divide-y-0">
+                      <div className="px-4 py-3">
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Total In Flight</p>
+                        <p className="mt-1 text-sm font-semibold text-black">
+                          {orders.filter((o) => !o.isDraft && !o.isAbandoned && o.fulfillmentStatus !== "Cancelled").length}{" "}
+                          <span className="font-normal text-black/45">—</span>
+                        </p>
+                        <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                       </div>
-                      <p className="mt-2 text-2xl font-bold font-serif text-[#072515]">
-                        {orders.filter((o) => !o.isDraft && !o.isAbandoned && o.fulfillmentStatus !== "Cancelled").length}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-black/50">Active sacred consignments</p>
-                    </div>
-
-                    <div className="rounded-xl border border-blue-200 bg-blue-50/50 p-4 shadow-sm">
-                      <div className="flex items-center justify-between text-blue-900 text-xs font-medium">
-                        <span>In Transit / Dispatched</span>
-                        <Clock className="size-4 text-blue-600" />
+                      <div className="px-4 py-3">
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">In Transit</p>
+                        <p className="mt-1 text-sm font-semibold text-black">
+                          {orders.filter((o) => o.fulfillmentStatus === "Shipped" || o.fulfillmentStatus === "In Transit").length}{" "}
+                          <span className="font-normal text-black/45">—</span>
+                        </p>
+                        <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                       </div>
-                      <p className="mt-2 text-2xl font-bold font-serif text-blue-950">
-                        {orders.filter((o) => o.fulfillmentStatus === "Shipped" || o.fulfillmentStatus === "In Transit").length}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-blue-800/70">Air & Surface logistics</p>
-                    </div>
-
-                    <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 shadow-sm">
-                      <div className="flex items-center justify-between text-purple-900 text-xs font-medium">
-                        <span>Out for Delivery</span>
-                        <Truck className="size-4 text-purple-600" />
+                      <div className="px-4 py-3">
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Out for Delivery</p>
+                        <p className="mt-1 text-sm font-semibold text-black">
+                          {orders.filter((o) => o.fulfillmentStatus === "Out for Delivery").length}{" "}
+                          <span className="font-normal text-black/45">—</span>
+                        </p>
+                        <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                       </div>
-                      <p className="mt-2 text-2xl font-bold font-serif text-purple-950">
-                        {orders.filter((o) => o.fulfillmentStatus === "Out for Delivery").length}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-purple-800/70">With courier riders</p>
-                    </div>
-
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
-                      <div className="flex items-center justify-between text-emerald-900 text-xs font-medium">
-                        <span>Delivered & Sealed</span>
-                        <CheckCircle2 className="size-4 text-emerald-600" />
+                      <div className="px-4 py-3">
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Delivered</p>
+                        <p className="mt-1 text-sm font-semibold text-black">
+                          {orders.filter((o) => o.fulfillmentStatus === "Delivered").length}{" "}
+                          <span className="font-normal text-black/45">—</span>
+                        </p>
+                        <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                       </div>
-                      <p className="mt-2 text-2xl font-bold font-serif text-emerald-950">
-                        {orders.filter((o) => o.fulfillmentStatus === "Delivered").length}
-                      </p>
-                      <p className="mt-0.5 text-[11px] text-emerald-800/70">Received by patrons</p>
                     </div>
-                  </div>
+                  </section>
 
-                  {/* Real-Time Storefront Notice Banner */}
-                  <div className="rounded-xl border border-[#c89e43]/30 bg-[#FAF8F5] p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2.5">
-                      <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="font-semibold text-[#072515]">Real-Time Storefront Tracking Connected:</span>
-                      <span className="text-black/60 hidden md:inline">
-                        Any status, carrier or AWB changes saved in admin immediately update live customer tracking at <code className="bg-black/5 px-1 py-0.5 rounded font-mono text-[11px]">/track-order</code>.
-                      </span>
-                    </div>
-                    <Link
-                      href="/track-order"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#072515] hover:text-[#c89e43] underline"
-                    >
-                      Launch Customer Tracking View <ExternalLink className="size-3" />
-                    </Link>
-                  </div>
-
-                  {/* Tracking Search & Filter Controls */}
+                  {/* Consignment Tracking Table */}
                   <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
                     <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-black/75">
-                        <span>Tracking Status:</span>
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-black/75">
                         <select
                           value={orderStatusFilter}
                           onChange={(e) => setOrderStatusFilter(e.target.value)}
                           className="bg-transparent border border-black/15 rounded-md px-2 py-1 text-xs outline-none"
                         >
                           <option value="All">All statuses</option>
-                          <option value="Processing">Processing / Atelier</option>
+                          <option value="Processing">Processing</option>
                           <option value="Shipped">Shipped / In Transit</option>
                           <option value="Out for Delivery">Out for Delivery</option>
                           <option value="Delivered">Delivered</option>
@@ -2958,23 +2784,22 @@ export default function AdminDashboardPage() {
                         <input
                           value={orderSearchQuery}
                           onChange={(e) => setOrderSearchQuery(e.target.value)}
-                          placeholder="Search order #, patron name, destination city, carrier, or AWB tracking #..."
+                          placeholder="Search order #, customer, city, carrier, or AWB tracking #..."
                           className="w-full bg-transparent outline-none placeholder:text-black/40 text-black text-xs"
                         />
                       </div>
                     </div>
 
-                    {/* Consignment Tracking Table */}
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[1060px] border-collapse text-left text-xs">
-                        <thead className="bg-[#FAF8F5] text-black/70">
+                        <thead className="bg-black/[0.025] text-black/65">
                           <tr>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Order & Date</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Patron & Destination</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Customer & Destination</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Carrier & Waybill (AWB)</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Live Fulfillment Status</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Fulfillment Status</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Estimated Delivery</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Latest Transit Update</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Latest Update</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Tracking Actions</th>
                           </tr>
                         </thead>
@@ -2987,17 +2812,17 @@ export default function AdminDashboardPage() {
                             </tr>
                           ) : (
                             filteredOrders.map((ord) => (
-                              <tr key={ord.id} className="hover:bg-black/[0.015] transition-colors">
+                              <tr key={ord.id} className="hover:bg-black/[0.02] transition-colors">
                                 <td className="px-3 py-2.5">
-                                  <div className="font-bold text-[#072515] font-mono">{ord.orderNumber}</div>
-                                  <div className="text-[10px] text-black/50">{ord.date}</div>
+                                  <div className="font-semibold text-black">{ord.orderNumber}</div>
+                                  <div className="text-[11px] text-black/50">{ord.date}</div>
                                 </td>
                                 <td className="px-3 py-2.5 font-medium">
-                                  <div className="text-[#072515] font-semibold">{ord.customerName}</div>
-                                  <div className="text-[10px] text-black/50">{ord.city}</div>
+                                  <div className="text-black font-medium">{ord.customerName}</div>
+                                  <div className="text-[11px] text-black/50">{ord.city}</div>
                                 </td>
                                 <td className="px-3 py-2.5">
-                                  <div className="font-semibold text-black/80">{ord.courier || "BlueDart Express"}</div>
+                                  <div className="font-medium text-black/80">{ord.courier || "BlueDart Express"}</div>
                                   <div className="flex items-center gap-1.5 mt-0.5">
                                     <span className="font-mono text-[11px] text-black/60 bg-black/5 px-1.5 py-0.5 rounded">
                                       {ord.awb || "Pending AWB"}
@@ -3024,36 +2849,35 @@ export default function AdminDashboardPage() {
                                     onChange={(e) =>
                                       updateOrderTracking(ord.id, { fulfillmentStatus: e.target.value })
                                     }
-                                    className={`px-2 py-1 rounded-md text-xs font-semibold border outline-none transition cursor-pointer ${
-                                      ord.fulfillmentStatus === "Delivered"
-                                        ? "bg-emerald-50 border-emerald-300 text-emerald-800"
-                                        : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
+                                    className={`px-2 py-1 rounded-md text-xs font-semibold border outline-none transition cursor-pointer ${ord.fulfillmentStatus === "Delivered"
+                                      ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                                      : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
                                         ? "bg-blue-50 border-blue-300 text-blue-800"
                                         : ord.fulfillmentStatus === "Out for Delivery"
-                                        ? "bg-purple-50 border-purple-300 text-purple-800"
-                                        : ord.fulfillmentStatus === "Processing"
-                                        ? "bg-amber-50 border-amber-300 text-amber-800"
-                                        : "bg-gray-50 border-gray-300 text-gray-800"
-                                    }`}
+                                          ? "bg-purple-50 border-purple-300 text-purple-800"
+                                          : ord.fulfillmentStatus === "Processing"
+                                            ? "bg-amber-50 border-amber-300 text-amber-800"
+                                            : "bg-gray-50 border-gray-300 text-gray-800"
+                                      }`}
                                   >
                                     <option value="Confirmed">Confirmed</option>
-                                    <option value="Processing">Processing / Atelier</option>
-                                    <option value="Shipped">Shipped / In Transit</option>
+                                    <option value="Processing">Processing</option>
+                                    <option value="Shipped">Shipped</option>
                                     <option value="Out for Delivery">Out for Delivery</option>
                                     <option value="Delivered">Delivered</option>
                                     <option value="Cancelled">Cancelled</option>
                                   </select>
                                 </td>
                                 <td className="px-3 py-2.5 text-black/70">
-                                  <div className="font-medium text-[11px]">{ord.estimatedDate || "Within 2-3 business days"}</div>
+                                  <div className="text-[11px]">{ord.estimatedDate || "Within 2-3 business days"}</div>
                                 </td>
                                 <td className="px-3 py-2.5 text-black/60 max-w-xs truncate text-[11px]">
                                   {ord.notes || (
                                     ord.fulfillmentStatus === "Delivered"
                                       ? "Handed over to recipient."
                                       : ord.fulfillmentStatus === "Shipped"
-                                      ? "In transit via courier hub."
-                                      : "Order confirmed, preparing in atelier."
+                                        ? "In transit via courier hub."
+                                        : "Order confirmed, preparing in store."
                                   )}
                                 </td>
                                 <td className="px-3 py-2.5 text-center">
@@ -3061,7 +2885,7 @@ export default function AdminDashboardPage() {
                                     <button
                                       type="button"
                                       onClick={() => openInspectOrder(ord)}
-                                      className="px-2.5 py-1 rounded bg-[#072515] text-[#eed08e] hover:bg-[#072515]/90 font-medium text-[11px] transition shadow-2xs"
+                                      className="px-2.5 py-1 rounded bg-black/5 hover:bg-black/10 text-black font-medium text-[11px] transition"
                                     >
                                       Manage
                                     </button>
@@ -3090,21 +2914,21 @@ export default function AdminDashboardPage() {
                   {/* Summary Strip (from admin-panel/screens/orders/page.tsx) */}
                   <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
                     <div className="grid grid-cols-2 divide-x divide-y divide-black/10 sm:grid-cols-3 lg:grid-cols-7 lg:divide-y-0">
-                      <div className="flex items-center gap-2 px-4 py-3.5 text-xs font-semibold text-[#072515]">
-                        <CalendarDays className="size-4 text-[#c89e43]" /> Today
+                      <div className="flex items-center gap-2 px-4 py-4 text-xs font-medium text-black">
+                        <CalendarDays className="size-4 text-black/65" /> Today
                       </div>
                       {[
                         ["Orders", String(orders.length)],
-                        ["Items ordered", String(orders.reduce((acc, o) => acc + o.itemsCount, 0))],
+                        ["Items ordered", String(orders.reduce((acc, o) => acc + (o.itemsCount || 1), 0))],
                         ["Returns", "₹0"],
                         ["Orders fulfilled", String(orders.filter((o) => o.fulfillmentStatus === "Shipped" || o.fulfillmentStatus === "Delivered").length)],
                         ["Orders delivered", String(orders.filter((o) => o.fulfillmentStatus === "Delivered").length)],
-                        ["Fulfillment time", "1.4 days"],
+                        ["Order to fulfillment time", "1.4 days"],
                       ].map(([label, val]) => (
                         <div key={label} className="px-4 py-3">
                           <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">{label}</p>
-                          <p className="mt-1 text-sm font-bold text-[#072515]">{val}</p>
-                          <div className="mt-2 h-0.5 w-10 bg-[#c89e43]" />
+                          <p className="mt-1 text-sm font-semibold text-black">{val} <span className="font-normal text-black/45">—</span></p>
+                          <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                         </div>
                       ))}
                     </div>
@@ -3113,12 +2937,11 @@ export default function AdminDashboardPage() {
                   {/* Filter & Search Bar */}
                   <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
                     <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-black/75">
-                        <span>Status:</span>
+                      <div className="flex items-center gap-1 text-xs font-medium text-black/80">
                         <select
                           value={orderStatusFilter}
                           onChange={(e) => setOrderStatusFilter(e.target.value)}
-                          className="bg-transparent border border-black/15 rounded-md px-2 py-1 text-xs outline-none"
+                          className="bg-transparent border-none outline-none font-medium cursor-pointer text-xs"
                         >
                           <option value="All">All statuses</option>
                           <option value="Paid">Paid</option>
@@ -3129,88 +2952,95 @@ export default function AdminDashboardPage() {
                         </select>
                       </div>
 
-                      <div className="flex min-w-52 flex-1 items-center gap-2 text-xs text-black/50">
-                        <Search className="size-3.5 text-black/40" />
+                      <div className="flex min-w-52 flex-1 items-center gap-2 text-sm text-black/50">
+                        <Search className="size-4 text-black/45" />
                         <input
                           value={orderSearchQuery}
                           onChange={(e) => setOrderSearchQuery(e.target.value)}
-                          placeholder="Search order #, patron name, or city..."
-                          className="w-full bg-transparent outline-none placeholder:text-black/40 text-black text-xs"
+                          aria-label="Search and filter orders"
+                          placeholder="Search and filter"
+                          className="w-full bg-transparent outline-none placeholder:text-black/45 text-black text-xs"
                         />
                       </div>
+                      <button type="button" aria-label="Filter orders" className="rounded-md p-1.5 text-black/55 hover:bg-black/5">
+                        <SlidersHorizontal className="size-4" />
+                      </button>
+                      <button type="button" aria-label="More order options" className="rounded-md p-1.5 text-black/55 hover:bg-black/5">
+                        <MoreHorizontal className="size-4" />
+                      </button>
                     </div>
 
                     {/* Table */}
                     <div className="overflow-x-auto">
-                      <table className="w-full min-w-[980px] border-collapse text-left text-xs">
-                        <thead className="bg-[#FAF8F5] text-black/70">
+                      <table className="w-full min-w-[1050px] border-collapse text-left text-xs">
+                        <thead className="bg-black/[0.025] text-black/65">
                           <tr>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium"><input type="checkbox" aria-label="Select all orders" /></th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Order</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Date</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Customer</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Channel</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Total</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Payment status</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Fulfillment</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Fulfillment status</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Items</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Courier</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Delivery status</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Delivery method</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-black/5">
+                        <tbody>
                           {filteredOrders.length === 0 ? (
                             <tr>
-                              <td colSpan={10} className="px-4 py-12 text-center text-black/50">
+                              <td colSpan={12} className="px-4 py-12 text-center text-black/50">
                                 No orders found matching the criteria.
                               </td>
                             </tr>
                           ) : (
                             filteredOrders.map((ord) => (
-                              <tr key={ord.id} className="hover:bg-black/[0.015] transition-colors">
-                                <td className="px-3 py-2.5 font-bold text-[#072515]">{ord.orderNumber}</td>
-                                <td className="px-3 py-2.5 text-black/60">{ord.date}</td>
-                                <td className="px-3 py-2.5 font-medium">
+                              <tr key={ord.id} className="hover:bg-black/[0.02] transition-colors">
+                                <td className="border-b border-black/10 px-3 py-2.5"><input type="checkbox" aria-label={`Select ${ord.orderNumber}`} /></td>
+                                <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">{ord.orderNumber}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.date}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">
                                   <div>{ord.customerName}</div>
                                   <div className="text-[10px] text-black/45">{ord.city}</div>
                                 </td>
-                                <td className="px-3 py-2.5 text-black/65">{ord.channel}</td>
-                                <td className="px-3 py-2.5 text-right font-bold text-[#072515]">{formatINR(ord.totalAmount)}</td>
-                                <td className="px-3 py-2.5">
+                                <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.channel || "KURMA"}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 text-right font-medium text-black">{formatINR(ord.totalAmount)}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5">
                                   <span
-                                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                                      ord.paymentStatus === "Paid"
-                                        ? "bg-emerald-100 text-emerald-800"
-                                        : "bg-amber-100 text-amber-800"
-                                    }`}
+                                    className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${ord.paymentStatus === "Paid"
+                                      ? "bg-black/10 text-black"
+                                      : "bg-amber-200 text-amber-900"
+                                      }`}
                                   >
-                                    {ord.paymentStatus}
+                                    {ord.paymentStatus === "Paid" ? "Paid" : "Payment pending"}
                                   </span>
                                 </td>
-                                <td className="px-3 py-2.5">
+                                <td className="border-b border-black/10 px-3 py-2.5">
                                   <span
-                                    className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                                      ord.fulfillmentStatus === "Delivered"
-                                        ? "bg-emerald-100 text-emerald-800"
-                                        : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
-                                        ? "bg-blue-100 text-blue-800"
-                                        : ord.fulfillmentStatus === "Processing"
-                                        ? "bg-purple-100 text-purple-800"
-                                        : "bg-gray-100 text-gray-800"
-                                    }`}
+                                    className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${ord.fulfillmentStatus === "Delivered"
+                                      ? "bg-emerald-200 text-emerald-900"
+                                      : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
+                                        ? "bg-blue-100 text-blue-900"
+                                        : "bg-yellow-200 text-yellow-900"
+                                      }`}
                                   >
-                                    {ord.fulfillmentStatus}
+                                    {ord.fulfillmentStatus || "Unfulfilled"}
                                   </span>
                                 </td>
-                                <td className="px-3 py-2.5 text-black/65">{ord.itemsCount} items</td>
-                                <td className="px-3 py-2.5 text-black/65">{ord.courier}</td>
-                                <td className="px-3 py-2.5 text-center">
+                                <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.itemsCount || 1} items</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 text-black/60">{ord.fulfillmentStatus === "Delivered" ? "Delivered" : "—"}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.courier || "Standard"}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 text-center">
                                   <div className="flex items-center justify-center gap-1.5">
                                     <button
                                       type="button"
                                       onClick={() => openInspectOrder(ord)}
-                                      className="px-2.5 py-1 rounded bg-[#072515]/5 hover:bg-[#072515] hover:text-[#eed08e] text-[#072515] font-semibold text-[11px] transition"
+                                      className="px-2.5 py-1 rounded-md bg-black/5 hover:bg-black/10 text-black font-medium text-[11px] transition-colors"
                                     >
-                                      Inspect Hamper
+                                      Inspect
                                     </button>
                                     <Link
                                       href={`/track-order?orderNumber=${encodeURIComponent(ord.orderNumber)}`}
@@ -3239,20 +3069,20 @@ export default function AdminDashboardPage() {
           {/* ROUTE 3: PRODUCTS (All Products, Collections, Categories, Inventory) */}
           {/* ================================================================== */}
           {activeRoute === "products" && (
-            <main className="flex-1 p-4 sm:p-6 bg-[#f6f5f1] space-y-4">
+            <main className="min-h-full flex-1 bg-[#f5f5f5] p-4 text-black sm:p-5 space-y-4">
               {/* Top Action Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <h1 className="flex items-center gap-2 text-lg font-semibold text-[#072515]">
-                    <Tag className="size-4 text-[#c89e43]" />
+                <div className="flex items-center gap-3">
+                  <h1 className="flex items-center gap-2 text-lg font-semibold text-black">
+                    <Tag className="size-4" />
                     <span>
                       {productsSubView === "all"
                         ? "Products"
                         : productsSubView === "customise"
-                        ? "Customise Studio"
-                        : productsSubView === "inventory"
-                        ? "Inventory"
-                        : "Categories"}
+                          ? "Customise Studio"
+                          : productsSubView === "inventory"
+                            ? "Inventory"
+                            : "Categories"}
                     </span>
                   </h1>
 
@@ -3260,28 +3090,28 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setProductsSubView("all")}
-                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "all" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "all" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Products
                     </button>
                     <button
                       type="button"
                       onClick={() => setProductsSubView("customise")}
-                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "customise" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "customise" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Customise
                     </button>
                     <button
                       type="button"
                       onClick={() => setProductsSubView("inventory")}
-                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "inventory" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "inventory" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Inventory
                     </button>
                     <button
                       type="button"
                       onClick={() => setProductsSubView("categories")}
-                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "categories" ? "bg-white text-[#072515] shadow-xs" : "text-black/60"}`}
+                      className={`px-2.5 py-1 rounded-md transition cursor-pointer ${productsSubView === "categories" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Categories
                     </button>
@@ -3289,11 +3119,20 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium hover:bg-black/10 transition-colors">
+                    <Download className="size-3.5" /> Export
+                  </button>
+                  <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium hover:bg-black/10 transition-colors">
+                    <Upload className="size-3.5" /> Import
+                  </button>
+                  <button type="button" className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium hover:bg-black/10 transition-colors">
+                    More actions <ChevronDown className="size-3.5" />
+                  </button>
                   {productsSubView === "all" && (
                     <button
                       type="button"
                       onClick={() => setIsAddProductOpen(true)}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
                     >
                       <Plus className="size-3.5" /> Add product
                     </button>
@@ -3302,7 +3141,7 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setIsAddCategoryOpen(true)}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
                     >
                       <Plus className="size-3.5" /> Add category
                     </button>
@@ -3311,7 +3150,7 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => router.push("/admin/customise")}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90 transition cursor-pointer"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs cursor-pointer"
                     >
                       <SlidersHorizontal className="size-3.5" /> Open Full Studio
                     </button>
@@ -3325,42 +3164,56 @@ export default function AdminDashboardPage() {
                   {/* Summary Bar */}
                   <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
                     <div className="grid grid-cols-2 divide-x divide-y divide-black/10 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0">
-                      <div className="flex items-center gap-2 px-4 py-3.5 text-xs font-semibold text-[#072515]">
-                        <CalendarDays className="size-4 text-[#c89e43]" /> 30 days
+                      <div className="flex items-center gap-2 px-4 py-4 text-xs font-medium text-black">
+                        <CalendarDays className="size-4 text-black/65" /> 30 days
                       </div>
                       <div className="px-4 py-3">
-                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Sell-through rate</p>
-                        <p className="mt-1 text-sm font-bold text-[#072515]">0.08%</p>
-                        <div className="mt-2 h-0.5 w-10 bg-[#c89e43]" />
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Average sell-through rate</p>
+                        <p className="mt-1 text-sm font-semibold text-black">0.08% <span className="font-normal text-black/45">—</span></p>
+                        <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                       </div>
                       <div className="px-4 py-3">
-                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Days inventory remaining</p>
-                        <p className="mt-1 text-sm font-bold text-[#072515]">42 days avg</p>
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">Products by days of inventory remaining</p>
+                        <p className="mt-1 text-sm text-black/55">42 days avg</p>
                       </div>
                       <div className="px-4 py-3">
-                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">ABC luxury analysis</p>
-                        <p className="mt-1 text-sm font-bold text-[#072515]">Grade A (Sacred Heritage)</p>
+                        <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">ABC product analysis</p>
+                        <p className="mt-1 text-sm font-semibold text-black">₹1,84,200 <span className="font-normal text-black/55">A</span></p>
+                        <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                       </div>
                     </div>
                   </section>
 
                   {/* Products Table */}
                   <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
-                    <div className="flex items-center gap-3 border-b border-black/10 px-4 py-3">
-                      <Search className="size-3.5 text-black/40" />
-                      <input
-                        value={productSearchQuery}
-                        onChange={(e) => setProductSearchQuery(e.target.value)}
-                        placeholder="Search product creation, notes, or SKU..."
-                        className="w-full bg-transparent outline-none text-xs text-black placeholder:text-black/40"
-                      />
+                    <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
+                      <button type="button" className="inline-flex items-center gap-1 text-xs font-medium text-black/80">
+                        All <ChevronDown className="size-3.5" />
+                      </button>
+                      <div className="flex min-w-52 flex-1 items-center gap-2 text-sm text-black/50">
+                        <Search className="size-4 text-black/45" />
+                        <input
+                          value={productSearchQuery}
+                          onChange={(e) => setProductSearchQuery(e.target.value)}
+                          aria-label="Search and filter products"
+                          placeholder="Search and filter"
+                          className="w-full bg-transparent outline-none placeholder:text-black/45 text-xs text-black"
+                        />
+                      </div>
+                      <button type="button" aria-label="Filter products" className="rounded-md p-1.5 text-black/55 hover:bg-black/5">
+                        <SlidersHorizontal className="size-4" />
+                      </button>
+                      <button type="button" aria-label="More product options" className="rounded-md p-1.5 text-black/55 hover:bg-black/5">
+                        <MoreHorizontal className="size-4" />
+                      </button>
                     </div>
 
                     <div className="overflow-x-auto">
-                      <table className="w-full min-w-[900px] border-collapse text-left text-xs">
-                        <thead className="bg-[#FAF8F5] text-black/70">
+                      <table className="w-full min-w-[1100px] border-collapse text-left text-xs">
+                        <thead className="bg-black/[0.025] text-black/65">
                           <tr>
-                            <th className="border-b border-black/10 px-4 py-2.5 font-medium">Product</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium"><input type="checkbox" aria-label="Select all products" /></th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Product</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Status</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Inventory</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Category</th>
@@ -3369,86 +3222,96 @@ export default function AdminDashboardPage() {
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Stock & Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-black/5">
-                          {productsList.filter((p) => p.name.toLowerCase().includes(productSearchQuery.toLowerCase())).map((prod) => {
-                            const stockCount = inventoryStock[prod.id] ?? 12;
-                            return (
-                              <tr key={prod.id} className="hover:bg-black/[0.015] transition-colors">
-                                <td className="px-4 py-3">
-                                  <div className="flex items-center gap-3">
-                                    <div className="relative size-10 rounded-lg overflow-hidden border border-black/10 bg-[#FAF8F5] shrink-0">
-                                      <Image src={prod.image} alt={prod.name} fill className="object-cover" />
+                        <tbody>
+                          {productsList
+                            .filter((p) => p.name.toLowerCase().includes(productSearchQuery.toLowerCase()))
+                            .map((prod) => {
+                              const stockCount = inventoryStock[prod.id] ?? 12;
+                              return (
+                                <tr key={prod.id} className="hover:bg-black/[0.02] transition-colors">
+                                  <td className="border-b border-black/10 px-3 py-2.5"><input type="checkbox" aria-label={`Select ${prod.name}`} /></td>
+                                  <td className="border-b border-black/10 px-3 py-2.5">
+                                    <div className="flex items-center gap-3 font-medium">
+                                      <Image
+                                        src={prod.image}
+                                        alt={prod.name}
+                                        width={40}
+                                        height={40}
+                                        className="size-10 rounded-md border border-black/10 object-cover"
+                                      />
+                                      <div>
+                                        <button
+                                          type="button"
+                                          onClick={() => router.push(`/admin/products/edit?id=${encodeURIComponent(prod.id)}`)}
+                                          className="font-medium text-black hover:underline text-left block"
+                                          title="Click to edit product on dedicated page"
+                                        >
+                                          {prod.name}
+                                        </button>
+                                        <p className="text-[10px] text-black/50">{prod.subtitle || prod.id}</p>
+                                      </div>
                                     </div>
-                                    <div>
+                                  </td>
+                                  <td className="border-b border-black/10 px-3 py-2.5">
+                                    <span className="rounded-full bg-emerald-200 px-2 py-0.5 text-[11px] font-medium text-emerald-900">
+                                      Active
+                                    </span>
+                                  </td>
+                                  <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black/80">
+                                    {stockCount} in stock
+                                  </td>
+                                  <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{prod.category}</td>
+                                  <td className="border-b border-black/10 px-3 py-2.5 text-black/70">1</td>
+                                  <td className="border-b border-black/10 px-3 py-2.5 text-right font-medium text-black">{formatINR(prod.price)}</td>
+                                  <td className="border-b border-black/10 px-3 py-2.5 text-center">
+                                    <div className="flex items-center justify-center gap-1.5">
+                                      <div className="inline-flex items-center gap-1 border border-black/15 rounded-md px-1.5 py-0.5 bg-white">
+                                        <button
+                                          type="button"
+                                          onClick={() => updateStock(prod.id, -1)}
+                                          className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs"
+                                          title="Decrease stock"
+                                        >
+                                          -
+                                        </button>
+                                        <span className="w-6 text-center font-semibold text-xs">{stockCount}</span>
+                                        <button
+                                          type="button"
+                                          onClick={() => updateStock(prod.id, 1)}
+                                          className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs"
+                                          title="Increase stock"
+                                        >
+                                          +
+                                        </button>
+                                      </div>
                                       <button
                                         type="button"
                                         onClick={() => router.push(`/admin/products/edit?id=${encodeURIComponent(prod.id)}`)}
-                                        className="font-semibold text-[#072515] hover:underline text-left block"
-                                        title="Click to edit product on dedicated page"
+                                        className="p-1.5 rounded-md text-black/50 hover:text-black hover:bg-black/5 transition"
+                                        title="Edit product on dedicated page"
                                       >
-                                        {prod.name}
+                                        <Pencil className="size-3.5" />
                                       </button>
-                                      <p className="text-[10px] text-black/50">{prod.subtitle || prod.id}</p>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="px-3 py-3">
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800">
-                                    Active
-                                  </span>
-                                </td>
-                                <td className="px-3 py-3 font-medium">
-                                  <span className={stockCount < 10 ? "text-amber-700 font-bold" : "text-black/80"}>
-                                    {stockCount} in stock
-                                  </span>
-                                </td>
-                                <td className="px-3 py-3 text-black/65">{prod.category}</td>
-                                <td className="px-3 py-3 text-black/65">Kurma Online</td>
-                                <td className="px-3 py-3 text-right font-bold text-[#072515]">{formatINR(prod.price)}</td>
-                                <td className="px-3 py-3 text-center">
-                                  <div className="flex items-center justify-center gap-1.5">
-                                    <div className="inline-flex items-center gap-1 border border-black/15 rounded-lg px-2 py-0.5 bg-white">
                                       <button
                                         type="button"
-                                        onClick={() => updateStock(prod.id, -1)}
-                                        className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs"
-                                        title="Decrease stock"
+                                        onClick={() => deleteProduct(prod.id, prod.name)}
+                                        className="p-1.5 rounded-md text-black/40 hover:text-red-600 hover:bg-red-50 transition"
+                                        title="Delete product"
                                       >
-                                        -
-                                      </button>
-                                      <span className="w-6 text-center font-semibold text-xs">{stockCount}</span>
-                                      <button
-                                        type="button"
-                                        onClick={() => updateStock(prod.id, 1)}
-                                        className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs"
-                                        title="Increase stock"
-                                      >
-                                        +
+                                        <Trash2 className="size-3.5" />
                                       </button>
                                     </div>
-                                    <button
-                                      type="button"
-                                      onClick={() => router.push(`/admin/products/edit?id=${encodeURIComponent(prod.id)}`)}
-                                      className="p-1.5 rounded-md text-black/50 hover:text-[#072515] hover:bg-black/5 transition"
-                                      title="Edit creation on dedicated page"
-                                    >
-                                      <Pencil className="size-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => deleteProduct(prod.id, prod.name)}
-                                      className="p-1.5 rounded-md text-black/40 hover:text-red-600 hover:bg-red-50 transition"
-                                      title="Delete creation"
-                                    >
-                                      <Trash2 className="size-3.5" />
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                         </tbody>
                       </table>
+                    </div>
+                    <div className="flex items-center gap-1 border-t border-black/10 px-3 py-2 text-xs text-black/60">
+                      <button type="button" aria-label="Previous page" className="rounded-md bg-black/5 p-1 hover:bg-black/10"><ChevronLeft className="size-4" /></button>
+                      <button type="button" aria-label="Next page" className="rounded-md bg-black/5 p-1 hover:bg-black/10"><ChevronRight className="size-4" /></button>
+                      <span className="ml-1">1–{productsList.length} of {productsList.length}</span>
                     </div>
                   </section>
                 </>
@@ -3458,9 +3321,9 @@ export default function AdminDashboardPage() {
               {productsSubView === "customise" && (
                 <section className="space-y-4">
                   {/* Hero Banner linking to full dedicated page */}
-                  <div className="overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-xs sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="overflow-hidden rounded-xl border border-black/10 bg-white p-5 shadow-sm sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="space-y-1">
-                      <h2 className="text-base font-bold text-[#072515] font-serif">
+                      <h2 className="text-base font-semibold text-black">
                         Customise Gift Studio &amp; Keepsake Packaging
                       </h2>
                       <p className="text-xs text-black/60 max-w-xl">
@@ -3473,23 +3336,23 @@ export default function AdminDashboardPage() {
                         href="/elements"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-black/15 bg-white hover:bg-black/5 text-xs font-semibold text-[#072515] transition shadow-2xs"
+                        className="inline-flex h-8 items-center gap-1.5 px-3 rounded-lg border border-black/15 bg-white hover:bg-black/5 text-xs font-medium text-black transition-colors"
                       >
                         <span>Preview Live (/elements)</span>
-                        <ExternalLink className="size-3 text-[#c89e43]" />
+                        <ExternalLink className="size-3 text-black/50" />
                       </a>
                       <button
                         type="button"
                         onClick={() => router.push("/admin/customise/edit?id=new")}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold transition shadow-2xs cursor-pointer"
+                        className="inline-flex h-8 items-center gap-1.5 px-3 rounded-lg bg-black/5 hover:bg-black/10 text-black text-xs font-medium transition-colors cursor-pointer"
                       >
                         <Plus className="size-3.5" />
-                        <span>Add Bespoke Box</span>
+                        <span>Add Box</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => router.push("/admin/customise")}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-bold hover:bg-[#072515]/90 transition shadow-sm cursor-pointer"
+                        className="inline-flex h-8 items-center gap-1.5 px-3.5 rounded-lg bg-black text-white text-xs font-medium hover:bg-black/80 transition-colors shadow-2xs cursor-pointer"
                       >
                         <SlidersHorizontal className="size-3.5" />
                         <span>Launch Full Studio</span>
@@ -3499,42 +3362,46 @@ export default function AdminDashboardPage() {
 
                   {/* 4 Studio Metric Cards */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
-                      <span className="text-[10px] uppercase font-bold text-black/45 tracking-wider block">
+                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-sm">
+                      <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">
                         Bespoke Trunks &amp; Boxes
-                      </span>
-                      <span className="text-lg font-serif font-bold text-[#072515] mt-1 block">
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-black">
                         {customBoxes.length} Trunks ({customBoxes.filter((b) => b.active !== false).length} Active)
-                      </span>
+                      </p>
+                      <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                     </div>
 
-                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
-                      <span className="text-[10px] uppercase font-bold text-black/45 tracking-wider block">
+                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-sm">
+                      <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">
                         Curated Goodies Library
-                      </span>
-                      <span className="text-lg font-serif font-bold text-[#072515] mt-1 block">14 Items</span>
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-black">14 Items</p>
+                      <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                     </div>
 
-                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
-                      <span className="text-[10px] uppercase font-bold text-black/45 tracking-wider block">
+                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-sm">
+                      <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">
                         Brass Plaque Monogram
-                      </span>
-                      <span className="text-lg font-serif font-bold text-[#072515] mt-1 block">Active (+₹350)</span>
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-black">Active (+₹350)</p>
+                      <div className="mt-2 h-0.5 w-11 bg-[#55c5f7]" />
                     </div>
 
-                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-xs">
-                      <span className="text-[10px] uppercase font-bold text-black/45 tracking-wider block">
+                    <div className="p-4 rounded-xl bg-white border border-black/10 shadow-sm">
+                      <p className="text-xs font-medium text-black/65 underline decoration-dotted underline-offset-4">
                         Storefront Status
-                      </span>
-                      <span className="text-lg font-serif font-bold text-emerald-800 mt-1 block">Live on /elements</span>
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-emerald-700">Live on /elements</p>
+                      <div className="mt-2 h-0.5 w-11 bg-emerald-500" />
                     </div>
                   </div>
 
                   {/* Table of Customise Boxes with Edit Feature */}
-                  <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-xs">
+                  <div className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
                     <div className="p-4 border-b border-black/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-[#072515]">
+                        <h3 className="text-xs font-semibold text-black">
                           Customise Gift Trunks &amp; Packaging ({filteredCustomBoxes.length})
                         </h3>
                         <p className="text-[11px] text-black/55 mt-0.5">
@@ -3550,15 +3417,15 @@ export default function AdminDashboardPage() {
                             placeholder="Search boxes..."
                             value={customBoxSearch}
                             onChange={(e) => setCustomBoxSearch(e.target.value)}
-                            className="pl-8 pr-3 py-1.5 rounded-lg border border-black/15 text-xs outline-none focus:border-[#072515] w-36 sm:w-48 bg-stone-50/50"
+                            className="pl-8 pr-3 py-1.5 rounded-lg border border-black/15 text-xs outline-none focus:border-black w-36 sm:w-48 bg-transparent"
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => router.push("/admin/customise/edit?id=new")}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-2xs cursor-pointer"
+                          className="inline-flex h-8 items-center gap-1.5 px-3 rounded-lg bg-black text-white text-xs font-medium hover:bg-black/80 transition-colors shadow-2xs cursor-pointer"
                         >
-                          <Plus className="size-3" />
+                          <Plus className="size-3.5" />
                           <span>Add Box</span>
                         </button>
                       </div>
@@ -3566,7 +3433,7 @@ export default function AdminDashboardPage() {
 
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs border-collapse">
-                        <thead className="bg-[#FAF8F5] text-black/70 border-b border-black/10">
+                        <thead className="bg-black/[0.025] text-black/65 border-b border-black/10">
                           <tr>
                             <th className="px-4 py-2.5 font-medium">Trunk / Box</th>
                             <th className="px-3 py-2.5 font-medium">Dimensions</th>
@@ -3578,37 +3445,36 @@ export default function AdminDashboardPage() {
                         </thead>
                         <tbody className="divide-y divide-black/5">
                           {filteredCustomBoxes.map((b) => (
-                            <tr key={b.id} className="hover:bg-black/[0.015] transition-colors">
+                            <tr key={b.id} className="hover:bg-black/[0.02] transition-colors">
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-3">
                                   <div className="relative size-11 rounded-lg overflow-hidden border border-black/10 bg-[#FAF8F5] shrink-0">
                                     <Image src={b.image} alt={b.title} fill className="object-contain p-0.5" unoptimized />
                                   </div>
                                   <div className="min-w-0 max-w-xs">
-                                    <span className="font-bold text-[#072515] block truncate">{b.title}</span>
+                                    <span className="font-medium text-black block truncate">{b.title}</span>
                                     <span className="text-[11px] text-black/50 line-clamp-1 block">{b.description}</span>
                                   </div>
                                 </div>
                               </td>
                               <td className="px-3 py-3 text-black/60 font-mono text-[11px] whitespace-nowrap">{b.size}</td>
                               <td className="px-3 py-3 whitespace-nowrap">
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#072515]/10 text-[#072515]">
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/5 text-black">
                                   {b.capacity} Slots
                                 </span>
                               </td>
-                              <td className="px-3 py-3 font-bold text-[#072515] whitespace-nowrap">{formatINR(b.price)}</td>
+                              <td className="px-3 py-3 font-medium text-black whitespace-nowrap">{formatINR(b.price)}</td>
                               <td className="px-3 py-3 whitespace-nowrap">
                                 <button
                                   type="button"
                                   onClick={() => handleToggleCustomBoxActive(b.id)}
-                                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold transition cursor-pointer ${
-                                    b.active !== false
-                                      ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
-                                      : "bg-stone-200 text-stone-600 hover:bg-stone-300"
-                                  }`}
+                                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-medium transition cursor-pointer ${b.active !== false
+                                    ? "bg-emerald-200 text-emerald-900 hover:bg-emerald-300"
+                                    : "bg-black/10 text-black/70 hover:bg-black/15"
+                                    }`}
                                   title="Click to toggle storefront visibility"
                                 >
-                                  <span className={`size-1.5 rounded-full ${b.active !== false ? "bg-emerald-600" : "bg-stone-500"}`} />
+                                  <span className={`size-1.5 rounded-full ${b.active !== false ? "bg-emerald-600" : "bg-black/40"}`} />
                                   <span>{b.active !== false ? "Active" : "Hidden"}</span>
                                 </button>
                               </td>
@@ -3617,7 +3483,7 @@ export default function AdminDashboardPage() {
                                   <button
                                     type="button"
                                     onClick={() => router.push(`/admin/customise/edit?id=${b.id}`)}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-2xs cursor-pointer"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-black/5 hover:bg-black/10 text-black text-xs font-medium transition-colors cursor-pointer"
                                     title={`Edit ${b.title} on dedicated page`}
                                   >
                                     <Pencil className="size-3" />
@@ -3626,7 +3492,7 @@ export default function AdminDashboardPage() {
                                   <button
                                     type="button"
                                     onClick={() => router.push(`/admin/customise/edit?id=${b.id}`)}
-                                    className="p-1.5 rounded-lg hover:bg-black/5 text-black/40 hover:text-black transition cursor-pointer"
+                                    className="p-1.5 rounded-md hover:bg-black/5 text-black/40 hover:text-black transition-colors cursor-pointer"
                                     title="Open Dedicated Edit Box Page"
                                   >
                                     <ExternalLink className="size-3.5" />
@@ -3647,8 +3513,8 @@ export default function AdminDashboardPage() {
                 <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm p-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-sm font-semibold text-[#072515]">Live Atelier Inventory Matrix</h2>
-                      <p className="text-xs text-black/55">Real-time stock quantities across Delhi Central & Moradabad ateliers.</p>
+                      <h2 className="text-sm font-semibold text-black">Live Inventory Matrix</h2>
+                      <p className="text-xs text-black/55">Real-time stock quantities across ateliers and fulfillment centers.</p>
                     </div>
                   </div>
 
@@ -3659,38 +3525,37 @@ export default function AdminDashboardPage() {
                       return (
                         <div
                           key={prod.id}
-                          className="p-3.5 rounded-xl border border-black/10 bg-[#FAF8F5] flex flex-col justify-between"
+                          className="p-3.5 rounded-xl border border-black/10 bg-white shadow-xs flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-mono text-black/50">{prod.id}</span>
                               <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                                  isLow ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"
-                                }`}
+                                className={`px-2 py-0.5 rounded text-[10px] font-medium ${isLow ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"
+                                  }`}
                               >
                                 {isLow ? "Low Stock" : "Healthy"}
                               </span>
                             </div>
-                            <h4 className="mt-1 font-semibold text-xs text-[#072515] line-clamp-1">{prod.name}</h4>
+                            <h4 className="mt-1 font-medium text-xs text-black line-clamp-1">{prod.name}</h4>
                             <p className="text-[11px] text-black/50">{prod.category}</p>
                           </div>
 
                           <div className="mt-4 pt-3 border-t border-black/5 flex items-center justify-between">
-                            <span className="text-xs font-bold text-[#072515]">{stockCount} units</span>
-                            <div className="inline-flex items-center gap-1 border border-black/15 rounded-lg px-2 py-0.5 bg-white">
+                            <span className="text-xs font-semibold text-black">{stockCount} units</span>
+                            <div className="inline-flex items-center gap-1 border border-black/15 rounded-md px-1.5 py-0.5 bg-white">
                               <button
                                 type="button"
                                 onClick={() => updateStock(prod.id, -1)}
-                                className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs"
+                                className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs text-black"
                               >
                                 -
                               </button>
-                              <span className="w-5 text-center text-xs font-semibold">{stockCount}</span>
+                              <span className="w-5 text-center text-xs font-semibold text-black">{stockCount}</span>
                               <button
                                 type="button"
                                 onClick={() => updateStock(prod.id, 1)}
-                                className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs"
+                                className="size-5 rounded hover:bg-black/10 flex items-center justify-center font-bold text-xs text-black"
                               >
                                 +
                               </button>
@@ -3719,7 +3584,7 @@ export default function AdminDashboardPage() {
                     <button
                       type="button"
                       onClick={() => setIsAddCategoryOpen(true)}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90 transition"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition shadow-2xs"
                     >
                       <Plus className="size-3.5" /> Add category
                     </button>
@@ -3727,11 +3592,11 @@ export default function AdminDashboardPage() {
 
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[700px] border-collapse text-left text-xs">
-                      <thead className="bg-[#FAF8F5] text-black/70">
+                      <thead className="bg-black/[0.025] text-black/65">
                         <tr>
                           <th className="border-b border-black/10 px-4 py-2.5 font-medium">Category</th>
                           <th className="border-b border-black/10 px-3 py-2.5 font-medium">Slug</th>
-                          <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Creations</th>
+                          <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Products</th>
                           <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Target Revenue</th>
                           <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Visibility</th>
                           <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Actions</th>
@@ -3744,29 +3609,28 @@ export default function AdminDashboardPage() {
                             c.slug.toLowerCase().includes(categorySearchQuery.toLowerCase())
                           )
                           .map((cat) => (
-                            <tr key={cat.id} className="hover:bg-black/[0.015]">
-                              <td className="px-4 py-3 font-semibold text-[#072515]">
+                            <tr key={cat.id} className="hover:bg-black/[0.02] transition-colors">
+                              <td className="px-4 py-3 font-medium text-black">
                                 <div className="flex items-center gap-2">
-                                  <FolderTree className="size-4 text-[#c89e43]" />
+                                  <FolderTree className="size-4 text-black/55" />
                                   <span>{cat.title}</span>
                                 </div>
                               </td>
                               <td className="px-3 py-3 font-mono text-black/60">{cat.slug}</td>
                               <td className="px-3 py-3 text-center text-black/70">
-                                {productsList.filter((p) => p.category?.toLowerCase() === cat.title.toLowerCase() || p.category?.toLowerCase().includes(cat.slug.toLowerCase())).length || cat.productCount} creations
+                                {productsList.filter((p) => p.category?.toLowerCase() === cat.title.toLowerCase() || p.category?.toLowerCase().includes(cat.slug.toLowerCase())).length || cat.productCount} items
                               </td>
-                              <td className="px-3 py-3 text-right font-bold text-[#072515]">
+                              <td className="px-3 py-3 text-right font-medium text-black">
                                 {formatINR(cat.targetRevenue || 50000)}
                               </td>
                               <td className="px-3 py-3 text-center">
                                 <button
                                   type="button"
                                   onClick={() => toggleCategoryVisibility(cat.id)}
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold transition ${
-                                    cat.visible !== false
-                                      ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
-                                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                  }`}
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition ${cat.visible !== false
+                                    ? "bg-emerald-200 text-emerald-900 hover:bg-emerald-300"
+                                    : "bg-black/10 text-black/70 hover:bg-black/15"
+                                    }`}
                                 >
                                   {cat.visible !== false ? "Visible" : "Hidden"}
                                 </button>
@@ -3804,51 +3668,67 @@ export default function AdminDashboardPage() {
           {/* ROUTE 4: CUSTOMERS (Patrons Directory)                            */}
           {/* ================================================================== */}
           {activeRoute === "customers" && (
-            <main className="flex-1 p-4 sm:p-6 bg-[#f6f5f1] space-y-4">
+            <main className="min-h-full flex-1 bg-[#f5f5f5] p-4 text-black sm:p-5 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h1 className="flex items-center gap-2 text-lg font-semibold text-[#072515]">
-                  <UsersRound className="size-4 text-[#c89e43]" />
-                  <span>Patrons & Clients</span>
+                <h1 className="flex items-center gap-2 text-lg font-semibold text-black">
+                  <UsersRound className="size-4" />
+                  <span>Customers</span>
                 </h1>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => triggerNotification("Exported customer patrons directory.")}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-white border border-black/15 px-3 text-xs font-medium text-black hover:bg-black/5"
+                    onClick={() => triggerNotification("Exported customer directory.")}
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium text-black hover:bg-black/10 transition-colors"
                   >
                     <Download className="size-3.5" /> Export
                   </button>
                   <button
                     type="button"
-                    onClick={() => setIsAddCustomerOpen(true)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#072515] px-3 text-xs font-medium text-[#eed08e] hover:bg-[#072515]/90"
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/[0.06] px-3 text-xs font-medium text-black hover:bg-black/10 transition-colors"
                   >
-                    <Plus className="size-3.5" /> Add patron
+                    <Upload className="size-3.5" /> Import
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddCustomerOpen(true)}
+                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
+                  >
+                    <Plus className="size-3.5" /> Add customer
                   </button>
                 </div>
               </div>
 
               <section className="overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm">
-                <div className="flex items-center gap-3 border-b border-black/10 px-4 py-3">
-                  <Search className="size-3.5 text-black/40" />
-                  <input
-                    value={customerSearchQuery}
-                    onChange={(e) => setCustomerSearchQuery(e.target.value)}
-                    placeholder="Search patrons by name, email, or city..."
-                    className="w-full bg-transparent outline-none text-xs text-black placeholder:text-black/40"
-                  />
+                <div className="flex flex-wrap items-center gap-3 border-b border-black/10 px-4 py-3">
+                  <div className="flex min-w-52 flex-1 items-center gap-2 text-sm text-black/50">
+                    <Search className="size-4 text-black/45" />
+                    <input
+                      value={customerSearchQuery}
+                      onChange={(e) => setCustomerSearchQuery(e.target.value)}
+                      aria-label="Search customers"
+                      placeholder="Search customers"
+                      className="w-full bg-transparent outline-none placeholder:text-black/45 text-xs text-black"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Adjust customer filters"
+                    className="rounded-md p-1.5 text-black/55 hover:bg-black/5"
+                  >
+                    <SlidersHorizontal className="size-4" />
+                  </button>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[800px] border-collapse text-left text-xs">
-                    <thead className="bg-[#FAF8F5] text-black/70">
+                    <thead className="bg-black/[0.025] text-black/65">
                       <tr>
-                        <th className="border-b border-black/10 px-4 py-2.5 font-medium">Customer name</th>
+                        <th className="border-b border-black/10 px-3 py-2.5 font-medium"><input type="checkbox" aria-label="Select all customers" /></th>
+                        <th className="border-b border-black/10 px-3 py-2.5 font-medium">Customer name</th>
                         <th className="border-b border-black/10 px-3 py-2.5 font-medium">Email subscription</th>
                         <th className="border-b border-black/10 px-3 py-2.5 font-medium">Location</th>
                         <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Orders</th>
                         <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Amount spent</th>
-                        <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Tier</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/5">
@@ -3860,31 +3740,27 @@ export default function AdminDashboardPage() {
                             c.location.toLowerCase().includes(customerSearchQuery.toLowerCase())
                         )
                         .map((c) => (
-                          <tr key={c.id} className="hover:bg-black/[0.015]">
-                            <td className="px-4 py-3">
+                          <tr key={c.id} className="hover:bg-black/[0.02] transition-colors">
+                            <td className="border-b border-black/10 px-3 py-3"><input type="checkbox" aria-label={`Select ${c.name}`} /></td>
+                            <td className="border-b border-black/10 px-3 py-3">
                               <div className="flex items-center gap-2.5">
-                                <div className="size-8 rounded-full bg-[#072515]/10 text-[#072515] font-bold flex items-center justify-center text-xs">
+                                <div className="size-7 rounded-full bg-black/5 text-black font-semibold flex items-center justify-center text-xs">
                                   {c.initials}
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-[#072515]">{c.name}</p>
-                                  <p className="text-[10px] text-black/50">{c.email}</p>
+                                  <p className="font-medium text-black">{c.name}</p>
+                                  <p className="text-[11px] text-black/50">{c.email}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-3 py-3">
-                              <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-medium">
+                            <td className="border-b border-black/10 px-3 py-3">
+                              <span className="rounded-full bg-emerald-200 px-2 py-0.5 text-[11px] font-medium text-emerald-900">
                                 {c.subscription}
                               </span>
                             </td>
-                            <td className="px-3 py-3 text-black/70 font-medium">{c.location}</td>
-                            <td className="px-3 py-3 text-center font-bold text-[#072515]">{c.ordersCount}</td>
-                            <td className="px-3 py-3 text-right font-bold text-[#072515]">{formatINR(c.amountSpent)}</td>
-                            <td className="px-3 py-3 text-center">
-                              <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#eed08e]/30 text-[#072515] font-semibold border border-[#c89e43]/30">
-                                {c.tier}
-                              </span>
-                            </td>
+                            <td className="border-b border-black/10 px-3 py-3 text-black/70">{c.location}</td>
+                            <td className="border-b border-black/10 px-3 py-3 text-center text-black/80 font-medium">{c.ordersCount} orders</td>
+                            <td className="border-b border-black/10 px-3 py-3 text-right font-medium text-black">{formatINR(c.amountSpent)}</td>
                           </tr>
                         ))}
                     </tbody>
@@ -3974,15 +3850,14 @@ export default function AdminDashboardPage() {
                     Live Milestone Progress
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      inspectOrder.fulfillmentStatus === "Delivered"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : inspectOrder.fulfillmentStatus === "Shipped" || inspectOrder.fulfillmentStatus === "In Transit"
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${inspectOrder.fulfillmentStatus === "Delivered"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : inspectOrder.fulfillmentStatus === "Shipped" || inspectOrder.fulfillmentStatus === "In Transit"
                         ? "bg-blue-100 text-blue-800"
                         : inspectOrder.fulfillmentStatus === "Out for Delivery"
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-amber-100 text-amber-800"
-                    }`}
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-amber-100 text-amber-800"
+                      }`}
                   >
                     Current: {inspectOrder.fulfillmentStatus}
                   </span>
@@ -4005,20 +3880,18 @@ export default function AdminDashboardPage() {
                     return (
                       <div key={step.key} className="flex flex-col items-center">
                         <div
-                          className={`size-7 rounded-full flex items-center justify-center font-bold text-[10px] transition-all shadow-xs ${
-                            isDone
-                              ? "bg-emerald-700 text-white"
-                              : isCurrent
+                          className={`size-7 rounded-full flex items-center justify-center font-bold text-[10px] transition-all shadow-xs ${isDone
+                            ? "bg-emerald-700 text-white"
+                            : isCurrent
                               ? "bg-[#072515] text-[#eed08e] ring-2 ring-[#c89e43] ring-offset-2 ring-offset-[#FAF8F5]"
                               : "bg-black/10 text-black/40"
-                          }`}
+                            }`}
                         >
                           {isDone ? <Check className="size-3.5" /> : idx + 1}
                         </div>
                         <span
-                          className={`mt-1.5 text-[10px] font-medium leading-tight ${
-                            isCurrent ? "font-bold text-[#072515]" : isDone ? "text-emerald-800" : "text-black/40"
-                          }`}
+                          className={`mt-1.5 text-[10px] font-medium leading-tight ${isCurrent ? "font-bold text-[#072515]" : isDone ? "text-emerald-800" : "text-black/40"
+                            }`}
                         >
                           {step.label}
                         </span>
@@ -4098,8 +3971,8 @@ export default function AdminDashboardPage() {
                           const prefix = trackingForm.courier.startsWith("Delhivery")
                             ? "DEL"
                             : trackingForm.courier.startsWith("DTDC")
-                            ? "DTD"
-                            : "BLU";
+                              ? "DTD"
+                              : "BLU";
                           const rand = Math.floor(1000 + Math.random() * 9000);
                           const cityCode = inspectOrder.city.slice(0, 3).toUpperCase() || "IND";
                           setTrackingForm({ ...trackingForm, awb: `${prefix}-${rand}-${cityCode}` });
@@ -4398,11 +4271,10 @@ export default function AdminDashboardPage() {
                       key={imgItem.path}
                       type="button"
                       onClick={() => setNewProductData({ ...newProductData, image: imgItem.path })}
-                      className={`relative p-1 rounded-xl border flex flex-col items-center gap-1 transition ${
-                        newProductData.image === imgItem.path
-                          ? "border-[#072515] ring-2 ring-[#072515]/20 bg-[#FAF8F5]"
-                          : "border-black/10 hover:border-black/30 bg-white"
-                      }`}
+                      className={`relative p-1 rounded-xl border flex flex-col items-center gap-1 transition ${newProductData.image === imgItem.path
+                        ? "border-[#072515] ring-2 ring-[#072515]/20 bg-[#FAF8F5]"
+                        : "border-black/10 hover:border-black/30 bg-white"
+                        }`}
                     >
                       <div className="relative size-12 rounded-lg overflow-hidden border border-black/10 bg-[#FAF8F5]">
                         <Image src={imgItem.path} alt={imgItem.label} fill className="object-cover" unoptimized />
@@ -4874,11 +4746,10 @@ export default function AdminDashboardPage() {
                         type="button"
                         key={p.url}
                         onClick={() => setEditingCustomBox({ ...editingCustomBox, image: p.url })}
-                        className={`px-2 py-1 rounded-md text-[10px] border transition cursor-pointer ${
-                          editingCustomBox.image === p.url
-                            ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
-                            : "bg-white text-black/70 border-black/15 hover:border-black/40"
-                        }`}
+                        className={`px-2 py-1 rounded-md text-[10px] border transition cursor-pointer ${editingCustomBox.image === p.url
+                          ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
+                          : "bg-white text-black/70 border-black/15 hover:border-black/40"
+                          }`}
                       >
                         {p.label}
                       </button>
@@ -5032,11 +4903,10 @@ export default function AdminDashboardPage() {
                       type="button"
                       key={p.url}
                       onClick={() => setNewCustomBox({ ...newCustomBox, image: p.url })}
-                      className={`px-2 py-1 rounded-md text-[10px] border transition cursor-pointer ${
-                        newCustomBox.image === p.url
-                          ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
-                          : "bg-white text-black/70 border-black/15 hover:border-black/40"
-                      }`}
+                      className={`px-2 py-1 rounded-md text-[10px] border transition cursor-pointer ${newCustomBox.image === p.url
+                        ? "bg-[#072515] text-[#eed08e] border-[#072515] font-bold"
+                        : "bg-white text-black/70 border-black/15 hover:border-black/40"
+                        }`}
                     >
                       {p.label}
                     </button>

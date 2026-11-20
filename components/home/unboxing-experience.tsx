@@ -102,6 +102,17 @@ const FIVE_ELEMENTS_PRODUCTS = [
   },
 ];
 
+const TURTLE_PRODUCT = {
+  id: "turtle-incense-holder",
+  skuId: "turtle-incense-holder",
+  element: "Kurma",
+  name: "Solid Brass Turtle Burner",
+  subtitle: "Handcrafted Pure Sand-Cast Brass Ritual Stand",
+  badge: "Kurma • Sacred Keepsake",
+  image: "/images/unboxing/turtle-isolated.png",
+  accentGlow: "rgba(197, 164, 91, 0.45)",
+};
+
 export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
   const { addToCart: contextAddToCart } = useCart();
   const effectiveAddToCart = onAddToCart || contextAddToCart;
@@ -119,6 +130,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
   // Emerging products refs (individual items that emerge from the box)
   const emergingProductsGroupRef = useRef<HTMLDivElement>(null);
   const emergingItemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const turtleItemRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const auraGlowRef = useRef<HTMLDivElement>(null);
@@ -297,8 +309,8 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
     const lidLeftWingEl = lidLeftWingRef.current;
     const lidRightWingEl = lidRightWingRef.current;
     const claspEl = boxClaspRef.current;
-    const trayWithProductsEl = trayWithProductsRef.current;
     const emergingGroupEl = emergingProductsGroupRef.current;
+    const turtleEl = turtleItemRef.current;
     const auraEl = auraGlowRef.current;
     const titleEl = titleRef.current;
 
@@ -310,7 +322,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       const isMobile = width < 640;
       const isTablet = width < 1024;
 
-      const boxInitY = isMobile ? 32 : isTablet ? 46 : 58;
+      const boxInitY = isMobile ? 30 : isTablet ? 42 : 50;
 
       // 1. Initial 3D state of the box - Centered & visible immediately (No white blank space before!)
       gsap.set(stageEl, {
@@ -353,36 +365,69 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
         });
       }
 
-      // 3. Emerging products start nested inside the box tray
+      // 3. Products group starts hidden inside the closed box
       if (emergingGroupEl) {
         gsap.set(emergingGroupEl, {
           opacity: 0,
+          autoAlpha: 0,
+          visibility: "hidden",
           pointerEvents: "none",
         });
       }
 
+      // 3D Tray slot positions inside the open box (5 incense boxes + turtle resting naturally in velvet slots)
+      const slotX = isTablet ? -54 : -65;
+      const slotOffsets = [
+        { x: slotX, y: isTablet ? -18 : -22, z: isTablet ? -35 : -44, rotateX: 28, rotateY: 0, rotateZ: -90, scaleX: isTablet ? 0.38 : 0.40, scaleY: isTablet ? 0.90 : 0.94 },
+        { x: slotX, y: isTablet ? 15 : 19, z: isTablet ? -18 : -22, rotateX: 28, rotateY: 0, rotateZ: -90, scaleX: isTablet ? 0.38 : 0.40, scaleY: isTablet ? 0.90 : 0.94 },
+        { x: slotX, y: isTablet ? 50 : 60, z: 0, rotateX: 28, rotateY: 0, rotateZ: -90, scaleX: isTablet ? 0.38 : 0.40, scaleY: isTablet ? 0.90 : 0.94 },
+        { x: slotX, y: isTablet ? 85 : 101, z: isTablet ? 18 : 22, rotateX: 28, rotateY: 0, rotateZ: -90, scaleX: isTablet ? 0.38 : 0.40, scaleY: isTablet ? 0.90 : 0.94 },
+        { x: slotX, y: isTablet ? 120 : 142, z: isTablet ? 35 : 44, rotateX: 28, rotateY: 0, rotateZ: -90, scaleX: isTablet ? 0.38 : 0.40, scaleY: isTablet ? 0.90 : 0.94 },
+      ];
+      const turtleSlotOffset = {
+        x: isTablet ? 124 : 149,
+        y: isTablet ? 50 : 60,
+        z: 0,
+        rotateX: 28,
+        rotateY: 0,
+        rotateZ: 0,
+        scale: isTablet ? 0.72 : 0.78,
+      };
+
       emergingItemRefs.current.forEach((el, index) => {
         if (el) {
           gsap.set(el, {
-            y: 35,
-            z: -10,
-            x: (index - 2) * 10,
-            rotateX: 20,
-            rotateZ: 0,
-            scale: 0.52,
+            x: slotOffsets[index].x,
+            y: slotOffsets[index].y,
+            z: slotOffsets[index].z,
+            rotateX: slotOffsets[index].rotateX,
+            rotateY: slotOffsets[index].rotateY,
+            rotateZ: slotOffsets[index].rotateZ,
+            scaleX: slotOffsets[index].scaleX,
+            scaleY: slotOffsets[index].scaleY,
             opacity: 0,
+            autoAlpha: 0,
           });
         }
       });
 
-      // Hide extra card details (stars, subtitle, price, add button) while in 3D floating mode
-      const extraDetails = sectionEl.querySelectorAll(".card-extra-detail");
-      if (extraDetails.length > 0) {
-        gsap.set(extraDetails, { opacity: 0 });
+      if (turtleEl) {
+        gsap.set(turtleEl, {
+          x: turtleSlotOffset.x,
+          y: turtleSlotOffset.y,
+          z: turtleSlotOffset.z,
+          rotateX: turtleSlotOffset.rotateX,
+          rotateY: turtleSlotOffset.rotateY,
+          rotateZ: turtleSlotOffset.rotateZ,
+          scale: turtleSlotOffset.scale,
+          opacity: 0,
+          autoAlpha: 0,
+        });
       }
 
-      if (trayWithProductsEl) {
-        gsap.set(trayWithProductsEl, { opacity: 1 });
+      const luxuryLabels = sectionEl.querySelectorAll(".product-luxury-label");
+      if (luxuryLabels.length > 0) {
+        gsap.set(luxuryLabels, { opacity: 0 });
       }
 
       if (auraEl) {
@@ -395,26 +440,43 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       }
 
       // State A: Compact 3D fan-out floating above box
-      const fanBaseY = isMobile ? 36 : isTablet ? 65 : 82;
-      const fanStep = isMobile ? Math.min(width * 0.165, 62) : isTablet ? 116 : 158;
+      const fanBaseY = isMobile ? boxInitY - 10 : isTablet ? boxInitY - 20 : boxInitY - 25;
+      const fanStep = isTablet ? Math.min(width * 0.14, 100) : Math.min(width * 0.14, 145);
       const fanOffsets = [
-        { x: -2 * fanStep, y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: -5, scale: isMobile ? 0.88 : 0.84 },
-        { x: -1 * fanStep, y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: -2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 0, y: fanBaseY + (isMobile ? -4 : -8), z: 70, rotateZ: 0, scale: isMobile ? 0.98 : 0.92 },
-        { x: 1 * fanStep, y: fanBaseY + (isMobile ? 5 : 8), z: 45, rotateZ: 2.5, scale: isMobile ? 0.92 : 0.88 },
-        { x: 2 * fanStep, y: fanBaseY + (isMobile ? 14 : 22), z: 20, rotateZ: 5, scale: isMobile ? 0.88 : 0.84 },
+        { x: -2.5 * fanStep, y: fanBaseY + 16, z: 20, rotateX: 10, rotateY: 10, rotateZ: -4, scale: isTablet ? 0.76 : 0.82 },
+        { x: -1.5 * fanStep, y: fanBaseY + 6, z: 35, rotateX: 10, rotateY: 5, rotateZ: -2, scale: isTablet ? 0.80 : 0.86 },
+        { x: -0.5 * fanStep, y: fanBaseY - 4, z: 50, rotateX: 10, rotateY: 2, rotateZ: 0, scale: isTablet ? 0.82 : 0.88 },
+        { x: 0.5 * fanStep, y: fanBaseY - 4, z: 50, rotateX: 10, rotateY: -2, rotateZ: 0, scale: isTablet ? 0.82 : 0.88 },
+        { x: 1.5 * fanStep, y: fanBaseY + 6, z: 35, rotateX: 10, rotateY: -5, rotateZ: 2, scale: isTablet ? 0.80 : 0.86 },
       ];
+      const turtleFanOffset = {
+        x: 2.5 * fanStep,
+        y: fanBaseY + 16,
+        z: 22,
+        rotateX: 10,
+        rotateY: -10,
+        rotateZ: 4,
+        scale: isTablet ? 0.74 : 0.80,
+      };
 
-      // State B: Dedicated Product Section Row
-      const sectionStep = isMobile ? Math.min(width * 0.182, 74) : isTablet ? Math.min(width * 0.195, 172) : Math.min(width * 0.195, 252);
-      const cardYOffset = isMobile ? 32 : isTablet ? 58 : 72;
+      // State B: Majestic final 3D showcase layout (No product cards - 100% individual 3D products side by side)
+      const sectionStep = isTablet ? Math.min(width * 0.155, 138) : Math.min(width * 0.158, 200);
       const sectionOffsets = [
-        { x: -2 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: -1 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: 0, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: 1 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
-        { x: 2 * sectionStep, y: cardYOffset, z: 0, rotateZ: 0, scale: 1 },
+        { x: -2.5 * sectionStep, y: 14, z: 10, rotateX: 4, rotateY: 6, rotateZ: -2, scale: isTablet ? 0.98 : 1.05 },
+        { x: -1.5 * sectionStep, y: 8, z: 25, rotateX: 4, rotateY: 3, rotateZ: -1, scale: isTablet ? 0.98 : 1.05 },
+        { x: -0.5 * sectionStep, y: 0, z: 35, rotateX: 4, rotateY: 1, rotateZ: 0, scale: isTablet ? 1.00 : 1.08 },
+        { x: 0.5 * sectionStep, y: 0, z: 35, rotateX: 4, rotateY: -1, rotateZ: 0, scale: isTablet ? 1.00 : 1.08 },
+        { x: 1.5 * sectionStep, y: 8, z: 25, rotateX: 4, rotateY: -3, rotateZ: 1, scale: isTablet ? 0.98 : 1.05 },
       ];
+      const turtleSectionOffset = {
+        x: 2.5 * sectionStep,
+        y: 18,
+        z: 12,
+        rotateX: 5,
+        rotateY: -6,
+        rotateZ: 2,
+        scale: isTablet ? 0.94 : 1.00,
+      };
 
       // MASTER COORDINATED GSAP TIMELINE CONTROLLED BY SCROLL WITH SCRUB
       const masterTl = gsap.timeline({
@@ -428,12 +490,19 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
           onUpdate: (self) => {
             const prog = self.progress;
 
-            // Enable interactivity once cards transform into product section
+            // Enable interactivity once items are in floating or final positions
             if (emergingGroupEl) {
-              emergingGroupEl.style.pointerEvents = prog >= 0.72 ? "auto" : "none";
+              emergingGroupEl.style.pointerEvents = prog >= 0.70 ? "auto" : "none";
+              if (prog < 0.28) {
+                emergingGroupEl.style.visibility = "hidden";
+                emergingGroupEl.style.opacity = "0";
+              } else {
+                emergingGroupEl.style.visibility = "visible";
+                emergingGroupEl.style.opacity = "1";
+              }
             }
 
-            // Ensure the box stage remains strictly hidden once it has moved upward
+            // Ensure the box stage remains strictly hidden once it has moved downward
             if (stageEl) {
               if (prog >= 0.74) {
                 stageEl.style.visibility = "hidden";
@@ -524,81 +593,122 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
         0.08
       );
 
-      // ──────────────────────────────────────────────────────────
-      // STAGE 3: PRODUCTS EMERGE FROM THE BOX IN SYNCHRONIZATION
-      // (Starts as lid clears from 0.16 -> 0.48)
-      // Tray cross-fades to empty velvet tray so NO products remain inside!
-      // ──────────────────────────────────────────────────────────
+      // Reveal the internal products ONLY after the lid has tilted open backwards past 95deg (0.26 -> 0.29)
+      // When closed (or closing), products remain strictly hidden inside the box!
       if (emergingGroupEl) {
-        masterTl.to(
+        masterTl.fromTo(
           emergingGroupEl,
+          { opacity: 0, autoAlpha: 0 },
           {
             opacity: 1,
-            duration: 0.10,
-            ease: "power1.out",
+            autoAlpha: 1,
+            duration: 0.03,
+            ease: "none",
           },
-          0.16
+          0.26
         );
-      }
 
-      if (trayWithProductsEl) {
         masterTl.to(
-          trayWithProductsEl,
+          emergingItemRefs.current.filter(Boolean),
           {
-            opacity: 0,
-            duration: 0.20,
-            ease: "power1.inOut",
+            opacity: 1,
+            autoAlpha: 1,
+            duration: 0.03,
+            ease: "none",
           },
-          0.18
+          0.26
         );
+
+        if (turtleEl) {
+          masterTl.to(
+            turtleEl,
+            {
+              opacity: 1,
+              autoAlpha: 1,
+              duration: 0.03,
+              ease: "none",
+            },
+            0.26
+          );
+        }
       }
 
-      // Animate each of the 5 products smoothly lifting up and fanning out into 3D State A
+      // ──────────────────────────────────────────────────────────
+      // STAGE 3: PRODUCTS & TURTLE EMERGE FROM THE BOX IN REALISTIC 3D
+      // (Starts as lid clears: each product physically rises out of tray)
+      // They remain realistic 3D products - NO conversion to cards!
+      // ──────────────────────────────────────────────────────────
+
+      // Animate each of the 5 incense products physically rising out of the box one by one in 3D
       emergingItemRefs.current.forEach((el, index) => {
         if (el) {
+          const startT = 0.30 + index * 0.022;
+          const dur = 0.18;
+
+          // Physically rise up, move forward in Z, rotate from horizontal slot angle to upright 3D
           masterTl.to(
             el,
             {
-              y: fanOffsets[index].y,
               x: fanOffsets[index].x,
+              y: fanOffsets[index].y,
               z: fanOffsets[index].z,
-              rotateX: 10,
+              rotateX: fanOffsets[index].rotateX,
+              rotateY: fanOffsets[index].rotateY,
               rotateZ: fanOffsets[index].rotateZ,
-              scale: fanOffsets[index].scale,
-              opacity: 1,
-              duration: 0.32,
+              scaleX: fanOffsets[index].scale,
+              scaleY: fanOffsets[index].scale,
+              duration: dur,
               ease: "power2.out",
             },
-            0.18 + index * 0.02
+            startT
           );
         }
       });
+
+      // Animate the solid brass turtle burner rising out of its compartment and taking position on the side
+      if (turtleEl) {
+        masterTl.to(
+          turtleEl,
+          {
+            x: turtleFanOffset.x,
+            y: turtleFanOffset.y,
+            z: turtleFanOffset.z,
+            rotateX: turtleFanOffset.rotateX,
+            rotateY: turtleFanOffset.rotateY,
+            rotateZ: turtleFanOffset.rotateZ,
+            scale: turtleFanOffset.scale,
+            duration: 0.18,
+            ease: "power2.out",
+          },
+          0.38
+        );
+      }
 
       if (auraEl) {
         masterTl.to(
           auraEl,
           {
-            opacity: 0.85,
-            scale: 1.3,
-            duration: 0.24,
+            opacity: 0.9,
+            scale: 1.35,
+            duration: 0.22,
             ease: "sine.inOut",
           },
-          0.24
+          0.30
         );
       }
 
       // ──────────────────────────────────────────────────────────
-      // STAGE 4: BOX ANIMATES UPWARD UNTIL IT DISAPPEARS FROM SCREEN
+      // STAGE 4: BOX GENTLY GLIDES DOWN AS PRODUCTS EXPAND IN 3D
       // (Progress 0.50 -> 0.74)
       // ──────────────────────────────────────────────────────────
       masterTl.to(
         stageEl,
         {
-          y: "-40vh",
+          y: "35vh",
           autoAlpha: 0,
-          scale: 0.65,
-          duration: 0.20,
-          ease: "power2.in",
+          scale: 0.80,
+          duration: 0.22,
+          ease: "power2.inOut",
         },
         0.50
       );
@@ -606,41 +716,61 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
       // Title stays fixed at top — no animation needed
 
       // ──────────────────────────────────────────────────────────
-      // STAGE 5: TRANSFORM THOSE EXACT SAME 5 PRODUCT CARDS INTO
-      // THE DEDICATED PRODUCT SECTION
+      // STAGE 5: EXPAND PRODUCTS & TURTLE INTO MAJESTIC 3D SHOWCASE
       // (Progress 0.52 -> 0.76)
-      // Flatten 3D rotations, expand to full product layout & reveal details
+      // Products stay as realistic individual 3D objects throughout!
       // ──────────────────────────────────────────────────────────
       emergingItemRefs.current.forEach((el, index) => {
         if (el) {
+          const transT = 0.52 + index * 0.015;
+
           masterTl.to(
             el,
             {
               x: sectionOffsets[index].x,
               y: sectionOffsets[index].y,
-              z: 0,
-              rotateX: 0,
-              rotateY: 0,
-              rotateZ: 0,
-              scale: 1,
-              duration: 0.24,
+              z: sectionOffsets[index].z,
+              rotateX: sectionOffsets[index].rotateX,
+              rotateY: sectionOffsets[index].rotateY,
+              rotateZ: sectionOffsets[index].rotateZ,
+              scaleX: sectionOffsets[index].scale,
+              scaleY: sectionOffsets[index].scale,
+              duration: 0.22,
               ease: "power2.inOut",
             },
-            0.52 + index * 0.015
+            transT
           );
         }
       });
 
-      // Smoothly reveal rating stars, subtitle, price, and "+ Add" button
-      if (extraDetails.length > 0) {
+      if (turtleEl) {
         masterTl.to(
-          extraDetails,
+          turtleEl,
+          {
+            x: turtleSectionOffset.x,
+            y: turtleSectionOffset.y,
+            z: turtleSectionOffset.z,
+            rotateX: turtleSectionOffset.rotateX,
+            rotateY: turtleSectionOffset.rotateY,
+            rotateZ: turtleSectionOffset.rotateZ,
+            scale: turtleSectionOffset.scale,
+            duration: 0.22,
+            ease: "power2.inOut",
+          },
+          0.54
+        );
+      }
+
+      // Smoothly reveal elegant gold labels underneath each product
+      if (luxuryLabels.length > 0) {
+        masterTl.to(
+          luxuryLabels,
           {
             opacity: 1,
-            duration: 0.20,
+            duration: 0.18,
             ease: "power1.out",
           },
-          0.58
+          0.60
         );
       }
 
@@ -895,7 +1025,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
         {/* SECTION HEADER */}
         <div
           ref={titleRef}
-          className="absolute top-0 inset-x-0 z-40 pt-16 min-[380px]:pt-18 sm:pt-24 lg:pt-28 px-3 sm:px-6 max-w-4xl mx-auto text-center pointer-events-none"
+          className="absolute top-0 inset-x-0 z-40 pt-16 min-[380px]:pt-18 sm:pt-20 lg:pt-24 px-3 sm:px-6 max-w-4xl mx-auto text-center pointer-events-none"
         >
           <h2 className="font-serif text-xl min-[380px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight leading-tight text-[#1C1B18]">
             The 5 Elements Collection
@@ -905,7 +1035,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
         {/* 3D BOX STAGE & PRODUCT CARDS CONTAINER */}
         <div
           ref={containerRef}
-          className="relative z-20 flex-1 w-full max-w-full flex items-center justify-center px-1 sm:px-4 lg:px-6 pt-14 sm:pt-20 pb-3 sm:pb-6 overflow-hidden"
+          className="relative z-20 flex-1 w-full max-w-full flex items-center justify-center px-1 sm:px-4 lg:px-6 pt-16 sm:pt-24 pb-4 sm:pb-8 overflow-hidden"
           style={{
             perspective: "1200px",
           }}
@@ -913,8 +1043,9 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
           {/* THE 3D GREEN MARBLE BOX (Opens, products emerge, then moves upward & vanishes) */}
           <div
             ref={boxStageRef}
-            className="relative w-[250px] min-[380px]:w-[280px] sm:w-[340px] md:w-[390px] lg:w-[420px] aspect-[417/370] rounded-2xl shadow-2xl transition-shadow"
+            className="relative w-[270px] min-[380px]:w-[300px] sm:w-[360px] md:w-[410px] lg:w-[440px] rounded-2xl shadow-2xl transition-shadow"
             style={{
+              aspectRatio: "880 / 480",
               transformStyle: "preserve-3d",
               willChange: "transform, opacity",
             }}
@@ -927,30 +1058,17 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
                 transformStyle: "preserve-3d",
               }}
             >
-              {/* 1. Empty Velvet Interior Tray (Revealed as products emerge) */}
+              {/* Velvet Interior Tray (Authentic sculpted compartments ready to hold the 3D items) */}
               <div className="absolute inset-0">
                 <Image
-                  src="/images/unboxing/empty-tray.png"
-                  alt="Empty Kurma Luxury Suite Tray"
+                  src="/images/unboxing/kurma-bespoke-fitted-tray-v5.png"
+                  alt="Kurma Luxury Suite Tray"
                   fill
                   priority
                   sizes="(max-width: 768px) 90vw, 450px"
                   className="object-cover object-center"
                 />
                 <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/50 via-transparent to-black/20" />
-              </div>
-
-              {/* 2. Tray with 5 products (Smoothly fades out as 3D products lift out) */}
-              <div ref={trayWithProductsRef} className="absolute inset-0">
-                <Image
-                  src="/images/unboxing/suite-5-elements-tray.png"
-                  alt="Kurma 5 Elements Incense Luxury Suite"
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 90vw, 450px"
-                  className="object-cover object-center"
-                />
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/20" />
               </div>
 
               {/* Front Marble Wall & Brass Clasp Base */}
@@ -1052,107 +1170,88 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
           </div>
 
           {/* ──────────────────────────────────────────────────────────
-            THE EXACT SAME 5 PRODUCTS:
-            Emerges in 3D from the box -> transforms into the dedicated
-            product section as the box moves upward and vanishes!
-            NO duplicate cards or extra sections!
+            THE REALISTIC 3D PRODUCTS (5 ELEMENTS + SOLID BRASS TURTLE):
+            Physically start inside the box tray, emerge during scroll
+            in realistic 3D, and expand into the majestic showcase!
+            Never transformed into product cards!
            ────────────────────────────────────────────────────────── */}
           <div
             ref={emergingProductsGroupRef}
-            className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none"
-            style={{ perspective: "1200px" }}
+            className="absolute inset-0 flex items-center justify-center z-25 pointer-events-none opacity-0 invisible"
+            style={{ opacity: 0, visibility: "hidden", perspective: "1200px" }}
           >
-            {FIVE_ELEMENTS_PRODUCTS.map((prod, index) => {
-              const isAdded = !!addedIds[prod.id];
-              return (
-                <div
-                  key={`product-card-${prod.id}`}
-                  ref={(el) => {
-                    emergingItemRefs.current[index] = el;
-                  }}
-                  className="absolute w-[66px] min-[380px]:w-[74px] min-[420px]:w-[80px] sm:w-[122px] md:w-[164px] lg:w-[214px] xl:w-[242px] rounded-xl sm:rounded-2xl border border-stone-200/90 bg-white flex flex-col justify-between p-1 min-[380px]:p-1.5 sm:p-2.5 md:p-3 lg:p-3.5 transition-shadow shadow-xl shadow-stone-900/10 hover:border-[#C5A45B]"
-                  style={{
-                    transformStyle: "preserve-3d",
-                    willChange: "transform, opacity",
-                    backfaceVisibility: "hidden",
-                  }}
-                >
-                  {/* Product Image Visual Container */}
-                  <div className="relative w-full aspect-[445/640] my-0.5 sm:my-1 rounded-lg sm:rounded-xl overflow-hidden bg-white border border-stone-200/60 flex items-center justify-center shadow-xs">
-                    <Image
-                      src={prod.image}
-                      alt={prod.name}
-                      fill
-                      priority
-                      sizes="(max-width: 640px) 25vw, (max-width: 1024px) 20vw, 250px"
-                      className="object-contain object-center transition-transform duration-300"
-                    />
-
-                    {/* Wishlist Heart Button on Upper Right */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWishlist({
-                          id: prod.id,
-                          name: prod.name,
-                          price: prod.price,
-                          priceDisplay: prod.priceDisplay,
-                          image: prod.image,
-                          skuId: prod.skuId,
-                        });
-                      }}
-                      title={isInWishlist(prod.id) ? "Remove from wishlist" : "Add to wishlist"}
-                      aria-label={isInWishlist(prod.id) ? "Remove from wishlist" : "Add to wishlist"}
-                      className="group/btn absolute top-1.5 right-1.5 z-10 p-1 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer bg-transparent border-none text-white hover:scale-110"
-                    >
-                      <Heart
-                        className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-all duration-300 stroke-white stroke-[2.2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] ${isInWishlist(prod.id)
-                          ? "fill-white text-white scale-110 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
-                          : "fill-transparent text-white group-hover/btn:scale-110"
-                          }`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Product Name */}
-                  <div className="pt-0.5">
-                    <h4 className="font-sans text-[8.5px] min-[380px]:text-[9.5px] sm:text-xs md:text-sm lg:text-[15px] font-semibold text-[#1C1B18] truncate">
-                      {prod.name}
-                    </h4>
-                  </div>
-
-                  {/* Price and Action Button (Reveals during transformation to product section) */}
-                  <div className="card-extra-detail pt-1 sm:pt-1.5 mt-0.5 sm:mt-1 border-t border-stone-200/80 flex items-center justify-between gap-0.5 sm:gap-1 opacity-0">
-                    <div className="flex flex-col min-w-0">
-                      <span className="font-sans text-[9px] min-[380px]:text-[10.5px] sm:text-xs md:text-sm lg:text-base font-bold text-[#8C6215] leading-tight">
-                        {prod.priceDisplay}
-                      </span>
-                      <span className="font-sans text-[7px] min-[380px]:text-[8px] sm:text-[9.5px] md:text-[11px] text-stone-400 line-through leading-tight">
-                        {prod.originalPriceDisplay}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleQuickAdd(prod)}
-                      title={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                      aria-label={isAdded ? "Added to cart" : `Add ${prod.name} to cart`}
-                      className={`w-5.5 h-5.5 min-[380px]:w-6.5 min-[380px]:h-6.5 sm:w-8 sm:h-8 lg:w-8.5 lg:h-8.5 rounded-md sm:rounded-lg flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 shrink-0 ${isAdded
-                        ? "bg-emerald-600 text-white"
-                        : "bg-[#1C1B18] hover:bg-[#8C6215] text-[#FAF7F2]"
-                        }`}
-                    >
-                      {isAdded ? (
-                        <Check className="w-3 h-3 sm:w-4 sm:h-4 stroke-[2.5]" />
-                      ) : (
-                        <ShoppingCart className="w-2.5 h-2.5 min-[380px]:w-3.5 min-[380px]:h-3.5 sm:w-4 sm:h-4 stroke-[1.8]" />
-                      )}
-                    </button>
-                  </div>
+            {/* 1. The 5 Incense Elemental Products */}
+            {FIVE_ELEMENTS_PRODUCTS.map((prod, index) => (
+              <div
+                key={`product-3d-${prod.id}`}
+                ref={(el) => {
+                  emergingItemRefs.current[index] = el;
+                }}
+                onClick={() => router.push(`/products/${prod.skuId}`)}
+                className="product-3d-item absolute w-[78px] sm:w-[94px] md:w-[106px] lg:w-[124px] xl:w-[136px] flex flex-col items-center justify-center cursor-pointer select-none transition-transform duration-300 hover:scale-105"
+                style={{
+                  transformStyle: "preserve-3d",
+                  willChange: "transform, opacity",
+                  backfaceVisibility: "hidden",
+                }}
+              >
+                {/* 3D Product Box Visual with realistic physical lighting & shadow */}
+                <div className="relative w-full aspect-[445/1024] rounded-lg overflow-hidden flex items-center justify-center filter drop-shadow-[0_16px_22px_rgba(0,0,0,0.55)] transition-all duration-300 hover:drop-shadow-[0_20px_28px_rgba(197,164,91,0.5)]">
+                  <Image
+                    src={prod.image}
+                    alt={prod.name}
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 150px, (max-width: 1024px) 200px, 250px"
+                    className="object-contain object-center select-none pointer-events-none"
+                  />
                 </div>
-              );
-            })}
+
+                {/* Subtle Luxury Gold Name Label (reveals in final state) */}
+                <div className="product-luxury-label mt-2 text-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                  <p className="font-serif text-[10px] sm:text-xs md:text-sm font-medium tracking-wider uppercase text-[#8C6215]">
+                    {prod.badge}
+                  </p>
+                  <p className="font-sans text-[9px] sm:text-[11px] md:text-xs text-[#1C1B18]/70 truncate max-w-[150px]">
+                    {prod.name}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {/* 2. The Solid Brass Kurma Turtle Burner */}
+            <div
+              ref={turtleItemRef}
+              onClick={() => router.push(`/products/${TURTLE_PRODUCT.skuId}`)}
+              className="product-3d-item turtle-3d-item absolute w-[90px] sm:w-[106px] md:w-[120px] lg:w-[142px] xl:w-[156px] flex flex-col items-center justify-center cursor-pointer select-none z-30 transition-transform duration-300 hover:scale-105"
+              style={{
+                transformStyle: "preserve-3d",
+                willChange: "transform, opacity",
+                backfaceVisibility: "hidden",
+              }}
+            >
+              {/* 3D Turtle Burner with rich metallic cast brass depth */}
+              <div className="relative w-full aspect-[300/195] flex items-center justify-center filter drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] transition-all duration-300 hover:drop-shadow-[0_22px_32px_rgba(197,164,91,0.6)]">
+                <Image
+                  src={TURTLE_PRODUCT.image}
+                  alt={TURTLE_PRODUCT.name}
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 160px, (max-width: 1024px) 220px, 260px"
+                  className="object-contain object-center select-none pointer-events-none"
+                />
+              </div>
+
+              {/* Subtle Luxury Gold Turtle Label */}
+              <div className="product-luxury-label mt-1 text-center opacity-0 transition-opacity duration-300 pointer-events-none">
+                <p className="font-serif text-[10px] sm:text-xs md:text-sm font-medium tracking-wider uppercase text-[#8C6215]">
+                  {TURTLE_PRODUCT.badge}
+                </p>
+                <p className="font-sans text-[9px] sm:text-[11px] md:text-xs text-[#1C1B18]/70 truncate max-w-[170px]">
+                  {TURTLE_PRODUCT.name}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

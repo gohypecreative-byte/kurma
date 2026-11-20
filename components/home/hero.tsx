@@ -70,9 +70,9 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
           <div className="max-w-xl lg:max-w-[560px] xl:max-w-[640px] space-y-3.5 min-[380px]:space-y-4 sm:space-y-6">
             {/* Framer Motion Animated Headline */}
             {shouldReduceMotion ? (
-              <h1 className="text-xl min-[360px]:text-2xl min-[410px]:text-[26px] sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-normal sm:font-light text-[#FFFDF8] sm:text-[#092B20] drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:drop-shadow-none leading-[1.2] tracking-normal">
+              <h1 className="text-xl min-[360px]:text-2xl min-[410px]:text-[26px] sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-medium text-[#FFFDF8] sm:text-[#092B20] drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:drop-shadow-none leading-[1.2] tracking-normal">
                 <span className="block text-[#FFFDF8] sm:text-[#092B20]">Elements in Harmony</span>
-                <span className="block font-normal sm:font-light text-[#FFFDF8] sm:text-[#092B20] sm:whitespace-nowrap mt-0.5 sm:mt-0">
+                <span className="block font-medium text-[#FFFDF8] sm:text-[#092B20] sm:whitespace-nowrap mt-0.5 sm:mt-0">
                   Higher Consciousness
                 </span>
               </h1>
@@ -87,7 +87,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                     transition: { staggerChildren: 0.14, delayChildren: 0.1 },
                   },
                 }}
-                className="text-xl min-[360px]:text-2xl min-[410px]:text-[26px] sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-normal sm:font-light text-[#FFFDF8] sm:text-[#092B20] drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:drop-shadow-none leading-[1.2] tracking-normal"
+                className="text-xl min-[360px]:text-2xl min-[410px]:text-[26px] sm:text-4xl md:text-[44px] lg:text-[46px] xl:text-[54px] 2xl:text-[58px] font-serif font-medium text-[#FFFDF8] sm:text-[#092B20] drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)] sm:drop-shadow-none leading-[1.2] tracking-normal"
               >
                 <motion.span
                   variants={{
@@ -111,7 +111,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
                       transition: { duration: 0.9, ease: LUXURY_EASE },
                     },
                   }}
-                  className="block font-normal sm:font-light text-[#FFFDF8] sm:text-[#092B20] sm:whitespace-nowrap mt-0.5 sm:mt-0"
+                  className="block font-medium text-[#FFFDF8] sm:text-[#092B20] sm:whitespace-nowrap mt-0.5 sm:mt-0"
                 >
                   Higher Consciousness
                 </motion.span>
