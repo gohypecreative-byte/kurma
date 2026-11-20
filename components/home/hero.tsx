@@ -29,7 +29,7 @@ export function Hero({ onExploreGifts, onExploreBestsellers }: HeroProps) {
     <section
       ref={heroRef}
       id="home"
-      className="sticky top-16 sm:top-20 z-0 w-full h-[calc(100vh-64px)] sm:h-[calc(100vh-80px)] min-h-[500px] sm:min-h-[620px] bg-[#EDE1D1] border-b border-[#28513B]/40 overflow-hidden flex items-center text-[#092B20] transform-gpu [transform:translate3d(0,0,0)]"
+      className="sticky top-16 sm:top-20 z-0 w-full h-[calc(100dvh-64px)] sm:h-[calc(100vh-80px)] min-h-[500px] sm:min-h-[620px] bg-[#EDE1D1] border-b border-[#28513B]/40 overflow-hidden flex items-center text-[#092B20] transform-gpu [transform:translate3d(0,0,0)]"
     >
       <div className="w-full h-full flex items-end sm:items-center relative">
         {/* Full-Bleed Editorial Background Banner */}

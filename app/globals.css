@@ -257,6 +257,8 @@ html { scroll-padding-top: 100px; }
 /* Lenis Smooth Scroll Hardware & Interpolation Isolation */
 html.lenis, html.lenis body {
   height: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .lenis.lenis-smooth {
@@ -265,6 +267,7 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
+  touch-action: pan-x pan-y;
 }
 
 .lenis.lenis-stopped {

@@ -855,6 +855,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
             {/* Horizontal Scrolling Track (Strictly 2 cards visible at a time, cursor drag & touch swipe) */}
             <div
               ref={mobileScrollRef}
+              data-lenis-prevent
               onScroll={handleMobileScroll}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}

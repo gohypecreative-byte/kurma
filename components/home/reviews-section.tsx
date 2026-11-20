@@ -215,6 +215,7 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
           {/* NATIVE SMOOTH SIDE-SCROLLING HORIZONTAL TRACK */}
           <div
             ref={scrollContainerRef}
+            data-lenis-prevent
             onScroll={handleScroll}
             onTouchStart={() => setIsInteracting(true)}
             onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2500)}
