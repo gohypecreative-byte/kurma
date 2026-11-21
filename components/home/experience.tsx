@@ -200,12 +200,14 @@ function BestsellerCard({
   isAdded,
   onToggleWishlist,
   onAddToCart,
+  isDuplicate = false,
 }: {
   item: (typeof BESTSELLER_ITEMS)[0];
   isLiked: boolean;
   isAdded: boolean;
   onToggleWishlist: (id: string) => void;
   onAddToCart: (item: (typeof BESTSELLER_ITEMS)[0]) => void;
+  isDuplicate?: boolean;
 }) {
   const router = useRouter();
   const { isInWishlist, toggleWishlist } = useWishlist();
@@ -214,10 +216,44 @@ function BestsellerCard({
   const images = item.images && item.images.length > 0 ? item.images : [item.image];
   const currentImg = images[activeIdx] || item.image;
 
+  // Track touch drag movement to prevent accidental clicks while swiping horizontally
+  const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
+  const hasDraggedRef = useRef(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches[0]) {
+      touchStartXRef.current = e.touches[0].clientX;
+      touchStartYRef.current = e.touches[0].clientY;
+      hasDraggedRef.current = false;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches[0]) {
+      const dx = Math.abs(e.touches[0].clientX - touchStartXRef.current);
+      const dy = Math.abs(e.touches[0].clientY - touchStartYRef.current);
+      if (dx > 8 || dy > 8) {
+        hasDraggedRef.current = true;
+      }
+    }
+  };
+
+  const handleCardClick = () => {
+    if (hasDraggedRef.current) return;
+    router.push(`/products/${item.skuId}`);
+  };
+
   return (
     <div
-      onClick={() => router.push(`/products/${item.skuId}`)}
-      className="flex-shrink-0 w-[88%] sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] snap-start group relative flex flex-col cursor-pointer select-none transition-all duration-300"
+      onClick={handleCardClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      draggable={false}
+      onDragStart={(e) => e.preventDefault()}
+      className={`flex-shrink-0 w-[88%] sm:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] lg:snap-start group relative flex flex-col cursor-pointer select-none transition-all duration-300 ${
+        isDuplicate ? "lg:hidden" : ""
+      }`}
     >
       {/* Modern Image Canvas with in-card scrolling/carousel */}
       <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg sm:rounded-2xl bg-transparent flex items-center justify-center">
@@ -226,7 +262,8 @@ function BestsellerCard({
           alt={item.name}
           fill
           loading="lazy"
-          className={`absolute inset-0 w-full h-full ${
+          draggable={false}
+          className={`absolute inset-0 w-full h-full pointer-events-none select-none ${
             currentImg.includes("portrait") ? "object-cover" : "object-contain p-1 sm:p-1.5"
           } object-center group-hover:scale-105 transition-all duration-500 ease-out`}
           sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
@@ -379,6 +416,14 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
   const [canScrollBestsellersLeft, setCanScrollBestsellersLeft] = useState(false);
   const [canScrollBestsellersRight, setCanScrollBestsellersRight] = useState(true);
 
+  // Auto-scroll and touch interaction tracking for mobile
+  const isInteractingRef = useRef(false);
+  const isHoveredRef = useRef(false);
+  const isSectionVisibleRef = useRef(true);
+  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoScrollRafId = useRef<number | null>(null);
+  const lastTimestampRef = useRef<number | null>(null);
+
   const updateBestsellersScrollState = useCallback(() => {
     if (bestsellersRafId.current !== null) return;
     bestsellersRafId.current = requestAnimationFrame(() => {
@@ -390,39 +435,190 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
         setCanScrollBestsellersLeft((prev) => (prev !== newLeft ? newLeft : prev));
         setCanScrollBestsellersRight((prev) => (prev !== newRight ? newRight : prev));
 
+        const isMobileView = typeof window !== "undefined" && window.innerWidth < 1024;
+        const halfWidth = scrollWidth / 2;
+        const effectiveScroll = isMobileView && halfWidth > 0 ? scrollLeft % halfWidth : scrollLeft;
+
         const pageIndex = Math.min(
           totalBestsellerPages - 1,
-          Math.max(0, Math.round(scrollLeft / (clientWidth || 1)))
+          Math.max(0, Math.round(effectiveScroll / (clientWidth || 1)))
         );
         setBestsellerPage((prev) => (prev !== pageIndex ? pageIndex : prev));
       }
     });
   }, [totalBestsellerPages]);
 
+  // Handle scroll events with seamless looping for infinite smooth carousel on mobile
+  const handleScroll = useCallback(() => {
+    const container = bestsellersScrollRef.current;
+    if (container) {
+      const isMobileView = typeof window !== "undefined" && window.innerWidth < 1024;
+      if (isMobileView) {
+        const halfWidth = container.scrollWidth / 2;
+        if (halfWidth > 0) {
+          if (container.scrollLeft >= halfWidth) {
+            container.scrollLeft -= halfWidth;
+          } else if (container.scrollLeft <= 0 && isInteractingRef.current) {
+            container.scrollLeft += halfWidth;
+          }
+        }
+      }
+    }
+    updateBestsellersScrollState();
+  }, [updateBestsellersScrollState]);
+
   useEffect(() => {
     updateBestsellersScrollState();
     const current = bestsellersScrollRef.current;
     if (current) {
-      current.addEventListener("scroll", updateBestsellersScrollState, { passive: true });
+      current.addEventListener("scroll", handleScroll, { passive: true });
     }
     return () => {
-      if (current) current.removeEventListener("scroll", updateBestsellersScrollState);
+      if (current) current.removeEventListener("scroll", handleScroll);
       if (bestsellersRafId.current !== null) cancelAnimationFrame(bestsellersRafId.current);
     };
-  }, [updateBestsellersScrollState]);
+  }, [handleScroll, updateBestsellersScrollState]);
+
+  // IntersectionObserver to pause auto-scroll when section is out of viewport (battery & GPU friendly)
+  useEffect(() => {
+    const container = bestsellersScrollRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isSectionVisibleRef.current = entry.isIntersecting;
+        });
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  // Continuous smooth auto-scroll loop for mobile devices
+  useEffect(() => {
+    let isMounted = true;
+
+    const loop = (timestamp: number) => {
+      if (!isMounted) return;
+
+      if (lastTimestampRef.current === null) {
+        lastTimestampRef.current = timestamp;
+      }
+      const elapsed = Math.min(timestamp - lastTimestampRef.current, 50);
+      lastTimestampRef.current = timestamp;
+
+      const container = bestsellersScrollRef.current;
+      const isMobileView = typeof window !== "undefined" && window.innerWidth < 1024;
+
+      if (
+        container &&
+        isMobileView &&
+        isSectionVisibleRef.current &&
+        !isInteractingRef.current &&
+        !isHoveredRef.current
+      ) {
+        const halfWidth = container.scrollWidth / 2;
+        if (halfWidth > 0) {
+          // Smooth continuous drift (~36px/sec -> 0.036px/ms)
+          const delta = 0.036 * elapsed;
+          container.scrollLeft += delta;
+
+          if (container.scrollLeft >= halfWidth) {
+            container.scrollLeft -= halfWidth;
+          }
+        }
+      }
+
+      autoScrollRafId.current = requestAnimationFrame(loop);
+    };
+
+    autoScrollRafId.current = requestAnimationFrame(loop);
+
+    return () => {
+      isMounted = false;
+      if (autoScrollRafId.current !== null) {
+        cancelAnimationFrame(autoScrollRafId.current);
+      }
+      if (resumeTimerRef.current) {
+        clearTimeout(resumeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleTouchStart = () => {
+    isInteractingRef.current = true;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+  };
+
+  const handleTouchEnd = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2200);
+  };
+
+  const handlePointerDown = () => {
+    isInteractingRef.current = true;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+  };
+
+  const handlePointerUp = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 2200);
+  };
+
+  const handleMouseEnter = () => {
+    isHoveredRef.current = true;
+  };
+
+  const handleMouseLeave = () => {
+    isHoveredRef.current = false;
+  };
 
   const handleBestsellersScroll = (direction: "left" | "right") => {
     if (bestsellersScrollRef.current) {
-      const containerWidth = bestsellersScrollRef.current.clientWidth;
-      bestsellersScrollRef.current.scrollBy({
-        left: direction === "left" ? -containerWidth : containerWidth,
-        behavior: "smooth",
-      });
+      isInteractingRef.current = true;
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = setTimeout(() => {
+        isInteractingRef.current = false;
+      }, 3000);
+
+      const container = bestsellersScrollRef.current;
+      const isMobileView = typeof window !== "undefined" && window.innerWidth < 1024;
+
+      if (isMobileView) {
+        const firstCard = container.firstElementChild as HTMLElement;
+        const cardWidth = firstCard ? firstCard.offsetWidth : container.clientWidth * 0.88;
+        const gap = 16;
+        const step = cardWidth + gap;
+
+        container.scrollBy({
+          left: direction === "left" ? -step : step,
+          behavior: "smooth",
+        });
+      } else {
+        const containerWidth = container.clientWidth;
+        container.scrollBy({
+          left: direction === "left" ? -containerWidth : containerWidth,
+          behavior: "smooth",
+        });
+      }
     }
   };
 
   const goToBestsellersPage = (pageIdx: number) => {
     if (bestsellersScrollRef.current) {
+      isInteractingRef.current = true;
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = setTimeout(() => {
+        isInteractingRef.current = false;
+      }, 3000);
+
       const containerWidth = bestsellersScrollRef.current.clientWidth;
       bestsellersScrollRef.current.scrollTo({
         left: pageIdx * containerWidth,
@@ -470,26 +666,76 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
             </h2>
           </div>
 
-          {/* 4 Card Bestsellers Horizontal Carousel with Smooth Snapping */}
-          <div
-            ref={bestsellersScrollRef}
-            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-y"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
-          >
-            {BESTSELLER_ITEMS.map((item) => (
-              <BestsellerCard
-                key={item.id}
-                item={item}
-                isLiked={!!likedItems[item.id]}
-                isAdded={!!addedIds[item.id]}
-                onToggleWishlist={toggleWishlist}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
+          {/* Carousel Viewport Wrapper with Mobile Navigation Arrows */}
+          <div className="relative w-full">
+            {/* Left Chevron Button (Mobile/Tablet Only) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBestsellersScroll("left");
+              }}
+              className="lg:hidden absolute left-1 sm:left-2 top-[38%] -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white active:scale-90 transition-all border border-stone-300/80 shadow-md flex items-center justify-center text-stone-800 cursor-pointer backdrop-blur-xs"
+              aria-label="Previous bestseller"
+            >
+              <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
+            </button>
+
+            {/* Right Chevron Button (Mobile/Tablet Only) */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleBestsellersScroll("right");
+              }}
+              className="lg:hidden absolute right-1 sm:right-2 top-[38%] -translate-y-1/2 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/90 hover:bg-white active:scale-90 transition-all border border-stone-300/80 shadow-md flex items-center justify-center text-stone-800 cursor-pointer backdrop-blur-xs"
+              aria-label="Next bestseller"
+            >
+              <ChevronRight className="w-5 h-5 stroke-[2.2]" />
+            </button>
+
+            {/* 4 Card Bestsellers Horizontal Carousel with Smooth Snapping on Desktop & Continuous Auto-Scroll on Mobile */}
+            <div
+              ref={bestsellersScrollRef}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onTouchCancel={handleTouchEnd}
+              onPointerDown={handlePointerDown}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-3 pt-1 lg:snap-x lg:snap-mandatory lg:scroll-smooth no-scrollbar"
+              style={{
+                touchAction: "pan-x pan-y",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                WebkitOverflowScrolling: "touch",
+              }}
+            >
+              {BESTSELLER_ITEMS.map((item) => (
+                <BestsellerCard
+                  key={item.id}
+                  item={item}
+                  isLiked={!!likedItems[item.id]}
+                  isAdded={!!addedIds[item.id]}
+                  onToggleWishlist={toggleWishlist}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+              {/* Duplicate set for seamless continuous infinite loop on mobile/tablet (hidden on desktop) */}
+              {BESTSELLER_ITEMS.map((item) => (
+                <BestsellerCard
+                  key={`dup-${item.id}`}
+                  item={item}
+                  isLiked={!!likedItems[item.id]}
+                  isAdded={!!addedIds[item.id]}
+                  onToggleWishlist={toggleWishlist}
+                  onAddToCart={handleAddToCart}
+                  isDuplicate
+                />
+              ))}
+            </div>
           </div>
 
           {/* Subtle Page Indicator Dots like third image */}

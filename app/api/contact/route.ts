@@ -6,9 +6,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, phone, company, message, type } = body;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !message || !phone) {
       return NextResponse.json(
-        { error: "Name, email, and message are required" },
+        { error: "Name, email, phone number, and message are required" },
+        { status: 400 }
+      );
+    }
+
+    const cleanedPhone = phone.trim().replace(/[\s\-\(\)]/g, "");
+    if (!/^\+?[0-9]{10,15}$/.test(cleanedPhone)) {
+      return NextResponse.json(
+        { error: "Please enter a valid phone number (at least 10 digits)" },
         { status: 400 }
       );
     }

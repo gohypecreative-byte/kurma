@@ -49,15 +49,24 @@ export default function ContactPage() {
     message: "",
   });
 
+  const [phoneError, setPhoneError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate phone number: must be at least 10 digits
+    const cleanedPhone = form.phone.trim().replace(/[\s\-\(\)]/g, "");
+    if (!cleanedPhone || !/^\+?[0-9]{10,15}$/.test(cleanedPhone)) {
+      setPhoneError("Please enter a valid phone number (at least 10 digits).");
+      return;
+    }
+    setPhoneError("");
     setIsSubmitting(true);
 
     try {
-      await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -68,6 +77,16 @@ export default function ContactPage() {
           type: "BESPOKE",
         }),
       });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data.error && data.error.toLowerCase().includes("phone")) {
+          setPhoneError(data.error);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       setIsSubmitted(true);
     } catch {
       // Graceful fallback
@@ -243,7 +262,7 @@ export default function ContactPage() {
                 {/* 1. Name */}
                 <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-[#1C1B18]">
-                    Name <span className="text-[#C5A45B]">*</span>
+                    Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -258,7 +277,7 @@ export default function ContactPage() {
                 {/* 2. Email Address */}
                 <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-[#1C1B18]">
-                    Email Address <span className="text-[#C5A45B]">*</span>
+                    Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -273,21 +292,32 @@ export default function ContactPage() {
                 {/* 3. Phone Number */}
                 <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-[#1C1B18]">
-                    Phone Number
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
+                    required
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => {
+                      setForm({ ...form, phone: e.target.value });
+                      if (phoneError) setPhoneError("");
+                    }}
                     placeholder=""
-                    className="w-full h-12 px-4 rounded-xl bg-white border border-[#DDD3C2] text-[#1C1B18] placeholder-stone-400 focus:border-[#092B20] focus:ring-1 focus:ring-[#092B20] outline-none transition-all text-sm"
+                    className={`w-full h-12 px-4 rounded-xl bg-white border ${
+                      phoneError
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-[#DDD3C2] focus:border-[#092B20] focus:ring-[#092B20]"
+                    } text-[#1C1B18] placeholder-stone-400 focus:ring-1 outline-none transition-all text-sm`}
                   />
+                  {phoneError && (
+                    <p className="text-xs text-red-500 font-sans mt-1">{phoneError}</p>
+                  )}
                 </div>
 
                 {/* 4. Messages */}
                 <div className="space-y-1.5">
                   <label className="block text-sm font-medium text-[#1C1B18]">
-                    Messages <span className="text-[#C5A45B]">*</span>
+                    Messages <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     required
