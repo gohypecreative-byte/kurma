@@ -232,11 +232,17 @@ export function RealisticSmoke({
       p.x = tipX + (drift1 + drift2) * spreadFactor + diffusion;
     }
 
+    const isMobile =
+      preset === "hero-mobile" ||
+      (typeof window !== "undefined" && window.innerWidth < 768);
+
     // Pre-warm the simulation so smoke is already billowing on page load
     if (tipX > 0 && tipY > 0) {
       const warmUpDelta = 0.035;
-      for (let step = 0; step < 240; step++) {
-        emitAcc += warmUpDelta * 46;
+      const warmUpSteps = isMobile ? 90 : 240;
+      const warmUpRate = isMobile ? 22 : 46;
+      for (let step = 0; step < warmUpSteps; step++) {
+        emitAcc += warmUpDelta * warmUpRate;
         while (emitAcc >= 1) {
           emitAcc -= 1;
           const r = Math.random();
@@ -276,8 +282,8 @@ export function RealisticSmoke({
 
       if (tipX === 0 || tipY === 0) return;
 
-      // Continuous emission rate (~44 puffs/sec)
-      emitAcc += dt * 44;
+      // Continuous emission rate (~20 puffs/sec on mobile to save GPU cycles, ~44 on desktop)
+      emitAcc += dt * (isMobile ? 20 : 44);
       while (emitAcc >= 1) {
         emitAcc -= 1;
         const r = Math.random();
@@ -288,6 +294,12 @@ export function RealisticSmoke({
         } else {
           puffs.push(createPuff("filament"));
         }
+      }
+
+      // Max particle safety buffer to maintain 60-120fps scrolling on touch screens
+      const maxPuffs = isMobile ? 55 : 160;
+      if (puffs.length > maxPuffs) {
+        puffs.splice(0, puffs.length - maxPuffs);
       }
 
       // Update positions

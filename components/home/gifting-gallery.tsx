@@ -452,7 +452,6 @@ export function GiftingGallery() {
           {/* 3D Perspective Stage Container */}
           <div
             ref={stageRef}
-            data-lenis-prevent
             className="relative w-full overflow-hidden select-none cursor-grab active:cursor-grabbing py-1 sm:py-2 touch-pan-y"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}

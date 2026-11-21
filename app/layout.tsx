@@ -51,7 +51,7 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <body className="min-h-screen w-full max-w-full relative flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
+      <body className="min-h-screen w-full max-w-full overflow-x-clip relative flex flex-col bg-[#FAF7F2] text-[#1C1B18] selection:bg-[#EADBCC] selection:text-[#1C1B18]">
         <SmoothScrollProvider>
           <ProductsProvider>
             <CartProvider>

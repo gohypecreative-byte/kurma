@@ -855,7 +855,6 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
             {/* Horizontal Scrolling Track (Strictly 2 cards visible at a time, cursor drag & touch swipe) */}
             <div
               ref={mobileScrollRef}
-              data-lenis-prevent
               onScroll={handleMobileScroll}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
@@ -866,7 +865,7 @@ export function UnboxingExperience({ onAddToCart }: UnboxingExperienceProps) {
                 if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
                 interactionTimerRef.current = setTimeout(() => setIsMobileInteracting(false), 3000);
               }}
-              className="w-full flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar p-0 pb-3 pt-1 touch-pan-x cursor-grab active:cursor-grabbing select-none"
+              className="w-full flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar p-0 pb-3 pt-1 touch-pan-y cursor-grab active:cursor-grabbing select-none"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",

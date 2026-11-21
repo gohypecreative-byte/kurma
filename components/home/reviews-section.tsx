@@ -215,13 +215,12 @@ export function ReviewsSection({ onExploreProducts }: ReviewsSectionProps) {
           {/* NATIVE SMOOTH SIDE-SCROLLING HORIZONTAL TRACK */}
           <div
             ref={scrollContainerRef}
-            data-lenis-prevent
             onScroll={handleScroll}
             onTouchStart={() => setIsInteracting(true)}
             onTouchEnd={() => setTimeout(() => setIsInteracting(false), 2500)}
             onMouseEnter={() => setIsInteracting(true)}
             onMouseLeave={() => setIsInteracting(false)}
-            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-6 pt-2 px-3 sm:px-4 lg:px-0 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
+            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-6 pt-2 px-3 sm:px-4 lg:px-0 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-y"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",

@@ -20,6 +20,8 @@ type LenisLike = {
 export function HeroSnap({ targetId = "home-content-stack" }: HeroSnapProps) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Strictly disable on mobile/touch screens so mobile users scroll 100% naturally without scroll hijack
+    if (typeof window !== "undefined" && (window.innerWidth < 1024 || "ontouchstart" in window)) return;
 
     let prevTop = Number.POSITIVE_INFINITY;
     let snapping = false;
@@ -42,10 +44,10 @@ export function HeroSnap({ targetId = "home-content-stack" }: HeroSnapProps) {
 
       const lenis = (window as unknown as { lenis?: LenisLike }).lenis;
       if (lenis) {
-        lenis.scrollTo(0, { duration: 1.1, lock: true, onComplete: done });
+        lenis.scrollTo(0, { duration: 0.8, lock: false, onComplete: done });
       } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
-        window.setTimeout(done, 1200);
+        window.setTimeout(done, 900);
       }
     };
 

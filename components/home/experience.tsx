@@ -473,8 +473,7 @@ export function RitualAndQuestions({ onExploreGifts }: { onExploreGifts?: () => 
           {/* 4 Card Bestsellers Horizontal Carousel with Smooth Snapping */}
           <div
             ref={bestsellersScrollRef}
-            data-lenis-prevent
-            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-x"
+            className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto pb-3 pt-1 snap-x snap-mandatory scroll-smooth no-scrollbar touch-pan-y"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
