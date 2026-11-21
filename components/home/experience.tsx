@@ -327,9 +327,9 @@ function BestsellerCard({
           </>
         )}
 
-        {/* Slide Indicator Dots at Bottom Center */}
+        {/* Slide Indicator Dots at Bottom Center (Hidden on Mobile) */}
         {images.length > 1 && (
-          <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1.5 z-20">
+          <div className="hidden md:flex absolute bottom-2.5 inset-x-0 items-center justify-center gap-1.5 z-20">
             {images.map((_, idx) => (
               <button
                 key={idx}
