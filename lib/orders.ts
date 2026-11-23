@@ -45,6 +45,16 @@ export interface AdminOrder {
     greetingCard: boolean;
     monogram?: string;
   };
+  shippingAddress?: {
+    fullName?: string;
+    phone?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    country?: string;
+    fullAddress?: string;
+  } | any;
   isDraft?: boolean;
   isAbandoned?: boolean;
 }
@@ -268,6 +278,37 @@ export const INITIAL_ORDERS: AdminOrder[] = [
       greetingCard: true,
       monogram: "Parekh • Shanti",
     },
+  },
+  // Abandoned Checkouts
+  {
+    id: "ord-aband-1",
+    orderNumber: "#CHECKOUT-981",
+    customerName: "Rajeev Oberoi",
+    customerEmail: "rajeev.oberoi@cloudtech.io",
+    customerPhone: "+91 98450 66201",
+    city: "Pune, MH",
+    date: "Aug 04 at 10:14 am",
+    boxTitle: "Elements in Harmony Marble Gift Box",
+    boxImage: "/images/product/marble-box-clean.png",
+    itemsCount: 2,
+    items: [
+      { sku: "marble-gift-box", name: "Marble Keepsake Trunk", quantity: 1, price: 3499, image: "/images/product/marble-box-clean.png" },
+      { sku: "brass-turtle", name: "Solid Brass Turtle Burner", quantity: 1, price: 1250, image: "/images/product/turtle-burner.png" },
+    ],
+    totalAmount: 4749,
+    paymentMethod: "Card",
+    paymentStatus: "Pending",
+    fulfillmentStatus: "Unfulfilled",
+    channel: "Kurma Sanctuary",
+    courier: "Standard Air",
+    awb: "ABANDONED-STEP3",
+    personalization: {
+      recipientName: "Rajeev Oberoi",
+      senderName: "Self",
+      giftNote: "Sanctuary pooja setup.",
+      greetingCard: false,
+    },
+    isAbandoned: true,
   },
 ];
 

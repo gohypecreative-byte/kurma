@@ -155,6 +155,7 @@ model Discount {
   minSpend      Int?
   expiryDate    String?
   maxUses       Int?
+  productIds    String[] @default([])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

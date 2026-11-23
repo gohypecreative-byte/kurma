@@ -32,6 +32,7 @@ export async function GET() {
           description: p.description,
           details: p.details && p.details.length > 0 ? p.details : (staticItem?.details ?? []),
           elements: p.elements && p.elements.length > 0 ? p.elements : (staticItem?.elements ?? []),
+          stock: typeof p.stock === "number" ? p.stock : (staticItem?.stock ?? 25),
           customizationFields: staticItem?.customizationFields ?? [],
         };
       });

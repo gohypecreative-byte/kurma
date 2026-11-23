@@ -48,6 +48,7 @@ import {
   RefreshCw,
   Loader2,
   LogOut,
+  MapPin,
 } from "lucide-react";
 import { PRODUCTS, ProductSKU } from "@/lib/products";
 import { notifyProductUpdated } from "@/lib/products-context";
@@ -112,6 +113,16 @@ export interface AdminOrder {
     greetingCard: boolean;
     monogram?: string;
   };
+  shippingAddress?: {
+    name?: string;
+    street?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    phone?: string;
+    country?: string;
+    [key: string]: any;
+  } | any;
   isDraft?: boolean;
   isAbandoned?: boolean;
 }
@@ -142,6 +153,7 @@ export interface AdminDiscount {
   minSpend?: number;
   expiryDate?: string;
   maxUses?: number;
+  productIds?: string[];
 }
 
 export interface AdminCategory {
@@ -1083,9 +1095,26 @@ export default function AdminDashboardPage() {
       // ignore
     }
 
+    try {
+      const cached = localStorage.getItem("kurma_admin_orders");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setOrders(parsed);
+        }
+      }
+    } catch { }
+
     // Initiate real-time data fetch from Neon
     fetchAdminData();
   }, []);
+
+  // Automatically refresh orders when navigating to the Orders section
+  useEffect(() => {
+    if (activeRoute === "orders") {
+      fetchAdminData();
+    }
+  }, [activeRoute, ordersSubView]);
 
   // Search & Filter queries
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
@@ -1943,6 +1972,18 @@ export default function AdminDashboardPage() {
                       setActiveRoute("orders");
                       setOrdersSubView("abandoned");
                       setMobileSidebarOpen(false);
+                      fetch("/api/admin/orders?subview=abandoned")
+                        .then((r) => r.json())
+                        .then((d) => {
+                          if (Array.isArray(d.orders) && d.orders.length > 0) {
+                            setOrders((prev) => {
+                              const map = new Map(prev.map((o) => [o.id, o]));
+                              d.orders.forEach((o: AdminOrder) => map.set(o.id, o));
+                              return Array.from(map.values());
+                            });
+                          }
+                        })
+                        .catch(() => {});
                     }}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors ${activeRoute === "orders" && ordersSubView === "abandoned"
                       ? "text-black font-semibold bg-black/5"
@@ -1950,7 +1991,9 @@ export default function AdminDashboardPage() {
                       }`}
                   >
                     <span>Abandoned checkouts</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-medium">1</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-800 font-medium">
+                      {orders.filter((o) => o.isAbandoned).length}
+                    </span>
                   </button>
                 </div>
               )}
@@ -2538,7 +2581,7 @@ export default function AdminDashboardPage() {
                     <div className="mt-3 grid gap-2">
                       <button
                         type="button"
-                        onClick={() => setIsAddProductOpen(true)}
+                        onClick={() => router.push("/admin/products/new")}
                         className="rounded-md border border-black/15 px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-black hover:text-white cursor-pointer"
                       >
                         Add product
@@ -2689,7 +2732,21 @@ export default function AdminDashboardPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setOrdersSubView("abandoned")}
+                      onClick={() => {
+                        setOrdersSubView("abandoned");
+                        fetch("/api/admin/orders?subview=abandoned")
+                          .then((r) => r.json())
+                          .then((d) => {
+                            if (Array.isArray(d.orders) && d.orders.length > 0) {
+                              setOrders((prev) => {
+                                const map = new Map(prev.map((o) => [o.id, o]));
+                                d.orders.forEach((o: AdminOrder) => map.set(o.id, o));
+                                return Array.from(map.values());
+                              });
+                            }
+                          })
+                          .catch(() => {});
+                      }}
                       className={`px-2.5 py-1 rounded-md transition ${ordersSubView === "abandoned" ? "bg-white text-black shadow-xs font-semibold" : "text-black/60 hover:text-black"}`}
                     >
                       Abandoned
@@ -2710,13 +2767,6 @@ export default function AdminDashboardPage() {
                     className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black/5 px-3 text-xs font-medium text-black hover:bg-black/10 transition-colors"
                   >
                     More actions <ChevronDown className="size-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsCreateOrderOpen(true)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
-                  >
-                    <Plus className="size-3.5" /> Create order
                   </button>
                 </div>
               </div>
@@ -2972,27 +3022,23 @@ export default function AdminDashboardPage() {
 
                     {/* Table */}
                     <div className="overflow-x-auto">
-                      <table className="w-full min-w-[1050px] border-collapse text-left text-xs">
+                      <table className="w-full min-w-[750px] border-collapse text-left text-xs">
                         <thead className="bg-black/[0.025] text-black/65">
                           <tr>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium"><input type="checkbox" aria-label="Select all orders" /></th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Order</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Date</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Customer</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Channel</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium text-right">Total</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Payment status</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Fulfillment status</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium whitespace-nowrap">Payment status</th>
+                            <th className="border-b border-black/10 px-3 py-2.5 font-medium whitespace-nowrap">Fulfillment status</th>
                             <th className="border-b border-black/10 px-3 py-2.5 font-medium">Items</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Delivery status</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium">Delivery method</th>
-                            <th className="border-b border-black/10 px-3 py-2.5 font-medium text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {filteredOrders.length === 0 ? (
                             <tr>
-                              <td colSpan={12} className="px-4 py-12 text-center text-black/50">
+                              <td colSpan={8} className="px-4 py-12 text-center text-black/50">
                                 No orders found matching the criteria.
                               </td>
                             </tr>
@@ -3000,17 +3046,25 @@ export default function AdminDashboardPage() {
                             filteredOrders.map((ord) => (
                               <tr key={ord.id} className="hover:bg-black/[0.02] transition-colors">
                                 <td className="border-b border-black/10 px-3 py-2.5"><input type="checkbox" aria-label={`Select ${ord.orderNumber}`} /></td>
-                                <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">{ord.orderNumber}</td>
+                                <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">
+                                  <button
+                                    type="button"
+                                    onClick={() => openInspectOrder(ord)}
+                                    className="font-medium hover:underline text-left cursor-pointer"
+                                    title="Click to view order details"
+                                  >
+                                    {ord.orderNumber}
+                                  </button>
+                                </td>
                                 <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.date}</td>
                                 <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">
                                   <div>{ord.customerName}</div>
                                   <div className="text-[10px] text-black/45">{ord.city}</div>
                                 </td>
-                                <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.channel || "KURMA"}</td>
                                 <td className="border-b border-black/10 px-3 py-2.5 text-right font-medium text-black">{formatINR(ord.totalAmount)}</td>
-                                <td className="border-b border-black/10 px-3 py-2.5">
+                                <td className="border-b border-black/10 px-3 py-2.5 whitespace-nowrap">
                                   <span
-                                    className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${ord.paymentStatus === "Paid"
+                                    className={`inline-block whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-medium ${ord.paymentStatus === "Paid"
                                       ? "bg-black/10 text-black"
                                       : "bg-amber-200 text-amber-900"
                                       }`}
@@ -3018,9 +3072,9 @@ export default function AdminDashboardPage() {
                                     {ord.paymentStatus === "Paid" ? "Paid" : "Payment pending"}
                                   </span>
                                 </td>
-                                <td className="border-b border-black/10 px-3 py-2.5">
+                                <td className="border-b border-black/10 px-3 py-2.5 whitespace-nowrap">
                                   <span
-                                    className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${ord.fulfillmentStatus === "Delivered"
+                                    className={`inline-block whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-medium ${ord.fulfillmentStatus === "Delivered"
                                       ? "bg-emerald-200 text-emerald-900"
                                       : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
                                         ? "bg-blue-100 text-blue-900"
@@ -3031,28 +3085,6 @@ export default function AdminDashboardPage() {
                                   </span>
                                 </td>
                                 <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.itemsCount || 1} items</td>
-                                <td className="border-b border-black/10 px-3 py-2.5 text-black/60">{ord.fulfillmentStatus === "Delivered" ? "Delivered" : "—"}</td>
-                                <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.courier || "Standard"}</td>
-                                <td className="border-b border-black/10 px-3 py-2.5 text-center">
-                                  <div className="flex items-center justify-center gap-1.5">
-                                    <button
-                                      type="button"
-                                      onClick={() => openInspectOrder(ord)}
-                                      className="px-2.5 py-1 rounded-md bg-black/5 hover:bg-black/10 text-black font-medium text-[11px] transition-colors"
-                                    >
-                                      Inspect
-                                    </button>
-                                    <Link
-                                      href={`/track-order?orderNumber=${encodeURIComponent(ord.orderNumber)}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="p-1 rounded hover:bg-black/5 text-black/50 hover:text-black transition"
-                                      title="Track on Storefront"
-                                    >
-                                      <ExternalLink className="size-3.5" />
-                                    </Link>
-                                  </div>
-                                </td>
                               </tr>
                             ))
                           )}
@@ -3131,8 +3163,8 @@ export default function AdminDashboardPage() {
                   {productsSubView === "all" && (
                     <button
                       type="button"
-                      onClick={() => setIsAddProductOpen(true)}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
+                      onClick={() => router.push("/admin/products/new")}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs cursor-pointer"
                     >
                       <Plus className="size-3.5" /> Add product
                     </button>
@@ -3688,13 +3720,6 @@ export default function AdminDashboardPage() {
                   >
                     <Upload className="size-3.5" /> Import
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsAddCustomerOpen(true)}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white hover:bg-black/80 transition-colors shadow-2xs"
-                  >
-                    <Plus className="size-3.5" /> Add customer
-                  </button>
                 </div>
               </div>
 
@@ -3740,21 +3765,34 @@ export default function AdminDashboardPage() {
                             c.location.toLowerCase().includes(customerSearchQuery.toLowerCase())
                         )
                         .map((c) => (
-                          <tr key={c.id} className="hover:bg-black/[0.02] transition-colors">
-                            <td className="border-b border-black/10 px-3 py-3"><input type="checkbox" aria-label={`Select ${c.name}`} /></td>
+                          <tr
+                            key={c.id}
+                            onClick={() => router.push(`/admin/customers/${encodeURIComponent(c.id)}`)}
+                            className="hover:bg-black/[0.03] transition-colors cursor-pointer group"
+                            title="Click to view customer details and order history"
+                          >
+                            <td className="border-b border-black/10 px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                              <input type="checkbox" aria-label={`Select ${c.name}`} />
+                            </td>
                             <td className="border-b border-black/10 px-3 py-3">
-                              <div className="flex items-center gap-2.5">
-                                <div className="size-7 rounded-full bg-black/5 text-black font-semibold flex items-center justify-center text-xs">
+                              <Link
+                                href={`/admin/customers/${encodeURIComponent(c.id)}`}
+                                className="flex items-center gap-2.5 text-left group-hover:opacity-95"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="size-7 rounded-full bg-black/5 text-black font-semibold flex items-center justify-center text-xs group-hover:bg-[#072515] group-hover:text-[#eed08e] transition-colors">
                                   {c.initials}
                                 </div>
                                 <div>
-                                  <p className="font-medium text-black">{c.name}</p>
+                                  <p className="font-medium text-black group-hover:text-[#072515] group-hover:underline transition-colors">
+                                    {c.name}
+                                  </p>
                                   <p className="text-[11px] text-black/50">{c.email}</p>
                                 </div>
-                              </div>
+                              </Link>
                             </td>
                             <td className="border-b border-black/10 px-3 py-3">
-                              <span className="rounded-full bg-emerald-200 px-2 py-0.5 text-[11px] font-medium text-emerald-900">
+                              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 border border-emerald-200">
                                 {c.subscription}
                               </span>
                             </td>
@@ -3842,6 +3880,21 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              {/* Abandoned Checkout Notice */}
+              {inspectOrder.isAbandoned && (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-amber-900">
+                  <div className="size-7 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 shrink-0 font-bold text-xs">
+                    !
+                  </div>
+                  <div className="space-y-0.5 text-xs">
+                    <p className="font-bold">Customer Abandoned Checkout</p>
+                    <p className="text-amber-800 text-[11px] leading-relaxed">
+                      This customer added {inspectOrder.itemsCount} product(s) to their cart and initiated checkout, but left without completing payment. Customer contact details, cart items, and delivery address are captured below.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Visual 5-Stage Tracking Stepper */}
               <div className="p-4 rounded-xl bg-[#FAF8F5] border border-[#c89e43]/30">
                 <div className="flex items-center justify-between mb-3">
@@ -4102,20 +4155,59 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Patron & Destination Info */}
-              <div className="grid grid-cols-2 gap-3 p-3 bg-black/[0.02] rounded-xl border border-black/10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-black/[0.02] rounded-xl border border-black/10">
                 <div>
-                  <span className="text-[10px] text-black/50 block">Customer / Consignee:</span>
-                  <span className="font-semibold text-[#072515]">{inspectOrder.customerName}</span>
+                  <span className="text-[10px] text-black/50 block uppercase tracking-wider font-semibold">Customer / Consignee:</span>
+                  <span className="font-semibold text-sm text-[#072515] block">{inspectOrder.customerName}</span>
                   <span className="block text-[11px] text-black/60">{inspectOrder.customerEmail}</span>
                   <span className="block text-[11px] text-black/60">{inspectOrder.customerPhone}</span>
                 </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-black/50 block">Payment Details:</span>
-                  <span className="font-semibold text-[#072515]">{inspectOrder.paymentMethod}</span>
-                  <span className="block text-[11px] text-emerald-700 font-bold">{inspectOrder.paymentStatus}</span>
-                  <span className="block text-[11px] text-black/50">Channel: {inspectOrder.channel}</span>
+                <div className="sm:text-right">
+                  <span className="text-[10px] text-black/50 block uppercase tracking-wider font-semibold">Payment Details:</span>
+                  <span className="font-semibold text-sm text-[#072515] block">{inspectOrder.paymentMethod}</span>
+                  <span className="inline-block text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 mt-0.5">{inspectOrder.paymentStatus}</span>
+                  <span className="block text-[11px] text-black/50 mt-1">Channel: {inspectOrder.channel}</span>
                 </div>
               </div>
+
+              {/* Shipping & Delivery Address Card */}
+              {inspectOrder.shippingAddress && (
+                <div className="p-3.5 rounded-xl bg-[#FAF8F5] border border-[#c89e43]/30 text-xs">
+                  <div className="flex items-center gap-1.5 mb-1.5 text-[#072515] font-semibold text-[11px] uppercase tracking-wider">
+                    <MapPin className="size-3.5 text-[#c89e43]" />
+                    <span>Shipping & Delivery Address</span>
+                  </div>
+                  {typeof inspectOrder.shippingAddress === "string" ? (
+                    <p className="text-black/80">{inspectOrder.shippingAddress}</p>
+                  ) : (
+                    <div className="space-y-0.5 text-black/75">
+                      {inspectOrder.shippingAddress.name && (
+                        <p className="font-semibold text-[#072515]">{inspectOrder.shippingAddress.name}</p>
+                      )}
+                      {inspectOrder.shippingAddress.street && (
+                        <p>{inspectOrder.shippingAddress.street}</p>
+                      )}
+                      <p>
+                        {[
+                          inspectOrder.shippingAddress.city,
+                          inspectOrder.shippingAddress.state,
+                          inspectOrder.shippingAddress.pincode,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      {inspectOrder.shippingAddress.country && (
+                        <p className="text-black/50">{inspectOrder.shippingAddress.country}</p>
+                      )}
+                      {inspectOrder.shippingAddress.phone && (
+                        <p className="text-[11px] text-black/60 mt-1 font-medium">
+                          Contact: {inspectOrder.shippingAddress.phone}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Modal Bottom Bar */}

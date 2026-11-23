@@ -16,9 +16,11 @@ import {
   CreditCard,
   Banknote,
   RotateCcw,
+  AlertCircle,
 } from "lucide-react";
 import { ProductSKU, formatPrice, createCartItemId } from "@/lib/products";
 import { CartItem } from "@/components/cart/cart-drawer";
+import { useCart } from "@/lib/cart-context";
 
 interface ProductCustomizerModalProps {
   product: ProductSKU | null;
@@ -69,6 +71,25 @@ function CustomizerContent({
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [modalStep, setModalStep] = useState<"customize" | "pay" | "success">("customize");
+
+  const { cartItems, getProductStock, triggerStockWarning } = useCart();
+  const maxStock = typeof product.stock === "number" ? product.stock : (getProductStock ? getProductStock(product.id) : 25);
+  const currentInCart = cartItems
+    .filter((i) => Boolean(product?.id) && (i.id === product?.id || i.skuId === product?.id))
+    .reduce((sum, i) => sum + i.quantity, 0);
+  const remainingStock = Math.max(0, maxStock - currentInCart);
+  const [localStockWarning, setLocalStockWarning] = useState<string | null>(null);
+
+  const handleIncrement = () => {
+    if (quantity + currentInCart >= maxStock) {
+      const msg = `Only ${remainingStock} remaining available in stock for "${product.name}" (${currentInCart} already in your cart).`;
+      setLocalStockWarning(msg);
+      if (triggerStockWarning) triggerStockWarning(msg);
+      setTimeout(() => setLocalStockWarning(null), 4000);
+      return;
+    }
+    setQuantity((q) => q + 1);
+  };
 
   // Express Pay form state
   const [customerInfo, setCustomerInfo] = useState({
@@ -131,6 +152,13 @@ function CustomizerContent({
   };
 
   const handleAddToCart = () => {
+    if (remainingStock <= 0) {
+      const msg = `Cannot add more "${product.name}". All ${maxStock} available units are already in your cart.`;
+      setLocalStockWarning(msg);
+      if (triggerStockWarning) triggerStockWarning(msg);
+      return;
+    }
+
     const item: CartItem = {
       id: createCartItemId(product.id),
       skuId: product.id,
@@ -139,6 +167,7 @@ function CustomizerContent({
       priceDisplay: formatPrice(unitPrice),
       image: selectedImage || product.image,
       quantity,
+      stock: maxStock,
       customizations: getReadableCustomizations(),
     };
 
@@ -152,6 +181,23 @@ function CustomizerContent({
 
   const handleProceedToPay = () => {
     setModalStep("pay");
+    const buyNowItem = {
+      id: createCartItemId(product.id),
+      skuId: product.id,
+      name: product.name,
+      price: unitPrice,
+      priceDisplay: formatPrice(unitPrice),
+      image: selectedImage || product.image,
+      quantity,
+      customizations: getReadableCustomizations(),
+    };
+    try {
+      localStorage.setItem("kurma_buy_now_item", JSON.stringify(buyNowItem));
+    } catch { }
+    onClose();
+    if (typeof window !== "undefined") {
+      window.location.href = `/checkout?productId=${encodeURIComponent(product.id)}&quantity=${quantity}`;
+    }
   };
 
   const handleConfirmPayment = (e: React.FormEvent) => {
@@ -162,10 +208,62 @@ function CustomizerContent({
     }
 
     setIsProcessing(true);
-    setTimeout(() => {
-      const generatedId = `KRM-${Math.floor(100000 + Math.random() * 900000)}`;
-      setOrderId(generatedId);
+    const generatedId = `KURMA-${Math.floor(10000 + Math.random() * 90000)}`;
+    setOrderId(generatedId);
 
+    // Persist custom order to database
+    fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderNumber: generatedId,
+        customerName: customerInfo.name.trim(),
+        customerPhone: customerInfo.phone.trim(),
+        city: customerInfo.city?.trim() || "Mumbai, MH",
+        totalAmount: unitPrice * quantity,
+        paymentMethod: "UPI / Online Payment",
+        paymentStatus: "Paid",
+        fulfillmentStatus: "Processing",
+        channel: "Direct Atelier",
+        carrier: "BlueDart Express",
+        boxTitle: product.name,
+        boxImage: selectedImage || product.image,
+        shippingAddress: {
+          fullName: customerInfo.name.trim(),
+          phone: customerInfo.phone.trim(),
+          street: customerInfo.address.trim(),
+          city: customerInfo.city?.trim() || "",
+          country: "India",
+          fullAddress: `${customerInfo.address.trim()}${customerInfo.city ? `, ${customerInfo.city.trim()}` : ""}`,
+        },
+        personalization: {
+          recipientName: customerInfo.name.trim(),
+          senderName: "Patron",
+          giftNote: "Bespoke custom suite",
+          greetingCard: true,
+        },
+        items: [
+          {
+            productId: product.id,
+            sku: product.id,
+            name: product.name,
+            price: unitPrice,
+            quantity: quantity,
+            image: selectedImage || product.image,
+            customizations: getReadableCustomizations(),
+          },
+        ],
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.order?.orderNumber) {
+          setOrderId(data.order.orderNumber);
+        }
+      })
+      .catch((err) => console.warn("Customizer order save error:", err));
+
+    setTimeout(() => {
       // Also record into cart context
       onAddToCart({
         id: createCartItemId(product.id),
@@ -237,11 +335,10 @@ function CustomizerContent({
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(img)}
-                  className={`relative w-12 h-12 rounded-lg overflow-hidden border-2 shrink-0 transition-all cursor-pointer ${
-                    selectedImage === img
-                      ? "border-[#eed08e] scale-105 shadow-md"
-                      : "border-stone-700/60 opacity-60 hover:opacity-100"
-                  }`}
+                  className={`relative w-12 h-12 rounded-lg overflow-hidden border-2 shrink-0 transition-all cursor-pointer ${selectedImage === img
+                    ? "border-[#eed08e] scale-105 shadow-md"
+                    : "border-stone-700/60 opacity-60 hover:opacity-100"
+                    }`}
                 >
                   <Image
                     src={img}
@@ -359,11 +456,10 @@ function CustomizerContent({
                               onClick={() =>
                                 handleFieldChange(field.id, opt.value)
                               }
-                              className={`text-left p-2.5 rounded-xl border text-xs transition-all flex items-center justify-between cursor-pointer ${
-                                isSelected
-                                  ? "border-[#c0881b] bg-[#fbf6ea] font-semibold text-stone-900 shadow-xs"
-                                  : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
-                              }`}
+                              className={`text-left p-2.5 rounded-xl border text-xs transition-all flex items-center justify-between cursor-pointer ${isSelected
+                                ? "border-[#c0881b] bg-[#fbf6ea] font-semibold text-stone-900 shadow-xs"
+                                : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
+                                }`}
                             >
                               <span>{opt.label}</span>
                               {isSelected && (
@@ -399,22 +495,36 @@ function CustomizerContent({
             {/* Footer Summary & CTAs */}
             <div className="border-t border-stone-200 pt-4 mt-6 space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center border border-stone-200 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="px-3 py-1 text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer text-sm font-bold"
-                  >
-                    -
-                  </button>
-                  <span className="px-3 text-xs font-bold text-stone-800 min-w-8 text-center">
-                    {quantity}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-stone-200 rounded-xl overflow-hidden bg-white shadow-2xs">
+                    <button
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="px-3 py-1 text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer text-sm font-bold"
+                    >
+                      -
+                    </button>
+                    <span className="px-3 text-xs font-bold text-stone-800 min-w-8 text-center">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={handleIncrement}
+                      className="px-3 py-1 text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer text-sm font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span className="text-[11px] text-stone-500 font-medium">
+                    Available:{" "}
+                    <span
+                      className={
+                        remainingStock <= 5
+                          ? "text-amber-700 font-bold"
+                          : "text-stone-700 font-semibold"
+                      }
+                    >
+                      {remainingStock}
+                    </span>
                   </span>
-                  <button
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="px-3 py-1 text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer text-sm font-bold"
-                  >
-                    +
-                  </button>
                 </div>
 
                 <div className="text-right">
@@ -424,6 +534,13 @@ function CustomizerContent({
                   </span>
                 </div>
               </div>
+
+              {localStockWarning && (
+                <div className="flex items-center gap-1.5 p-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-[11px] font-medium">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>{localStockWarning}</span>
+                </div>
+              )}
 
               {/* Dual Action: Instant Pay NOW (Primary) + Add to Cart (Secondary) */}
               <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
@@ -586,11 +703,10 @@ function CustomizerContent({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("upi")}
-                  className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${
-                    paymentMethod === "upi"
-                      ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
-                      : "border-stone-200 bg-white text-stone-600"
-                  }`}
+                  className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${paymentMethod === "upi"
+                    ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
+                    : "border-stone-200 bg-white text-stone-600"
+                    }`}
                 >
                   <QrCode className="w-4 h-4 text-[#c0881b]" />
                   <span>UPI / QR</span>
@@ -598,11 +714,10 @@ function CustomizerContent({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
-                  className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${
-                    paymentMethod === "card"
-                      ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
-                      : "border-stone-200 bg-white text-stone-600"
-                  }`}
+                  className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${paymentMethod === "card"
+                    ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
+                    : "border-stone-200 bg-white text-stone-600"
+                    }`}
                 >
                   <CreditCard className="w-4 h-4 text-[#c0881b]" />
                   <span>Cards</span>
@@ -610,11 +725,10 @@ function CustomizerContent({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("cod")}
-                  className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${
-                    paymentMethod === "cod"
-                      ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
-                      : "border-stone-200 bg-white text-stone-600"
-                  }`}
+                  className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${paymentMethod === "cod"
+                    ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
+                    : "border-stone-200 bg-white text-stone-600"
+                    }`}
                 >
                   <Banknote className="w-4 h-4 text-[#c0881b]" />
                   <span>COD</span>

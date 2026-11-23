@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   BadgePercent,
   Tag,
@@ -30,6 +31,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { AdminDiscount } from "@/app/admin/page";
+import { PRODUCTS } from "@/lib/products";
 
 // ============================================================================
 // CURATED MASTER DISCOUNTS & FESTIVE COUPONS
@@ -201,6 +203,8 @@ export default function AdminDiscountsSection({
   setDiscounts,
   triggerNotification,
 }: AdminDiscountsSectionProps) {
+  const router = useRouter();
+
   // Search & Filtering State
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | "Active" | "Scheduled" | "Expired" | "VIP Tier">("All");
@@ -227,6 +231,7 @@ export default function AdminDiscountsSection({
     minSpend: number;
     expiryDate: string;
     status: "Active" | "Scheduled" | "Expired";
+    productIds: string[];
   }>({
     code: "",
     subtitle: "",
@@ -237,6 +242,7 @@ export default function AdminDiscountsSection({
     minSpend: 2500,
     expiryDate: "Dec 31, 2026",
     status: "Active",
+    productIds: [],
   });
 
   // Hydrate discounts from backend API or localStorage fallback
@@ -266,7 +272,7 @@ export default function AdminDiscountsSection({
         }
         localStorage.setItem("kurma_admin_discounts", JSON.stringify(CURATED_MASTER_DISCOUNTS));
         if (isMounted) setDiscounts(CURATED_MASTER_DISCOUNTS);
-      } catch {}
+      } catch { }
     }
     loadDiscounts();
     return () => {
@@ -281,7 +287,7 @@ export default function AdminDiscountsSection({
       localStorage.setItem("kurma_admin_discounts", JSON.stringify(updated));
       window.dispatchEvent(new Event("storage"));
       window.dispatchEvent(new CustomEvent("kurma_discounts_updated"));
-    } catch {}
+    } catch { }
   };
 
   // 1-Click Copy Code to Clipboard
@@ -299,7 +305,8 @@ export default function AdminDiscountsSection({
   // Toggle Active / Paused Status
   const handleToggleStatus = async (id: string) => {
     const target = discounts.find((d) => d.id === id);
-    const nextStatus = target?.status === "Active" ? "Expired" : "Active";
+    if (!target) return;
+    const nextStatus = target.status === "Active" ? "Expired" : "Active";
     const updated = discounts.map((d) => {
       if (d.id === id) {
         return { ...d, status: nextStatus as any };
@@ -309,16 +316,21 @@ export default function AdminDiscountsSection({
     persistDiscounts(updated);
 
     try {
-      await fetch("/api/admin/discounts", {
+      const res = await fetch("/api/admin/discounts", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: nextStatus }),
+        body: JSON.stringify({ id, title: target.title, status: nextStatus }),
       });
+      const data = await res.json();
+      if (data.success && data.discount) {
+        const synced = updated.map((d) => (d.id === id ? data.discount : d));
+        persistDiscounts(synced);
+      }
     } catch (err) {
       console.warn("Failed to persist discount status to backend", err);
     }
 
-    triggerNotification("Voucher status updated!");
+    triggerNotification(`Voucher "${target.title}" set to ${nextStatus}!`);
   };
 
   // Delete Discount
@@ -328,27 +340,58 @@ export default function AdminDiscountsSection({
       persistDiscounts(updated);
 
       try {
-        await fetch(`/api/admin/discounts?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        const res = await fetch(`/api/admin/discounts?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.success) {
+          triggerNotification(`Voucher "${title}" removed from database.`);
+        }
       } catch (err) {
         console.warn("Failed to delete discount in backend", err);
       }
-
-      triggerNotification(`Voucher "${title}" removed.`);
     }
   };
 
   // Duplicate / Clone Discount
-  const handleDuplicateDiscount = (disc: AdminDiscount) => {
+  const handleDuplicateDiscount = async (disc: AdminDiscount) => {
+    const tempId = `disc-${Date.now()}`;
     const clone: AdminDiscount = {
       ...disc,
-      id: `disc-${Date.now()}`,
+      id: tempId,
       title: `${disc.title}-COPY`,
       subtitle: `${disc.subtitle} (Duplicate)`,
       used: 0,
       status: "Active",
+      productIds: disc.productIds ? [...disc.productIds] : [],
     };
     const updated = [clone, ...discounts];
     persistDiscounts(updated);
+
+    try {
+      const res = await fetch("/api/admin/discounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: clone.title,
+          subtitle: clone.subtitle,
+          status: clone.status,
+          method: clone.method,
+          eligibility: clone.eligibility,
+          type: clone.type,
+          discountValue: clone.discountValue,
+          minSpend: (clone as any).minSpend,
+          expiryDate: (clone as any).expiryDate,
+          productIds: clone.productIds || [],
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.discount) {
+        const synced = updated.map((d) => (d.id === tempId ? data.discount : d));
+        persistDiscounts(synced);
+      }
+    } catch (err) {
+      console.warn("Failed to duplicate discount in backend", err);
+    }
+
     triggerNotification(`Duplicated coupon "${disc.title}" as "${clone.title}".`);
   };
 
@@ -365,6 +408,7 @@ export default function AdminDiscountsSection({
       minSpend: (disc as any).minSpend || 2500,
       expiryDate: (disc as any).expiryDate || "Dec 31, 2026",
       status: disc.status,
+      productIds: disc.productIds || [],
     });
     setIsModalOpen(true);
   };
@@ -382,6 +426,7 @@ export default function AdminDiscountsSection({
       minSpend: 2500,
       expiryDate: "Dec 31, 2026",
       status: "Active",
+      productIds: [],
     });
     setIsModalOpen(true);
   };
@@ -422,6 +467,7 @@ export default function AdminDiscountsSection({
             status: formData.status,
             minSpend: formData.minSpend,
             expiryDate: formData.expiryDate,
+            productIds: formData.productIds,
           };
         }
         return d;
@@ -429,14 +475,30 @@ export default function AdminDiscountsSection({
       persistDiscounts(updated);
 
       try {
-        await fetch("/api/admin/discounts", {
+        const res = await fetch("/api/admin/discounts", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: editingDiscountId,
+            title: cleanCode,
+            subtitle: formData.subtitle || `${formData.discountValue} concession on sacred gifting`,
+            type: formData.type,
+            discountValue: formData.discountValue,
+            method: formData.method,
+            eligibility: formData.eligibility,
             status: formData.status,
+            minSpend: formData.minSpend,
+            expiryDate: formData.expiryDate,
+            productIds: formData.productIds,
           }),
         });
+        const resData = await res.json();
+        if (resData.success && resData.discount) {
+          const synced = updated.map((d) =>
+            d.id === editingDiscountId ? resData.discount : d
+          );
+          persistDiscounts(synced);
+        }
       } catch (err) {
         console.warn("Failed to update discount on server", err);
       }
@@ -444,8 +506,9 @@ export default function AdminDiscountsSection({
       triggerNotification(`Updated voucher "${cleanCode}"!`);
     } else {
       // Create new
+      const tempId = `disc-${Date.now()}`;
       const newDisc: AdminDiscount = {
-        id: `disc-${Date.now()}`,
+        id: tempId,
         title: cleanCode,
         subtitle: formData.subtitle || `${formData.discountValue} concession on sacred gifting ensembles`,
         status: formData.status,
@@ -456,6 +519,7 @@ export default function AdminDiscountsSection({
         discountValue: formData.discountValue,
         minSpend: formData.minSpend,
         expiryDate: formData.expiryDate,
+        productIds: formData.productIds,
       };
       const updated = [newDisc, ...discounts];
       persistDiscounts(updated);
@@ -465,21 +529,23 @@ export default function AdminDiscountsSection({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            id: tempId,
             title: cleanCode,
             subtitle: formData.subtitle || `${formData.discountValue} concession on sacred gifting ensembles`,
+            status: formData.status,
             method: formData.method,
             eligibility: formData.eligibility,
             type: formData.type,
             discountValue: formData.discountValue,
             minSpend: formData.minSpend,
             expiryDate: formData.expiryDate,
+            productIds: formData.productIds,
           }),
         });
         const resData = await res.json();
         if (resData.success && resData.discount) {
-          // Sync with server assigned id if needed
           const serverUpdated = updated.map((d) =>
-            d.id === newDisc.id ? { ...d, id: resData.discount.id } : d
+            d.id === tempId ? resData.discount : d
           );
           persistDiscounts(serverUpdated);
         }
@@ -503,8 +569,7 @@ export default function AdminDiscountsSection({
       lines.push("Code,Discount Value,Type,Method,Eligibility,Status,Redemptions,Min Spend (INR),Expiry Date,Description");
       discounts.forEach((d) => {
         lines.push(
-          `"${d.title}","${d.discountValue}","${d.type}","${d.method}","${d.eligibility}","${d.status}",${d.used},${
-            (d as any).minSpend || 0
+          `"${d.title}","${d.discountValue}","${d.type}","${d.method}","${d.eligibility}","${d.status}",${d.used},${(d as any).minSpend || 0
           },"${(d as any).expiryDate || "Ongoing"}","${d.subtitle}"`
         );
       });
@@ -524,9 +589,25 @@ export default function AdminDiscountsSection({
   };
 
   // Load All Curated Coupons Preset
-  const handleLoadCuratedMasterCoupons = () => {
+  const handleLoadCuratedMasterCoupons = async () => {
     persistDiscounts(CURATED_MASTER_DISCOUNTS);
-    triggerNotification("Loaded 11 curated festive coupons into Kurma Sanctuary!");
+    try {
+      const res = await fetch("/api/admin/discounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "restore",
+          discounts: CURATED_MASTER_DISCOUNTS,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.discounts)) {
+        persistDiscounts(data.discounts);
+      }
+    } catch (err) {
+      console.warn("Failed to sync restored presets to database", err);
+    }
+    triggerNotification("Loaded curated festive coupons and saved to database!");
   };
 
   // Filtered List
@@ -594,8 +675,8 @@ export default function AdminDiscountsSection({
 
           <button
             type="button"
-            onClick={handleOpenCreate}
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white transition hover:bg-black/80 shadow-2xs"
+            onClick={() => router.push("/admin/discounts/new")}
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-black px-3 text-xs font-medium text-white transition hover:bg-black/80 shadow-2xs cursor-pointer"
           >
             <Plus className="size-3.5" />
             Create discount
@@ -667,11 +748,10 @@ export default function AdminDiscountsSection({
                   key={tab}
                   type="button"
                   onClick={() => setStatusFilter(tab)}
-                  className={`px-2.5 py-1 rounded-md text-xs transition cursor-pointer ${
-                    statusFilter === tab
-                      ? "bg-black/[0.08] text-black font-semibold"
-                      : "text-black/60 hover:text-black hover:bg-black/[0.03]"
-                  }`}
+                  className={`px-2.5 py-1 rounded-md text-xs transition cursor-pointer ${statusFilter === tab
+                    ? "bg-black/[0.08] text-black font-semibold"
+                    : "text-black/60 hover:text-black hover:bg-black/[0.03]"
+                    }`}
                 >
                   <span>{tab}</span>
                   <span className="ml-1.5 text-[11px] text-black/45 font-medium">{count}</span>
@@ -817,6 +897,24 @@ export default function AdminDiscountsSection({
                           <Tag className="size-3.5 text-black/50" />
                           {disc.type}
                         </span>
+                        {disc.productIds && disc.productIds.length > 0 && (
+                          <span
+                            className="block text-[10px] text-emerald-800 font-medium mt-0.5 truncate max-w-[170px]"
+                            title={disc.productIds
+                              .map(
+                                (id) =>
+                                  PRODUCTS.find((p) => p.id.toLowerCase() === id.toLowerCase())?.name || id
+                              )
+                              .join(", ")}
+                          >
+                            🎯{" "}
+                            {disc.productIds.length === 1
+                              ? PRODUCTS.find(
+                                (p) => p.id.toLowerCase() === disc.productIds![0].toLowerCase()
+                              )?.name || disc.productIds[0]
+                              : `${disc.productIds.length} specific products`}
+                          </span>
+                        )}
                       </td>
 
                       <td className="border-b border-black/10 px-3 py-3 text-black/65 text-[11px]">
@@ -879,13 +977,12 @@ export default function AdminDiscountsSection({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span
-                      className={`text-[11px] font-medium px-2 py-0.5 ${
-                        disc.status === "Active"
-                          ? "rounded-full bg-emerald-200 text-emerald-900"
-                          : disc.status === "Scheduled"
+                      className={`text-[11px] font-medium px-2 py-0.5 ${disc.status === "Active"
+                        ? "rounded-full bg-emerald-200 text-emerald-900"
+                        : disc.status === "Scheduled"
                           ? "rounded-md bg-amber-200 text-amber-900"
                           : "rounded-md bg-black/10 text-black"
-                      }`}
+                        }`}
                     >
                       {disc.status}
                     </span>
@@ -904,6 +1001,16 @@ export default function AdminDiscountsSection({
                   </div>
 
                   <p className="mt-2 text-xs text-black/70 line-clamp-2">{disc.subtitle}</p>
+                  {disc.productIds && disc.productIds.length > 0 && (
+                    <span className="inline-block mt-1.5 text-[10px] text-emerald-800 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 truncate max-w-full">
+                      🎯{" "}
+                      {disc.productIds.length === 1
+                        ? PRODUCTS.find(
+                          (p) => p.id.toLowerCase() === disc.productIds![0].toLowerCase()
+                        )?.name || disc.productIds[0]
+                        : `${disc.productIds.length} eligible products`}
+                    </span>
+                  )}
                 </div>
 
                 <div className="pt-2 border-t border-black/10 flex items-center justify-between text-xs text-black/60">
@@ -1003,6 +1110,64 @@ export default function AdminDiscountsSection({
                   />
                 </div>
               </div>
+
+              {formData.type === "Amount off products" && (
+                <div className="p-3 bg-stone-50 rounded-xl border border-black/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="font-semibold text-black text-[11px]">
+                      Eligible Products ({formData.productIds.length} selected)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (formData.productIds.length === PRODUCTS.length) {
+                          setFormData({ ...formData, productIds: [] });
+                        } else {
+                          setFormData({ ...formData, productIds: PRODUCTS.map((p) => p.id) });
+                        }
+                      }}
+                      className="text-[11px] font-medium text-emerald-800 hover:underline cursor-pointer"
+                    >
+                      {formData.productIds.length === PRODUCTS.length ? "Deselect all" : "Select all"}
+                    </button>
+                  </div>
+                  <div className="max-h-36 overflow-y-auto space-y-1 pr-1 text-xs">
+                    {PRODUCTS.map((prod) => {
+                      const isSelected = formData.productIds.includes(prod.id);
+                      return (
+                        <label
+                          key={prod.id}
+                          className={`flex items-center gap-2 p-1.5 rounded-lg border cursor-pointer transition ${isSelected
+                            ? "bg-white border-black/25 text-black font-medium shadow-2xs"
+                            : "bg-white/60 border-black/5 text-black/70 hover:bg-white"
+                            }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              const next = isSelected
+                                ? formData.productIds.filter((id) => id !== prod.id)
+                                : [...formData.productIds, prod.id];
+                              setFormData({ ...formData, productIds: next });
+                            }}
+                            className="accent-black rounded"
+                          />
+                          <span className="flex-1 truncate">{prod.name}</span>
+                          <span className="text-[11px] text-black/50 shrink-0">
+                            ₹{prod.price.toLocaleString("en-IN")}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {formData.productIds.length === 0 && (
+                    <p className="text-[10px] text-amber-700">
+                      * If no product is checked, discount will apply across all products in cart.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="block font-medium text-black mb-1">Description</label>

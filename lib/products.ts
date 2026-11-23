@@ -16,6 +16,7 @@ export interface ProductSKU {
   category: "Gift Boxes" | "Fragrances" | "Sacred Accessories";
   price: number;
   originalPrice?: number;
+  stock?: number;
   image: string;
   gallery?: string[];
   badge?: string;

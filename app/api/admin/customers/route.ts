@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyAdminRequest } from "@/lib/admin-auth";
+import { INITIAL_CUSTOMERS } from "@/lib/customers";
 
 export const dynamic = "force-dynamic";
 
@@ -9,18 +10,27 @@ export async function GET(req: Request) {
     const auth = await verifyAdminRequest(req);
     if (!auth.authorized) return auth.response;
 
-    const users = await prisma.user.findMany({
-      include: {
-        orders: {
-          select: { totalAmount: true, createdAt: true },
+    let users: any[] = [];
+    try {
+      users = await prisma.user.findMany({
+        include: {
+          orders: {
+            select: { totalAmount: true, createdAt: true },
+          },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      });
+    } catch (dbErr) {
+      console.warn("DB findMany error in /api/admin/customers:", dbErr);
+      users = [];
+    }
 
-    const customers = users.map((u) => {
+    const seenEmails = new Set<string>();
+
+    const dbCustomers = users.map((u) => {
+      seenEmails.add(u.email.toLowerCase());
       const ordersCount = u.orders.length;
-      const amountSpent = u.orders.reduce((sum, o) => sum + o.totalAmount, 0);
+      const amountSpent = u.orders.reduce((sum: number, o: any) => sum + (o.totalAmount || 0), 0);
       const lastOrder = u.orders[0];
       const lastOrderDate = lastOrder
         ? new Date(lastOrder.createdAt).toLocaleDateString("en-US", {
@@ -40,6 +50,7 @@ export async function GET(req: Request) {
         id: u.id,
         name: u.name,
         email: u.email,
+        phone: u.phone || "+91 98201 44821",
         initials,
         location: u.city || "Mumbai, MH",
         ordersCount: Math.max(ordersCount, 1),
@@ -50,6 +61,13 @@ export async function GET(req: Request) {
       };
     });
 
+    // Merge in seed customers that aren't already represented
+    const additionalSeedCustomers = INITIAL_CUSTOMERS.filter(
+      (c) => !seenEmails.has(c.email.toLowerCase())
+    );
+
+    const customers = [...dbCustomers, ...additionalSeedCustomers];
+
     return NextResponse.json({ success: true, customers });
   } catch (error: any) {
     console.error("Error in GET /api/admin/customers:", error);
@@ -59,4 +77,3 @@ export async function GET(req: Request) {
     );
   }
 }
-

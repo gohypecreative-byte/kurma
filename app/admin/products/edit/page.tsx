@@ -456,8 +456,8 @@ function ProductEditorInner() {
     <div className="min-h-screen bg-[#F6F5F1] text-stone-900 font-sans selection:bg-[#eed08e] selection:text-[#072515] pb-24">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-semibold shadow-2xl border border-[#eed08e]/30 animate-in fade-in slide-in-from-top-3">
-          <CheckCircle2 className="size-4 text-[#eed08e]" />
+        <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[#28513B] text-white text-xs font-semibold shadow-2xl border border-white/20 animate-in fade-in slide-in-from-top-3">
+          <CheckCircle2 className="size-4 text-white" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -514,9 +514,9 @@ function ProductEditorInner() {
               type="button"
               onClick={() => handleSaveProduct()}
               disabled={isSaving}
-              className="px-4 py-1.5 rounded-lg bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-sm flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-lg bg-[#28513B] text-white text-xs font-semibold hover:bg-[#28513B]/90 transition shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              <Save className="size-3.5" />
+              <Save className="size-3.5 text-white" />
               <span>{isSaving ? "Saving Creation..." : "Save Product Changes"}</span>
             </button>
           </div>
@@ -653,8 +653,8 @@ function ProductEditorInner() {
                     onClick={() => fileInputRef.current?.click()}
                     className="border-2 border-dashed border-black/20 hover:border-[#072515] bg-[#FAF8F5]/60 hover:bg-[#FAF8F5] p-6 rounded-2xl text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group"
                   >
-                    <div className="size-11 rounded-xl bg-[#072515]/5 group-hover:bg-[#072515] text-[#072515] group-hover:text-[#eed08e] flex items-center justify-center transition">
-                      <Upload className="size-5" />
+                    <div className="size-11 rounded-xl bg-[#28513B] text-white flex items-center justify-center transition shadow-2xs">
+                      <Upload className="size-5 text-white" />
                     </div>
                     <div>
                       <p className="text-xs font-bold text-black/85">
@@ -664,7 +664,7 @@ function ProductEditorInner() {
                         or drag and drop your photo directly from computer
                       </p>
                     </div>
-                    <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-semibold bg-white border border-black/10 text-[#072515] shadow-2xs">
+                    <span className="inline-flex px-2.5 py-1 rounded-md text-[10px] font-semibold bg-[#28513B] text-white border border-[#28513B] shadow-2xs">
                       Browse Files
                     </span>
                   </div>
@@ -981,9 +981,9 @@ function ProductEditorInner() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="w-full py-3 rounded-xl bg-[#072515] text-[#eed08e] text-xs font-semibold hover:bg-[#072515]/90 transition shadow-sm flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-[#28513B] text-white text-xs font-semibold hover:bg-[#28513B]/90 transition shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <Save className="size-4" />
+                <Save className="size-4 text-white" />
                 <span>{isSaving ? "Saving..." : "Save Product Changes"}</span>
               </button>
 

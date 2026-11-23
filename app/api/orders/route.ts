@@ -198,35 +198,76 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const {
+      orderNumber: requestedOrderNumber,
+      customerName,
       guestName,
+      customerEmail,
       guestEmail,
+      customerPhone,
       guestPhone,
+      city,
+      boxTitle,
+      boxImage,
       items,
       totalAmount,
+      paymentMethod,
+      paymentStatus,
+      fulfillmentStatus,
+      channel,
+      carrier,
+      trackingNumber,
+      estimatedDate,
       shippingAddress,
+      personalization,
       notes,
     } = body;
 
+    const name = customerName || guestName || shippingAddress?.name || "Valued Patron";
+    const email = (customerEmail || guestEmail || "")?.trim().toLowerCase();
+    const phone = customerPhone || guestPhone || shippingAddress?.phone || "";
+    const resolvedCity =
+      city ||
+      (shippingAddress?.city
+        ? `${shippingAddress.city}, ${shippingAddress.state || "IN"}`
+        : "Mumbai, MH");
+
     const randomSuffix = Math.floor(10000 + Math.random() * 90000);
-    const generatedOrderNumber = `KURMA-${randomSuffix}`;
+    const finalOrderNumber = requestedOrderNumber || `KURMA-${randomSuffix}`;
+    const awb = trackingNumber || `BD-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    const now = new Date();
+    const dateFormatted = `${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getFullYear()}`;
 
     const order = await prisma.order.create({
       data: {
-        orderNumber: generatedOrderNumber,
-        customerName: guestName || null,
-        customerEmail: guestEmail?.trim().toLowerCase() || null,
-        customerPhone: guestPhone || null,
+        orderNumber: finalOrderNumber,
+        customerName: name,
+        customerEmail: email || null,
+        customerPhone: phone || null,
+        city: resolvedCity,
+        dateFormatted,
+        boxTitle:
+          boxTitle ||
+          (items?.[0]?.name ? `${items[0].name} Suite` : "Kurma Atelier Sacred Hamper"),
+        boxImage: boxImage || items?.[0]?.image || "/images/product/marble-box-clean.png",
         totalAmount: Number(totalAmount) || 0,
+        paymentMethod: paymentMethod || "Online Payment",
+        paymentStatus: paymentStatus || "Paid",
+        fulfillmentStatus: fulfillmentStatus || "Processing",
+        channel: channel || "Kurma Sanctuary",
         status: "CONFIRMED",
-        carrier: "BlueDart Express",
-        trackingNumber: `BD-${Math.floor(10000000 + Math.random() * 90000000)}`,
-        estimatedDate: "Within 3-5 business days",
+        carrier: carrier || "BlueDart Express",
+        trackingNumber: awb,
+        estimatedDate: estimatedDate || "Within 3-5 business days",
         shippingAddress: shippingAddress || null,
-        notes: notes || null,
+        personalization: personalization || null,
+        notes: notes || "Order placed via website storefront.",
+        isDraft: false,
+        isAbandoned: false,
         items: {
           create: (items || []).map((item: any) => ({
-            productId: item.productId || item.sku || item.id || "kurma-bespoke",
-            name: item.name || "Kurma Item",
+            productId: item.productId || item.sku || item.id || "kurma-product",
+            sku: item.sku || item.productId || item.id || "kurma-sku",
+            name: item.name || "Kurma Luxury Incense",
             price: Number(item.price) || 0,
             quantity: Number(item.quantity) || 1,
             image: item.image || null,
@@ -236,6 +277,55 @@ export async function POST(req: Request) {
       },
       include: { items: true },
     });
+
+    // If this order completed a previously abandoned checkout session, remove the abandoned record
+    const abandonedCheckoutId = body.abandonedCheckoutId;
+    if (abandonedCheckoutId) {
+      try {
+        await prisma.order.deleteMany({
+          where: {
+            id: abandonedCheckoutId,
+            isAbandoned: true,
+          },
+        });
+      } catch (delErr) {
+        console.warn("Could not delete abandoned checkout record:", delErr);
+      }
+    } else if (email || phone) {
+      try {
+        await prisma.order.deleteMany({
+          where: {
+            isAbandoned: true,
+            OR: [
+              ...(email ? [{ customerEmail: email }] : []),
+              ...(phone ? [{ customerPhone: phone }] : []),
+            ],
+          },
+        });
+      } catch (delErr) {
+        console.warn("Could not clean up abandoned checkouts for user:", delErr);
+      }
+    }
+
+    // If coupon was applied, increment its usage counter in database
+    const couponToIncrement = body.couponCode || body.discountCode;
+    if (couponToIncrement && typeof couponToIncrement === "string") {
+      try {
+        await prisma.discount.updateMany({
+          where: {
+            title: {
+              equals: couponToIncrement.trim().toUpperCase(),
+              mode: "insensitive",
+            },
+          },
+          data: {
+            used: { increment: 1 },
+          },
+        });
+      } catch (discErr) {
+        console.warn("Could not increment discount usage count:", discErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

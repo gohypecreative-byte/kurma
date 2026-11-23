@@ -46,6 +46,7 @@ import {
   Copy,
   Bookmark,
   ChevronDown,
+  AlertCircle,
 } from "lucide-react";
 
 // Sacred Element Fragrances that make up the Suite
@@ -148,7 +149,15 @@ export default function ProductDetailPage() {
   const rawId = params?.id as string;
   const productId = rawId || "5-elements-suite";
 
-  const { cartCount, setIsCartOpen, addToCart } = useCart();
+  const {
+    cartCount,
+    setIsCartOpen,
+    addToCart,
+    cartItems,
+    getProductStock,
+    triggerStockWarning,
+  } = useCart();
+  const [localStockWarning, setLocalStockWarning] = useState<string | null>(null);
 
   const { getProduct } = useProducts();
 
@@ -451,8 +460,60 @@ export default function ProductDetailPage() {
     return readable;
   };
 
+  const productStock = useMemo(() => {
+    if (typeof product?.stock === "number") return product.stock;
+    return getProductStock ? getProductStock(product?.id) : 25;
+  }, [product, getProductStock]);
+
+  const inCartQty = useMemo(() => {
+    if (!product?.id || !cartItems) return 0;
+    return cartItems
+      .filter((i) => i.id === product.id || i.skuId === product.id)
+      .reduce((sum, i) => sum + i.quantity, 0);
+  }, [cartItems, product?.id]);
+
+  const remainingAvailableStock = Math.max(0, productStock - inCartQty);
+
+  const handleIncrementQuantity = () => {
+    if (quantity + inCartQty >= productStock) {
+      const msg = `Only ${remainingAvailableStock} available in stock for "${product.name}" (${inCartQty} already in your cart).`;
+      setLocalStockWarning(msg);
+      if (triggerStockWarning) triggerStockWarning(msg);
+      setTimeout(() => setLocalStockWarning(null), 4000);
+      return;
+    }
+    setQuantity((q) => q + 1);
+  };
+
   const handleAddToCart = () => {
-    addToCart({
+    if (remainingAvailableStock <= 0) {
+      const msg = `Cannot add more "${product.name}". Only ${productStock} items available in stock and all ${productStock} are already in your cart.`;
+      setLocalStockWarning(msg);
+      if (triggerStockWarning) triggerStockWarning(msg);
+      setIsCartOpen(true);
+      return;
+    }
+
+    const success = addToCart({
+      id: createCartItemId(product.id),
+      skuId: product.id,
+      name: product.name,
+      price: unitPrice,
+      priceDisplay: formatPrice(unitPrice),
+      image: selectedImage || product.image,
+      quantity,
+      stock: productStock,
+      customizations: getReadableCustomizations(),
+    });
+
+    if (success) {
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1400);
+    }
+  };
+
+  const handleBuyNow = () => {
+    const buyNowItem = {
       id: createCartItemId(product.id),
       skuId: product.id,
       name: product.name,
@@ -461,10 +522,11 @@ export default function ProductDetailPage() {
       image: selectedImage || product.image,
       quantity,
       customizations: getReadableCustomizations(),
-    });
-
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1400);
+    };
+    try {
+      localStorage.setItem("kurma_buy_now_item", JSON.stringify(buyNowItem));
+    } catch {}
+    router.push(`/checkout?productId=${encodeURIComponent(product.id)}&quantity=${quantity}`);
   };
 
   const handlePlaceOrder = (e: React.FormEvent) => {
@@ -933,30 +995,44 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Quantity Stepper matching reference layout */}
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-xs font-bold text-stone-900 font-sans">Quantity :</span>
-                <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden bg-stone-50 shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-8 h-8 flex items-center justify-center text-stone-600 hover:bg-stone-200 transition-colors cursor-pointer text-sm font-bold"
-                    title="Decrease quantity"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="w-10 text-center text-xs font-bold text-stone-900 font-mono">
-                    {quantity}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="w-8 h-8 flex items-center justify-center text-stone-600 hover:bg-stone-200 transition-colors cursor-pointer text-sm font-bold"
-                    title="Increase quantity"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
+              {/* Quantity Stepper matching reference layout with stock validation */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-900 font-sans">Quantity :</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] text-stone-500 font-medium">
+                      Available: <span className={remainingAvailableStock <= 5 ? "text-amber-700 font-bold" : "text-stone-700 font-semibold"}>{remainingAvailableStock}</span>
+                    </span>
+                    <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden bg-stone-50 shadow-2xs">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="w-8 h-8 flex items-center justify-center text-stone-600 hover:bg-stone-200 transition-colors cursor-pointer text-sm font-bold"
+                        title="Decrease quantity"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="w-10 text-center text-xs font-bold text-stone-900 font-mono">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleIncrementQuantity}
+                        className="w-8 h-8 flex items-center justify-center text-stone-600 hover:bg-stone-200 transition-colors cursor-pointer text-sm font-bold"
+                        title="Increase quantity"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
+
+                {localStockWarning && (
+                  <div className="flex items-center gap-1.5 p-2 bg-amber-50/90 border border-amber-200 rounded-lg text-amber-900 text-[11px] font-medium animate-in fade-in">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>{localStockWarning}</span>
+                  </div>
+                )}
               </div>
 
               {/* Delivery Estimate matching reference */}
@@ -1029,15 +1105,7 @@ export default function ProductDetailPage() {
                     )}
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowCheckout(!showCheckout);
-                        if (!showCheckout) {
-                          setTimeout(() => {
-                            const el = document.getElementById("express-checkout-form");
-                            if (el) el.scrollIntoView({ behavior: "smooth" });
-                          }, 100);
-                        }
-                      }}
+                      onClick={handleBuyNow}
                       className="w-full py-3 sm:py-3.5 px-2 sm:px-4 rounded-xl bg-[#c0881b] hover:bg-[#a97514] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer active:scale-98"
                     >
                       <span className="truncate">Buy Now</span>
@@ -1049,177 +1117,6 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Inline Express Checkout Form (toggled on Buy Now) */}
-              {showCheckout && (
-                <form
-                  id="express-checkout-form"
-                  onSubmit={handlePlaceOrder}
-                  className="bg-white border border-[#eed08e]/70 rounded-2xl p-4 sm:p-5 space-y-4 animate-in fade-in duration-200 mt-2 shadow-md"
-                >
-                  <div className="flex items-center justify-between border-b border-stone-200 pb-2">
-                    <h4 className="font-serif text-sm font-bold text-stone-900">
-                      Express Delivery Destination
-                    </h4>
-                    <span className="text-[10px] text-stone-500 font-cinzel uppercase">
-                      256-Bit SSL Secured
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 mb-0.5">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={customer.name}
-                        onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                        placeholder="Radhika Sharma"
-                        className="w-full text-xs px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-hidden focus:border-[#c0881b]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 mb-0.5">
-                        Phone (WhatsApp) *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={customer.phone}
-                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
-                        className="w-full text-xs px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-hidden focus:border-[#c0881b]"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-stone-700 mb-0.5">
-                      Delivery Address *
-                    </label>
-                    <textarea
-                      rows={2}
-                      required
-                      value={customer.address}
-                      onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
-                      placeholder="Flat 402, Street, Landmark"
-                      className="w-full text-xs px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-hidden focus:border-[#c0881b]"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 mb-0.5">
-                        City *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={customer.city}
-                        onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                        placeholder="Bengaluru"
-                        className="w-full text-xs px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-hidden focus:border-[#c0881b]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-semibold text-stone-700 mb-0.5">
-                        Pincode *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        maxLength={6}
-                        value={customer.pincode}
-                        onChange={(e) => setCustomer({ ...customer, pincode: e.target.value })}
-                        placeholder="560001"
-                        className="w-full text-xs px-3 py-2 bg-stone-50 border border-stone-300 rounded-lg focus:outline-hidden focus:border-[#c0881b]"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Payment Mode Selection */}
-                  <div className="space-y-1.5 pt-1">
-                    <label className="block text-[11px] font-semibold text-stone-700">
-                      Payment Mode
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("upi")}
-                        className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${
-                          paymentMethod === "upi"
-                            ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
-                            : "border-stone-200 bg-white text-stone-600"
-                        }`}
-                      >
-                        <QrCode className="w-3.5 h-3.5 text-[#c0881b]" />
-                        <span>UPI / QR</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("card")}
-                        className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${
-                          paymentMethod === "card"
-                            ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
-                            : "border-stone-200 bg-white text-stone-600"
-                        }`}
-                      >
-                        <CreditCard className="w-3.5 h-3.5 text-[#c0881b]" />
-                        <span>Card</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("cod")}
-                        className={`p-2 rounded-lg border text-center text-xs flex flex-col items-center gap-1 cursor-pointer transition-all ${
-                          paymentMethod === "cod"
-                            ? "border-[#c0881b] bg-[#fbf6ea] font-bold text-stone-900"
-                            : "border-stone-200 bg-white text-stone-600"
-                        }`}
-                      >
-                        <Banknote className="w-3.5 h-3.5 text-[#c0881b]" />
-                        <span>COD</span>
-                      </button>
-                    </div>
-
-                    {paymentMethod === "upi" && (
-                      <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-200 flex items-center justify-between text-xs mt-2">
-                        <span className="font-mono text-[11px] text-stone-800 font-bold">{upiId}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(upiId);
-                            setCopiedUpi(true);
-                            setTimeout(() => setCopiedUpi(false), 2000);
-                          }}
-                          className="px-2 py-0.5 text-[10px] bg-stone-900 text-white rounded cursor-pointer"
-                        >
-                          {copiedUpi ? "Copied!" : "Copy VPA"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="w-full py-3 px-4 rounded-xl bg-[#c0881b] hover:bg-[#a97514] text-white font-cinzel font-semibold text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <RotateCcw className="w-4 h-4 animate-spin" />
-                        <span>Confirming Sacred Order...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-3.5 h-3.5" />
-                        <span>Pay {formatPrice(totalPrice)} &amp; Complete Order</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
 
               {/* Accordions matching reference layout */}
               <div className="border-t border-stone-200/90 pt-3 space-y-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,10 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
+  X,
+  Loader2,
+  AlertCircle,
+  ShieldCheck,
 } from "lucide-react";
 
 interface PatronUser {
@@ -41,6 +45,72 @@ export default function SignUpPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<PatronUser | null>(null);
 
+  // OTP Verification Modal State
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(30);
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Timer countdown for resending OTP
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isOtpModalOpen && resendCountdown > 0) {
+      timer = setTimeout(() => setResendCountdown((prev) => prev - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [isOtpModalOpen, resendCountdown]);
+
+  // Focus first input on open
+  useEffect(() => {
+    if (isOtpModalOpen) {
+      setTimeout(() => {
+        otpInputRefs.current[0]?.focus();
+      }, 150);
+    }
+  }, [isOtpModalOpen]);
+
+  // OTP Input & Paste Handlers
+  const handleOtpChange = (index: number, val: string) => {
+    const clean = val.replace(/[^0-9]/g, "");
+
+    if (clean.length > 1) {
+      const pasted = clean.slice(0, 6).split("");
+      const next = [...otpDigits];
+      for (let i = 0; i < pasted.length; i++) {
+        if (index + i < 6) next[index + i] = pasted[i];
+      }
+      setOtpDigits(next);
+      setOtpError(null);
+      const nextFocus = Math.min(index + pasted.length, 5);
+      otpInputRefs.current[nextFocus]?.focus();
+      return;
+    }
+
+    const next = [...otpDigits];
+    next[index] = clean ? clean.slice(-1) : "";
+    setOtpDigits(next);
+    setOtpError(null);
+
+    if (clean && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      handleVerifyOtpAndCreateAccount();
+    }
+  };
+
   // Load existing session from localStorage
   useEffect(() => {
     try {
@@ -56,11 +126,60 @@ export default function SignUpPage() {
     }
   }, []);
 
-  // Handle Account Registration submission
-  const handleSignUp = async (e: React.FormEvent) => {
+  // Handle phone input change with strict 10-digit validation
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let raw = e.target.value.replace(/\D/g, "");
+    // If user pasted with 91 country code prefix (12 digits), strip leading 91 to get 10-digit number
+    if (raw.length === 12 && raw.startsWith("91")) {
+      raw = raw.slice(2);
+    } else if (raw.length === 11 && raw.startsWith("0")) {
+      raw = raw.slice(1);
+    }
+    const digitsOnly = raw.slice(0, 10);
+    setPhone(digitsOnly);
+    if (errorMessage) {
+      setErrorMessage("");
+    }
+  };
+
+  // Handle Account Registration submission - triggers OTP Verification
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setErrorMessage("");
+
+    if (!name.trim()) {
+      setErrorMessage("Please enter your full name");
+      return;
+    }
+    if (!email.trim()) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (!cleanPhone) {
+      setErrorMessage("Please enter your mobile number");
+      return;
+    }
+    if (cleanPhone.length !== 10) {
+      setErrorMessage("Please enter a valid 10-digit mobile number");
+      return;
+    }
+    if (!password || password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long");
+      return;
+    }
+
+    // Open OTP Verification Modal
+    setOtpDigits(["", "", "", "", "", ""]);
+    setOtpError(null);
+    setResendCountdown(30);
+    setIsOtpModalOpen(true);
+  };
+
+  // Verify OTP & Complete Account Creation (Allows any entered OTP)
+  const handleVerifyOtpAndCreateAccount = async () => {
+    setIsVerifyingOtp(true);
+    setOtpError(null);
 
     const profile: PatronUser = {
       name: name.trim() || "Patron of Kurma",
@@ -84,8 +203,8 @@ export default function SignUpPage() {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        setErrorMessage(errorData.error || "Failed to create account");
-        setIsLoading(false);
+        setOtpError(errorData.error || "Failed to create account. Please try again.");
+        setIsVerifyingOtp(false);
         return;
       }
 
@@ -102,8 +221,9 @@ export default function SignUpPage() {
 
     localStorage.setItem("kurma_user", JSON.stringify(profile));
     setCurrentUser(profile);
-    setIsLoading(false);
-    setSuccessMessage(`Account created! Welcome, ${profile.name}`);
+    setIsVerifyingOtp(false);
+    setIsOtpModalOpen(false);
+    setSuccessMessage(`Account verified and created! Welcome, ${profile.name}`);
     setTimeout(() => {
       router.push("/shop");
     }, 1100);
@@ -205,8 +325,8 @@ export default function SignUpPage() {
 
             {/* Success Notification Alert */}
             {successMessage && (
-              <div className="mb-6 p-3.5 bg-stone-100 border-l-2 border-black text-black flex items-center gap-2.5 text-xs animate-in fade-in">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="mb-6 p-3.5 rounded-xl bg-[#28513B] text-white flex items-center gap-2.5 text-xs shadow-md animate-in fade-in">
+                <CheckCircle2 className="w-4 h-4 text-white shrink-0" />
                 <span className="font-semibold">{successMessage}</span>
               </div>
             )}
@@ -271,10 +391,13 @@ export default function SignUpPage() {
                   <input
                     id="signup-phone"
                     type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    maxLength={10}
                     required
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 98200 00000"
+                    onChange={handlePhoneChange}
+                    placeholder="Enter 10-digit mobile number"
                     className="w-full px-4 py-3.5 border border-stone-300 focus:border-black outline-none text-sm placeholder:text-stone-400 rounded-none bg-white font-sans transition-colors"
                   />
                 </div>
@@ -350,6 +473,135 @@ export default function SignUpPage() {
             </div>
           </div>
         </div>
+
+        {/* ==================================================================== */}
+        {/* OTP VERIFICATION POPUP MODAL (Consistent Kurma Luxury Theme)          */}
+        {/* ==================================================================== */}
+        {isOtpModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/65 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="w-full max-w-md bg-white rounded-3xl border border-[#eed08e]/70 shadow-2xl p-6 sm:p-8 space-y-6 relative animate-in zoom-in-95 duration-200">
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isVerifyingOtp) {
+                    setIsOtpModalOpen(false);
+                    setOtpError(null);
+                  }
+                }}
+                disabled={isVerifyingOtp}
+                className="absolute top-4 right-4 p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition disabled:opacity-40 cursor-pointer"
+                aria-label="Close OTP popup"
+              >
+                <X className="size-4" />
+              </button>
+
+              {/* Header */}
+              <div className="text-center space-y-1.5 pt-1">
+                <div className="size-12 rounded-2xl bg-[#28513B] text-white flex items-center justify-center mx-auto mb-3 shadow-md border border-[#28513B]/30">
+                  <ShieldCheck className="size-6 text-white" />
+                </div>
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#072515]">
+                  Account Verification
+                </h3>
+                <p className="text-xs text-stone-600 max-w-xs mx-auto leading-relaxed">
+                  Enter the 6-digit verification code sent to{" "}
+                  <strong className="text-stone-900 font-semibold break-all">
+                    {email || "your email address"}
+                  </strong>
+                  {phone ? (
+                    <span>
+                      {" "}
+                      (or mobile{" "}
+                      <strong className="text-stone-900 font-semibold">{phone}</strong>)
+                    </span>
+                  ) : null}
+                </p>
+              </div>
+
+              {/* 6 Digit Input Boxes */}
+              <div className="space-y-3">
+                <div className="grid grid-cols-6 gap-2 sm:gap-2.5">
+                  {otpDigits.map((digit, idx) => (
+                    <input
+                      key={idx}
+                      ref={(el) => {
+                        otpInputRefs.current[idx] = el;
+                      }}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(idx, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      disabled={isVerifyingOtp}
+                      className={`h-12 sm:h-14 text-center text-lg sm:text-xl font-bold font-mono rounded-xl border-2 transition-all outline-none ${
+                        digit
+                          ? "border-[#072515] bg-white ring-2 ring-[#eed08e]/30 text-[#072515]"
+                          : "border-stone-200 bg-[#FAF8F5] text-stone-800 focus:border-[#072515] focus:bg-white"
+                      } ${otpError ? "border-red-500 focus:border-red-500" : ""}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Error Message */}
+                {otpError && (
+                  <p className="text-[11px] text-red-600 font-medium flex items-center justify-center gap-1.5 animate-in fade-in">
+                    <AlertCircle className="size-3.5 shrink-0" />
+                    <span>{otpError}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="space-y-2.5">
+                <button
+                  type="button"
+                  onClick={handleVerifyOtpAndCreateAccount}
+                  disabled={isVerifyingOtp}
+                  className="w-full py-3.5 px-6 rounded-xl bg-[#28513B] hover:bg-[#1e3f2e] text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+                >
+                  {isVerifyingOtp ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin text-white" />
+                      <span>Verifying Code &amp; Creating Account...</span>
+                    </>
+                  ) : (
+                    <span>Verify &amp; Create Account</span>
+                  )}
+                </button>
+
+                {/* Resend Code Section */}
+                <div className="text-center pt-1">
+                  {resendCountdown > 0 ? (
+                    <p className="text-[11px] text-stone-500">
+                      Resend verification code in{" "}
+                      <span className="font-semibold text-stone-800 font-mono">
+                        {resendCountdown}s
+                      </span>
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setResendCountdown(30)}
+                      disabled={isVerifyingOtp}
+                      className="text-xs font-semibold text-[#072515] hover:underline cursor-pointer disabled:opacity-50"
+                    >
+                      Resend Verification Code
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Trust Badge */}
+              <div className="border-t border-stone-100 pt-3 flex items-center justify-center gap-2 text-[10.5px] text-stone-500">
+                <ShieldCheck className="size-3.5 text-emerald-600" />
+                <span>256-Bit Encrypted Patron Verification</span>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

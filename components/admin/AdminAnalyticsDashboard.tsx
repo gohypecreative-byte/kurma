@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -38,6 +38,15 @@ import {
 import { ProductSKU } from "@/lib/products";
 import { AdminOrder, AdminCustomer, AdminCategory } from "@/app/admin/page";
 import { AdminCustomBox } from "@/app/admin/customise/edit/page";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -352,78 +361,46 @@ export default function AdminAnalyticsDashboard({
     return TIMEFRAME_DATA[timeframe];
   }, [timeframe]);
 
-  // SVG Chart Geometry Calculations
-  const chartHeight = 220;
-  const chartWidth = 720;
-  const paddingX = 40;
-  const paddingY = 30;
-
   const points = currentData.points;
-  const metricValues = points.map((p) => p[chartMetric]);
-  const prevMetricValues = points.map((p) => (chartMetric === "revenue" ? p.prevRevenue : p[chartMetric] * 0.85));
 
-  const maxVal = Math.max(...metricValues, ...prevMetricValues) * 1.15 || 100;
-  const minVal = 0;
+  // Chart data for Recharts matching Admin Home overview
+  const chartData = useMemo(() => {
+    return points.map((p) => {
+      const current = p[chartMetric];
+      const previous =
+        chartMetric === "revenue"
+          ? p.prevRevenue
+          : Math.round(p[chartMetric] * 0.85);
+      return {
+        date: p.shortDate,
+        fullDate: p.date,
+        current,
+        previous,
+        revenue: p.revenue,
+        prevRevenue: p.prevRevenue,
+        orders: p.orders,
+        visitors: p.visitors,
+        aov: p.aov,
+      };
+    });
+  }, [points, chartMetric]);
 
-  // Coordinate mapper
-  const getCoordinates = (index: number, val: number) => {
-    const usableWidth = chartWidth - paddingX * 2;
-    const x = paddingX + (index / (points.length - 1)) * usableWidth;
-    const usableHeight = chartHeight - paddingY * 2;
-    const normalizedY = (val - minVal) / (maxVal - minVal);
-    const y = chartHeight - paddingY - normalizedY * usableHeight;
-    return { x, y };
+  const formatYAxis = (v: number) => {
+    if (chartMetric === "revenue" || chartMetric === "aov") {
+      return v >= 1000 ? `₹${Math.round(v / 1000)}k` : `₹${v}`;
+    }
+    return v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`;
   };
 
-  // Generate SVG Path String with smooth cubic bezier curve
-  const { pathD, areaD, prevPathD } = useMemo(() => {
-    if (points.length === 0) return { pathD: "", areaD: "", prevPathD: "" };
-
-    const coords = points.map((p, i) => getCoordinates(i, p[chartMetric]));
-    const prevCoords = points.map((p, i) =>
-      getCoordinates(i, chartMetric === "revenue" ? p.prevRevenue : p[chartMetric] * 0.85)
-    );
-
-    // Current line path
-    let d = `M ${coords[0].x} ${coords[0].y}`;
-    for (let i = 0; i < coords.length - 1; i++) {
-      const p0 = coords[i === 0 ? 0 : i - 1];
-      const p1 = coords[i];
-      const p2 = coords[i + 1];
-      const p3 = coords[i + 2 < coords.length ? i + 2 : i + 1];
-
-      const cp1x = p1.x + (p2.x - p0.x) / 6;
-      const cp1y = p1.y + (p2.y - p0.y) / 6;
-      const cp2x = p2.x - (p3.x - p1.x) / 6;
-      const cp2y = p2.y - (p3.y - p1.y) / 6;
-
-      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
-    }
-
-    // Closed area path
-    const lastX = coords[coords.length - 1].x;
-    const firstX = coords[0].x;
-    const bottomY = chartHeight - paddingY;
-    const area = `${d} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
-
-    // Previous period dashed line
-    let prevD = `M ${prevCoords[0].x} ${prevCoords[0].y}`;
-    for (let i = 0; i < prevCoords.length - 1; i++) {
-      const p0 = prevCoords[i === 0 ? 0 : i - 1];
-      const p1 = prevCoords[i];
-      const p2 = prevCoords[i + 1];
-      const p3 = prevCoords[i + 2 < prevCoords.length ? i + 2 : i + 1];
-
-      const cp1x = p1.x + (p2.x - p0.x) / 6;
-      const cp1y = p1.y + (p2.y - p0.y) / 6;
-      const cp2x = p2.x - (p3.x - p1.x) / 6;
-      const cp2y = p2.y - (p3.y - p1.y) / 6;
-
-      prevD += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
-    }
-
-    return { pathD: d, areaD: area, prevPathD: prevD };
-  }, [points, chartMetric, maxVal]);
+  const formatTooltipValue = (val: any, name: any) => {
+    const num = Number(val) || 0;
+    const label = name === "current" ? "Current period" : "Previous period";
+    const formatted =
+      chartMetric === "revenue" || chartMetric === "aov"
+        ? formatINR(num)
+        : num.toLocaleString();
+    return [formatted, label];
+  };
 
   // Filtered and Sorted Best Sellers
   const filteredProducts = useMemo(() => {
@@ -677,7 +654,7 @@ export default function AdminAnalyticsDashboard({
       {/* ==================================================================== */}
       {/* 4. PERFORMANCE VELOCITY CHART (admin-panel styled)                   */}
       {/* ==================================================================== */}
-      {(activeTab === "overview" || activeTab === "sales" || activeTab === "customers") && (
+      {(activeTab === "overview" || activeTab === "sales" || activeTab === "products" || activeTab === "customers") && (
         <section className="bg-white rounded-xl border border-black/10 shadow-sm p-4 space-y-3">
           {/* Chart Header & Metric Switcher Tabs */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/10 pb-3">
@@ -750,131 +727,80 @@ export default function AdminAnalyticsDashboard({
             </div>
           )}
 
-          {/* Responsive SVG Chart with #08a7f5 line */}
-          <div className="relative w-full overflow-hidden">
-            <svg
-              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-              className="w-full h-52 sm:h-60 overflow-visible select-none"
-            >
-              <defs>
-                <linearGradient id="velocityGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#08a7f5" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#08a7f5" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-
-              {/* Gridlines */}
-              {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => {
-                const y = paddingY + pct * (chartHeight - paddingY * 2);
-                const val = Math.round(maxVal - pct * (maxVal - minVal));
-                return (
-                  <g key={i}>
-                    <line
-                      x1={paddingX}
-                      y1={y}
-                      x2={chartWidth - paddingX}
-                      y2={y}
-                      stroke="#f0f0f0"
-                      strokeDasharray="4 4"
-                      strokeWidth="1"
-                    />
-                    <text
-                      x={paddingX - 8}
-                      y={y + 3}
-                      textAnchor="end"
-                      className="text-[9px] fill-black/40 font-mono"
-                    >
-                      {chartMetric === "revenue" || chartMetric === "aov"
-                        ? `₹${(val / 1000).toFixed(0)}k`
-                        : val.toLocaleString()}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Area Fill */}
-              {areaD && <path d={areaD} fill="url(#velocityGradient)" />}
-
-              {/* Previous Period Dashed Baseline */}
-              {prevPathD && (
-                <path
-                  d={prevPathD}
-                  fill="none"
-                  stroke="#8ed5f6"
-                  strokeWidth="1.75"
+          {/* Multi-Point Line Chart (Recharts) matching Home overview UI & hover effect */}
+          <div className="mt-4 h-[240px] sm:h-[280px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={chartData}
+                margin={{ top: 8, right: 12, left: 0, bottom: 0 }}
+                onMouseMove={(state: any) => {
+                  if (state && typeof state.activeTooltipIndex === "number") {
+                    setHoveredPointIndex(state.activeTooltipIndex);
+                  }
+                }}
+                onMouseLeave={() => setHoveredPointIndex(null)}
+              >
+                <CartesianGrid stroke="#e5e5e5" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#737373", fontSize: 11 }}
+                  dy={8}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#737373", fontSize: 11 }}
+                  width={48}
+                  tickFormatter={formatYAxis}
+                  domain={[0, "auto"]}
+                />
+                <Tooltip
+                  cursor={{ stroke: "#d4d4d4", strokeDasharray: "3 3" }}
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: "1px solid #e5e5e5",
+                    fontSize: 12,
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  }}
+                  formatter={formatTooltipValue}
+                  labelFormatter={(label, items) => {
+                    const item = items?.[0]?.payload;
+                    return item?.fullDate ? `${item.fullDate} (${label})` : label;
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="previous"
+                  name="Previous period"
+                  stroke="#8bd4f5"
+                  strokeWidth={1.5}
                   strokeDasharray="4 4"
+                  dot={false}
                 />
-              )}
-
-              {/* Main Spline Curve (#08a7f5 cyan) */}
-              {pathD && (
-                <path
-                  d={pathD}
-                  fill="none"
+                <Line
+                  type="monotone"
+                  dataKey="current"
+                  name="Current period"
                   stroke="#08a7f5"
-                  strokeWidth="2.25"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  strokeWidth={1.8}
+                  dot={false}
+                  activeDot={{ r: 3.5, stroke: "#08a7f5", strokeWidth: 2, fill: "#ffffff" }}
                 />
-              )}
-
-              {/* Interactive Data Points */}
-              {points.map((p, i) => {
-                const coord = getCoordinates(i, p[chartMetric]);
-                const isHovered = hoveredPointIndex === i;
-                return (
-                  <g
-                    key={i}
-                    className="cursor-pointer"
-                    onMouseEnter={() => setHoveredPointIndex(i)}
-                    onMouseLeave={() => setHoveredPointIndex(null)}
-                  >
-                    <circle cx={coord.x} cy={coord.y} r={18} fill="transparent" />
-
-                    {isHovered && (
-                      <circle
-                        cx={coord.x}
-                        cy={coord.y}
-                        r={9}
-                        fill="#08a7f5"
-                        fillOpacity="0.25"
-                      />
-                    )}
-
-                    <circle
-                      cx={coord.x}
-                      cy={coord.y}
-                      r={isHovered ? 5 : 3.5}
-                      fill="#08a7f5"
-                      stroke="#ffffff"
-                      strokeWidth={2}
-                      className="transition-all duration-150"
-                    />
-
-                    <text
-                      x={coord.x}
-                      y={chartHeight - 8}
-                      textAnchor="middle"
-                      className={`text-[10px] font-medium transition-colors ${
-                        isHovered ? "fill-black font-semibold" : "fill-black/45"
-                      }`}
-                    >
-                      {p.shortDate}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+              </LineChart>
+            </ResponsiveContainer>
           </div>
 
           {/* Chart Legend */}
-          <div className="pt-2 border-t border-black/5 flex items-center justify-center gap-6 text-xs text-black/60">
-            <span className="flex items-center gap-2">
+          <div className="flex justify-center gap-6 pt-3 text-[11px] text-black/55 border-t border-black/5">
+            <span className="inline-flex items-center gap-2">
               <span className="size-2 rounded-full bg-[#08a7f5]" />
               Current period
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-3.5 h-0.5 border-t-2 border-dashed border-[#8ed5f6]" />
+            <span className="inline-flex items-center gap-2">
+              <span className="w-3.5 h-0.5 border-t-2 border-dashed border-[#8bd4f5]" />
               Previous period
             </span>
           </div>

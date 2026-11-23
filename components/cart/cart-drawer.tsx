@@ -11,6 +11,7 @@ import {
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 
 export interface CartItem {
@@ -21,6 +22,7 @@ export interface CartItem {
   priceDisplay?: string;
   image: string;
   quantity: number;
+  stock?: number;
   customizations?: Record<string, string>;
 }
 
@@ -31,6 +33,9 @@ interface CartDrawerProps {
   onUpdateQuantity: (id: string, delta: number) => void;
   onRemoveItem: (id: string) => void;
   onExploreProducts: () => void;
+  onClearCart?: () => void;
+  stockWarning?: string | null;
+  onClearStockWarning?: () => void;
 }
 
 export function CartDrawer({
@@ -40,12 +45,19 @@ export function CartDrawer({
   onUpdateQuantity,
   onRemoveItem,
   onExploreProducts,
+  onClearCart,
+  stockWarning,
+  onClearStockWarning,
 }: CartDrawerProps) {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [isCouponFreeShipping, setIsCouponFreeShipping] = useState<boolean>(false);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [couponError, setCouponError] = useState("");
   const [checkoutStep, setCheckoutStep] = useState<"cart" | "checkout" | "success">("cart");
   const [orderId, setOrderId] = useState("KRM-592814");
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   // Checkout address state
   const [shippingDetails, setShippingDetails] = useState({
@@ -64,79 +76,131 @@ export function CartDrawer({
   const freeShippingThreshold = 499;
   const isFreeShipping = subtotal >= freeShippingThreshold;
 
-  const isCouponFreeShipping = appliedCoupon === "ROYALSHIP";
-  const discountRate =
-    appliedCoupon === "SOVEREIGN20"
-      ? 0.2
-      : appliedCoupon === "DIWALI2026"
-      ? 0.15
-      : 0.1;
-
-  const discountAmount = !appliedCoupon
-    ? 0
-    : appliedCoupon === "KURMAWELCOME"
-    ? Math.min(subtotal, 300)
-    : appliedCoupon === "WEDDINGBLESSINGS"
-    ? Math.min(subtotal, 1000)
-    : appliedCoupon === "ROYALSHIP"
-    ? 0
-    : Math.round(subtotal * discountRate);
-
+  const discountAmount = appliedCoupon ? couponDiscount : 0;
   const shippingFee = items.length === 0 ? 0 : (isFreeShipping || isCouponFreeShipping) ? 0 : 49;
   const grandTotal = Math.max(0, subtotal - discountAmount + shippingFee);
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
+  const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
     setCouponError("");
     if (!couponCode.trim()) return;
 
     const clean = couponCode.trim().toUpperCase();
-    const DEFAULT_VALID_CODES = [
-      "DIWALI2026",
-      "ROYALSHIP",
-      "KURMAWELCOME",
-      "SOVEREIGN20",
-      "FESTIVEBRASS",
-      "SACRED10",
-      "KURMA10",
-      "HERITAGE10",
-      "WEDDINGBLESSINGS",
-      "VEDICFLORA",
-    ];
+    setIsValidatingCoupon(true);
 
-    let allValid = DEFAULT_VALID_CODES;
     try {
-      const stored = localStorage.getItem("kurma_admin_discounts");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          allValid = parsed
-            .filter((d: any) => d.status === "Active")
-            .map((d: any) => (d.title || d.code || "").toUpperCase());
-        }
-      }
-    } catch {}
+      const res = await fetch("/api/discounts/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: clean,
+          items,
+          subtotal,
+        }),
+      });
 
-    if (allValid.includes(clean)) {
-      setAppliedCoupon(clean);
-      setCouponCode("");
-    } else {
-      setCouponError("Invalid coupon code. Try 'DIWALI2026' or 'SACRED10'!");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAppliedCoupon(data.code);
+        setCouponDiscount(data.discountAmount || 0);
+        setIsCouponFreeShipping(Boolean(data.freeShipping));
+        setCouponCode("");
+        setCouponError("");
+      } else {
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setIsCouponFreeShipping(false);
+        setCouponError(data.error || "Invalid coupon code.");
+      }
+    } catch {
+      setCouponError("Could not validate coupon. Please check connection.");
+    } finally {
+      setIsValidatingCoupon(false);
     }
   };
 
   const handleProceedCheckout = () => {
-    setCheckoutStep("checkout");
+    onClose();
+    try {
+      localStorage.removeItem("kurma_buy_now_item");
+      if (items && items.length > 0) {
+        localStorage.setItem("kurma_cart", JSON.stringify(items));
+      }
+    } catch { }
+    if (typeof window !== "undefined") {
+      window.location.href = "/checkout?from=cart";
+    }
   };
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!shippingDetails.name || !shippingDetails.phone || !shippingDetails.address) {
       alert("Please enter your name, phone number, and delivery address.");
       return;
     }
-    setOrderId(`KRM-${Math.floor(100000 + Math.random() * 900000)}`);
-    setCheckoutStep("success");
+
+    setIsSubmittingOrder(true);
+    const generatedOrderNumber = `KURMA-${Math.floor(10000 + Math.random() * 90000)}`;
+    setOrderId(generatedOrderNumber);
+
+    try {
+      const orderPayload = {
+        orderNumber: generatedOrderNumber,
+        customerName: shippingDetails.name.trim(),
+        customerPhone: shippingDetails.phone.trim(),
+        customerEmail: "",
+        city: shippingDetails.city?.trim() || "Mumbai, MH",
+        totalAmount: grandTotal,
+        couponCode: appliedCoupon || null,
+        discountAmount,
+        paymentMethod: shippingDetails.paymentMethod === "cod" ? "Cash on Delivery" : "UPI / Online Payment",
+        paymentStatus: shippingDetails.paymentMethod === "cod" ? "Payment pending" : "Paid",
+        fulfillmentStatus: "Processing",
+        channel: "Kurma Sanctuary",
+        carrier: "BlueDart Express",
+        boxTitle: items[0]?.name
+          ? `${items[0].name}${items.length > 1 ? ` (+${items.length - 1} more)` : ""}`
+          : "Sacred Kurma Collection",
+        boxImage: items[0]?.image || "/images/product/image.png",
+        shippingAddress: {
+          fullName: shippingDetails.name.trim(),
+          phone: shippingDetails.phone.trim(),
+          street: shippingDetails.address.trim(),
+          city: shippingDetails.city?.trim() || "",
+          pincode: shippingDetails.pincode?.trim() || "",
+          country: "India",
+          fullAddress: `${shippingDetails.address.trim()}${shippingDetails.city ? `, ${shippingDetails.city.trim()}` : ""}${shippingDetails.pincode ? ` - ${shippingDetails.pincode.trim()}` : ""}`,
+        },
+        items: items.map((it) => ({
+          productId: it.skuId || it.id,
+          sku: it.skuId || it.id,
+          name: it.name,
+          price: it.price,
+          quantity: it.quantity || 1,
+          image: it.image,
+          customizations: it.customizations || null,
+        })),
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.order?.orderNumber) {
+          setOrderId(data.order.orderNumber);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not reach /api/orders, fallback active", err);
+    } finally {
+      setIsSubmittingOrder(false);
+      setCheckoutStep("success");
+      if (onClearCart) onClearCart();
+    }
   };
 
   const handleCloseAndReset = () => {
@@ -179,6 +243,23 @@ export function CartDrawer({
           {/* STEP 1: CART VIEW */}
           {checkoutStep === "cart" && (
             <>
+              {/* Stock Warning Notice */}
+              {stockWarning && (
+                <div className="mx-4 sm:mx-6 mt-3 p-3 bg-amber-50 border border-amber-300 rounded-xl flex items-start gap-2.5 text-xs text-amber-900 animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div className="flex-1 font-medium leading-snug">{stockWarning}</div>
+                  {onClearStockWarning && (
+                    <button
+                      type="button"
+                      onClick={onClearStockWarning}
+                      className="text-amber-700 hover:text-amber-900 cursor-pointer p-0.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Items List */}
               <div
                 className="flex-1 overflow-y-auto px-4 sm:px-6 py-3 divide-y divide-stone-100"
@@ -474,9 +555,10 @@ export function CartDrawer({
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-3 px-3 sm:px-4 bg-[#1E1E1C] hover:bg-[#33312D] text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer text-center"
+                    disabled={isSubmittingOrder}
+                    className="flex-1 py-3 px-3 sm:px-4 bg-[#1E1E1C] hover:bg-[#33312D] disabled:opacity-50 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer text-center"
                   >
-                    Place Sacred Order (₹{grandTotal})
+                    {isSubmittingOrder ? "Confirming Sacred Order..." : `Place Sacred Order (₹${grandTotal})`}
                   </button>
                 </div>
               </form>

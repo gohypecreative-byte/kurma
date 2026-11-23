@@ -20,7 +20,7 @@ export async function GET(req: Request) {
       whereClause.isDraft = true;
     } else if (subview === "abandoned") {
       whereClause.isAbandoned = true;
-    } else {
+    } else if (subview === "all") {
       whereClause.isDraft = false;
       whereClause.isAbandoned = false;
     }
@@ -37,45 +37,60 @@ export async function GET(req: Request) {
       orders = [];
     }
 
-    let formatted =
-      orders.length > 0
-        ? orders.map((o) => ({
-          id: o.id,
-          orderNumber: o.orderNumber,
-          customerName: o.customerName || "Valued Patron",
-          customerEmail: o.customerEmail || "",
-          customerPhone: o.customerPhone || "",
-          city: o.city || "Mumbai, MH",
-          date: o.dateFormatted || new Date(o.createdAt).toLocaleDateString(),
-          boxTitle: o.boxTitle || (o.items[0]?.name ? `${o.items[0].name} Suite` : "Bespoke Hamper"),
-          boxImage: o.boxImage || o.items[0]?.image || "/images/product/marble-box-clean.png",
-          itemsCount: o.items.reduce((sum: number, it: any) => sum + it.quantity, 0) || 1,
-          items: o.items.map((it: any) => ({
-            sku: it.sku || it.productId,
-            name: it.name,
-            quantity: it.quantity,
-            price: it.price,
-            image: it.image || "/images/product/image.png",
-          })),
-          totalAmount: o.totalAmount,
-          paymentMethod: o.paymentMethod as any,
-          paymentStatus: o.paymentStatus as any,
-          fulfillmentStatus: o.fulfillmentStatus as any,
-          channel: o.channel as any,
-          courier: o.carrier || "BlueDart Express",
-          awb: o.trackingNumber || "BLU-8842-MUM",
-          estimatedDate: o.estimatedDate || "Within 3-5 business days",
-          notes: o.notes || "Order verified and processed in atelier.",
-          personalization: (o.personalization as any) || {
-            recipientName: "Valued Recipient",
-            senderName: "Patron",
-            giftNote: "",
-            greetingCard: false,
-          },
-          isDraft: o.isDraft,
-          isAbandoned: o.isAbandoned,
-        }))
-        : INITIAL_ORDERS;
+    const mappedDbOrders = orders.map((o) => ({
+      id: o.id,
+      orderNumber: o.orderNumber,
+      customerName: o.customerName || "Valued Patron",
+      customerEmail: o.customerEmail || "",
+      customerPhone: o.customerPhone || "",
+      city: o.city || "Mumbai, MH",
+      date: o.dateFormatted || new Date(o.createdAt).toLocaleDateString(),
+      boxTitle: o.boxTitle || (o.items[0]?.name ? `${o.items[0].name} Suite` : "Bespoke Hamper"),
+      boxImage: o.boxImage || o.items[0]?.image || "/images/product/marble-box-clean.png",
+      itemsCount: o.items.reduce((sum: number, it: any) => sum + it.quantity, 0) || 1,
+      items: o.items.map((it: any) => ({
+        sku: it.sku || it.productId,
+        name: it.name,
+        quantity: it.quantity,
+        price: it.price,
+        image: it.image || "/images/product/image.png",
+      })),
+      totalAmount: o.totalAmount,
+      paymentMethod: o.paymentMethod as any,
+      paymentStatus: o.paymentStatus as any,
+      fulfillmentStatus: o.fulfillmentStatus as any,
+      channel: o.channel as any,
+      courier: o.carrier || "BlueDart Express",
+      awb: o.trackingNumber || "BLU-8842-MUM",
+      estimatedDate: o.estimatedDate || "Within 3-5 business days",
+      notes: o.notes || "Order verified and processed in atelier.",
+      personalization: (o.personalization as any) || {
+        recipientName: "Valued Recipient",
+        senderName: "Patron",
+        giftNote: "",
+        greetingCard: false,
+      },
+      shippingAddress: o.shippingAddress,
+      isDraft: o.isDraft,
+      isAbandoned: o.isAbandoned,
+    }));
+
+    // Merge live DB orders (top priority) with seed orders, eliminating duplicate order numbers
+    const dbOrderNumbers = new Set(mappedDbOrders.map((o) => o.orderNumber.toLowerCase()));
+    const nonDuplicateSeedOrders = INITIAL_ORDERS.filter(
+      (o) => !dbOrderNumbers.has(o.orderNumber.toLowerCase())
+    );
+
+    let filteredSeedOrders = nonDuplicateSeedOrders;
+    if (subview === "drafts") {
+      filteredSeedOrders = nonDuplicateSeedOrders.filter((o) => o.isDraft);
+    } else if (subview === "abandoned") {
+      filteredSeedOrders = nonDuplicateSeedOrders.filter((o) => o.isAbandoned);
+    } else if (subview === "all") {
+      filteredSeedOrders = nonDuplicateSeedOrders.filter((o) => !o.isDraft && !o.isAbandoned);
+    }
+
+    let formatted = [...mappedDbOrders, ...filteredSeedOrders];
 
     if (search) {
       formatted = formatted.filter(
