@@ -884,7 +884,7 @@ export default function AdminDashboardPage() {
         fetch("/api/admin/products"),
         fetch("/api/admin/categories"),
         fetch("/api/admin/custom-boxes"),
-        fetch("/api/admin/customers"),
+        fetch("/api/admin/customers", { credentials: "include", cache: "no-store" }),
         fetch("/api/admin/discounts"),
       ]);
 
@@ -1680,7 +1680,7 @@ export default function AdminDashboardPage() {
           tier: newCustomerData.tier,
         }),
       });
-      const res = await fetch("/api/admin/customers");
+      const res = await fetch("/api/admin/customers", { credentials: "include", cache: "no-store" });
       const data = await res.json();
       if (data.customers) setCustomers(data.customers);
     } catch (err) {
@@ -3780,7 +3780,7 @@ export default function AdminDashboardPage() {
                                 className="flex items-center gap-2.5 text-left group-hover:opacity-95"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <div className="size-7 rounded-full bg-black/5 text-black font-semibold flex items-center justify-center text-xs group-hover:bg-[#072515] group-hover:text-[#eed08e] transition-colors">
+                                <div className="size-7 rounded-full bg-black/5 text-black font-semibold flex items-center justify-center text-xs group-hover:bg-[#28513B] group-hover:text-white transition-colors">
                                   {c.initials}
                                 </div>
                                 <div>

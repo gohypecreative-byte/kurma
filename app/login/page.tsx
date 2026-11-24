@@ -122,6 +122,7 @@ export default function LoginPage() {
           data.user.role === "ADMIN" ||
           data.user.email === "admin@kurmaluxury.com" ||
           data.user.email === "admin@kurma.com" ||
+          data.user.email === "kurma@gmail.com" ||
           data.user.email === "vishal1@gmail.com" ||
           data.user.email === "vishalsingh123764@gmail.com";
         profile = {
@@ -140,6 +141,7 @@ export default function LoginPage() {
       profile.role === "ADMIN" ||
       profile.email === "admin@kurmaluxury.com" ||
       profile.email === "admin@kurma.com" ||
+      profile.email === "kurma@gmail.com" ||
       profile.email === "vishal1@gmail.com" ||
       profile.email === "vishalsingh123764@gmail.com";
 
@@ -304,14 +306,14 @@ export default function LoginPage() {
               <div className="mb-6 p-4 rounded-none bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
                 <div>
                   <p className="font-bold text-black uppercase tracking-wider">
-                    {currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com" || currentUser.email === "vishal1@gmail.com" || currentUser.email === "vishalsingh123764@gmail.com"
+                    {currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com" || currentUser.email === "kurma@gmail.com" || currentUser.email === "vishal1@gmail.com" || currentUser.email === "vishalsingh123764@gmail.com"
                       ? "Admin"
                       : currentUser.name}
                   </p>
                   <p className="text-stone-500 font-mono text-[11px]">{currentUser.email}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {(currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com" || currentUser.email === "vishal1@gmail.com" || currentUser.email === "vishalsingh123764@gmail.com") ? (
+                  {(currentUser.role === "ADMIN" || currentUser.email === "admin@kurmaluxury.com" || currentUser.email === "admin@kurma.com" || currentUser.email === "kurma@gmail.com" || currentUser.email === "vishal1@gmail.com" || currentUser.email === "vishalsingh123764@gmail.com") ? (
                     <button
                       type="button"
                       onClick={() => router.push("/admin")}

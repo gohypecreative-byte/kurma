@@ -9,6 +9,7 @@ const ADMIN_JWT_SECRET =
 export const KNOWN_ADMIN_EMAILS = [
   "admin@kurmaluxury.com",
   "admin@kurma.com",
+  "kurma@gmail.com",
   "vishal1@gmail.com",
   "vishalsingh123764@gmail.com",
 ];
@@ -142,13 +143,22 @@ export function extractAdminToken(req: Request): string | null {
     return authHeader.slice(7).trim();
   }
 
-  // 2. Check Cookie header
+  // 2. Check NextRequest cookies object if available
+  if ("cookies" in req && typeof (req as any).cookies?.get === "function") {
+    const cookieObj = (req as any).cookies.get(ADMIN_COOKIE_NAME);
+    if (cookieObj?.value) {
+      return decodeURIComponent(cookieObj.value).replace(/^"|"$/g, "").trim();
+    }
+  }
+
+  // 3. Check Cookie header
   const cookieHeader = req.headers.get("cookie");
   if (cookieHeader) {
     const cookies = cookieHeader.split(";").map((c) => c.trim());
     for (const cookie of cookies) {
       if (cookie.startsWith(`${ADMIN_COOKIE_NAME}=`)) {
-        return decodeURIComponent(cookie.slice(ADMIN_COOKIE_NAME.length + 1));
+        const val = decodeURIComponent(cookie.slice(ADMIN_COOKIE_NAME.length + 1));
+        return val.replace(/^"|"$/g, "").trim();
       }
     }
   }
@@ -208,7 +218,8 @@ export async function verifyAdminRequest(
   const token = extractAdminToken(req);
 
   if (!token) {
-    if (process.env.NODE_ENV !== "production") {
+    // Only bypass if explicitly requested via environment variable for offline tests
+    if (process.env.ADMIN_DEV_MOCK_AUTH === "true") {
       return {
         authorized: true,
         user: {
@@ -232,7 +243,7 @@ export async function verifyAdminRequest(
 
   const payload = await verifyAdminToken(token);
   if (!payload) {
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env.ADMIN_DEV_MOCK_AUTH === "true") {
       return {
         authorized: true,
         user: {

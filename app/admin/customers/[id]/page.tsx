@@ -131,7 +131,13 @@ export default function CustomerDetailsPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/admin/customers/${encodeURIComponent(customerId)}`);
+        const res = await fetch(`/api/admin/customers/${encodeURIComponent(customerId)}`, {
+          credentials: "include",
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
         if (!res.ok) {
           throw new Error("Failed to load customer profile");
         }
@@ -182,7 +188,7 @@ export default function CustomerDetailsPage() {
           <div className="pt-2">
             <Link
               href="/admin?route=customers"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#072515] text-[#eed08e] hover:bg-[#28513B] text-xs font-semibold transition"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#28513B] text-white hover:bg-[#1e3e2d] text-xs font-semibold transition shadow-2xs"
             >
               <ArrowLeft className="size-4" /> Return to Customers Directory
             </Link>
@@ -259,9 +265,9 @@ export default function CustomerDetailsPage() {
             )}
             <Link
               href="/admin?route=customers"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#072515] text-[#eed08e] hover:bg-[#28513B] text-xs font-semibold transition shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#28513B] text-white hover:bg-[#1e3e2d] text-xs font-semibold transition shadow-2xs"
             >
-              <UsersRound className="size-3.5" />
+              <UsersRound className="size-3.5 text-white" />
               <span>All Customers</span>
             </Link>
           </div>
@@ -275,10 +281,10 @@ export default function CustomerDetailsPage() {
         {/* ==================================================================== */}
         <section className="bg-white rounded-2xl border border-[#eed08e]/30 shadow-xs p-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-[#eed08e]/10 to-transparent pointer-events-none" />
-          
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative z-10">
             <div className="flex items-center gap-4">
-              <div className="size-16 rounded-2xl bg-[#072515] text-[#eed08e] font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#eed08e]/40 shadow-md shrink-0">
+              <div className="size-16 rounded-2xl bg-[#28513B] text-white font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#28513B]/30 shadow-md shrink-0">
                 {customer.initials || customer.name.slice(0, 2).toUpperCase()}
               </div>
               <div className="space-y-1">
@@ -391,28 +397,26 @@ export default function CustomerDetailsPage() {
                         <div className="flex items-center gap-2">
                           {/* Payment status badge */}
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
-                              ord.paymentStatus === "Paid"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : ord.paymentStatus === "Refunded"
-                                  ? "bg-stone-100 text-stone-700"
-                                  : "bg-amber-100 text-amber-800"
-                            }`}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${ord.paymentStatus === "Paid"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : ord.paymentStatus === "Refunded"
+                                ? "bg-stone-100 text-stone-700"
+                                : "bg-amber-100 text-amber-800"
+                              }`}
                           >
                             {ord.paymentStatus}
                           </span>
 
                           {/* Fulfillment status badge */}
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
-                              ord.fulfillmentStatus === "Delivered"
-                                ? "bg-emerald-100 text-emerald-800"
-                                : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : ord.fulfillmentStatus === "Out for Delivery"
-                                    ? "bg-purple-100 text-purple-800"
-                                    : "bg-amber-100 text-amber-800"
-                            }`}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${ord.fulfillmentStatus === "Delivered"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
+                                ? "bg-blue-100 text-blue-800"
+                                : ord.fulfillmentStatus === "Out for Delivery"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : "bg-amber-100 text-amber-800"
+                              }`}
                           >
                             {ord.fulfillmentStatus}
                           </span>
@@ -421,7 +425,7 @@ export default function CustomerDetailsPage() {
                           <button
                             type="button"
                             onClick={() => setInspectOrder(ord)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/5 hover:bg-[#072515] hover:text-[#eed08e] text-black text-[11px] font-medium transition"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/5 hover:bg-[#28513B] hover:text-white text-black text-[11px] font-medium transition"
                           >
                             <Eye className="size-3" />
                             <span>Inspect</span>
@@ -503,7 +507,7 @@ export default function CustomerDetailsPage() {
                 <div>
                   <span className="block text-[11px] text-black/50 font-medium">Phone Number</span>
                   <div className="flex items-center justify-between">
-                    <span className="text-black/80 font-mono">{customer.phone || "+91 98201 44821"}</span>
+                    <span className="text-black/80 font-mono">{customer.phone || "—"}</span>
                     {customer.phone && (
                       <button
                         type="button"
@@ -519,7 +523,7 @@ export default function CustomerDetailsPage() {
 
                 <div>
                   <span className="block text-[11px] text-black/50 font-medium">Primary Region</span>
-                  <span className="text-black/80">{customer.location}</span>
+                  <span className="text-black/80">{customer.location || "—"}</span>
                 </div>
               </div>
             </section>
@@ -531,9 +535,6 @@ export default function CustomerDetailsPage() {
                   <MapPin className="size-3.5 text-[#c89e43]" />
                   <span>Delivery Address</span>
                 </h3>
-                <span className="text-[10px] bg-emerald-50 text-emerald-800 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
-                  Primary
-                </span>
               </div>
 
               {customer.shippingAddress ? (
@@ -553,9 +554,11 @@ export default function CustomerDetailsPage() {
                       .filter(Boolean)
                       .join(", ")}
                   </p>
-                  <p className="text-black/50">
-                    {customer.shippingAddress.country || "India"}
-                  </p>
+                  {customer.shippingAddress.country && (
+                    <p className="text-black/50">
+                      {customer.shippingAddress.country}
+                    </p>
+                  )}
                   {customer.shippingAddress.phone && (
                     <p className="text-[11px] font-mono text-black/60 pt-1">
                       Tel: {customer.shippingAddress.phone}
@@ -563,10 +566,8 @@ export default function CustomerDetailsPage() {
                   )}
                 </div>
               ) : (
-                <div className="text-xs text-black/50 bg-[#FAF8F5] p-3.5 rounded-xl border border-black/5">
-                  <p className="font-semibold text-black">{customer.name}</p>
-                  <p>{customer.location}</p>
-                  <p>India</p>
+                <div className="text-xs text-black/40 bg-[#FAF8F5] p-4 rounded-xl border border-black/5 text-center">
+                  No delivery address saved yet.
                 </div>
               )}
             </section>
@@ -624,15 +625,14 @@ export default function CustomerDetailsPage() {
                     Live Milestone Progress
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      inspectOrder.fulfillmentStatus === "Delivered"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : inspectOrder.fulfillmentStatus === "Shipped" || inspectOrder.fulfillmentStatus === "In Transit"
-                          ? "bg-blue-100 text-blue-800"
-                          : inspectOrder.fulfillmentStatus === "Out for Delivery"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-amber-100 text-amber-800"
-                    }`}
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${inspectOrder.fulfillmentStatus === "Delivered"
+                      ? "bg-emerald-100 text-emerald-800"
+                      : inspectOrder.fulfillmentStatus === "Shipped" || inspectOrder.fulfillmentStatus === "In Transit"
+                        ? "bg-blue-100 text-blue-800"
+                        : inspectOrder.fulfillmentStatus === "Out for Delivery"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-amber-100 text-amber-800"
+                      }`}
                   >
                     Current: {inspectOrder.fulfillmentStatus}
                   </span>
@@ -654,20 +654,18 @@ export default function CustomerDetailsPage() {
                     return (
                       <div key={step.key} className="flex flex-col items-center">
                         <div
-                          className={`size-6 rounded-full flex items-center justify-center font-bold text-[10px] mb-1 transition-colors ${
-                            isDone
-                              ? "bg-emerald-600 text-white"
-                              : isCurrent
-                                ? "bg-[#072515] text-[#eed08e] ring-2 ring-[#c89e43]"
-                                : "bg-black/10 text-black/40"
-                          }`}
+                          className={`size-6 rounded-full flex items-center justify-center font-bold text-[10px] mb-1 transition-colors ${isDone
+                            ? "bg-emerald-600 text-white"
+                            : isCurrent
+                              ? "bg-[#072515] text-[#eed08e] ring-2 ring-[#c89e43]"
+                              : "bg-black/10 text-black/40"
+                            }`}
                         >
                           {isDone ? "✓" : idx + 1}
                         </div>
                         <span
-                          className={`text-[10px] font-medium leading-tight ${
-                            isCurrent ? "font-bold text-[#072515]" : "text-black/50"
-                          }`}
+                          className={`text-[10px] font-medium leading-tight ${isCurrent ? "font-bold text-[#072515]" : "text-black/50"
+                            }`}
                         >
                           {step.label}
                         </span>
@@ -721,7 +719,7 @@ export default function CustomerDetailsPage() {
               <button
                 type="button"
                 onClick={() => setInspectOrder(null)}
-                className="px-4 py-2 rounded-xl bg-[#072515] text-[#eed08e] hover:bg-[#28513B] text-xs font-semibold transition"
+                className="px-4 py-2 rounded-xl bg-[#28513B] text-white hover:bg-[#1e3e2d] text-xs font-semibold transition"
               >
                 Close Order View
               </button>

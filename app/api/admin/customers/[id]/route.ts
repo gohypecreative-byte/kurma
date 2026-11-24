@@ -14,8 +14,18 @@ export async function GET(
     const auth = await verifyAdminRequest(req);
     if (!auth.authorized) return auth.response;
 
-    const resolvedParams = await Promise.resolve(props.params);
-    const rawId = resolvedParams?.id || "";
+    let rawId = "";
+    if (props && props.params) {
+      try {
+        const resolvedParams = await Promise.resolve(props.params);
+        rawId = resolvedParams?.id || "";
+      } catch {}
+    }
+    if (!rawId && req.url) {
+      const url = new URL(req.url);
+      const segments = url.pathname.split("/").filter(Boolean);
+      rawId = segments[segments.length - 1] || "";
+    }
     const id = decodeURIComponent(rawId).trim();
 
     if (!id) {
@@ -24,7 +34,6 @@ export async function GET(
 
     // 1. Try finding in database
     let dbUser: any = null;
-    let dbAddresses: any[] = [];
     let dbOrders: any[] = [];
 
     try {
@@ -33,6 +42,8 @@ export async function GET(
           OR: [
             { id: id },
             { email: { equals: id, mode: "insensitive" } },
+            { phone: id },
+            { name: { equals: id, mode: "insensitive" } },
           ],
         },
         include: {

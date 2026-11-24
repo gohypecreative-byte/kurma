@@ -62,6 +62,7 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
         method: "GET",
         headers: { "Cache-Control": "no-cache" },
         cache: "no-store",
+        credentials: "include",
       });
 
       if (res.ok) {
@@ -84,6 +85,7 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
         const isAdminEmail =
           parsed?.email === "admin@kurmaluxury.com" ||
           parsed?.email === "admin@kurma.com" ||
+          parsed?.email === "kurma@gmail.com" ||
           parsed?.email === "vishal1@gmail.com" ||
           parsed?.email === "vishalsingh123764@gmail.com" ||
           parsed?.role === "ADMIN";
@@ -92,6 +94,7 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
           const syncRes = await fetch("/api/auth/admin-session", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ action: "sync", email: parsed.email }),
           });
 
@@ -128,6 +131,7 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
       const res = await fetch("/api/auth/admin-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email: email.trim(), password }),
       });
 
@@ -168,7 +172,7 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
   // Logout handler
   const logout = async () => {
     try {
-      await fetch("/api/auth/admin-session", { method: "POST" });
+      await fetch("/api/auth/admin-session", { method: "POST", credentials: "include" });
     } catch {
       // ignore
     }
@@ -207,23 +211,7 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#eed08e_1px,transparent_1px)] [background-size:24px_24px]" />
 
         {/* Top Minimal Bar */}
-        <header className="px-6 py-5 flex items-center justify-between border-b border-[#eed08e]/15 relative z-10">
-          <Link href="/" className="flex items-center gap-3 group" aria-label="Kurma Home">
-            <div className="relative size-9 rounded-xl overflow-hidden shadow-md border border-[#eed08e]/40 bg-[#072515] flex items-center justify-center shrink-0">
-              <Image
-                src="/images/logo.jpeg"
-                alt="Kurma Logo"
-                width={36}
-                height={36}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-              />
-            </div>
-            <div>
-              <span className="font-serif text-sm tracking-widest font-bold text-[#eed08e] block">KURMA</span>
-              <span className="text-[10px] text-[#FAF8F5]/60 tracking-wider uppercase font-light">Haute Fragrance & Gifting</span>
-            </div>
-          </Link>
-
+        <header className="px-6 py-5 flex items-center justify-end border-b border-[#eed08e]/15 relative z-10">
           <Link
             href="/"
             className="flex items-center gap-1.5 text-xs text-[#eed08e]/80 hover:text-[#eed08e] transition-colors"
@@ -240,13 +228,14 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
             <div className="bg-[#FAF8F5] text-[#1A1A18] rounded-2xl shadow-2xl border border-[#eed08e]/40 p-8 sm:p-10 relative">
               {/* Title Section */}
               <div className="text-center mb-6 flex flex-col items-center">
-                <div className="relative size-14 rounded-2xl overflow-hidden shadow-md border border-[#eed08e]/40 bg-[#072515] mb-3 flex items-center justify-center">
+                <div className="relative size-24 sm:size-28 mb-3 flex items-center justify-center">
                   <Image
-                    src="/images/logo.jpeg"
+                    src="/images/logo-transparent.png"
                     alt="Kurma Logo"
-                    width={56}
-                    height={56}
-                    className="w-full h-full object-cover"
+                    width={112}
+                    height={112}
+                    className="w-full h-full object-contain"
+                    priority
                   />
                 </div>
                 <h1 className="font-serif text-2xl font-bold tracking-tight text-[#072515]">
@@ -324,17 +313,17 @@ export default function AdminAuthGuard({ children }: { children: React.ReactNode
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full mt-2 py-3 px-4 rounded-xl bg-[#072515] hover:bg-[#0b3820] text-[#eed08e] font-medium text-xs tracking-wider uppercase transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed group cursor-pointer"
+                  className="w-full mt-2 py-3 px-4 rounded-xl bg-[#28513B] hover:bg-[#1e3e2d] text-white font-medium text-xs tracking-wider uppercase transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed group cursor-pointer"
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="size-4 animate-spin text-[#eed08e]" />
-                      <span>Verifying Credentials...</span>
+                      <Loader2 className="size-4 animate-spin text-white" />
+                      <span className="text-white">Verifying Credentials...</span>
                     </>
                   ) : (
                     <>
-                      <Lock className="size-3.5 text-[#eed08e]" />
-                      <span>Authenticate Sovereign Admin</span>
+                      <Lock className="size-3.5 text-white" />
+                      <span className="text-white">Authenticate Sovereign Admin</span>
                     </>
                   )}
                 </button>
