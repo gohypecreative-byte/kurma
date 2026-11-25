@@ -17,7 +17,10 @@ import {
   Clock,
   ShieldCheck,
   UsersRound,
+  Loader2,
+  Menu,
 } from "lucide-react";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const RANDOM_PROMO_PRESETS = [
   "ROYAL25",
@@ -49,6 +52,7 @@ function CreateDiscountPageInner() {
   // UI state
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -147,7 +151,7 @@ function CreateDiscountPageInner() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 pb-20 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 flex flex-col lg:flex-row antialiased selection:bg-[#eed08e] selection:text-[#072515]">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#28513B] text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 flex items-center gap-2.5 text-xs font-semibold animate-in slide-in-from-bottom-5">
@@ -156,46 +160,39 @@ function CreateDiscountPageInner() {
         </div>
       )}
 
-      {/* Top Header Navigation */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 sm:px-8 py-4 shadow-2xs">
-        <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <Link
-              href="/admin?route=discounts"
-              className="inline-flex size-9 items-center justify-center rounded-xl border border-black/15 bg-white text-black/75 hover:text-black hover:bg-black/5 transition shadow-2xs cursor-pointer"
-              aria-label="Back to Discounts"
-            >
-              <ArrowLeft className="size-4" />
-            </Link>
+      {/* Admin Dashboard Sidebar Navigation */}
+      <AdminSidebar
+        currentRoute="discounts"
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        {/* Main Content: 2-Column Responsive Layout */}
+        <main className="max-w-6xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 w-full pb-20">
+          {/* Page Title & Mobile Sidebar Toggle */}
+          <div className="flex items-center justify-between pb-5 mb-6 border-b border-black/10">
             <div>
-              <h1 className="font-serif text-lg sm:text-xl font-bold text-[#072515] flex items-center gap-2">
-                <span>Create Discount</span>
+              <h1 className="font-serif text-2xl font-bold text-[#072515]">
+                Create discount
               </h1>
+              <p className="text-xs text-stone-500 mt-1">
+                Configure discount code, rules, and customer eligibility.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-xl border border-black/15 bg-white text-black/75 hover:text-black hover:bg-black/5 transition"
+                aria-label="Open Sidebar Menu"
+              >
+                <Menu className="size-4" />
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/admin?route=discounts"
-              className="px-3.5 py-2 rounded-xl border border-stone-300 text-xs font-semibold text-stone-700 hover:bg-stone-50 transition"
-            >
-              Cancel
-            </Link>
-            <button
-              type="button"
-              onClick={handleCreateDiscount}
-              disabled={isSaving}
-              className="px-4 py-2 rounded-xl bg-[#28513B] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#28513B]/90 transition shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              <Ticket className="size-3.5 text-white" />
-              <span>{isSaving ? "Saving..." : "Create Discount"}</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content: 2-Column Responsive Layout */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8">
         <form onSubmit={handleCreateDiscount}>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* ============================================================= */}
@@ -515,6 +512,7 @@ function CreateDiscountPageInner() {
           </div>
         </form>
       </main>
+      </div>
     </div>
   );
 }
@@ -523,13 +521,8 @@ export default function CreateDiscountPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-          <div className="text-center space-y-3">
-            <div className="size-10 border-2 border-[#072515] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs uppercase tracking-widest text-[#072515] font-semibold">
-              Loading Create Discount...
-            </p>
-          </div>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-[#28513B]" />
         </div>
       }
     >

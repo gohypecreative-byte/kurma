@@ -130,7 +130,7 @@ export async function POST(req: Request) {
         name: formattedName,
         email: cleanEmail,
         password: hashedPassword,
-        role: "PATRON",
+        role: "USER",
         memberSince: new Date().toLocaleDateString("en-US", {
           month: "long",
           year: "numeric",

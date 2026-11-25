@@ -10,6 +10,38 @@ export async function GET(req: Request) {
     const auth = await verifyAdminRequest(req);
     if (!auth.authorized) return auth.response;
 
+    const { searchParams } = new URL(req.url);
+    const queryId = searchParams.get("id");
+
+    if (queryId) {
+      const cleanId = queryId.trim();
+      const disc = await prisma.discount.findFirst({
+        where: {
+          OR: [
+            { id: cleanId },
+            { title: { equals: cleanId, mode: "insensitive" as const } },
+          ],
+        },
+      });
+
+      if (disc) {
+        return NextResponse.json({ success: true, discount: disc });
+      }
+
+      // Check fallback curated presets
+      const preset = CURATED_MASTER_DISCOUNTS.find(
+        (p) =>
+          p.id.toLowerCase() === cleanId.toLowerCase() ||
+          p.title.toUpperCase() === cleanId.toUpperCase()
+      );
+
+      if (preset) {
+        return NextResponse.json({ success: true, discount: preset });
+      }
+
+      return NextResponse.json({ error: "Discount not found" }, { status: 404 });
+    }
+
     let discounts = await prisma.discount.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -119,6 +151,7 @@ export async function POST(req: Request) {
       type,
       discountValue,
       minSpend,
+      startDate,
       expiryDate,
       maxUses,
       productIds,
@@ -152,6 +185,7 @@ export async function POST(req: Request) {
           type: type || existing.type,
           discountValue: discountValue || existing.discountValue,
           minSpend: minSpend !== undefined ? (minSpend ? Number(minSpend) : null) : existing.minSpend,
+          startDate: startDate !== undefined ? (startDate || null) : (existing as any).startDate,
           expiryDate: expiryDate !== undefined ? (expiryDate || null) : existing.expiryDate,
           maxUses: maxUses !== undefined ? (maxUses ? Number(maxUses) : null) : existing.maxUses,
           productIds: Array.isArray(productIds) ? productIds : existing.productIds,
@@ -179,6 +213,7 @@ export async function POST(req: Request) {
         used: 0,
         discountValue: discountValue || "10%",
         minSpend: minSpend ? Number(minSpend) : null,
+        startDate: startDate || null,
         expiryDate: expiryDate || null,
         maxUses: maxUses ? Number(maxUses) : null,
         productIds: Array.isArray(productIds) ? productIds : [],
@@ -216,6 +251,7 @@ export async function PATCH(req: Request) {
       type,
       discountValue,
       minSpend,
+      startDate,
       expiryDate,
       maxUses,
       productIds,
@@ -250,6 +286,7 @@ export async function PATCH(req: Request) {
     if (type) updateData.type = type;
     if (discountValue) updateData.discountValue = discountValue;
     if (minSpend !== undefined) updateData.minSpend = minSpend ? Number(minSpend) : null;
+    if (startDate !== undefined) updateData.startDate = startDate || null;
     if (expiryDate !== undefined) updateData.expiryDate = expiryDate || null;
     if (maxUses !== undefined) updateData.maxUses = maxUses ? Number(maxUses) : null;
     if (Array.isArray(productIds)) updateData.productIds = productIds;

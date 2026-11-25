@@ -23,7 +23,9 @@ import {
   AlertCircle,
   Eye,
   GripVertical,
+  Menu,
 } from "lucide-react";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export interface AtelierPresetImage {
   id: string;
@@ -53,6 +55,7 @@ function ProductEditorInner() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
@@ -453,7 +456,7 @@ function ProductEditorInner() {
   const currentProduct = allProducts.find((p) => p.id === productId) || allProducts[0];
 
   return (
-    <div className="min-h-screen bg-[#F6F5F1] text-stone-900 font-sans selection:bg-[#eed08e] selection:text-[#072515] pb-24">
+    <div className="min-h-screen bg-[#F6F5F1] text-stone-900 font-sans selection:bg-[#eed08e] selection:text-[#072515] flex flex-col lg:flex-row antialiased">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[#28513B] text-white text-xs font-semibold shadow-2xl border border-white/20 animate-in fade-in slide-in-from-top-3">
@@ -462,32 +465,28 @@ function ProductEditorInner() {
         </div>
       )}
 
-      {/* Top Sticky Command Bar */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 sm:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 bg-white hover:bg-black/5 text-xs font-medium text-black/80 transition"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>Back to Products</span>
-            </Link>
+      {/* Admin Dashboard Sidebar Navigation */}
+      <AdminSidebar
+        currentRoute="products"
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+      />
 
-            <span className="text-black/30">|</span>
-
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-serif font-bold text-base sm:text-lg text-[#072515] truncate max-w-xs sm:max-w-md">
-                  {name || "Untitled Creation"}
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
-                  {status}
-                </span>
-              </div>
-              <p className="text-[11px] text-black/50 font-mono">SKU: {productId}</p>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto pb-24">
+        {/* Top Sticky Command Bar */}
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 sm:px-8 py-3.5">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-xl border border-black/15 bg-white text-black hover:bg-black/5 transition"
+                aria-label="Open Sidebar Menu"
+              >
+                <Menu className="size-4" />
+              </button>
             </div>
-          </div>
 
           <div className="flex items-center gap-2.5 self-end sm:self-auto">
             {/* Switch Product Selector Dropdown */}
@@ -504,7 +503,7 @@ function ProductEditorInner() {
             </select>
 
             <Link
-              href="/admin"
+              href="/admin?route=products"
               className="px-3 py-1.5 rounded-lg border border-black/20 text-xs font-medium hover:bg-black/5 transition"
             >
               Discard
@@ -999,6 +998,7 @@ function ProductEditorInner() {
           </div>
         </form>
       </main>
+      </div>
     </div>
   );
 }

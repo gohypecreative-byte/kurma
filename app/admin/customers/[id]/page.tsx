@@ -19,7 +19,9 @@ import {
   X,
   Search,
   UsersRound,
+  Menu,
 } from "lucide-react";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 interface OrderItem {
   sku?: string;
@@ -116,6 +118,7 @@ export default function CustomerDetailsPage() {
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [inspectOrder, setInspectOrder] = useState<CustomerOrder | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -208,7 +211,7 @@ export default function CustomerDetailsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-black pb-24 font-sans selection:bg-[#eed08e]/40">
+    <div className="min-h-screen bg-[#FAF8F5] text-black flex flex-col lg:flex-row antialiased selection:bg-[#eed08e]/40 font-sans">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 flex items-center gap-2.5 rounded-xl bg-[#072515] px-4 py-3 text-xs font-medium text-[#FAF8F5] shadow-2xl border border-[#eed08e]/30 animate-fade-in">
@@ -217,117 +220,29 @@ export default function CustomerDetailsPage() {
         </div>
       )}
 
-      {/* Top Header / Sticky Bar */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-black/10 px-4 sm:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin?route=customers"
-              className="inline-flex items-center justify-center size-9 rounded-xl border border-black/15 bg-white text-black hover:bg-black/5 transition shadow-2xs group"
-              title="Return to Customers"
-            >
-              <ArrowLeft className="size-4 group-hover:-translate-x-0.5 transition-transform" />
-            </Link>
-            <div>
-              <div className="flex items-center gap-2 text-[11px] text-black/50">
-                <Link href="/admin?route=home" className="hover:text-black transition">Admin</Link>
-                <span>/</span>
-                <Link href="/admin?route=customers" className="hover:text-black transition">Customers</Link>
-                <span>/</span>
-                <span className="text-[#072515] font-medium truncate max-w-[180px]">{customer.name}</span>
-              </div>
-              <h1 className="font-serif text-lg sm:text-xl font-bold text-[#072515] leading-tight">
-                {customer.name}
-              </h1>
-            </div>
-          </div>
+      {/* Admin Dashboard Sidebar Navigation */}
+      <AdminSidebar
+        currentRoute="customers"
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+      />
 
-          <div className="flex items-center gap-2.5">
-            {customer.email && (
-              <a
-                href={`mailto:${customer.email}`}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-black/15 text-black hover:bg-black/5 text-xs font-semibold transition shadow-2xs"
-              >
-                <Mail className="size-3.5 text-black/60" />
-                <span className="hidden sm:inline">Email Customer</span>
-              </a>
-            )}
-            {customer.phone && (
-              <a
-                href={`https://wa.me/${customer.phone.replace(/[^0-9]/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 text-xs font-semibold transition shadow-2xs"
-              >
-                <Phone className="size-3.5 text-emerald-600" />
-                <span className="hidden sm:inline">WhatsApp</span>
-              </a>
-            )}
-            <Link
-              href="/admin?route=customers"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#28513B] text-white hover:bg-[#1e3e2d] text-xs font-semibold transition shadow-2xs"
-            >
-              <UsersRound className="size-3.5 text-white" />
-              <span>All Customers</span>
-            </Link>
-          </div>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto pb-24">
+        {/* Mobile Header Bar for Sidebar Toggle (visible only on mobile) */}
+        <div className="lg:hidden sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-black/10 px-4 py-3 flex items-center justify-between shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(true)}
+            className="p-2 rounded-xl border border-black/15 bg-white text-black hover:bg-black/5 transition"
+            aria-label="Open Sidebar Menu"
+          >
+            <Menu className="size-4" />
+          </button>
         </div>
-      </header>
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 space-y-6">
-        {/* ==================================================================== */}
-        {/* CUSTOMER HERO CARD                                                   */}
-        {/* ==================================================================== */}
-        <section className="bg-white rounded-2xl border border-[#eed08e]/30 shadow-xs p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-full bg-gradient-to-l from-[#eed08e]/10 to-transparent pointer-events-none" />
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 relative z-10">
-            <div className="flex items-center gap-4">
-              <div className="size-16 rounded-2xl bg-[#28513B] text-white font-serif font-bold text-2xl flex items-center justify-center border-2 border-[#28513B]/30 shadow-md shrink-0">
-                {customer.initials || customer.name.slice(0, 2).toUpperCase()}
-              </div>
-              <div className="space-y-1">
-                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#072515]">
-                  {customer.name}
-                </h2>
-                <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-black/60">
-                  <span className="flex items-center gap-1">
-                    <Mail className="size-3.5 text-black/40" />
-                    <span>{customer.email}</span>
-                  </span>
-                  {customer.phone && (
-                    <span className="flex items-center gap-1">
-                      <Phone className="size-3.5 text-black/40" />
-                      <span>{customer.phone}</span>
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <MapPin className="size-3.5 text-black/40" />
-                    <span>{customer.location}</span>
-                  </span>
-                  {customer.memberSince && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="size-3.5 text-black/40" />
-                      <span>Member since {customer.memberSince}</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
-              <button
-                type="button"
-                onClick={() => handleCopy(customer.email, "Email")}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/15 text-xs text-black hover:bg-black/5 transition"
-              >
-                <Copy className="size-3.5 text-black/50" /> Copy Email
-              </button>
-            </div>
-          </div>
-        </section>
-
         {/* ==================================================================== */}
         {/* 2-COLUMN MAIN CONTENT (8 COLS / 4 COLS)                               */}
         {/* ==================================================================== */}
@@ -387,40 +302,9 @@ export default function CustomerDetailsPage() {
                             {ord.orderNumber}
                           </span>
                           <span className="text-xs text-black/50">{ord.date}</span>
-                          {ord.channel && (
-                            <span className="text-[10px] bg-black/5 text-black/60 px-2 py-0.5 rounded-full font-medium">
-                              {ord.channel}
-                            </span>
-                          )}
                         </div>
 
                         <div className="flex items-center gap-2">
-                          {/* Payment status badge */}
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${ord.paymentStatus === "Paid"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : ord.paymentStatus === "Refunded"
-                                ? "bg-stone-100 text-stone-700"
-                                : "bg-amber-100 text-amber-800"
-                              }`}
-                          >
-                            {ord.paymentStatus}
-                          </span>
-
-                          {/* Fulfillment status badge */}
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${ord.fulfillmentStatus === "Delivered"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : ord.fulfillmentStatus === "Shipped" || ord.fulfillmentStatus === "In Transit"
-                                ? "bg-blue-100 text-blue-800"
-                                : ord.fulfillmentStatus === "Out for Delivery"
-                                  ? "bg-purple-100 text-purple-800"
-                                  : "bg-amber-100 text-amber-800"
-                              }`}
-                          >
-                            {ord.fulfillmentStatus}
-                          </span>
-
                           {/* Inspect button */}
                           <button
                             type="button"
@@ -727,6 +611,7 @@ export default function CustomerDetailsPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -151,6 +151,7 @@ export interface AdminDiscount {
   used: number;
   discountValue: string;
   minSpend?: number;
+  startDate?: string | null;
   expiryDate?: string;
   maxUses?: number;
   productIds?: string[];
@@ -1146,15 +1147,7 @@ export default function AdminDashboardPage() {
   };
 
   const openInspectOrder = (ord: AdminOrder) => {
-    setInspectOrder(ord);
-    setTrackingForm({
-      fulfillmentStatus: ord.fulfillmentStatus || "Processing",
-      paymentStatus: ord.paymentStatus || "Paid",
-      courier: ord.courier || "BlueDart Express",
-      awb: ord.awb || "",
-      estimatedDate: ord.estimatedDate || "Within 2-3 business days",
-      notes: ord.notes || "",
-    });
+    router.push(`/admin/orders/${encodeURIComponent(ord.id || ord.orderNumber)}`);
   };
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
@@ -3047,14 +3040,13 @@ export default function AdminDashboardPage() {
                               <tr key={ord.id} className="hover:bg-black/[0.02] transition-colors">
                                 <td className="border-b border-black/10 px-3 py-2.5"><input type="checkbox" aria-label={`Select ${ord.orderNumber}`} /></td>
                                 <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">
-                                  <button
-                                    type="button"
-                                    onClick={() => openInspectOrder(ord)}
-                                    className="font-medium hover:underline text-left cursor-pointer"
+                                  <Link
+                                    href={`/admin/orders/${encodeURIComponent(ord.id || ord.orderNumber)}`}
+                                    className="font-medium hover:underline text-left cursor-pointer inline-block"
                                     title="Click to view order details"
                                   >
                                     {ord.orderNumber}
-                                  </button>
+                                  </Link>
                                 </td>
                                 <td className="border-b border-black/10 px-3 py-2.5 text-black/70">{ord.date}</td>
                                 <td className="border-b border-black/10 px-3 py-2.5 font-medium text-black">

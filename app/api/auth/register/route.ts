@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
         city: city?.trim() || null,
         tier: tier || "Patron",
-        role: "PATRON",
+        role: "USER",
         memberSince: new Date().toLocaleDateString("en-US", {
           month: "long",
           year: "numeric",

@@ -10,7 +10,7 @@ datasource db {
 }
 
 enum Role {
-  PATRON
+  USER
   ADMIN
 }
 
@@ -35,7 +35,7 @@ model User {
   name        String
   password    String?
   phone       String?
-  role        Role      @default(PATRON)
+  role        Role      @default(USER)
   memberSince String?
   city        String?
   tier        String    @default("Patron")
@@ -153,6 +153,7 @@ model Discount {
   used          Int      @default(0)
   discountValue String
   minSpend      Int?
+  startDate     String?
   expiryDate    String?
   maxUses       Int?
   productIds    String[] @default([])

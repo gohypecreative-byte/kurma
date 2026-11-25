@@ -395,22 +395,9 @@ export default function AdminDiscountsSection({
     triggerNotification(`Duplicated coupon "${disc.title}" as "${clone.title}".`);
   };
 
-  // Open Edit Modal
+  // Open Dedicated Edit Page
   const handleOpenEdit = (disc: AdminDiscount) => {
-    setEditingDiscountId(disc.id);
-    setFormData({
-      code: disc.title,
-      subtitle: disc.subtitle,
-      type: disc.type,
-      discountValue: disc.discountValue,
-      method: disc.method,
-      eligibility: (disc.eligibility as any) || "All customers",
-      minSpend: (disc as any).minSpend || 2500,
-      expiryDate: (disc as any).expiryDate || "Dec 31, 2026",
-      status: disc.status,
-      productIds: disc.productIds || [],
-    });
-    setIsModalOpen(true);
+    router.push(`/admin/discounts/edit?id=${encodeURIComponent(disc.id)}`);
   };
 
   // Open Create Modal
@@ -840,7 +827,14 @@ export default function AdminDiscountsSection({
                       <td className="border-b border-black/10 px-3 py-3">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-black">{disc.title}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(disc)}
+                              className="font-semibold text-black hover:text-[#28513B] hover:underline text-left cursor-pointer"
+                              title="Edit discount"
+                            >
+                              {disc.title}
+                            </button>
                             <button
                               type="button"
                               onClick={() => handleCopyCode(disc.title)}

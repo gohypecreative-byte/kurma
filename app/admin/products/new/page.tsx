@@ -17,7 +17,9 @@ import {
   Sparkles,
   Trash2,
   Check,
+  Menu,
 } from "lucide-react";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const AVAILABLE_TAGS = [
   "Bestseller",
@@ -67,6 +69,7 @@ function NewProductPageInner() {
   // UI state
   const [isSaving, setIsSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -253,7 +256,7 @@ function NewProductPageInner() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 pb-20 selection:bg-[#eed08e] selection:text-[#072515]">
+    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 selection:bg-[#eed08e] selection:text-[#072515] flex flex-col lg:flex-row antialiased">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#28513B] text-white px-4 py-3 rounded-xl shadow-2xl border border-white/20 flex items-center gap-2.5 text-xs font-semibold animate-in slide-in-from-bottom-5">
@@ -262,16 +265,34 @@ function NewProductPageInner() {
         </div>
       )}
 
-      {/* Top Header Navigation */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 sm:px-8 py-3.5 shadow-2xs">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin?route=products"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/15 text-xs font-semibold text-black/75 hover:text-black hover:bg-black/5 transition"
-            >
-              <ArrowLeft className="size-3.5" /> Back to Products
-            </Link>
+      {/* Admin Dashboard Sidebar Navigation */}
+      <AdminSidebar
+        currentRoute="products"
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto pb-20">
+        {/* Top Header Navigation */}
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-black/10 px-4 sm:px-8 py-3.5 shadow-2xs">
+          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-xl border border-black/15 bg-white text-black hover:bg-black/5 transition"
+                aria-label="Open Sidebar Menu"
+              >
+                <Menu className="size-4" />
+              </button>
+
+              <Link
+                href="/admin?route=products"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/15 text-xs font-semibold text-black/75 hover:text-black hover:bg-black/5 transition"
+              >
+                <ArrowLeft className="size-3.5" /> Back to Products
+              </Link>
 
             <div className="hidden sm:block h-4 w-px bg-black/15" />
 
@@ -655,6 +676,7 @@ function NewProductPageInner() {
           </div>
         </form>
       </main>
+      </div>
     </div>
   );
 }
