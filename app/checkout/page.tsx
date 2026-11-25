@@ -641,18 +641,36 @@ function CheckoutContent() {
   };
 
   // OTP Input & Paste Handlers
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text") || "";
+    const clean = pasted.replace(/[^0-9]/g, "");
+    if (!clean) return;
+
+    const digits = clean.slice(0, 6).split("");
+    const next = ["", "", "", "", "", ""];
+    for (let i = 0; i < digits.length; i++) {
+      next[i] = digits[i];
+    }
+    setOtpDigits(next);
+    setOtpError(null);
+
+    const nextFocus = Math.min(digits.length, 5);
+    otpInputRefs.current[nextFocus]?.focus();
+  };
+
   const handleOtpChange = (index: number, val: string) => {
     const clean = val.replace(/[^0-9]/g, "");
 
     if (clean.length > 1) {
-      const pasted = clean.slice(0, 6).split("");
-      const next = [...otpDigits];
-      for (let i = 0; i < pasted.length; i++) {
-        if (index + i < 6) next[index + i] = pasted[i];
+      const digits = clean.slice(0, 6).split("");
+      const next = ["", "", "", "", "", ""];
+      for (let i = 0; i < digits.length; i++) {
+        next[i] = digits[i];
       }
       setOtpDigits(next);
       setOtpError(null);
-      const nextFocus = Math.min(index + pasted.length, 5);
+      const nextFocus = Math.min(digits.length, 5);
       otpInputRefs.current[nextFocus]?.focus();
       return;
     }
@@ -810,21 +828,13 @@ function CheckoutContent() {
             </div>
 
             {/* Order Ref Banner */}
-            <div className="bg-[#FAF8F5] rounded-2xl p-4 border border-[#c89e43]/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+            <div className="bg-[#FAF8F5] rounded-2xl p-4 border border-[#c89e43]/30 flex items-center justify-between gap-3 text-left">
               <div>
                 <span className="text-[10px] uppercase font-bold text-stone-500 block">
                   Order Reference ID
                 </span>
                 <span className="font-mono text-base font-bold text-[#072515]">
                   {orderConfirmed.orderNumber}
-                </span>
-              </div>
-              <div className="sm:text-right">
-                <span className="text-[10px] uppercase font-bold text-stone-500 block">
-                  Logistics Carrier
-                </span>
-                <span className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
-                  <Truck className="size-3.5 text-[#c0881b]" /> BlueDart Express (Air Priority)
                 </span>
               </div>
             </div>
@@ -1488,11 +1498,13 @@ function CheckoutContent() {
                       }}
                       type="text"
                       inputMode="numeric"
+                      autoComplete="one-time-code"
                       pattern="[0-9]*"
-                      maxLength={1}
+                      maxLength={6}
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      onPaste={handleOtpPaste}
                       disabled={isVerifyingOtp}
                       className={`h-12 sm:h-14 text-center text-lg sm:text-xl font-bold font-mono rounded-xl border-2 transition-all outline-none ${digit
                         ? "border-[#072515] bg-white ring-2 ring-[#eed08e]/30 text-[#072515]"

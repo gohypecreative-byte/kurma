@@ -280,8 +280,9 @@ export default function OrderDetailsPage({
     );
   }
 
+  const activeFulfillmentStatus = trackingForm.fulfillmentStatus || order.fulfillmentStatus || "Processing";
   const statusOrder = ["Confirmed", "Processing", "Shipped", "Out for Delivery", "Delivered"];
-  const currentIdx = Math.max(0, statusOrder.indexOf(order.fulfillmentStatus));
+  const currentIdx = activeFulfillmentStatus === "Pending" ? -1 : statusOrder.indexOf(activeFulfillmentStatus);
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-stone-900 flex flex-col lg:flex-row antialiased selection:bg-[#eed08e] selection:text-[#072515] font-sans">
@@ -328,6 +329,15 @@ export default function OrderDetailsPage({
 
               <button
                 type="button"
+                onClick={() => handleSaveTracking()}
+                disabled={isSaving}
+                className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-[#28513B] text-white text-xs font-semibold hover:bg-[#1e3e2d] transition shadow-xs cursor-pointer disabled:opacity-50"
+              >
+                <span>{isSaving ? "Saving Updates..." : "Save Tracking Updates"}</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={handleDeleteOrder}
                 disabled={isDeleting || isSaving}
                 className="p-2 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition text-xs font-semibold cursor-pointer disabled:opacity-50"
@@ -368,16 +378,16 @@ export default function OrderDetailsPage({
                   </span>
                   <span
                     className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      order.fulfillmentStatus === "Delivered"
+                      activeFulfillmentStatus === "Delivered"
                         ? "bg-emerald-100 text-emerald-800"
-                        : order.fulfillmentStatus === "Shipped" || order.fulfillmentStatus === "In Transit"
+                        : activeFulfillmentStatus === "Shipped" || activeFulfillmentStatus === "In Transit"
                         ? "bg-blue-100 text-blue-800"
-                        : order.fulfillmentStatus === "Out for Delivery"
+                        : activeFulfillmentStatus === "Out for Delivery"
                         ? "bg-purple-100 text-purple-800"
                         : "bg-amber-100 text-amber-800"
                     }`}
                   >
-                    Current: {order.fulfillmentStatus}
+                    Current: {activeFulfillmentStatus}
                   </span>
                 </div>
 
@@ -390,7 +400,7 @@ export default function OrderDetailsPage({
                     { key: "Out for Delivery", label: "Out for Delivery" },
                     { key: "Delivered", label: "Delivered" },
                   ].map((step, idx) => {
-                    const isDone = idx < currentIdx;
+                    const isDone = idx < currentIdx || (idx === 4 && activeFulfillmentStatus === "Delivered");
                     const isCurrent = idx === currentIdx;
 
                     return (
@@ -400,7 +410,7 @@ export default function OrderDetailsPage({
                             isDone
                               ? "bg-[#28513B] text-white"
                               : isCurrent
-                              ? "bg-[#072515] text-[#eed08e] ring-2 ring-[#c89e43] ring-offset-2 ring-offset-[#FAF8F5]"
+                              ? "bg-[#28513B] text-white ring-2 ring-[#28513B]/30 ring-offset-2 ring-offset-[#FAF8F5]"
                               : "bg-black/10 text-black/40"
                           }`}
                         >
@@ -446,7 +456,11 @@ export default function OrderDetailsPage({
                     </label>
                     <select
                       value={trackingForm.fulfillmentStatus}
-                      onChange={(e) => setTrackingForm({ ...trackingForm, fulfillmentStatus: e.target.value })}
+                      onChange={(e) => {
+                        const newStatus = e.target.value;
+                        setTrackingForm((prev) => ({ ...prev, fulfillmentStatus: newStatus }));
+                        setOrder((prev) => (prev ? { ...prev, fulfillmentStatus: newStatus } : prev));
+                      }}
                       className="w-full bg-[#FAF8F5]/60 border border-black/15 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-[#072515] outline-none focus:border-[#28513B] focus:ring-1 focus:ring-[#28513B] cursor-pointer"
                     >
                       <option value="Pending">Pending</option>
@@ -568,22 +582,10 @@ export default function OrderDetailsPage({
                   </div>
                 </div>
 
-                {/* Save Tracking Action Button */}
-                <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-black/10">
-                  <div className="flex items-center gap-1.5 text-xs text-stone-500">
-                    <Clock className="size-3.5 text-[#c89e43]" />
-                    <span>Order Placed: {order.date}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleSaveTracking()}
-                    disabled={isSaving}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#28513B] text-white text-xs font-semibold hover:bg-[#1e3e2d] transition shadow-xs cursor-pointer disabled:opacity-50"
-                  >
-                    <Check className="size-4 text-white" />
-                    <span>{isSaving ? "Saving Updates..." : "Save Tracking Updates"}</span>
-                  </button>
+                {/* Order Placed Footer */}
+                <div className="pt-3 flex items-center gap-1.5 text-xs text-stone-500 border-t border-black/10">
+                  <Clock className="size-3.5 text-[#c89e43]" />
+                  <span>Order Placed: {order.date}</span>
                 </div>
               </section>
 

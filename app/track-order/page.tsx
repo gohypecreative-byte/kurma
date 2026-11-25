@@ -370,13 +370,13 @@ function TrackOrderContent() {
                             <div className="relative flex flex-col items-center text-center">
                               <div
                                 className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                                  isConfirmed ? "bg-[#092B20]" : "bg-[#EAE3D8]"
+                                  isConfirmed ? "bg-[#28513B]" : "bg-[#EAE3D8]"
                                 }`}
                               />
-                              <div className="relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#092B20] text-[#E8D9AE] shadow-xs">
-                                <Check className="w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 text-[#C5A45B] stroke-[2.5]" />
+                              <div className="relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#28513B] text-white shadow-xs">
+                                <Check className="w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 text-white stroke-[2.5]" />
                               </div>
-                              <h4 className="font-serif text-[10px] min-[420px]:text-xs sm:text-sm font-medium text-[#092B20] mt-2 sm:mt-3 leading-tight sm:leading-snug">
+                              <h4 className="font-serif text-[10px] min-[420px]:text-xs sm:text-sm font-medium text-[#28513B] mt-2 sm:mt-3 leading-tight sm:leading-snug">
                                 Order Placed
                               </h4>
                               <p className="text-[8.5px] min-[420px]:text-[10px] sm:text-[11px] text-[#7A6F62] font-medium mt-0.5 font-sans leading-none">
@@ -388,25 +388,25 @@ function TrackOrderContent() {
                             <div className="relative flex flex-col items-center text-center">
                               <div
                                 className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                                  isShipped ? "bg-[#092B20]" : "bg-[#EAE3D8]"
+                                  isShipped ? "bg-[#28513B]" : "bg-[#EAE3D8]"
                                 }`}
                               />
                               <div
                                 className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isConfirmed
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs"
+                                    ? "bg-[#28513B] text-white shadow-xs ring-2 sm:ring-4 ring-[#28513B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Check
                                   className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
-                                    isConfirmed ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                    isConfirmed ? "text-white" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
                                 className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
-                                  isConfirmed ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                  isConfirmed ? "font-medium text-[#28513B]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Order Confirmed
@@ -420,25 +420,25 @@ function TrackOrderContent() {
                             <div className="relative flex flex-col items-center text-center">
                               <div
                                 className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                                  isOutForDelivery ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
+                                  isOutForDelivery ? "bg-[#28513B]" : "border-t-2 border-dashed border-[#D9CEBF]"
                                 }`}
                               />
                               <div
                                 className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isShipped
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-2 sm:ring-4 ring-[#C5A45B]/25"
+                                    ? "bg-[#28513B] text-white shadow-xs ring-2 sm:ring-4 ring-[#28513B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Truck
                                   className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2] ${
-                                    isShipped ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                    isShipped ? "text-white" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
                                 className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
-                                  isShipped ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                  isShipped ? "font-medium text-[#28513B]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Shipped
@@ -452,25 +452,25 @@ function TrackOrderContent() {
                             <div className="relative flex flex-col items-center text-center">
                               <div
                                 className={`absolute top-3.5 min-[420px]:top-4 sm:top-5 left-1/2 w-full h-[2px] z-0 ${
-                                  isDelivered ? "bg-[#092B20]" : "border-t-2 border-dashed border-[#D9CEBF]"
+                                  isDelivered ? "bg-[#28513B]" : "border-t-2 border-dashed border-[#D9CEBF]"
                                 }`}
                               />
                               <div
                                 className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isOutForDelivery
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-2 sm:ring-4 ring-[#C5A45B]/25"
+                                    ? "bg-[#28513B] text-white shadow-xs ring-2 sm:ring-4 ring-[#28513B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Package
                                   className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2] ${
-                                    isOutForDelivery ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                    isOutForDelivery ? "text-white" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
                                 className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
-                                  isOutForDelivery ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                  isOutForDelivery ? "font-medium text-[#28513B]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Out for Delivery
@@ -485,19 +485,19 @@ function TrackOrderContent() {
                               <div
                                 className={`relative z-10 w-7 h-7 min-[420px]:w-8 min-[420px]:h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all ${
                                   isDelivered
-                                    ? "bg-[#092B20] text-[#E8D9AE] shadow-xs ring-2 sm:ring-4 ring-[#C5A45B]/25"
+                                    ? "bg-[#28513B] text-white shadow-xs ring-2 sm:ring-4 ring-[#28513B]/25"
                                     : "bg-[#FAF7F2] text-[#A3998C] border border-[#EAE3D8]"
                                 }`}
                               >
                                 <Check
                                   className={`w-3.5 h-3.5 min-[420px]:w-4 min-[420px]:h-4 sm:w-5 sm:h-5 stroke-[2.5] ${
-                                    isDelivered ? "text-[#C5A45B]" : "text-[#A3998C]"
+                                    isDelivered ? "text-white" : "text-[#A3998C]"
                                   }`}
                                 />
                               </div>
                               <h4
                                 className={`font-serif text-[10px] min-[420px]:text-xs sm:text-sm mt-2 sm:mt-3 leading-tight sm:leading-snug ${
-                                  isDelivered ? "font-medium text-[#092B20]" : "font-light text-[#A3998C]"
+                                  isDelivered ? "font-medium text-[#28513B]" : "font-light text-[#A3998C]"
                                 }`}
                               >
                                 Delivered

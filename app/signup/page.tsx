@@ -72,18 +72,36 @@ export default function SignUpPage() {
   }, [isOtpModalOpen]);
 
   // OTP Input & Paste Handlers
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text") || "";
+    const clean = pasted.replace(/[^0-9]/g, "");
+    if (!clean) return;
+
+    const digits = clean.slice(0, 6).split("");
+    const next = ["", "", "", "", "", ""];
+    for (let i = 0; i < digits.length; i++) {
+      next[i] = digits[i];
+    }
+    setOtpDigits(next);
+    setOtpError(null);
+
+    const nextFocus = Math.min(digits.length, 5);
+    otpInputRefs.current[nextFocus]?.focus();
+  };
+
   const handleOtpChange = (index: number, val: string) => {
     const clean = val.replace(/[^0-9]/g, "");
 
     if (clean.length > 1) {
-      const pasted = clean.slice(0, 6).split("");
-      const next = [...otpDigits];
-      for (let i = 0; i < pasted.length; i++) {
-        if (index + i < 6) next[index + i] = pasted[i];
+      const digits = clean.slice(0, 6).split("");
+      const next = ["", "", "", "", "", ""];
+      for (let i = 0; i < digits.length; i++) {
+        next[i] = digits[i];
       }
       setOtpDigits(next);
       setOtpError(null);
-      const nextFocus = Math.min(index + pasted.length, 5);
+      const nextFocus = Math.min(digits.length, 5);
       otpInputRefs.current[nextFocus]?.focus();
       return;
     }
@@ -530,11 +548,13 @@ export default function SignUpPage() {
                       }}
                       type="text"
                       inputMode="numeric"
+                      autoComplete="one-time-code"
                       pattern="[0-9]*"
-                      maxLength={1}
+                      maxLength={6}
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
                       onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      onPaste={handleOtpPaste}
                       disabled={isVerifyingOtp}
                       className={`h-12 sm:h-14 text-center text-lg sm:text-xl font-bold font-mono rounded-xl border-2 transition-all outline-none ${
                         digit
